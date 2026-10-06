@@ -49,7 +49,14 @@ export const PLAQUETTES = {
 export const CATALOGUE_PLAQUETTES = "https://www.calameo.com/accounts/7206845";
 
 /* Mini-jeux disponibles : id de formation → id du jeu */
-export const GAMES = { gestion: "comptoir" };
+export const GAMES = { gestion: "comptoir", sv: "jardin" };
+/* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */
+export const GAME_INFO = {
+	comptoir:{ fid:"gestion", title:"Le Comptoir", icon:"☕", where:"falise", whereLabel:"Atrium de Michel Falise", dur:"6 min",
+		pitch:"Pilote le café de l'atrium : prix, équipe, imprévus… et ton résultat en direct." },
+	jardin:{ fid:"sv", title:"Mission Jardin Boulay", icon:"🔍", where:"jardin", whereLabel:"Jardin botanique Nicolas Boulay", dur:"6 min",
+		pitch:"Trouve et identifie les petites bêtes du jardin, compte une prairie, refais l'expérience de Mendel." }
+};
 
 export const PROFILES = {
 	lycee: { icon:"🎒", label:"Lycée", levels:["prep","L"] },
@@ -155,7 +162,7 @@ export const SEASONS = {
 		grass:"#a9b05c", lawn:"#9cb257", path:"#dec59c", water:"#6e9aa4", slate:"#4f5767",
 		trees:["#d9822b","#e6a43c","#c4532f","#b98a2f","#a03d2a","#e9b84b","#8f9a3c"], conifer:"#4d6a44", bush:["#7c8f3e","#b0602e","#97a046"],
 		parts:{ n:150, colors:["#d9822b","#c4532f","#e6a43c","#b98a2f"], w:.38, h:.26, speed:1.3, sway:1.3 },
-		day:{ skyTop:"#f2bf86", skyBot:"#fde9c8", fog:"#f5dcb6", hemiSky:"#ffe8c4", hemiGround:"#7d5b3c", hemiI:1.15, sun:"#ffcf8f", sunI:2.5, sunPos:[-70,62,50], cloud:"#fff1dc", exposure:1 }
+		day:{ skyTop:"#a8c6df", skyBot:"#fbe8cc", fog:"#f3e4cb", hemiSky:"#ffe8c4", hemiGround:"#7d5b3c", hemiI:1.15, sun:"#ffcf8f", sunI:2.5, sunPos:[-70,62,50], cloud:"#fff1dc", exposure:1 }
 	},
 	hiver: {
 		icon:"❄️", label:"Hiver",

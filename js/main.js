@@ -2,11 +2,14 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, beam } from "./kit.js";
-import { FORMATIONS as F, GAMES, PROFILES, PLACES, LIFE, SEASONS, NIGHT, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES } from "./data.js";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES } from "./data.js";
 import { MAP } from "./vauban.js";
 import { buildCity, pointInPoly } from "./city.js";
 import { Audio } from "./audio.js";
 import { DETAILS } from "./details.js";
+
+// lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
+const GAME_AT = Object.fromEntries(Object.entries(GAME_INFO).map(([k, g]) => [g.where, k]));
 
 const store = {
 	get(k,d){ try{ const v = localStorage.getItem("campusfges:"+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
@@ -550,6 +553,20 @@ if(city.pois.rizomm){
 		Object.assign(LIFE[id], { pin:[p.x, top + 4, p.z], target:[p.x, 2, p.z], cam:[p.x + 14, top + 24, p.z + 36] });
 		if(city.pois[id]) register(city.pois[id].group, id);
 	}
+	// station de terrain de la « Mission Jardin » : une petite tente de biologiste dans le jardin botanique
+	if(MAP.pois.jardin && GAME_AT.jardin){
+		const j = MAP.pois.jardin, sx = j.x + 5, sz = j.z + 4, st = new THREE.Group();
+		st.position.set(sx, 0, sz);
+		const wood = std("#8a5a3c"), green = std("#2f6b45");
+		for(const [dx, dz] of [[-1.3,-1],[1.3,-1],[-1.3,1],[1.3,1]]) cyl(st, .06, .06, 2.2, wood, dx, 0, dz, 6);
+		const roof = mesh(new THREE.ConeGeometry(2.1, 1.1, 4).rotateY(Math.PI/4).translate(0, .55, 0), green, st, 0, 2.2, 0); roof.scale.set(1.05, 1, .8);
+		box(st, 2.4, .08, 1.2, std("#f4f1e6"), 0, .9, 0);
+		for(const dx of [-1, 1]) box(st, .08, .9, 1, wood, dx, 0, 0);
+		mesh(new THREE.TorusGeometry(.22, .05, 6, 16), std("#d9a441"), st, .5, 1.25, 0).rotation.x = -.6;
+		box(st, .6, .25, .4, std("#dfeee0"), -.5, .98, 0);
+		const sci = makeStudent(st); sci.g.position.set(.2, 0, 1.4); sci.g.scale.setScalar(.9);
+		scene.add(st);
+	}
 	const [cx, cz] = MAP.citadelle;
 	Object.assign(LIFE.citadelle, { pin:[cx, 18, cz], target:[cx, 2, cz], cam:[cx + 40, 70, cz + 95] });
 }
@@ -910,7 +927,11 @@ setInterval(() => { if(timeMode === "auto" && realNight() !== night) applyAmbian
 const interiors = { atrium:null, chapelle:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
 const MAKERS = { atrium:() => import("./atrium.js").then(m => m.createAtrium), chapelle:() => import("./chapelle.js").then(m => m.createChapelle) };
-const loadGame = () => import("./games/comptoir.js");
+const GAME_LOADERS = {
+	comptoir:() => import("./games/comptoir.js").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js").then(m => m.openJardin)
+};
+const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
 	const go = () => { MAKERS.atrium(); MAKERS.chapelle(); loadGame(); };
 	("requestIdleCallback" in window) ? requestIdleCallback(go, { timeout:8000 }) : setTimeout(go, 4000);
@@ -991,6 +1012,8 @@ $("skip").addEventListener("click", endIntro);
 let profile = store.get("profile", null); if(!PROFILES[profile]) profile = null;
 let favs = new Set(store.get("favs", []));
 let stamps = new Set(store.get("stamps", []));
+let medals = store.get("medals", {});        // { comptoir:"Bien", … } : la meilleure mention de chaque mini-jeu
+const MENTION_RANK = ["De justesse", "Assez bien", "Bien", "Très bien"];
 let found = new Set(store.get("found", []));
 let entered = false, current = null;
 let musicWanted = store.get("music", true);
@@ -1054,12 +1077,12 @@ function buildPins(){
 	let list;
 	if(mode !== "ext") list = interiors[mode].pins.map(p => ({ ...p, act:() => interiorAction(p.id) }));
 	else list = [
-		...Object.entries(PLACES).map(([id,p]) => ({ id, icon:p.icon, name:p.name, pos:p.pin, act:() => selectPlace(id), place:id })),
-		...Object.entries(LIFE).filter(([,p]) => p.pin).map(([id,p]) => ({ id, icon:p.icon, name:p.name, pos:p.pin, act:() => selectPlace(id), place:id, life:true }))
+		...Object.entries(PLACES).map(([id,p]) => ({ id, icon:p.icon, name:p.name, pos:p.pin, act:() => selectPlace(id), place:id, game:!!GAME_AT[id] })),
+		...Object.entries(LIFE).filter(([,p]) => p.pin).map(([id,p]) => ({ id, icon:p.icon, name:p.name, pos:p.pin, act:() => selectPlace(id), place:id, life:true, game:!!GAME_AT[id] }))
 	];
 	pins = list.map(p => {
 		const b = document.createElement("button");
-		b.className = "pin" + (p.life ? " life" : "");
+		b.className = "pin" + (p.life ? " life" : "") + (p.game ? " hasgame" : "");
 		b.setAttribute("aria-label", p.name);
 		b.innerHTML = `<span><em>${p.icon}</em><i>${p.name}</i><s>${p.place && (stamps.has(p.place) || found.has(p.place)) ? "✓" : ""}</s></span>`;
 		b.addEventListener("click", p.act);
@@ -1070,17 +1093,15 @@ function buildPins(){
 }
 const v3 = new THREE.Vector3(), v3b = new THREE.Vector3();
 function updatePins(){
-	const W = innerWidth, Hh = innerHeight;
+	const W = innerWidth, Hh = innerHeight, shown = [];
 	for(const p of pins){
 		v3.copy(p.v).project(camera);
-		let x = (v3.x*.5 + .5)*W, y = (-v3.y*.5 + .5)*Hh, edge = false;
+		let x = (v3.x*.5 + .5)*W, y = (-v3.y*.5 + .5)*Hh, edge = false, hide = false;
 		const behind = v3.z > 1;
 		if(p.life){
 			const dist = camera.position.distanceTo(p.v);
 			p.far = p.far ? dist > 215 : dist > 240;          // hystérésis : pas de clignotement au seuil
-			const hide = behind || p.far;
-			if(hide !== p.hid){ p.el.classList.toggle("hidden", hide); p.hid = hide; }
-			if(hide) continue;
+			hide = behind || p.far;
 		} else if(mode === "ext" && !behind && y < 96 && p.place && (() => { const t = (PLACES[p.place] || LIFE[p.place]).target; if(!t) return false; v3b.set(...t).project(camera); const tx = (v3b.x*.5+.5)*W, ty = (-v3b.y*.5+.5)*Hh; return v3b.z < 1 && tx > 0 && tx < W && ty > 0 && ty < Hh; })()){
 			y = 96;      // le bâtiment est à l'écran : l'épingle reste en haut, sans flèche
 		} else if(mode === "ext" && (behind || x < 40 || x > W - 40 || y < 96 || y > Hh - 30)){
@@ -1090,13 +1111,29 @@ function updatePins(){
 			const k = Math.min((W/2 - 70)/Math.abs(dx || 1e-6), (Hh/2 - 70)/Math.abs(dy || 1e-6));
 			x = cx + dx*Math.min(k, 1e6); y = cy + dy*Math.min(k, 1e6) + 30;
 			edge = true;
-		} else if(behind){
-			if(!p.hid){ p.el.classList.add("hidden"); p.hid = true; }
-			continue;
+		} else if(behind) hide = true;
+		p.nx = x; p.ny = y; p.nedge = edge; p.nhide = hide;
+		if(!hide) shown.push(p);
+	}
+	// lisibilité : les épingles des bâtiments ne se recouvrent jamais (elles s'empilent),
+	// et une petite épingle « vie de campus » s'efface si elle cache le nom d'un bâtiment
+	const box = p => { if(!p.w){ p.w = p.el.offsetWidth || 120; p.h = p.el.offsetHeight || 36; } return [p.nx - p.w/2 - 4, p.ny - p.h - 10, p.nx + p.w/2 + 4, p.ny + 4]; };
+	const hit = (a, b) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
+	const big = shown.filter(p => !p.life).sort((a, b) => a.nedge - b.nedge), placed = [];
+	for(const p of big){
+		for(let n=0; n<4; n++){
+			const o = placed.find(q => hit(box(p), q)); if(!o) break;
+			p.ny = o[3] + p.h + 12;                              // juste en dessous de l'épingle déjà placée…
+			if(p.ny > Hh - 70) p.ny = o[1] - 6;                  // …ou au-dessus si on sort de l'écran
 		}
-		if(p.hid){ p.el.classList.remove("hidden"); p.hid = false; }
-		if(edge !== p.edge){ p.el.classList.toggle("edge", edge); p.edge = edge; }
-		const rx = Math.round(x), ry = Math.round(y);
+		placed.push(box(p));
+	}
+	for(const p of shown) if(p.life && placed.some(r => hit(box(p), r))) p.nhide = true;
+	for(const p of pins){
+		if(p.nhide !== p.hid){ p.el.classList.toggle("hidden", p.nhide); p.hid = p.nhide; }
+		if(p.nhide) continue;
+		if(p.nedge !== p.edge){ p.el.classList.toggle("edge", p.nedge); p.edge = p.nedge; p.w = 0; }
+		const rx = Math.round(p.nx), ry = Math.round(p.ny);
 		if(rx !== p.rx || ry !== p.ry){ p.rx = rx; p.ry = ry; p.el.style.transform = `translate3d(${rx}px,${ry}px,0) translate(-50%,-100%)`; }
 	}
 }
@@ -1186,8 +1223,8 @@ function formationCard(f){
 		<div class="top"><span class="school s-${f.school}">${f.school}</span><button class="fav" data-fav="${f.id}" aria-pressed="${favs.has(f.id)}" aria-label="Ajouter au carnet">${favs.has(f.id) ? "♥" : "♡"}</button></div>
 		<h4 data-detail="${f.id}" role="button" tabindex="0" style="cursor:pointer">${f.name}</h4><p class="meta">${meta}</p><p class="pitch">${f.pitch}</p>
 		<button class="btn alt" data-detail="${f.id}" style="margin-top:10px;padding:10px">📖 Programme, débouchés, admission</button>
-		${game ? `<button class="play" data-game="${f.id}">🎮 Jouer au mini-jeu</button>` : ""}
-		<div class="row">${game ? `<span class="soon ok">☕ Le Comptoir</span>` : `<span class="soon">🎮 Mini-jeu bientôt</span>`}<a class="link" href="${f.url}" target="_blank" rel="noopener">Voir la fiche →</a></div>
+		${game ? `<button class="play" data-game="${f.id}">${GAME_INFO[game].icon} Jouer : ${GAME_INFO[game].title}</button>` : ""}
+		<div class="row">${game ? `<span class="soon ok">${GAME_INFO[game].icon} ${GAME_INFO[game].title}</span>` : `<span class="soon">🎮 Mini-jeu bientôt</span>`}<a class="link" href="${f.url}" target="_blank" rel="noopener">Voir la fiche →</a></div>
 	</article>`;
 }
 const listFor = place => F.filter(f => f.place === place && PROFILES[profile].levels.includes(f.level));
@@ -1222,7 +1259,10 @@ function carnetBody(){
 	const st = Object.keys(PLACES).map(id => `<div class="stamp ${stamps.has(id) ? "got" : ""}"><i>${PLACES[id].icon}</i>${PLACES[id].name.replace("Bâtiment ","")}</div>`).join("");
 	const lifeIds = Object.keys(LIFE).filter(id => LIFE[id].pin);
 	const lf = lifeIds.map(id => `<span class="lifechip ${found.has(id) ? "got" : ""}" title="${LIFE[id].name}">${LIFE[id].icon}</span>`).join("");
-	return `<h3>Tampons de visite</h3><div class="stamps">${st}</div>
+	const gk = Object.keys(GAME_INFO), won = gk.filter(k => medals[k]);
+	const md = gk.map(k => `<button class="medal ${medals[k] ? "got" : ""}" data-game="${GAME_INFO[k].fid}" title="${GAME_INFO[k].title}"><i>${medals[k] ? "🏅" : GAME_INFO[k].icon}</i><b>${GAME_INFO[k].title}</b><small>${medals[k] ? "Mention " + medals[k] : "À jouer"}</small></button>`).join("");
+	return `<h3>Mes médailles (${won.length}/${gk.length})</h3><div class="medals">${md}</div>
+		<h3>Tampons de visite</h3><div class="stamps">${st}</div>
 		<h3>Lieux de vie découverts (${lifeIds.filter(id => found.has(id)).length}/${lifeIds.length})</h3><div class="lifes">${lf}</div>
 		<h3>Mes formations (${list.length})</h3>
 		${list.length ? list.map(formationCard).join("") : `<div class="empty">Ton carnet est vide. Entre dans un bâtiment et touche ♡ sur une formation.</div>`}
@@ -1252,26 +1292,51 @@ function renderFList(){
 	setMatches(fq || flv !== "toi" ? Object.fromEntries(Object.entries(by).map(([k,v]) => [k, v.length])) : null);
 }
 function candidater(f){
-	if(f.level === "prep" || f.level === "L") return `<a class="btn main wide" href="https://www.parcoursup.gouv.fr/" target="_blank" rel="noopener">Candidater sur Parcoursup ↗</a>`;
-	if(f.level === "M") return `<a class="btn main wide" href="https://www.monmaster.gouv.fr/" target="_blank" rel="noopener">Candidater en M1 sur Mon Master ↗</a>`;
-	return `<a class="btn main wide" href="${f.url}" target="_blank" rel="noopener">Comment candidater ↗</a>`;
+	if(f.level === "prep" || f.level === "L") return `<a class="btn alt wide" href="https://www.parcoursup.gouv.fr/" target="_blank" rel="noopener">Candidater sur Parcoursup ↗</a>`;
+	if(f.level === "M") return `<a class="btn alt wide" href="https://www.monmaster.gouv.fr/" target="_blank" rel="noopener">Candidater en M1 sur Mon Master ↗</a>`;
+	return `<a class="btn alt wide" href="${f.url}" target="_blank" rel="noopener">Comment candidater ↗</a>`;
 }
 function detailView(f){
 	const d = DETAILS[f.id] || {}, P = PLACES[f.place];
 	const backLbl = panelBack === "nav:formations" ? "Formations" : panelBack === "carnet" ? "Mon carnet" : panelBack && (PLACES[panelBack] || LIFE[panelBack]) ? (PLACES[panelBack] || LIFE[panelBack]).name : null;
 	const head = `${backLbl ? `<button class="back" data-back>← ${backLbl}</button>` : ""}<div class="kick">${f.school} · ${P ? P.name : ""}</div><h2>${f.name}</h2><p>${f.pitch}</p>
 		<div class="facts">${[f.seats ? `${f.seats} places` : null, f.rhythm].filter(Boolean).map(x => `<span>${x}</span>`).join("")}</div>`;
-	const body = (d.p ? `<h3>Au programme</h3><ul class="prog">${d.p.map(([k,v]) => `<li><b>${k}</b><span>${v}</span></li>`).join("")}</ul>` : "") +
+	const gk = GAMES[f.id], g = gk && GAME_INFO[gk];
+	const teaser = g ? `<button class="gteaser" data-game="${f.id}"><span class="gic">${g.icon}</span><span><b>${g.title}</b><small>Le mini-jeu de cette formation · ${g.dur}${medals[gk] ? ` · 🏅 ${medals[gk]}` : ""}</small></span><span class="go">${medals[gk] ? "Rejouer" : "Jouer"} ▶</span></button>` : "";
+	const body = teaser + (d.p ? `<h3>Au programme</h3><ul class="prog">${d.p.map(([k,v]) => `<li><b>${k}</b><span>${v}</span></li>`).join("")}</ul>` : "") +
 		(d.j ? `<div class="info"><b>Et après ?</b> ${d.j}</div>` : "") +
 		(d.a ? `<div class="info"><b>Admission :</b> ${d.a}</div>` : "") +
 		`<div class="acts">
-			${GAMES[f.id] ? `<button class="play wide" data-game="${f.id}" style="margin:0">🎮 Jouer au mini-jeu</button>` : ""}
 			<button class="btn main wide" data-lead="${f.id}">📄 Recevoir la plaquette</button>
 			<button class="btn alt" data-favd="${f.id}">${favs.has(f.id) ? "♥ Dans mon carnet" : "♡ Garder"}</button>
 			<button class="btn alt" data-fly="${f.place}">📍 Voir le bâtiment</button>
-			<a class="btn alt wide" href="${f.url}" target="_blank" rel="noopener">Fiche officielle sur fges.fr ↗</a>
 			${candidater(f)}
+			<a class="more wide" href="${f.url}" target="_blank" rel="noopener">Fiche officielle sur fges.fr ↗</a>
 		</div>`;
+	return [head, body];
+}
+function gameHere(id){
+	const k = GAME_AT[id]; if(!k) return "";
+	const g = GAME_INFO[k];
+	return `<button class="play wide" data-game="${g.fid}">🎮 ${g.title} · le mini-jeu de la ${F.find(f => f.id === g.fid).name}</button>`;
+}
+let justWon = null;      // après une victoire, la vue Jeux félicite et suggère la suite
+function jeuxView(){
+	const mine = PROFILES[profile].levels;
+	const list = Object.entries(GAME_INFO).map(([k, g]) => ({ k, g, f:F.find(f => f.id === g.fid) }))
+		.sort((a, b) => (a.k === justWon) - (b.k === justWon) || (!!medals[a.k]) - (!!medals[b.k]) || mine.includes(b.f.level) - mine.includes(a.f.level));
+	const won = Object.keys(GAME_INFO).filter(k => medals[k]).length, total = Object.keys(GAME_INFO).length;
+	const head = `<div class="kick">Mini-jeux · ${won}/${total} médaille${won > 1 ? "s" : ""}</div><h2>Joue une formation</h2>
+		<p>Chaque jeu te fait vivre une formation en quelques minutes, avec de vrais exercices de cours.</p>`;
+	const banner = justWon ? `<div class="wonbar">🏅 Médaille <b>${GAME_INFO[justWon].title}</b> : mention ${medals[justWon]} ! Tu as aimé ? Essaie aussi :</div>` : "";
+	const card = ({ k, g, f }) => `<div class="gcard ${medals[k] ? "got" : ""}">
+			<div class="gtop"><span class="gic">${g.icon}</span><span><b>${g.title}</b><small>${f.name}</small></span>${medals[k] ? `<span class="gmed" title="Mention ${medals[k]}">🏅</span>` : ""}</div>
+			<p>${g.pitch}</p>
+			<div class="gmeta"><button data-place="${g.where}">📍 ${g.whereLabel}</button><span>⏱️ ${g.dur}</span>${mine.includes(f.level) ? "" : `<span>${f.level === "M" ? "Master" : f.level === "DU" ? "Formation continue" : "Licence"}</span>`}</div>
+			<button class="play wide" data-game="${g.fid}">${medals[k] ? `Rejouer · mention ${medals[k]}` : "🎮 Jouer"}</button>
+		</div>`;
+	const body = banner + list.map(card).join("") + `<div class="empty">D'autres jeux arrivent : un par formation, conçus avec leurs enseignants.</div>`;
+	justWon = null;
 	return [head, body];
 }
 function lieuxView(){
@@ -1285,7 +1350,7 @@ function lieuxView(){
 	return [head, body];
 }
 function syncDock(){
-	const on = { formations: current === "nav:formations", lieux: current === "nav:lieux", carnet: current === "carnet", visite: !!tour };
+	const on = { formations: current === "nav:formations", lieux: current === "nav:lieux", jeux: current === "nav:jeux", carnet: current === "carnet", visite: !!tour };
 	document.querySelectorAll("[data-dock]").forEach(b => b.setAttribute("aria-pressed", String(!!on[b.dataset.dock])));
 }
 function openPanel(id){
@@ -1299,6 +1364,8 @@ function openPanel(id){
 		body = `<div id="flist"></div>`;
 	} else if(id === "nav:lieux"){
 		[head, body] = lieuxView();
+	} else if(id === "nav:jeux"){
+		[head, body] = jeuxView();
 	} else if(String(id).startsWith("f:")){
 		const f = F.find(x => x.id === id.slice(2));
 		[head, body] = detailView(f);
@@ -1308,7 +1375,7 @@ function openPanel(id){
 	} else if(LIFE[id]){
 		const p = LIFE[id];
 		head = `<div class="kick">Vie de campus · ${p.kicker}</div><h2>${p.icon} ${p.name}</h2><p>${p.text}</p><div class="facts">${p.facts.map(f => `<span>${f}</span>`).join("")}</div>`;
-		body = (p.action ? `<button class="btn atrium" data-go="${p.action.go}">${p.action.label}</button>` : "") +
+		body = (p.action ? `<button class="btn atrium" data-go="${p.action.go}">${p.action.label}</button>` : "") + gameHere(id) +
 			`<h3>Et les formations ?</h3><div class="empty">Elles t'attendent à l'<b>Hôtel Académique</b>, au <b>bâtiment Michel Falise</b> et à <b>Wenov</b>.</div><button class="btn alt" data-place="falise">🧱 Aller à Michel Falise</button>`;
 	} else {
 		const p = PLACES[id];
@@ -1318,6 +1385,7 @@ function openPanel(id){
 			const list = listFor(id);
 			body = list.length ? groupBySchool(list) : `<div class="empty">Pas de formation pour ton profil ici. ${otherPlaceHint(id)}</div>`;
 			if(id === "falise" && mode === "ext") body = `<button class="btn atrium" data-go="atrium">✨ Entrer dans l'atrium</button>` + body;
+			body = gameHere(id) + body;
 		}
 	}
 	if(!String(id).startsWith("nav:") && !String(id).startsWith("f:")) body += linksHTML(LIFE[id] || PLACES[id]);
@@ -1355,20 +1423,30 @@ function toggleFav(id){
 }
 function openGame(fid){
 	const f = F.find(x => x.id === fid);
-	if(!f || GAMES[fid] !== "comptoir") return;
+	const kind = GAMES[fid];
+	if(!f || !GAME_LOADERS[kind]) return;
 	$("ambiance").hidden = true;
-	let won = false;
-	loadGame().then(({ openComptoir }) => openComptoir({
+	let won = false, mention = null;
+	gamePaused = true;
+	GAME_LOADERS[kind]().then(open => open({
+		openLead:() => openLead([fid]),
 		formation:f, audio:Audio,
 		isFav:() => favs.has(fid), toggleFav:() => toggleFav(fid),
-		onEvent:(ev) => { if(ev === "win") won = true; },
+		onEvent:(ev, v) => {
+			if(ev !== "win") return;
+			won = true; mention = v;
+			if(MENTION_RANK.indexOf(v) > MENTION_RANK.indexOf(medals[kind])){ medals = { ...medals, [kind]:v }; store.set("medals", medals); }
+		},
 		onClose:() => {
-			if(won){
-				const party = () => { interiors.atrium.celebrate(); Audio.play("win"); toast("🎓 Bravo, diplômé·e ! Toute l'atrium fête ta réussite !", 4500); };
+			gamePaused = false;
+			const suggest = () => { justWon = kind; openPanel("nav:jeux"); };
+			if(won && kind === "comptoir"){
+				const party = () => { interiors.atrium.celebrate(); Audio.play("win"); toast("🎓 Bravo, diplômé·e ! Toute l'atrium fête ta réussite !", 4500); setTimeout(suggest, 4200); };
 				if(mode === "atrium") party(); else enterInterior("atrium", party);
-			} else if(current) openPanel(current);
+			} else if(won){ Audio.play("win"); toast(`🏅 Médaille obtenue : mention ${mention} !`, 3500); suggest(); }
+			else if(current) openPanel(current);
 		}
-	})).catch(() => toast("Impossible de lancer le mini-jeu : vérifie ta connexion.", 3500));
+	})).catch(() => { gamePaused = false; toast("Impossible de lancer le mini-jeu : vérifie ta connexion.", 3500); });
 }
 function flyToPlace(id, dur){
 	const p = PLACES[id] || LIFE[id];
@@ -1473,7 +1551,7 @@ document.querySelectorAll("[data-dock]").forEach(b => b.addEventListener("click"
 	Audio.play("pop");
 	if(coach) endCoach();
 	if(k === "visite"){ tour ? stopTour() : startTour(); return; }
-	const view = k === "formations" ? "nav:formations" : k === "lieux" ? "nav:lieux" : "carnet";
+	const view = k === "formations" ? "nav:formations" : k === "lieux" ? "nav:lieux" : k === "jeux" ? "nav:jeux" : "carnet";
 	if(tour) stopTour();
 	if(current === view){ closePanel(); return; }
 	openPanel(view);
@@ -1567,6 +1645,15 @@ function homeView(){
 	const a = innerWidth/innerHeight, dist = a < 1 ? 230 : 165, t = V(0,0,-14);
 	return { pos: t.clone().add(V(.18, .55, .82).normalize().multiplyScalar(dist)), target:t };
 }
+/* La brume commence toujours un peu derrière le point regardé : le campus reste net,
+   même quand la caméra recule (vue d'ensemble sur téléphone), et seul l'horizon s'estompe. */
+function fogFollow(force){
+	const d = camera.position.distanceTo(controls.target), Q = QUALITY[quality];
+	const near = Math.max(170, d*1.05), far = Math.max(Q.far, near + 260);
+	if(!force && Math.abs(far - scene.fog.far) < 8 && Math.abs(near - scene.fog.near) < 8) return;
+	scene.fog.near = near; scene.fog.far = far;
+	camera.far = far + 60; camera.updateProjectionMatrix();
+}
 function flyHome(d){ const h = homeView(); flyTo(h.pos, h.target, d); }
 /* La source d'ombre suit la caméra par pas d'un texel : sans ça, les bords d'ombre « grouillent ». */
 const _sx = new THREE.Vector3(), _sy = new THREE.Vector3(), _sz = new THREE.Vector3(), _up = new THREE.Vector3(0,1,0);
@@ -1625,7 +1712,7 @@ function setQuality(level){
 	shadowsOn(sun, Q.shadows, Q.map);
 	horizon.body.visible = horizon.roof.visible = Q.horizon;
 	const walkers = students.filter(s => !s.chat); walkers.forEach((s, i) => { s.off = (i + .5)/walkers.length > Q.crowd; s.g.visible = !s.off; });
-	scene.fog.far = Q.far; camera.far = Q.far + 60; camera.updateProjectionMatrix();
+	fogFollow(true);
 	for(const k in interiors) if(interiors[k]) qualityInterior(interiors[k]);
 	partIM.count = reduceMotion ? 0 : Math.round(season.parts.n*Q.parts);
 	renderAmbiancePop();
@@ -1647,7 +1734,9 @@ function watchPerf(rawDt){
 	}
 }
 
+let gamePaused = false;     // le campus ne se dessine pas pendant un mini-jeu (une seule scène 3D à la fois)
 function frame(){
+	if(gamePaused){ clock.getDelta(); requestAnimationFrame(frame); return; }
 	const rawDt = clock.getDelta(), dt = Math.min(rawDt, .05), t = clock.elapsedTime;
 	watchPerf(rawDt);
 
@@ -1707,6 +1796,7 @@ function frame(){
 		clockHands.hourHand.rotation.z = -hrs/12*Math.PI*2;
 		if(now.getMinutes() === 0 && lastMinute === 59 && entered){ Audio.play("chime"); setTimeout(scarePigeons, 250); }
 		lastMinute = now.getMinutes();
+		if(mode === "ext") fogFollow();
 		renderer.render(scene, camera);
 	}
 	if(entered) updatePins();
@@ -1730,7 +1820,9 @@ for(const ev of ["pointerdown","keydown","wheel","touchstart"]){
 	}, { passive:true, capture:true });
 }
 setInterval(() => {
-	if(!entered || tour || intro || coach || mode !== "ext" || document.querySelector(".cg") || !$("welcome").classList.contains("gone")) return;
+	// jamais pendant un mini-jeu, le formulaire, ou (hors borne) quand le visiteur lit un panneau
+	if(!entered || tour || intro || coach || mode !== "ext" || gamePaused || !$("lead").hidden || !$("welcome").classList.contains("gone")) return;
+	if(!BORNE && (current || !$("ambiance").hidden)) return;
 	if(performance.now() - lastInput > IDLE_MS){ idleTour = true; startTour(true); }
 }, 2000);
 

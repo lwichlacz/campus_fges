@@ -38,10 +38,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .hud{position:fixed;top:max(14px,env(safe-area-inset-top));left:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none;z-index:10;opacity:0;transform:translateY(-12px);transition:.6s ease}
 .hud.on{opacity:1;transform:none}
 .hud>*{pointer-events:auto}
-.brand{display:flex;align-items:center;gap:10px;background:var(--cream);padding:8px 16px 8px 8px;border-radius:999px;box-shadow:var(--shadow)}
-.brand .mark{width:34px;height:34px;border-radius:50%;background:var(--bordeaux);color:#fff;display:grid;place-items:center;font:700 17px Fraunces,serif;flex:none}
-.brand b{display:block;font:700 16px/1.1 Fraunces,serif}
-.brand small{display:block;font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.02em}
+/* logo officiel en entier (img/logo-fges.png, recadré depuis « fges logo.png »), sur une carte blanche */
+.brand{display:flex;align-items:center;padding:6px 12px;border-radius:16px;background:rgba(255,248,236,.78);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 4px 16px rgba(60,35,20,.14)}
+.brand img{display:block;height:42px;width:auto}
 .actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;position:relative}
 .chip{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--cream);padding:10px 14px;border-radius:999px;box-shadow:var(--shadow);font-weight:800;font-size:13.5px;transition:transform .15s ease;min-height:42px}
 .chip:hover{transform:translateY(-2px)}
@@ -84,6 +83,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .pin.life:hover span i,.pin.life.hover span i,.pin.life:focus-visible span i{max-width:240px;margin:0 6px}
 .pin.life span s:not(:empty){margin-right:4px}
 @keyframes bob{0%,100%{translate:0 0}50%{translate:0 -5px}}
+/* un lieu qui cache un mini-jeu : petit badge sur son épingle, le bouton « Jouer » est dans sa fiche */
+.pin.hasgame span{position:relative}
+.pin.hasgame span:before{content:"🎮";position:absolute;top:-9px;right:-9px;width:20px;height:20px;border-radius:50%;background:#2f6b45;display:grid;place-items:center;font-size:11px;box-shadow:0 2px 6px rgba(0,0,0,.25);animation:bob 2.4s ease-in-out infinite}
 
 /* ---------- Accueil ---------- */
 #welcome{position:fixed;inset:0;display:grid;place-items:center;padding:16px;z-index:20;background:radial-gradient(ellipse at center,rgba(60,30,20,.08),rgba(60,30,20,.38));transition:opacity .6s ease;overflow:auto}
@@ -92,6 +94,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes rise{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
 .kick{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--bordeaux)}
 .card h1{font:700 34px/1.08 Fraunces,Georgia,serif;margin:8px 0 10px;letter-spacing:-.01em}
+.card .wlogo{display:block;height:54px;width:auto;margin:0 auto 6px}
 .card p{margin:0 auto 16px;color:var(--ink2);max-width:380px}
 .profiles{display:grid;gap:9px;margin:0 0 12px}
 .profile{display:flex;align-items:center;gap:12px;text-align:left;border:2px solid var(--line);background:#fff;border-radius:16px;padding:11px 14px;transition:.15s ease}
@@ -157,6 +160,34 @@ button{font:inherit;color:inherit;cursor:pointer}
 .steps li b{color:var(--ink)}
 .steps li:before{counter-increment:s;content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--gold);color:#fff;font-weight:800;display:grid;place-items:center}
 .empty{background:#fff;border:1px dashed #dcc29c;border-radius:16px;padding:16px;color:var(--ink2);font-size:14px;text-align:center}
+/* mini-jeux : bandeau en tête de fiche formation, cartes de la vue Jeux et médailles du carnet */
+.gteaser{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-radius:18px;padding:10px 12px;margin:2px 0 6px;background:linear-gradient(135deg,#fff3d6,#fbe3b0);box-shadow:inset 0 0 0 2px #e8c27a;cursor:pointer;font:inherit;color:var(--ink)}
+.gteaser>span:nth-child(2){flex:1;min-width:0}
+.gteaser .gic{background:#fff}
+.gteaser b{display:block;font:700 16px/1.15 Fraunces,serif}
+.gteaser small{display:block;font-size:12px;color:var(--ink2);font-weight:700}
+.gteaser .go{flex:none;background:var(--bordeaux);color:#fff;border-radius:999px;padding:7px 12px;font-weight:800;font-size:13px;white-space:nowrap}
+.gteaser:hover{filter:brightness(1.03)}
+.acts .more{display:block;text-align:center;font-size:13px;font-weight:700;color:var(--navy);padding:6px;text-decoration:underline;text-underline-offset:3px}
+.gcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:10px}
+.gcard.got{border-color:var(--gold)}
+.gcard p{margin:8px 0;font-size:14px;color:var(--ink2)}
+.gtop{display:flex;align-items:center;gap:10px}
+.gtop b{display:block;font:700 17px/1.15 Fraunces,serif}
+.gtop small{display:block;font-size:12px;color:var(--muted);font-weight:700}
+.gic{width:44px;height:44px;border-radius:14px;background:var(--cream2);display:grid;place-items:center;font-size:24px;flex:none}
+.gmed{margin-left:auto;font-size:24px}
+.gmeta{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;font-weight:700;color:var(--ink2)}
+.gmeta>*{background:var(--cream);border:1px solid var(--line);border-radius:999px;padding:4px 9px;font:inherit;color:inherit}
+.gmeta button{cursor:pointer}
+.wonbar{background:#eef8f0;border:2px solid #3d7a55;border-radius:16px;padding:10px 12px;margin-bottom:10px;font-size:14px;font-weight:700;color:#2f6b45}
+.medals{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:6px}
+.medal{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;background:#fff;border:2px dashed var(--line);border-radius:16px;padding:10px 6px;cursor:pointer;font:inherit;color:var(--ink2)}
+.medal i{font-style:normal;font-size:24px;filter:grayscale(1);opacity:.5}
+.medal b{font-size:13px;color:var(--ink)}
+.medal small{font-size:11.5px;font-weight:700}
+.medal.got{border-style:solid;border-color:var(--gold)}
+.medal.got i{filter:none;opacity:1}
 .stamps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
 .stamp{background:#fff;border:2px dashed var(--line);border-radius:16px;padding:12px 6px;text-align:center;font-size:12px;font-weight:800;color:var(--muted)}
 .stamp i{display:block;font-style:normal;font-size:24px;filter:grayscale(1);opacity:.35;margin-bottom:4px}
@@ -292,8 +323,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 	.tour,.coach{bottom:calc(env(safe-area-inset-bottom) + 76px)}
 	.osm{bottom:calc(env(safe-area-inset-bottom) + 72px)}
 	.hud{left:12px;right:12px;gap:6px}
-	.brand{padding:4px}
-	.brand>div:last-child{display:none}
+	.brand{padding:5px 8px;border-radius:12px}
+	.brand img{height:30px}
 	.actions{gap:6px}
 	.chip{padding:10px 12px}
 	.chip .lbl{display:none}
@@ -330,7 +361,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 <button id="skip" hidden>Passer ⏭</button>
 
 <header class="hud" id="hud">
-	<div class="brand"><div class="mark">F</div><div><b>Campus FGES</b><small>Université Catholique de Lille</small></div></div>
+	<div class="brand"><img src="img/logo-fges.png" alt="FGES · Faculté de Gestion, Économie et Sciences · Université Catholique de Lille" width="652" height="195"></div>
 	<div class="actions">
 		<button class="chip" id="btnProfile" title="Changer de profil"></button>
 		<button class="chip" id="btnTheme" title="Ambiance" aria-haspopup="true"></button>
@@ -352,9 +383,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 <div id="welcome">
 	<div class="card">
-		<div class="kick">FGES · Université Catholique de Lille</div>
+		<img class="wlogo" src="img/logo-fges.png" alt="FGES · Faculté de Gestion, Économie et Sciences · Université Catholique de Lille" width="652" height="195">
 		<h1>Bienvenue sur le campus</h1>
-		<p>Promène-toi dans le vrai quartier Vauban : l'Hôtel Académique, sa chapelle, le bâtiment Michel Falise et son atrium, la BU, le resto U… Entre dans les bâtiments, joue et garde tes formations préférées dans ton carnet.</p>
+		<p>Promène-toi dans le vrai quartier Vauban, entre dans les bâtiments… et <b>joue une formation</b> : chaque mini-jeu te fait vivre une licence avec de vrais exercices, et te rapporte une médaille 🏅</p>
 		<div class="profiles">
 			<button class="profile" data-p="lycee"><span class="e">🎒</span><span><b>Je suis au lycée</b><small>Licences, prépa, année préparatoire</small></span></button>
 			<button class="profile" data-p="bac3"><span class="e">🎓</span><span><b>J'ai un bac+2 ou un bac+3</b><small>Masters et licence pro</small></span></button>
@@ -369,6 +400,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 <nav class="dock" id="dock" aria-label="Navigation">
 	<button data-dock="formations"><i>🎓</i><span>Formations</span></button>
 	<button data-dock="lieux"><i>🏛️</i><span>Lieux</span></button>
+	<button data-dock="jeux"><i>🎮</i><span>Jeux</span></button>
 	<button data-dock="visite" title="Visite guidée"><i>🧭</i><span>Visite</span></button>
 	<button data-dock="carnet"><i>📒</i><span>Carnet</span><b class="n" id="carnetN">0</b></button>
 </nav>

@@ -181,8 +181,9 @@ export function createChapelle({ background }){
 	const vMatB = new THREE.MeshStandardMaterial({ color:"#6e1f33", roughness:.9 });
 	scene.add(toMesh(VB, vMat, false), toMesh(VBb, vMatB, false));
 	const rosettes = [];
+	const keyMat = gold.clone(); keyMat.transparent = true;      // clés de voûte : s'estompent avec les nervures
 	for(let z = Z0; z <= Z1 + .01; z += BAYZ){
-		for(let i=0;i<xs.length-1;i++) bar(RB, [xs[i], vaultY(xs[i]) - .06, z], [xs[i+1], vaultY(xs[i+1]) - .06, z], .17);
+		for(let i=0;i<xs.length-1;i++) bar(RB, [xs[i], vaultY(xs[i]) - .06, z], [xs[i+1], vaultY(xs[i+1]) - .06, z], .11);
 		rosettes.push([0, vaultY(0) - .12, z]);
 		if(z + BAYZ > Z1) continue;
 		for(const dir of [1,-1]){
@@ -190,16 +191,18 @@ export function createChapelle({ background }){
 			for(let k=0;k<=12;k++){
 				const s = k/12, x = dir*(-NX + 2*NX*s), zz = z + BAYZ*s;
 				const p = [x, vaultY(x) - .1, zz];
-				if(prev) bar(RB, prev, p, .13);
+				if(prev) bar(RB, prev, p, .08);
 				prev = p;
 			}
 		}
 		rosettes.push([0, vaultY(0) - .12, z + BAYZ/2]);
 	}
-	bar(RB, [0, SPRING + RISE - .1, Z0], [0, SPRING + RISE - .1, Z1], .15);
-	scene.add(toMesh(RB, cream, false));
+	bar(RB, [0, SPRING + RISE - .1, Z0], [0, SPRING + RISE - .1, Z1], .1);
+	// vue « maquette » d'en haut, la voûte disparaît : ses nervures s'estompent pour ne pas barrer la nef
+	const ribMat = cream.clone(); ribMat.transparent = true;
+	scene.add(toMesh(RB, ribMat, false));
 	{
-		const im = new THREE.InstancedMesh(new THREE.CylinderGeometry(.32, .32, .12, 14), gold, rosettes.length), d = new THREE.Object3D();
+		const im = new THREE.InstancedMesh(new THREE.CylinderGeometry(.32, .32, .12, 14), keyMat, rosettes.length), d = new THREE.Object3D();
 		rosettes.forEach((p,i) => { d.position.set(...p); d.updateMatrix(); im.setMatrixAt(i, d.matrix); });
 		scene.add(im);
 	}
@@ -287,13 +290,18 @@ export function createChapelle({ background }){
 	const N = 220, dust = new Float32Array(N*3), seedD = mulberry32(3);
 	for(let i=0;i<N;i++){ dust[i*3] = (seedD()*2-1)*AX; dust[i*3+1] = seedD()*14 + .5; dust[i*3+2] = Z0 + seedD()*(Z1-Z0); }
 	const dg = new THREE.BufferGeometry(); dg.setAttribute("position", new THREE.BufferAttribute(dust, 3));
-	const dustMat = new THREE.PointsMaterial({ color:"#fff3d6", size:.05, transparent:true, opacity:.55, depthWrite:false });
+	const dustMat = new THREE.PointsMaterial({ color:"#fff3d6", size:.035, transparent:true, opacity:.4, depthWrite:false });
 	const dustPts = new THREE.Points(dg, dustMat); scene.add(dustPts);
 
 	const pickables = [];
 	const ringMat = gold;
 	function update(dt, t, camera){
-		if(camera){ for(const s of [-1,1]) sideG[s].visible = camera.position.x*s < AX; }
+		if(camera){
+			for(const s of [-1,1]) sideG[s].visible = camera.position.x*s < AX;
+			const above = camera.position.y > SPRING + RISE + 1, o = above ? .18 : 1;
+			ribMat.opacity += (o - ribMat.opacity)*Math.min(1, dt*6); ribMat.depthWrite = ribMat.opacity > .9;
+			keyMat.opacity = ribMat.opacity; keyMat.depthWrite = ribMat.depthWrite;
+		}
 		for(const f of flames){ f.scale.y = 1.5 + Math.sin(t*13 + f.position.x*5)*.15 + Math.sin(t*7.3)*.1; }
 		const a = dg.attributes.position.array;
 		for(let i=0;i<N;i++){ a[i*3+1] += Math.sin(t*.3 + i)*.002 + .002; a[i*3] += Math.cos(t*.2 + i*1.7)*.002; if(a[i*3+1] > 15) a[i*3+1] = .5; }
@@ -313,7 +321,7 @@ export function createChapelle({ background }){
 		sun.intensity = night ? .15 : 1.6;
 		baseGlow = night ? .3 : .85; vitrailMat.emissiveIntensity = baseGlow + glowBoost;
 		spotMat.emissiveIntensity = night ? 3 : 2;
-		dustMat.opacity = night ? .3 : .55;
+		dustMat.opacity = night ? .22 : .4;
 	}
 	function lightUp(){ glowBoost = 1.4; }
 

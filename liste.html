@@ -42,6 +42,7 @@ details[open] summary:after{content:"Masquer ▴"}
 .det h3{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--bordeaux);margin:12px 0 6px}
 .det ul{margin:0;padding-left:20px}
 .det li{margin-bottom:6px}
+.det .game{background:#fff3d6;border-radius:12px;padding:10px 12px;margin:12px 0 0}
 .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .acts a{display:inline-block;padding:9px 14px;border-radius:10px;border:2px solid var(--line);text-decoration:none;background:#fff}
 .acts a.main{background:var(--bordeaux);border-color:var(--bordeaux);color:#fff}
@@ -80,7 +81,7 @@ footer{max-width:860px;margin:0 auto;padding:20px;color:var(--muted);font-size:1
 </main>
 <footer>Université Catholique de Lille · FGES. Plan du campus : données © les contributeurs d'<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.</footer>
 <script type="module">
-import { FORMATIONS as F, PLACES, LIFE } from "./js/data.js";
+import { FORMATIONS as F, PLACES, LIFE, GAMES, GAME_INFO } from "./js/data.js";
 import { DETAILS } from "./js/details.js";
 
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" })[c]);
@@ -101,6 +102,7 @@ function card(f){
 		${d.p ? `<h3>Au programme</h3><ul>${d.p.map(([k,v]) => `<li><b>${esc(k)} :</b> ${esc(v)}</li>`).join("")}</ul>` : ""}
 		${d.j ? `<h3>Et après ?</h3><p>${esc(d.j)}</p>` : ""}
 		${d.a ? `<h3>Admission</h3><p>${esc(d.a)}</p>` : ""}
+		${GAMES[f.id] ? `<p class="game">Mini-jeu : <b>${esc(GAME_INFO[GAMES[f.id]].title)}</b> (${GAME_INFO[GAMES[f.id]].dur}), à jouer dans <a href="index.html">le campus 3D</a>. ${esc(GAME_INFO[GAMES[f.id]].pitch)}</p>` : ""}
 		<div class="acts"><a href="${f.url}">Fiche officielle sur fges.fr</a>${apply(f)}</div></div></details>`;
 }
 function render(){
