@@ -9,7 +9,8 @@ import { Audio } from "./audio.js";
 import { DETAILS } from "./details.js";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
-const GAME_AT = Object.fromEntries(Object.entries(GAME_INFO).map(([k, g]) => [g.where, k]));
+const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
+for(const [k, g] of Object.entries(GAME_INFO)) (GAME_AT[g.where] = GAME_AT[g.where] || []).push(k);
 
 const store = {
 	get(k,d){ try{ const v = localStorage.getItem("campusfges:"+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
@@ -1063,7 +1064,8 @@ const interiors = { atrium:null, chapelle:null };
 const MAKERS = { atrium:() => import("./atrium.js").then(m => m.createAtrium), chapelle:() => import("./chapelle.js").then(m => m.createChapelle) };
 const GAME_LOADERS = {
 	comptoir:() => import("./games/comptoir.js").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js").then(m => m.openJardin)
+	jardin:() => import("./games/jardin.js").then(m => m.openJardin),
+	audit:() => import("./games/audit.js").then(m => m.openAudit)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -1452,9 +1454,8 @@ function detailView(f){
 	return [head, body];
 }
 function gameHere(id){
-	const k = GAME_AT[id]; if(!k) return "";
-	const g = GAME_INFO[k];
-	return `<button class="play wide" data-game="${g.fid}">🎮 ${g.title} · le mini-jeu de la ${F.find(f => f.id === g.fid).name}</button>`;
+	return (GAME_AT[id] || []).map(k => { const g = GAME_INFO[k];
+		return `<button class="play wide" data-game="${g.fid}">${g.icon} ${g.title} · le mini-jeu de la ${F.find(f => f.id === g.fid).name}</button>`; }).join("");
 }
 let justWon = null;      // après une victoire, la vue Jeux félicite et suggère la suite
 function jeuxView(){

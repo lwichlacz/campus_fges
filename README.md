@@ -39,7 +39,8 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/details.js` | Fiches détaillées des formations (programme, débouchés, admission) |
 | `js/atrium.js` · `js/chapelle.js` | Les intérieurs visitables |
 | `js/games/comptoir.js` | Mini-jeu « Le Comptoir » (Licence Gestion) ; variante « caisse » avec `?caisse` |
-| `js/games/jardin.js` | Mini-jeu « Mission Jardin Boulay » (Licence Sciences de la Vie) |
+| `js/games/jardin.js` | Mini-jeu « Mission Jardin Boulay » (Licence Sciences de la Vie, 3 parcours en L3) |
+| `js/games/audit.js` | Mini-jeu « L'Enquête de l'auditeur » (Licence Comptabilité-Finance-Audit) |
 | `docs/validation-*.md` | Fiches de validation des mini-jeux, à faire relire par un enseignant de chaque formation |
 | `js/audio.js` | Musique lofi, ambiances et effets sonores générés |
 | `js/kit.js` | Outils 3D partagés (formes, fenêtres, étudiants) |

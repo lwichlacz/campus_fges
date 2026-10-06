@@ -49,14 +49,16 @@ export const PLAQUETTES = {
 export const CATALOGUE_PLAQUETTES = "https://www.calameo.com/accounts/7206845";
 
 /* Mini-jeux disponibles : id de formation → id du jeu */
-export const GAMES = { gestion: "comptoir", sv: "jardin" };
+export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit" };
 /* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */
 export const GAME_INFO = {
 	comptoir:{ fid:"gestion", title:"Le Comptoir", icon:"☕", where:"falise", whereLabel:"Atrium de Michel Falise", dur:"6 min",
 		pitch:"Pilote le café de l'atrium : prix, équipe, imprévus… et ton résultat en direct." },
 	jardin:{ fid:"sv", title:"Mission Jardin Boulay", icon:"🔍", where:"jardin", whereLabel:"Jardin botanique Nicolas Boulay", dur:"7 min",
 		pitch:"Identifie les petites bêtes du jardin, refais l'expérience de Mendel… puis choisis ta spécialisation de L3.",
-		parcours:[["eco","🌿","Écologie"],["biotech","🧬","Biotech"],["inge","⚙️","Ingénieur"]] }
+		parcours:[["eco","🌿","Écologie"],["biotech","🧬","Biotech"],["inge","⚙️","Ingénieur"]] },
+	audit:{ fid:"cfa", title:"L'Enquête de l'auditeur", icon:"🕵️", where:"falise", whereLabel:"Bâtiment Michel Falise (ISEA)", dur:"6 min",
+		pitch:"La trésorerie d'une PME fond sans raison : trie les pièces, rapproche la banque, analyse le budget… et démasque le fraudeur." }
 };
 
 export const PROFILES = {
