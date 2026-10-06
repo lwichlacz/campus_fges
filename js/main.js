@@ -521,7 +521,136 @@ function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul
 /* =====================================================================
    Construction
    ===================================================================== */
-buildHA(); buildFalise(); buildWenov(); buildCitadelle(); buildKiosque();
+/* =====================================================================
+   Palais Rameau (Junia) : halle de 1878 posée sur son emprise réelle.
+   Pavillon d'entrée à deux tours et dômes à bulbe, maçonnerie rayée crème / brique,
+   grande halle couverte de zinc avec lanterne octogonale, serre-rotonde vitrée à l'arrière.
+   ===================================================================== */
+const zincMats = [];
+let rameauGlass = null;
+function buildRameau(){
+	const P = MAP.pois.rameau, rec = P && MAP.buildings[P.i];
+	if(!rec || !city.pois.rameau) return;
+	const f = rec[4], pts = []; for(let k=0;k<f.length;k+=2) pts.push([f[k], f[k+1]]);
+	// rectangle minimal (calé sur une arête) pour trouver l'axe long du bâtiment
+	let best = null;
+	for(let i=0;i<pts.length;i++){
+		const a = pts[i], b = pts[(i+1)%pts.length], an = Math.atan2(b[1]-a[1], b[0]-a[0]), c = Math.cos(an), s = Math.sin(an);
+		const us = pts.map(q => q[0]*c + q[1]*s), vs = pts.map(q => -q[0]*s + q[1]*c);
+		const A = (Math.max(...us) - Math.min(...us))*(Math.max(...vs) - Math.min(...vs));
+		if(!best || A < best.A) best = { A, an, du:Math.max(...us) - Math.min(...us), dv:Math.max(...vs) - Math.min(...vs) };
+	}
+	const axis = best.du >= best.dv ? best.an : best.an + Math.PI/2;
+	const ctr = [pts.reduce((a,q) => a + q[0], 0)/pts.length, pts.reduce((a,q) => a + q[1], 0)/pts.length];
+	// la rotonde (beaucoup de sommets rapprochés) marque l'arrière : l'axe va de l'entrée vers elle
+	let fwd = [Math.cos(axis), Math.sin(axis)];
+	const along = q => (q[0]-ctr[0])*fwd[0] + (q[1]-ctr[1])*fwd[1];
+	const tA = Math.min(...pts.map(along)), tB = Math.max(...pts.map(along));
+	if(pts.filter(q => along(q) < tA + 7).length > pts.filter(q => along(q) > tB - 7).length) fwd = [-fwd[0], -fwd[1]];
+	const side = [fwd[1], -fwd[0]];
+	const LL = pts.map(q => [(q[0]-ctr[0])*side[0] + (q[1]-ctr[1])*side[1], (q[0]-ctr[0])*fwd[0] + (q[1]-ctr[1])*fwd[1]]);
+	const T0 = Math.min(...LL.map(q => q[1])), T1 = Math.max(...LL.map(q => q[1])), len = T1 - T0;
+	const span = sel => { const s = LL.filter(sel); return s.length ? [Math.min(...s.map(q => q[0])), Math.max(...s.map(q => q[0]))] : [-3, 3]; };
+	const pav = span(q => q[1] < T0 + 2.5), hall = span(q => Math.abs(q[1] - (T0 + len*.4)) < len*.22);
+	const circ = LL.filter(q => q[1] > T1 - 8.6);
+	const R0 = Math.min(4.6, Math.max(3.2, circ.length ? (Math.max(...circ.map(q => q[0])) - Math.min(...circ.map(q => q[0])))/2 : 4));
+	const RX = circ.length ? (Math.max(...circ.map(q => q[0])) + Math.min(...circ.map(q => q[0])))/2 : 0;
+	const rotZ = T1 - R0, hallZ0 = T0 + len*.12, hallZ1 = rotZ - R0 - len*.055;
+	const root = new THREE.Group(); root.position.set(ctr[0], 0, ctr[1]); root.rotation.y = Math.atan2(fwd[0], fwd[1]); scene.add(root);
+	// local : x = côté (side), z = de l'entrée vers la rotonde (fwd) ; rotation.y = atan2(fwd) envoie +z sur fwd et +x sur side
+
+	// matériaux : bandes crème et brique (texture répétée selon la hauteur), pierre, zinc, ardoise des bulbes, verre
+	const stripeTex = (() => { const c = document.createElement("canvas"); c.width = 16; c.height = 64; const x = c.getContext("2d");
+		x.fillStyle = "#efe4cf"; x.fillRect(0, 0, 16, 64); x.fillStyle = "#bd5f47"; x.fillRect(0, 38, 16, 9); x.fillRect(0, 51, 16, 4); x.fillStyle = "rgba(120,90,60,.18)"; x.fillRect(0, 18, 16, 1);
+		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; return t; })();
+	const striped = h => { const t = stripeTex.clone(); t.needsUpdate = true; t.repeat.set(1, Math.max(1, Math.round(h/1.1))); return new THREE.MeshStandardMaterial({ map:t, roughness:.9 }); };
+	const stone = std("#f0e6d2"), zinc = std("#9aa5b1", { metalness:.3, roughness:.45 }), onion = std("#3b414c", { roughness:.6 });
+	const glass = std("#d3e7ef", { transparent:true, opacity:.42, roughness:.1, metalness:.2, emissive:"#ffd391", emissiveIntensity:0, depthWrite:false });
+	const steel = std("#8d969e", { metalness:.4, roughness:.45 }), dark = std("#2b2a33"), white = std("#eef1f2");
+	// toiture de la serre : verre bleuté plus dense, comme sur les photos
+	const roofGlass = std("#a9c6d8", { transparent:true, opacity:.78, roughness:.08, metalness:.35, emissive:"#ffd391", emissiveIntensity:0, depthWrite:false });
+	zincMats.push(zinc); rameauGlass = [glass, roofGlass];
+	const sbox = (w, h, d, x, y, z) => box(root, w, h, d, striped(h), x, y, z);
+	// toit à 4 pans (tronc de pyramide) : base w1 × l1, sommet w2 × l2
+	const frustum = (w1, l1, w2, l2, h) => {
+		const a = [[-w1/2,0,-l1/2],[w1/2,0,-l1/2],[w1/2,0,l1/2],[-w1/2,0,l1/2]], b = [[-w2/2,h,-l2/2],[w2/2,h,-l2/2],[w2/2,h,l2/2],[-w2/2,h,l2/2]];
+		const v = []; for(let i=0;i<4;i++){ const j = (i+1)%4; v.push(...a[i], ...b[j], ...a[j], ...a[i], ...b[i], ...b[j]); }
+		if(w2 > .01 && l2 > .01) v.push(...b[0], ...b[2], ...b[1], ...b[0], ...b[3], ...b[2]);
+		const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(v, 3)); g.computeVertexNormals(); return g;
+	};
+	const onionGeo = r => new THREE.LatheGeometry([[0,0],[1,0],[1.22,.32],[1.3,.68],[1.18,1.05],[.9,1.36],[.52,1.66],[.22,1.92],[.06,2.15],[0,2.25]].map(([a,b]) => new THREE.Vector2(a*r, b*r)), 16);
+	const urn = (x, y, z) => { cyl(root, .2, .26, .45, stone, x, y, z, 8); mesh(new THREE.SphereGeometry(.3, 10, 8), stone, root, x, y + .66, z); };
+
+	// --- la halle : angles avant arrondis, fenêtres cintrées, toit de zinc à claire-voie, lanterne octogonale ---
+	const HW = hall[1] - hall[0], HX = (hall[0] + hall[1])/2, HL = hallZ1 - hallZ0, HZ = (hallZ0 + hallZ1)/2, H = 6.6;
+	const rr = Math.min(2.2, HW*.16);
+	sbox(HW, H, HL - rr, HX, 0, HZ + rr/2);
+	sbox(HW - 2*rr, H, rr + .02, HX, 0, hallZ0 + rr/2);
+	for(const sx of [-1, 1]) cyl(root, rr, rr, H, striped(H), HX + sx*(HW/2 - rr), 0, hallZ0 + rr, 16);
+	box(root, HW + .3, .45, HL + .3, stone, HX, H - .1, HZ);
+	box(root, HW + .2, .5, HL + .2, stone, HX, 0, HZ);
+	const nWin = Math.max(3, Math.floor((HL - 3)/3.1));
+	for(let k=0;k<nWin;k++){ const z = hallZ0 + 2.8 + k*((HL - 4.4)/Math.max(1, nWin - 1)); for(const sx of [-1, 1]) win(root, HX + sx*HW/2, 3, z, 1.2, 2.3, sx*Math.PI/2, { arch:true }); }
+	const CW = HW*.62, CL = HL*.86;
+	mesh(frustum(HW + .4, HL + .4, CW, CL, 1.5), zinc, root, HX, H + .35, HZ);
+	box(root, CW, 1.6, CL, white, HX, H + 1.85, HZ);
+	for(let k=0;k<Math.floor(CL/1.6);k++){ const z = HZ - CL/2 + .8 + k*1.6; for(const sx of [-1, 1]) box(root, .1, 1.2, 1.2, glass, HX + sx*(CW/2 + .03), H + 2.05, z); }
+	mesh(frustum(CW + .4, CL + .4, .2, CL*.55, 2.4), zinc, root, HX, H + 3.45, HZ);
+	const lzz = HZ + HL*.08;
+	cyl(root, 2.3, 2.3, 1.6, white, HX, H + 4.6, lzz, 8).rotation.y = Math.PI/8;
+	for(let k=0;k<8;k++){ const a = Math.PI/8 + k*Math.PI/4; box(root, .5, 1.1, .08, glass, HX + Math.sin(a)*2.32, H + 4.85, lzz + Math.cos(a)*2.32, a); }
+	mesh(new THREE.ConeGeometry(2.6, 2.2, 8).translate(0, 1.1, 0), zinc, root, HX, H + 6.2, lzz).rotation.y = Math.PI/8;
+	cyl(root, .08, .08, 1, steel, HX, H + 8.4, lzz, 6);
+	for(const sx of [-1, 1]) for(const z of [hallZ0 + rr, hallZ1 - .3]) urn(HX + sx*(HW/2 - .25), H + .35, z);
+
+	// --- pavillon d'entrée : grand arc, loggia, fronton, et ses deux tours à belvédère et bulbe ---
+	const PW = Math.max(6.4, pav[1] - pav[0]), PX = (pav[0] + pav[1])/2, PZ0 = T0, PZ1 = hallZ0 + .6, PD = PZ1 - PZ0, PH = 8.6;
+	sbox(PW, PH, PD, PX, 0, (PZ0 + PZ1)/2);
+	box(root, PW + .3, .5, PD + .3, stone, PX, 0, (PZ0 + PZ1)/2);
+	win(root, PX, 2.3, PZ0, PW*.36, 3.4, Math.PI, { arch:true, door:true });
+	box(root, PW*.36 + .7, .3, .3, stone, PX, 4.05 + PW*.18 + .2, PZ0 - .1);
+	box(root, PW*.58, .35, .5, stone, PX, PH*.66, PZ0 - .05);
+	for(let k=0;k<5;k++) win(root, PX + (k - 2)*PW*.11, PH*.79, PZ0, PW*.07, .9, Math.PI, { arch:true, lit:false });
+	box(root, PW + .4, .45, PD + .4, stone, PX, PH, (PZ0 + PZ1)/2);
+	mesh(gable(1.4, PW*.52, 1.4), striped(1.4), root, PX, PH + .45, PZ0 + 1.3, Math.PI/2);
+	const TW = Math.min(2.6, PW*.3), TH = 12.2;
+	for(const sx of [-1, 1]){
+		const tx = PX + sx*(PW/2 - TW/2 + .15), tz = PZ0 + TW/2 - .15;
+		sbox(TW, TH, TW, tx, 0, tz);
+		box(root, TW + .3, .4, TW + .3, stone, tx, TH, tz);
+		win(root, tx, 6.4, tz - TW/2, .55, 1.2, Math.PI, { arch:true });
+		win(root, tx, 3.4, tz - TW/2, .55, 1.2, Math.PI, { arch:true });
+		box(root, TW*.62, 1.9, TW*.62, dark, tx, TH + .4, tz);
+		for(const [ax, az] of [[-1,-1],[1,-1],[1,1],[-1,1]]) box(root, .36, 1.9, .36, stone, tx + ax*(TW/2 - .1), TH + .4, tz + az*(TW/2 - .1));
+		box(root, TW + .35, .4, TW + .35, stone, tx, TH + 2.3, tz);
+		mesh(onionGeo(TW*.42), onion, root, tx, TH + 2.7, tz);
+		cone(root, .1, 1.1, steel, tx, TH + 2.7 + TW*.42*2.25, tz, 6);
+	}
+
+	// --- passage puis serre-rotonde vitrée à deux étages, encadrée de cheminées rayées ---
+	const cz0 = hallZ1 - .2, cz1 = rotZ - R0 + .6, cw = Math.min(6, HW*.42);
+	sbox(cw, 4.6, cz1 - cz0, HX, 0, (cz0 + cz1)/2);
+	box(root, cw + .3, .35, cz1 - cz0 + .3, stone, HX, 4.6, (cz0 + cz1)/2);
+	cyl(root, R0, R0, 1.1, stone, RX, 0, rotZ, 16);
+	const drum = cyl(root, R0 - .1, R0 - .1, 3.4, glass, RX, 1.1, rotZ, 16); drum.castShadow = false;
+	for(let k=0;k<16;k++){ const a = k/16*Math.PI*2; box(root, .12, 3.4, .12, steel, RX + Math.sin(a)*(R0 - .05), 1.1, rotZ + Math.cos(a)*(R0 - .05)); }
+	const tier = new THREE.Mesh(new THREE.CylinderGeometry(R0*.72, R0 + .3, 1, 16, 1, true).translate(0, .5, 0), roofGlass); tier.position.set(RX, 4.5, rotZ); root.add(tier);
+	mesh(new THREE.TorusGeometry(R0 + .25, .06, 4, 32).rotateX(Math.PI/2), steel, root, RX, 4.55, rotZ);
+	cyl(root, R0*.7, R0*.7, 2, glass, RX, 5.5, rotZ, 16).castShadow = false;
+	for(let k=0;k<12;k++){ const a = k/12*Math.PI*2; box(root, .1, 2, .1, steel, RX + Math.sin(a)*R0*.7, 5.5, rotZ + Math.cos(a)*R0*.7); }
+	mesh(new THREE.ConeGeometry(R0*.82, 2.1, 16).translate(0, 1.05, 0), roofGlass, root, RX, 7.5, rotZ).castShadow = false;
+	for(let k=0;k<16;k++){ const a = k/16*Math.PI*2; beam(root, V(RX + Math.sin(a)*R0*.82, 7.5, rotZ + Math.cos(a)*R0*.82), V(RX, 9.6, rotZ), .06, .06, steel); }
+	mesh(new THREE.TorusGeometry(R0*.82, .06, 4, 32).rotateX(Math.PI/2), steel, root, RX, 7.55, rotZ);
+	cyl(root, .55, .55, .8, glass, RX, 9.6, rotZ, 8); cone(root, .7, .7, steel, RX, 10.4, rotZ, 8);
+	for(const sx of [-1, 1]){ cyl(root, .42, .42, 6.4, striped(6.4), HX + sx*(cw/2 + .45), 0, cz1 - .3, 12); cyl(root, .5, .5, .3, stone, HX + sx*(cw/2 + .45), 6.4, cz1 - .3, 12); }
+
+	// l'ancien bloc générique d'OpenStreetMap laisse la place
+	city.pois.rameau.group.visible = false;
+	city.pois.rameau.H = TH + 4;
+	register(root, "rameau");
+}
+
+buildHA(); buildFalise(); buildWenov(); buildCitadelle(); buildKiosque(); buildRameau();
 const horizon = buildHorizon();
 WB.build(scene, glassLit, glassDark, frameMat);
 scene.updateMatrixWorld(true);
@@ -879,6 +1008,7 @@ function applyAmbiance(){
 	renderer.toneMappingExposure = L.exposure;
 	groundMat.color.set(S.grass);
 	slateMats.forEach(m => m.color.set(S.slate));
+	zincMats.forEach(m => m.color.set(S.snowy ? "#dfe6ee" : "#9aa5b1"));
 	cedarMat.color.set(S.conifer); pineMats.forEach(m => m.color.set(S.conifer));
 	city.setSeason(S); city.setNight(night);
 	const c = new THREE.Color();
@@ -897,6 +1027,7 @@ function applyAmbiance(){
 	lampMat.emissiveIntensity = night ? 2.2 : 0;
 	glowPts.visible = night;
 	faliseGlass.emissiveIntensity = night ? .9 : 0;
+	if(rameauGlass) rameauGlass.forEach(m => m.emissiveIntensity = night ? .8 : 0);
 	atriumRoof.emissiveIntensity = night ? .55 : 0;
 	atriumGlow.emissiveIntensity = night ? 2 : .4;
 	wenovGlass.emissiveIntensity = night ? .28 : 0;
