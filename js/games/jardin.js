@@ -13,8 +13,16 @@ import { std, mesh, box, cyl, cone, mulberry32 } from "../kit.js";
 const COURSES = {
 	cle:    ["L1", "Biologie des organismes", "Classer le vivant : clés de détermination, embranchements, classes et ordres. Et beaucoup de terrain !"],
 	reseau: ["L1", "Écologie", "Réseaux trophiques, flux d'énergie, et la lutte biologique pour protéger les cultures sans pesticides."],
-	quadrat:["L2", "Écologie quantitative et biostatistiques", "Échantillonner sans biais, compter, estimer une population : la base de tout inventaire de biodiversité."],
-	genet:  ["L3", "Génétique", "La transmission des caractères, de Mendel à l'ADN, et les tests statistiques pour vérifier une hypothèse."]
+	genet:  ["L2", "Génétique", "La transmission des caractères, de Mendel à l'ADN, et les tests statistiques pour vérifier une hypothèse."],
+	quadrat:["L3", "Parcours Écologie opérationnelle", "Inventorier, échantillonner sans biais, estimer une population : le métier d'écologue de terrain."],
+	biotech:["L3", "Parcours Biotechnologies", "Biologie moléculaire, microbiologie et bioprocédés : faire produire des molécules utiles par le vivant."],
+	inge:   ["L3", "Parcours Ingénieur", "Modélisation, dimensionnement, génie des procédés : l'approche ingénieur appliquée au vivant, vers les écoles d'ingénieurs."]
+};
+// la spécialisation de L3 (une médaille par parcours)
+export const PARCOURS = {
+	eco:    { icon:"🌿", name:"Écologie opérationnelle", course:"quadrat", pitch:"Compter une population sauvage sans se tromper." },
+	biotech:{ icon:"🧬", name:"Biotechnologies", course:"biotech", pitch:"Faire produire une enzyme par des bactéries, de la paillasse au bioréacteur." },
+	inge:   { icon:"⚙️", name:"Ingénieur", course:"inge", pitch:"Concevoir et piloter la ferme urbaine du Palais Rameau." }
 };
 const SPECIES = {
 	coccinelle:{ name:"Coccinelle à sept points", emoji:"🐞", taxon:"Insectes · ordre des Coléoptères", where:"sur le rosier",
@@ -120,6 +128,31 @@ const CSS = `
 .jd-found{display:flex;gap:4px;font-size:18px}
 .jd-found i{font-style:normal;opacity:.25;filter:grayscale(1)}
 .jd-found i.on{opacity:1;filter:none}
+.jd-dna{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:4px 0}
+.jd-dna span{display:grid;place-items:center;height:34px;border-radius:9px;font:800 16px Nunito,sans-serif;color:#fff}
+.jd-dna span.t{background:#fff;border:2px dashed #b9cfa4;color:#22301f}
+.jd-dna span.cur{border:2px solid #2f6b45;box-shadow:0 0 0 3px rgba(47,107,69,.2)}
+.b-A{background:#3d8a5a!important;color:#fff!important}.b-T{background:#c4532f!important;color:#fff!important}.b-G{background:#d9a441!important;color:#fff!important}.b-C{background:#3b6fb5!important;color:#fff!important}
+.jd-keys4{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:6px}
+.jd-keys4 button{border:0;border-radius:14px;height:50px;font:800 22px Nunito,sans-serif;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.18);touch-action:manipulation}
+.jd-keys4 button:active{transform:translateY(3px);box-shadow:none}
+.jd-ctl{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #d5e3c6;border-radius:14px;padding:7px 10px;margin-bottom:6px;font-weight:800;font-size:14px}
+.jd-ctl b{min-width:66px;text-align:center;font-size:15px}
+.jd-ctl b.bad{color:#b91c1c}
+.jd-ctl button{width:40px;height:40px;border-radius:12px;border:2px solid #d5e3c6;background:#fff;font:800 18px Nunito,sans-serif;cursor:pointer;touch-action:manipulation;color:#22301f}
+.jd-ctl button[aria-pressed=true]{border-color:#2f6b45;background:#e2f2e5}
+.jd-ctl small{margin-left:auto;font-size:11.5px;color:#8a937f;text-align:right}
+.jd-hold{display:block;width:100%;border:0;border-radius:18px;padding:16px;background:#3b6fb5;color:#fff;font:800 16px Nunito,sans-serif;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 6px 0 #284f86}
+.jd-hold:active{transform:translateY(4px);box-shadow:0 2px 0 #284f86}
+.jd-par{display:grid;gap:8px}
+.jd-par button{display:flex;gap:12px;align-items:center;text-align:left;border:2px solid #d5e3c6;background:#fff;border-radius:16px;padding:12px;cursor:pointer;font:inherit;color:#22301f}
+.jd-par button:hover{border-color:#2f6b45}
+.jd-par i{font-style:normal;font-size:30px}
+.jd-par b{display:block;font:700 17px Fraunces,Georgia,serif}
+.jd-par small{display:block;font-size:13px;color:#4d5a48}
+.jd-par .done{margin-left:auto;font-size:20px}
+.jd-ctl .lb{flex:none}
+@media (max-width:440px){ .jd-ctl{flex-wrap:wrap;row-gap:4px} .jd-ctl .lb{flex-basis:100%} .jd-ctl small{order:9;flex-basis:100%;margin:0;text-align:left} .jd-ctl b{min-width:58px} }
 @media (max-width:560px){ .jd-chip{font-size:12px;padding:6px 9px} .jd-h{font-size:20px} .jd-node{min-width:56px;font-size:11px;padding:3px 5px} .jd-node i{font-size:19px} }
 `;
 
@@ -272,7 +305,8 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 	const spark = mesh(new THREE.OctahedronGeometry(.22), std("#fff3a0", { emissive:"#ffd84a", emissiveIntensity:1 }), scene, 0, -5, 0, 0, false);
 
 	/* ---------- état ---------- */
-	const S = { found:new Set(), errors:0, keyErrors:0, webErrors:0, quadErr:null, quadRandom:false, geneObs:null, learned:new Set() };
+	const S = { found:new Set(), errors:0, keyErrors:0, webErrors:0, quadErr:null, quadRandom:false, geneObs:null, learned:new Set(), parcours:null, troncErrors:0, modScore:0, done:new Set() };
+	let sim = null;          // simulation en direct (bioréacteur, serre) : avancée à chaque image
 	let stage = "intro", running = true, raf = 0, last = 0, closed = false, hintT = 0, fly = null;
 
 	function layout(){
@@ -301,7 +335,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		show(`<div class="jd-k">Mini-jeu · ${formation.name}</div><h2 class="jd-h">Mission Jardin Boulay</h2>
 			<div class="jd-big">🔍🌿</div>
 			<p class="jd-p">La Ville se demande si le jardin botanique du campus mérite le label <b>« refuge de biodiversité »</b>. Ton labo de licence est chargé de l'inventaire : observer, identifier, compter… et prouver tes résultats.</p>
-			<ul class="jd-list"><li><span>L1</span>Identifier les espèces, comprendre qui mange qui</li><li><span>L2</span>Compter une population sans se tromper</li><li><span>L3</span>Vérifier une loi de la génétique</li></ul>
+			<ul class="jd-list"><li><span>L1</span>Identifier les espèces, comprendre qui mange qui</li><li><span>L2</span>Vérifier une loi de la génétique</li><li><span>L3</span>Ta spécialisation : 🌿 écologie, 🧬 biotech ou ⚙️ ingénieur</li></ul>
 			<button class="jd-go" data-a="hunt">Entrer dans le jardin</button>`);
 	}
 
@@ -388,14 +422,14 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 				const o = e.target.closest("[data-q]"); if(!o || card.querySelector("[data-q].ok")) return;
 				if(o.dataset.q !== "ok"){ err("webErrors"); o.classList.add("ko"); return; }
 				o.classList.add("ok"); play("good"); card.onclick = null;
-				card.querySelector("[data-fin]").innerHTML = `<p class="jd-p" style="margin-top:10px">Exact. C'est pour ça que les jardiniers et les agriculteurs pratiquent la <b>lutte biologique</b> : on lâche des coccinelles plutôt que de pulvériser. Le réseau trophique se régule tout seul.</p>${course("reseau")}<button class="jd-go" data-a="quad">Passer en L2 →</button>`;
+				card.querySelector("[data-fin]").innerHTML = `<p class="jd-p" style="margin-top:10px">Exact. C'est pour ça que les jardiniers et les agriculteurs pratiquent la <b>lutte biologique</b> : on lâche des coccinelles plutôt que de pulvériser. Le réseau trophique se régule tout seul.</p>${course("reseau")}<button class="jd-go" data-a="gene">Passer en L2 →</button>`;
 			};
 		}
 	}
 
 	/* ---------- L2 · quadrats ---------- */
 	function startQuad(){
-		stage = "quad"; setStage("L2 · Écologie quantitative"); flyTo("prairie");
+		stage = "quad"; setStage("L3 · Écologie opérationnelle"); flyTo("prairie");
 		// la prairie : 10 × 10 quadrats d'un mètre carré, plus fleurie côté soleil (en bas à droite)
 		const N = 10, cells = [];
 		for(let j=0;j<N;j++) for(let i=0;i<N;i++){
@@ -483,7 +517,8 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 				const verdict = ecart <= 15 ? `Très bonne estimation : seulement <b>${ecart} %</b> d'écart.`
 					: S.quadRandom ? `<b>${ecart} %</b> d'écart : avec seulement 4 quadrats, le hasard peut jouer. Plus on fait de quadrats, plus l'estimation est précise.`
 					: `<b>${ecart} %</b> d'écart ! Tu as choisi des quadrats ${dense ? "dans les zones les plus fleuries, côté soleil" : "dans les zones les moins fleuries"} : c'est un <b>biais d'échantillonnage</b>. Pour l'éviter, on tire les quadrats <b>au hasard</b>.`;
-				card.querySelector("[data-fin]").innerHTML = `<p class="jd-p" style="margin-top:10px">Le vrai nombre (on a tout compté pour toi) : <b>${total.toLocaleString("fr-FR")} pâquerettes</b>. ${verdict}</p>${course("quadrat")}<button class="jd-go" data-a="gene">Passer en L3 →</button>`;
+				S.modScore = ecart <= 20 ? 85 : ecart <= 35 ? 60 : 40;
+				card.querySelector("[data-fin]").innerHTML = `<p class="jd-p" style="margin-top:10px">Le vrai nombre (on a tout compté pour toi) : <b>${total.toLocaleString("fr-FR")} pâquerettes</b>. ${verdict}</p>${course("quadrat")}<button class="jd-go" data-a="end">Rendre mon rapport de mission</button>`;
 			};
 		}
 	}
@@ -491,7 +526,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 	/* ---------- L3 · génétique : le croisement de Mendel ---------- */
 	const pots = [];
 	function startGene(){
-		stage = "gene"; setStage("L3 · Génétique"); flyTo("serre");
+		stage = "gene"; setStage("L2 · Génétique"); flyTo("serre");
 		show(`<div class="jd-k">L3 · génétique</div><h2 class="jd-h">Le pari de Mendel</h2>
 			<p class="jd-p">Dans la serre, des pois. En 1865, Gregor Mendel croise des pois à <b>fleurs violettes</b> et des pois à <b>fleurs blanches</b> (lignées pures). L'allèle <b>V</b> (violet) est <b>dominant</b>, l'allèle <b>b</b> (blanc) est <b>récessif</b>.</p>
 			<p class="jd-p"><b>Les enfants (génération F1) sont tous Vb. De quelle couleur sont leurs fleurs ?</b></p>
@@ -559,27 +594,324 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 			const o = e.target.closest("[data-g]"); if(!o || card.querySelector("[data-g].ok")) return;
 			if(o.dataset.g !== "ok"){ err(); o.classList.add("ko"); return; }
 			o.classList.add("ok"); play("good"); card.onclick = null;
-			card.querySelector("[data-fin]").innerHTML = `<p class="jd-p" style="margin-top:10px">Bien vu. Pour trancher, les biologistes utilisent un <b>test statistique</b> (le test du χ², « khi-deux ») : il dit si l'écart est assez petit pour être dû au hasard. Mendel, lui, avait compté plus de 7 000 graines !</p>${course("genet")}<button class="jd-go" data-a="end">Rendre mon rapport de mission</button>`;
+			card.querySelector("[data-fin]").innerHTML = `<p class="jd-p" style="margin-top:10px">Bien vu. Pour trancher, les biologistes utilisent un <b>test statistique</b> (le test du χ², « khi-deux ») : il dit si l'écart est assez petit pour être dû au hasard. Mendel, lui, avait compté plus de 7 000 graines !</p>${course("genet")}<button class="jd-go" data-a="parcours">Choisir ma spécialisation de L3 →</button>`;
 		};
+	}
+
+
+	/* ---------- L3 · le choix de la spécialisation ---------- */
+	function chooseParcours(){
+		stage = "parcours"; setStage("L3 · Spécialisation"); flyTo("jardin");
+		S.troncErrors = S.errors;
+		show(`<div class="jd-k">L3 · spécialisation</div><h2 class="jd-h">Ta troisième année, à toi de choisir</h2>
+			<p class="jd-p">En L3, la licence se spécialise. Choisis ton parcours : tu pourras rejouer pour découvrir les autres.</p>
+			<div class="jd-par">${Object.entries(PARCOURS).map(([k, p]) => `<button data-p="${k}"><i>${p.icon}</i><span><b>${p.name}</b><small>${p.pitch}</small></span>${S.done.has(k) ? '<span class="done">🏅</span>' : ""}</button>`).join("")}</div>`);
+	}
+	function startParcours(k){
+		S.parcours = k; S.errors = S.troncErrors; S.modScore = 0;
+		if(k === "eco") return startQuad();
+		if(k === "biotech") return startBio();
+		return startInge();
+	}
+	// petit graphique : axes, courbe(s) et nuage de points
+	function plot(cv, { xmax, ymax, xl, yl, lines = [], pts = [], hline, xt = [], yt = [] }){
+		const x = cv.getContext("2d"), W = cv.width, H = cv.height, L = 44, B = 30;
+		const X = v => L + (W - L - 12)*v/xmax, Y = v => H - B - (H - B - 12)*v/ymax;
+		x.clearRect(0, 0, W, H); x.fillStyle = "#fff"; x.fillRect(0, 0, W, H);
+		x.strokeStyle = "#d5e3c6"; x.lineWidth = 2; x.beginPath(); x.moveTo(L, 8); x.lineTo(L, H - B); x.lineTo(W - 8, H - B); x.stroke();
+		x.fillStyle = "#8a937f"; x.font = "bold 13px Nunito, sans-serif"; x.fillText(yl, L + 6, 18); x.textAlign = "right"; x.fillText(xl, W - 10, H - B - 6);
+		// graduations, pour pouvoir lire une valeur sur le graphique
+		x.font = "bold 12px Nunito, sans-serif"; x.strokeStyle = "#eef3e6"; x.lineWidth = 1;
+		for(const v of yt){ x.fillText(String(v), L - 6, Y(v) + 4); x.beginPath(); x.moveTo(L + 1, Y(v)); x.lineTo(W - 8, Y(v)); x.stroke(); }
+		x.textAlign = "center";
+		for(const v of xt){ x.fillText(String(v), X(v), H - B + 16); x.beginPath(); x.moveTo(X(v), H - B - 1); x.lineTo(X(v), 12); x.stroke(); }
+		x.textAlign = "left"; x.font = "bold 13px Nunito, sans-serif";
+		if(hline){ x.setLineDash([7, 5]); x.strokeStyle = hline.c; x.beginPath(); x.moveTo(L, Y(hline.v)); x.lineTo(W - 8, Y(hline.v)); x.stroke(); x.setLineDash([]); x.fillStyle = hline.c; x.textAlign = "right"; x.fillText(hline.t, W - 12, Y(hline.v) - 6); x.textAlign = "left"; }
+		for(const l of lines){ x.strokeStyle = l.c; x.lineWidth = l.w || 3; x.beginPath(); l.d.forEach(([a, b], i) => i ? x.lineTo(X(a), Y(b)) : x.moveTo(X(a), Y(b))); x.stroke(); }
+		x.fillStyle = "#2f6b45"; for(const [a, b] of pts){ x.beginPath(); x.arc(X(a), Y(b), 4.5, 0, 7); x.fill(); }
+	}
+	function qcm(el, opts, good, onOk, kind){
+		el.innerHTML = `<div class="jd-opts">${opts.map(([v, t]) => `<button class="jd-opt" data-q="${v}">${t}</button>`).join("")}</div><div data-after></div>`;
+		el.querySelectorAll("[data-q]").forEach(b => b.addEventListener("click", () => {
+			if(el.querySelector("[data-q].ok")) return;
+			if(b.dataset.q !== String(good)){ err(kind); b.classList.add("ko"); return; }
+			b.classList.add("ok"); play("good"); onOk(el.querySelector("[data-after]"));
+		}));
+	}
+
+	/* ---------- L3 · parcours Biotechnologies : le labo de bioproduction ---------- */
+	function startBio(){ stage = "bio"; setStage("L3 · Biotechnologies"); flyTo("serre"); S.bio = { pip:[] }; bioDNA(); }
+	function bioDNA(){
+		const tpl = "ATGCGTAC".split(""), comp = { A:"T", T:"A", G:"C", C:"G" }, got = [];
+		const render = msg => {
+			show(`<div class="jd-k">L3 · biotech · étape 1/5</div><h2 class="jd-h">Copier le gène de l'enzyme</h2>
+				<p class="jd-p">Pour copier un gène par <b>PCR</b>, il faut une <b>amorce</b> : le brin complémentaire du début du gène. A s'apparie avec T, G avec C.</p>
+				<div class="jd-dna">${tpl.map(b => `<span class="b-${b}">${b}</span>`).join("")}</div>
+				<div class="jd-dna">${tpl.map((b, i) => `<span class="t ${i < got.length ? "b-" + got[i] : i === got.length ? "cur" : ""}">${got[i] || ""}</span>`).join("")}</div>
+				<div class="jd-msg ${msg ? "ko" : ""}">${msg || "Touche les bases dans l'ordre pour construire l'amorce."}</div>
+				${got.length < tpl.length ? `<div class="jd-keys4">${["A", "T", "G", "C"].map(b => `<button data-b="${b}" class="b-${b}">${b}</button>`).join("")}</div>` : ""}<div data-fin></div>`);
+		};
+		render();
+		card.onclick = e => {
+			const b = e.target.closest("[data-b]"); if(!b) return;
+			const want = comp[tpl[got.length]];
+			if(b.dataset.b !== want){ err(); render(`${tpl[got.length]} s'apparie avec ${want}, pas avec ${b.dataset.b}.`); return; }
+			got.push(want); play("pop"); render();
+			if(got.length === tpl.length){
+				card.onclick = null; play("good");
+				card.querySelector("[data-fin]").innerHTML = `<p class="jd-p" style="margin-top:8px">Amorce prête : <b>${got.join("")}</b>. La PCR va copier le gène des millions de fois en quelques heures.</p><button class="jd-go" data-a="bio-gel">Vérifier sur gel →</button>`;
+			}
+		};
+	}
+	function bioGel(){
+		const wells = [[1000], [300], [750]].sort(() => rnd() - .5), good = wells.findIndex(w => w[0] === 750) + 1;
+		show(`<div class="jd-k">L3 · biotech · étape 2/5</div><h2 class="jd-h">Lire le gel d'électrophorèse</h2>
+			<p class="jd-p">Les fragments d'ADN migrent dans le gel : <b>les plus petits vont le plus loin</b>. À gauche, l'échelle de tailles. <b>Ton gène fait 750 paires de bases : quel puits le contient ?</b></p>
+			<canvas class="jd-cv" width="400" height="260"></canvas><div data-q></div>`);
+		const cv = card.querySelector("canvas"), x = cv.getContext("2d");
+		const Y = bp => 40 + (1 - Math.log(bp/200)/Math.log(1300/200))*190;
+		x.fillStyle = "#1f3550"; x.fillRect(0, 0, 400, 260);
+		const lanes = [["Échelle", [1000, 750, 500, 250]], ["Puits 1", wells[0]], ["Puits 2", wells[1]], ["Puits 3", wells[2]]];
+		lanes.forEach(([n, bands], i) => {
+			const cx = 106 + i*88;
+			x.fillStyle = "#0e1c2d"; x.fillRect(cx - 28, 18, 56, 10);
+			x.fillStyle = "#cfe3ff"; x.font = "bold 13px Nunito, sans-serif"; x.textAlign = "center"; x.fillText(n, cx, 250);
+			for(const bp of bands){ x.fillStyle = i ? "#ffe680" : "#a8c7ff"; x.shadowColor = x.fillStyle; x.shadowBlur = 8; x.fillRect(cx - 26, Y(bp) - 3, 52, 6); x.shadowBlur = 0; if(!i){ x.fillStyle = "#a8c7ff"; x.textAlign = "left"; x.fillText(bp + " pb", 4, Y(bp) + 4); } }
+		});
+		qcm(card.querySelector("[data-q]"), [[1, "Puits 1"], [2, "Puits 2"], [3, "Puits 3"]], good, el => {
+			el.innerHTML = `<p class="jd-p" style="margin-top:8px">Exact : la bande du puits ${good} est à la hauteur du repère 750 pb. Ton gène est bien copié.</p><button class="jd-go" data-a="bio-pip">À la pipette →</button>`;
+		});
+	}
+	function bioPip(){
+		S.bio = S.bio || { pip:[] };
+		let n = 0, vol = 0, holding = false;
+		const render = msg => {
+			show(`<div class="jd-k">L3 · biotech · étape 3/5</div><h2 class="jd-h">Dilutions en série</h2>
+				<p class="jd-p">Ta culture est trop concentrée pour compter les bactéries. Dilue-la 3 fois au dixième : à chaque fois, prélève <b>100 µL</b> et verse-les dans 900 µL d'eau.</p>
+				<canvas class="jd-cv" width="400" height="110"></canvas>
+				<div class="jd-msg ${msg && msg.ko ? "ko" : msg ? "ok" : ""}">${msg ? msg.t : `Dilution ${n + 1}/3 : maintiens le bouton, relâche à 100 µL.`}</div>
+				${n < 3 ? `<button class="jd-hold" data-hold>🧪 Maintiens pour aspirer</button>` : ""}<div data-fin></div>`);
+			draw();
+			const h = card.querySelector("[data-hold]");
+			if(h){
+				h.addEventListener("pointerdown", e => { e.preventDefault(); holding = true; vol = 0; });
+				for(const ev of ["pointerup", "pointerleave", "pointercancel"]) h.addEventListener(ev, () => { if(holding){ holding = false; release(); } });
+			}
+		};
+		const draw = () => {
+			const cv = card.querySelector("canvas"); if(!cv) return;
+			const x = cv.getContext("2d"), X = v => 20 + v/200*360;
+			x.clearRect(0, 0, 400, 110); x.fillStyle = "#fff"; x.fillRect(0, 0, 400, 110);
+			x.fillStyle = "#e2f2e5"; x.fillRect(X(85), 30, X(115) - X(85), 40);
+			x.strokeStyle = "#b9cfa4"; x.lineWidth = 2; x.strokeRect(20, 30, 360, 40);
+			x.fillStyle = "#3b6fb5"; x.fillRect(20, 34, X(vol) - 20, 32);
+			x.fillStyle = "#4d5a48"; x.font = "bold 13px Nunito, sans-serif"; x.textAlign = "center";
+			for(const v of [0, 50, 100, 150, 200]) x.fillText(v + " µL", X(v), 92);
+			x.fillStyle = "#22301f"; x.font = "bold 18px Nunito, sans-serif"; x.fillText(Math.round(vol) + " µL", 200, 22);
+		};
+		sim = dt => { if(holding){ vol = Math.min(200, vol + dt*(45 + vol*.9)); draw(); if(vol >= 200){ holding = false; release(); } } };
+		const release = () => {
+			const v = Math.round(vol); S.bio.pip.push(v);
+			if(v >= 85 && v <= 115){ n++; play("pop"); render({ t:`✓ ${v} µL : dilution ${n} réussie.` }); }
+			else { err(); render({ t:`${v} µL : ${v < 85 ? "pas assez" : "trop"} ! Vide la pipette et recommence.`, ko:true }); }
+			if(n === 3){ sim = null; finish(); }
+		};
+		const finish = () => {
+			const el = card.querySelector("[data-fin]");
+			el.innerHTML = `<p class="jd-p" style="margin-top:6px">Chaque étape divise la concentration par 10 (C₁V₁ = C₂V₂). <b>Quelle est la dilution finale ?</b></p><div data-q></div>`;
+			qcm(el.querySelector("[data-q]"), [["30", "1/30"], ["1000", "1/1 000"], ["300", "1/300"]], "1000", a => {
+				a.innerHTML = `<p class="jd-p" style="margin-top:8px">Exact : 1/10 × 1/10 × 1/10 = 1/1 000. Place au bioréacteur pour produire l'enzyme en grand.</p><button class="jd-go" data-a="bio-reac">Lancer le bioréacteur →</button>`;
+			});
+		};
+		render();
+	}
+	function bioReactor(){
+		S.bio = S.bio || { pip:[] };
+		const R = { T:37, pH:7, od:.05, t:0, dur:24, dT:.04, dpH:-.012, ev:0 };
+		const hist = [[0, .05]];
+		show(`<div class="jd-k">L3 · biotech · étape 4/5</div><h2 class="jd-h">Le bioréacteur en direct</h2>
+			<p class="jd-p">Tes bactéries poussent le mieux à <b>37 °C</b> et à <b>pH 7</b>. Garde-les dans cette zone pendant la culture : la courbe doit monter le plus haut possible.</p>
+			<canvas class="jd-cv" width="400" height="170"></canvas>
+			<div class="jd-ctl"><span class="lb">🌡️ Température</span><button data-c="T-">−</button><b data-v="T">37,0 °C</b><button data-c="T+">+</button><small>idéal 37 °C</small></div>
+			<div class="jd-ctl"><span class="lb">🧪 pH</span><button data-c="pH-">−</button><b data-v="pH">7,0</b><button data-c="pH+">+</button><small>idéal 7</small></div>
+			<div class="jd-msg" data-st>La culture démarre…</div><div data-fin></div>`);
+		const fmt = v => v.toLocaleString("fr-FR", { minimumFractionDigits:1, maximumFractionDigits:1 });
+		const ui = () => {
+			const t = card.querySelector('[data-v="T"]'), p = card.querySelector('[data-v="pH"]'); if(!t) return;
+			t.textContent = fmt(R.T) + " °C"; t.classList.toggle("bad", Math.abs(R.T - 37) > 2);
+			p.textContent = fmt(R.pH); p.classList.toggle("bad", Math.abs(R.pH - 7) > .5);
+			plot(card.querySelector("canvas"), { xmax:R.dur, ymax:2, xl:"heures →", yl:"densité de bactéries", xt:[0, 6, 12, 18, 24], lines:[{ c:"#2f6b45", d:hist }], hline:{ v:1.67, c:"#d9a441", t:"objectif" } });
+		};
+		card.onclick = e => {
+			const b = e.target.closest("[data-c]"); if(!b || R.t >= R.dur) return;
+			const c = b.dataset.c; play("pop");
+			if(c === "T+") R.T += .5; if(c === "T-") R.T -= .5; if(c === "pH+") R.pH += .1; if(c === "pH-") R.pH -= .1;
+			ui();
+		};
+		sim = dt => {
+			R.t += dt;
+			if(R.ev === 0 && R.t > 7){ R.ev = 1; R.dT = .55; say("⚠️ Le chauffage s'emballe : surveille la température !", 3500); play("bad"); }
+			if(R.ev === 1 && R.t > 11){ R.ev = 2; R.dT = .04; }
+			if(R.ev === 2 && R.t > 14){ R.ev = 3; R.dpH = -.09; say("⚠️ Les bactéries acidifient le milieu : le pH baisse !", 3500); play("bad"); }
+			R.T += R.dT*dt; R.pH += R.dpH*dt;
+			const r = R.T > 43 ? -.15 : .22*Math.exp(-(((R.T - 37)/3)**2))*Math.exp(-(((R.pH - 7)/.6)**2));
+			R.od = Math.max(.01, R.od + r*R.od*(1 - R.od/2)*dt);
+			if(hist.length === 0 || R.t - hist[hist.length - 1][0] > .25) hist.push([Math.min(R.t, R.dur), R.od]);
+			const st = card.querySelector("[data-st]");
+			if(st) st.textContent = R.T > 43 ? "🔥 Trop chaud : les bactéries meurent !" : r > .15 ? "✓ Croissance rapide" : r > .05 ? "Croissance ralentie : corrige les réglages" : "⚠️ La culture ne pousse presque plus";
+			ui();
+			if(R.t >= R.dur){
+				sim = null; card.onclick = null;
+				const score = Math.min(100, Math.round(R.od/1.67*100)); S.bio.reac = score; S.modScore = score;
+				play(score >= 70 ? "good" : "bad");
+				card.querySelector("[data-fin]").innerHTML = `<p class="jd-p" style="margin-top:6px">Culture terminée : <b>${score} %</b> de l'objectif. ${score >= 85 ? "Excellent pilotage !" : score >= 60 ? "Correct, mais les écarts de température et de pH ont freiné la croissance." : "Les bactéries ont souffert : en bioprocédés, chaque degré compte."}</p><button class="jd-go" data-a="bio-col">Compter les bactéries →</button>`;
+			}
+		};
+		ui();
+	}
+	function bioColonies(){
+		const N = 28 + Math.floor(rnd()*22), pts = [];
+		while(pts.length < N){ const a = rnd()*Math.PI*2, r = Math.sqrt(rnd())*165; const p = [200 + Math.cos(a)*r, 200 + Math.sin(a)*r]; if(pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > 16)) pts.push(p); }
+		const tapped = new Set();
+		show(`<div class="jd-k">L3 · biotech · étape 5/5</div><h2 class="jd-h">Compter les colonies</h2>
+			<p class="jd-p">Tu as étalé <b>0,1 mL</b> de la dilution au 1/1 000 sur une boîte de Petri. Chaque bactérie a formé une colonie. Touche-les toutes pour les compter.</p>
+			<canvas class="jd-cv" width="400" height="400"></canvas><div class="jd-msg">Colonies comptées : <b data-n>0</b></div><div data-fin></div>`);
+		const cv = card.querySelector("canvas");
+		const draw = () => {
+			const x = cv.getContext("2d");
+			x.fillStyle = "#f4f8ee"; x.fillRect(0, 0, 400, 400);
+			x.fillStyle = "#f3e6b8"; x.beginPath(); x.arc(200, 200, 185, 0, 7); x.fill(); x.strokeStyle = "#c9b98a"; x.lineWidth = 6; x.stroke();
+			pts.forEach(([a, b], k) => { x.fillStyle = tapped.has(k) ? "#2f6b45" : "#fbfbf2"; x.beginPath(); x.arc(a, b, 7, 0, 7); x.fill(); x.strokeStyle = "#b9a76a"; x.lineWidth = 1.5; x.stroke(); });
+		};
+		draw();
+		cv.onclick = e => {
+			const r = cv.getBoundingClientRect(), px = (e.clientX - r.left)/r.width*400, py = (e.clientY - r.top)/r.height*400;
+			let best = -1, bd = 22; pts.forEach(([a, b], k) => { const d = Math.hypot(a - px, b - py); if(d < bd && !tapped.has(k)){ bd = d; best = k; } });
+			if(best < 0) return; tapped.add(best); play("pop"); draw(); card.querySelector("[data-n]").textContent = tapped.size;
+			if(tapped.size === N){
+				cv.onclick = null;
+				const el = card.querySelector("[data-fin]");
+				el.innerHTML = `<p class="jd-p" style="margin-top:6px"><b>${N} colonies</b> dans 0,1 mL d'une dilution au 1/1 000. <b>Combien de bactéries par mL dans ta culture ?</b></p><div data-q></div>`;
+				const f = v => (N*v).toLocaleString("fr-FR");
+				qcm(el.querySelector("[data-q]"), [["a", `${f(10000)} par mL`], ["b", `${f(1000)} par mL`], ["c", `${f(10)} par mL`]].sort(() => rnd() - .5), "a", a => {
+					a.innerHTML = `<p class="jd-p" style="margin-top:8px">Exact : ${N} ÷ 0,1 mL × 1 000 = <b>${f(10000)} bactéries par mL</b>. C'est le calcul que font chaque jour les labos de biotech et de contrôle qualité.</p>${course("biotech")}<button class="jd-go" data-a="end">Rendre mon rapport de mission</button>`;
+				});
+			}
+		};
+	}
+
+	/* ---------- L3 · parcours Ingénieur : la ferme urbaine du Palais Rameau ---------- */
+	function startInge(){ stage = "inge"; setStage("L3 · Ingénieur"); flyTo("serre"); S.inge = {}; ingeSize(); }
+	function ingeSize(){
+		show(`<div class="jd-k">L3 · ingénieur · étape 1/3</div><h2 class="jd-h">Dimensionner la ferme</h2>
+			<p class="jd-p">Le restaurant universitaire veut <b>60 salades par semaine</b>, toute l'année, cultivées hors-sol au Palais Rameau. Une salade met <b>5 semaines</b> à pousser.</p>
+			<p class="jd-p"><b>Combien de salades doivent pousser en même temps ?</b></p><div data-q></div>`);
+		qcm(card.querySelector("[data-q]"), [["60", "60"], ["300", "300"], ["12", "12"]], "300", a => {
+			a.innerHTML = `<p class="jd-p" style="margin-top:8px">60 par semaine × 5 semaines = <b>300 salades</b> en culture en permanence. Un bac accueille 12 salades : <b>combien de bacs ?</b></p><div data-q2></div>`;
+			qcm(a.querySelector("[data-q2]"), [["25", "25 bacs"], ["5", "5 bacs"], ["36", "36 bacs"]], "25", b => {
+				b.innerHTML = `<p class="jd-p" style="margin-top:8px">300 ÷ 12 = <b>25 bacs</b>. Chaque bac consomme 2 L de solution nutritive par heure. <b>Quelle pompe choisir ?</b></p><div data-q3></div>`;
+				qcm(b.querySelector("[data-q3]"), [["a", "Pompe A · 30 L/h · 20 W"], ["b", "Pompe B · 60 L/h · 35 W"], ["c", "Pompe C · 120 L/h · 80 W"]], "b", c => {
+					c.innerHTML = `<p class="jd-p" style="margin-top:8px">Il faut 25 × 2 = 50 L/h. La pompe A est trop faible, la C consomme plus du double pour rien : la <b>B</b> est le bon dimensionnement.</p><button class="jd-go" data-a="inge-model">Modéliser la croissance →</button>`;
+				});
+			});
+		});
+	}
+	function ingeModel(){
+		const K = 250, r = .2, t0 = 20, f = t => K/(1 + Math.exp(-r*(t - t0)));
+		const pts = []; for(let d=2; d<=24; d+=2) pts.push([d, Math.max(2, f(d)*(.92 + rnd()*.16))]);
+		show(`<div class="jd-k">L3 · ingénieur · étape 2/3</div><h2 class="jd-h">Modéliser la croissance</h2>
+			<p class="jd-p">Les capteurs ont pesé une salade tous les 2 jours. Pour prévoir la récolte, il faut un <b>modèle</b>. <b>Quelle courbe décrit le mieux ces mesures ?</b></p>
+			<canvas class="jd-cv" width="400" height="200"></canvas><div data-q></div>`);
+		const cv = card.querySelector("canvas");
+		const base = { xmax:36, ymax:280, xl:"jours →", yl:"masse (g)", pts, xt:[0, 5, 10, 15, 20, 25, 30, 35], yt:[100, 200] };
+		plot(cv, base);
+		qcm(card.querySelector("[data-q]"), [["lin", "Une droite : elle pousse toujours à la même vitesse"], ["exp", "Une exponentielle : elle accélère sans fin"], ["log", "Une courbe en S : lente, rapide, puis elle plafonne"]], "log", a => {
+			const curve = []; for(let t=0; t<=36; t+=.5) curve.push([t, f(t)]);
+			plot(cv, { ...base, lines:[{ c:"#2f6b45", d:curve }], hline:{ v:200, c:"#d9a441", t:"récolte : 200 g" } });
+			a.innerHTML = `<p class="jd-p" style="margin-top:8px">C'est une <b>croissance logistique</b> : la salade plafonne vers 250 g. <b>D'après le modèle, vers quel jour atteint-elle 200 g ?</b></p><div data-q2></div>`;
+			qcm(a.querySelector("[data-q2]"), [["20", "Jour 20"], ["27", "Jour 27"], ["35", "Jour 35"]], "27", b => {
+				b.innerHTML = `<p class="jd-p" style="margin-top:8px">Exact : la courbe croise les 200 g vers le <b>jour 27</b>. Le modèle permet de planifier les récoltes… et les commandes du resto U.</p><button class="jd-go" data-a="inge-serre">Piloter la serre →</button>`;
+			});
+		});
+	}
+	const fr1 = v => v.toLocaleString("fr-FR", { minimumFractionDigits:1, maximumFractionDigits:1 });
+	function ingeSerre(){
+		S.inge = S.inge || {};
+		const G = { L:60, EC:1.2, aer:false, T:22, t:0, dur:24, bio:0, kwh:0, budget:30, ev:0 };
+		show(`<div class="jd-k">L3 · ingénieur · étape 3/3</div><h2 class="jd-h">Piloter la serre en direct</h2>
+			<p class="jd-p">Fais pousser un maximum de salades <b>sans dépasser le budget énergie</b>. La lumière accélère la croissance mais consomme, les nutriments ont un réglage idéal.</p>
+			<canvas class="jd-cv" width="400" height="150"></canvas>
+			<div class="jd-ctl"><span class="lb">💡 Lumière</span><button data-c="L-">−</button><b data-v="L"></b><button data-c="L+">+</button><small>consomme de l'énergie</small></div>
+			<div class="jd-ctl"><span class="lb">🧪 Nutriments</span><button data-c="E-">−</button><b data-v="E"></b><button data-c="E+">+</button><small>idéal autour de 1,8</small></div>
+			<div class="jd-ctl"><span class="lb">🌬️ Aération</span><button data-c="A" aria-pressed="false" style="width:auto;padding:0 12px">Off</button><b data-v="T"></b><small>température</small></div>
+			<div class="jd-msg" data-st></div><div data-fin></div>`);
+		const ui = () => {
+			const q = s => card.querySelector(s); if(!q('[data-v="L"]')) return;
+			q('[data-v="L"]').textContent = G.L + " %";
+			q('[data-v="E"]').textContent = G.EC.toLocaleString("fr-FR", { minimumFractionDigits:1, maximumFractionDigits:2 }); q('[data-v="E"]').classList.toggle("bad", Math.abs(G.EC - 1.8) > .5);
+			q('[data-v="T"]').textContent = Math.round(G.T) + " °C"; q('[data-v="T"]').classList.toggle("bad", G.T > 28);
+			const a = q('[data-c="A"]'); a.setAttribute("aria-pressed", String(G.aer)); a.textContent = G.aer ? "On" : "Off";
+			const x = q("canvas").getContext("2d"), W = 400;
+			x.clearRect(0, 0, W, 150); x.fillStyle = "#fff"; x.fillRect(0, 0, W, 150);
+			x.font = "bold 17px Nunito, sans-serif"; x.fillStyle = "#4d5a48";
+			x.fillText(`🥬 Croissance : ${Math.round(G.bio)} %`, 14, 30); x.fillText(`⚡ Énergie : ${fr1(G.kwh)} / ${G.budget} kWh`, 14, 95);
+			x.fillStyle = "#eef5e6"; x.fillRect(14, 40, 372, 22); x.fillStyle = "#3d8a5a"; x.fillRect(14, 40, 372*Math.min(1, G.bio/100), 22);
+			x.fillStyle = "#eef5e6"; x.fillRect(14, 105, 372, 22); x.fillStyle = G.kwh > G.budget ? "#c4532f" : "#d9a441"; x.fillRect(14, 105, 372*Math.min(1, G.kwh/G.budget), 22);
+			x.fillStyle = "#4d5a48"; x.fillText(`⏱️ ${Math.max(0, Math.ceil(G.dur - G.t))} s`, 330, 30);
+		};
+		card.onclick = e => {
+			const b = e.target.closest("[data-c]"); if(!b || G.t >= G.dur) return;
+			const c = b.dataset.c; play("pop");
+			if(c === "L+") G.L = Math.min(100, G.L + 10); if(c === "L-") G.L = Math.max(0, G.L - 10);
+			if(c === "E+") G.EC = Math.min(3, G.EC + .2); if(c === "E-") G.EC = Math.max(.4, G.EC - .2);
+			if(c === "A") G.aer = !G.aer;
+			G.EC = Math.round(G.EC*10)/10; ui();
+		};
+		sim = dt => {
+			G.t += dt;
+			if(G.ev === 0 && G.t > 9){ G.ev = 1; say("🔥 Canicule sur Lille : la serre chauffe ! Pense à aérer.", 3500); play("bad"); }
+			if(G.ev === 1 && G.t > 19){ G.ev = 2; say("La canicule est passée : l'aération n'est plus utile.", 3000); }
+			const heat = G.ev === 1 ? 34 : 22, target = G.aer ? Math.min(heat, 23) : heat;
+			G.T += (target - G.T)*Math.min(1, dt*.6);
+			const g = (1 - Math.exp(-G.L/40))*Math.exp(-(((G.EC - 1.8)/.6)**2))*Math.exp(-(((G.T - 22)/6)**2));
+			G.bio = Math.min(100, G.bio + g*dt*4.6);
+			G.kwh += (G.L/100*1.3 + (G.aer ? .5 : 0) + .1)*dt;
+			const st = card.querySelector("[data-st]");
+			if(st) st.textContent = G.T > 28 ? "🥵 Trop chaud : les salades souffrent" : Math.abs(G.EC - 1.8) > .5 ? "Nutriments mal dosés : la croissance ralentit" : g > .6 ? "✓ Croissance optimale" : "Croissance moyenne";
+			ui();
+			if(G.t >= G.dur){
+				sim = null; card.onclick = null;
+				const over = Math.max(0, G.kwh - G.budget), score = Math.max(0, Math.min(100, Math.round(G.bio - over*4)));
+				S.inge.serre = score; S.inge.kwh = G.kwh; S.modScore = score;
+				play(score >= 70 ? "good" : "bad");
+				card.querySelector("[data-fin]").innerHTML = `<p class="jd-p" style="margin-top:6px">Bilan : croissance ${Math.round(G.bio)} %, ${fr1(G.kwh)} kWh sur ${G.budget} autorisés${over > 0 ? ` (<b>dépassement de ${fr1(over)} kWh</b>)` : ""}. Score : <b>${score} %</b>. ${score >= 80 ? "Un vrai pilotage d'ingénieur : rendement et sobriété." : "L'ingénieur cherche le meilleur compromis entre rendement et énergie : rejoue pour l'améliorer."}</p>${course("inge")}<button class="jd-go" data-a="end">Rendre mon rapport de mission</button>`;
+			}
+		};
+		ui();
 	}
 
 	/* ---------- rapport final ---------- */
 	function finale(){
 		stage = "end"; setStage("Rapport de mission");
-		const e = S.errors, q = S.quadErr ?? 100;
-		const mention = e <= 3 && q <= 20 ? "Très bien" : e <= 8 ? "Bien" : "Assez bien";
-		onEvent && onEvent("win", mention);
+		const e = S.errors, sc = S.modScore, P = PARCOURS[S.parcours || "eco"];
+		const mention = e <= 3 && sc >= 70 ? "Très bien" : e <= 8 && sc >= 40 ? "Bien" : "Assez bien";
+		S.done.add(S.parcours);
+		onEvent && onEvent("win", mention, S.parcours);
 		play("win"); flyTo("jardin", 2);
-		show(`<div class="jd-k">Licence Sciences de la Vie · rapport</div><h2 class="jd-h">Jardin labellisé « refuge de biodiversité » !</h2>
+		const title = { eco:"Jardin labellisé « refuge de biodiversité » !", biotech:"Ton enzyme est produite !", inge:"La ferme urbaine est lancée !" }[S.parcours];
+		const row = { eco:["Population de pâquerettes", `écart de ${S.quadErr} %`], biotech:["Bioréacteur", `${S.bio && S.bio.reac} % de l'objectif`], inge:["Serre du Palais Rameau", `${S.inge && S.inge.serre} %`] }[S.parcours];
+		const others = Object.keys(PARCOURS).filter(k => k !== S.parcours);
+		show(`<div class="jd-k">Licence Sciences de la Vie · parcours ${P.name}</div><h2 class="jd-h">${title}</h2>
 			<div class="jd-big">🏅</div>
 			<p class="jd-p" style="text-align:center">Mission accomplie, mention <b>${mention}</b>.</p>
 			<table class="jd-tbl">
 				<tr><td>Espèces identifiées</td><td>${[...S.found].map(id => SPECIES[id].emoji).join(" ")} (${S.found.size}/6)</td></tr>
-				<tr><td>Population de pâquerettes</td><td>écart de ${q} %</td></tr>
-				<tr><td>Proportion de Mendel</td><td>${40 - S.geneObs} 💜 · ${S.geneObs} 🤍</td></tr>
+				<tr><td>Proportion de Mendel</td><td>${S.geneObs == null ? "—" : `${40 - S.geneObs} 💜 · ${S.geneObs} 🤍`}</td></tr>
+				<tr><td>${P.icon} ${row[0]}</td><td>${row[1]}</td></tr>
 				<tr><td>Erreurs en chemin</td><td>${e}</td></tr></table>
-			<p class="jd-p">En une mission, tu as fait le travail d'un biologiste de terrain, et touché à ${S.learned.size} cours de la licence (avec un stage chaque année pour pratiquer) :</p>
-			<ul class="jd-list">${["cle", "reseau", "quadrat", "genet"].filter(k => S.learned.has(k)).map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
+			<p class="jd-p">Tu as touché à ${S.learned.size} cours de la licence (avec un stage chaque année pour pratiquer) :</p>
+			<ul class="jd-list">${["cle", "reseau", "genet", P.course].filter(k => S.learned.has(k)).map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
+			${others.map(k => `<button class="jd-alt" data-p="${k}">${PARCOURS[k].icon} Essayer le parcours ${PARCOURS[k].name}${S.done.has(k) ? " · 🏅" : ""}</button>`).join("")}
 			${openLead ? `<button class="jd-go" data-a="lead">📄 Recevoir la plaquette de la licence</button>` : ""}
 			<a class="jd-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir la Licence Sciences de la Vie ↗</a>
 			<button class="jd-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
@@ -588,6 +920,8 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 
 	/* ---------- actions ---------- */
 	panel.addEventListener("click", e => {
+		const pc = e.target.closest("[data-p]");
+		if(pc && PARCOURS[pc.dataset.p]){ play("pop"); sim = null; card.onclick = null; return startParcours(pc.dataset.p); }
 		const a = e.target.closest("[data-a]"); if(!a) return;
 		const k = a.dataset.a; play("pop");
 		if(k === "hunt") return startHunt();
@@ -597,10 +931,17 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		if(k === "gene") return startGene();
 		if(k === "sow") return sow();
 		if(k === "end") return finale();
+		if(k === "parcours") return chooseParcours();
+		if(k === "bio-gel") return bioGel();
+		if(k === "bio-pip") return bioPip();
+		if(k === "bio-reac") return bioReactor();
+		if(k === "bio-col") return bioColonies();
+		if(k === "inge-model") return ingeModel();
+		if(k === "inge-serre") return ingeSerre();
 		if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
 		if(k === "lead"){ close(); return openLead(); }
 		if(k === "replay"){
-			Object.assign(S, { found:new Set(), errors:0, keyErrors:0, webErrors:0, quadErr:null, quadRandom:false, geneObs:null, learned:new Set() });
+			Object.assign(S, { found:new Set(), errors:0, keyErrors:0, webErrors:0, quadErr:null, quadRandom:false, geneObs:null, learned:new Set(), parcours:null, troncErrors:0, modScore:0 });
 			Object.values(C).forEach(g => g.visible = true); pots.forEach(p => scene.remove(p.g)); pots.length = 0;
 			root.querySelectorAll("[data-f]").forEach(el => el.classList.remove("on"));
 			return intro();
@@ -635,6 +976,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		spark.rotation.y += dt*3; spark.scale.setScalar(1 + Math.sin(t/150)*.2);
 		if(stage === "hunt" && panel.hidden){ hintT += dt; if(hintT > 15 && hintBtn.hidden) hintBtn.hidden = false; }
 		else hintBtn.hidden = true;
+		if(sim) sim(dt);
 		for(const p of pots){ p.t += dt; const k = Math.max(0, Math.min(1, p.t/1.2)); p.g.scale.setScalar(.01 + k*(2 - k)*.99); }
 		renderer.render(scene, camera);
 		raf = requestAnimationFrame(loop);
@@ -652,7 +994,9 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 	raf = requestAnimationFrame(loop);
 	onEvent && onEvent("start");
 	// debug (?debug) : sauter les étapes pendant les tests
-	if(window.campus) window.campus.game = { S, card, get stage(){ return stage; }, find:onFound, draw:drawSpecies, web:startWeb, quad:startQuad, gene:startGene, end:finale };
+	if(window.campus) window.campus.game = { S, card, get stage(){ return stage; }, find:onFound, draw:drawSpecies, web:startWeb, quad:startQuad, gene:startGene, end:finale,
+		parcours:chooseParcours, start:startParcours, bio:{ dna:bioDNA, gel:bioGel, pip:bioPip, reac:bioReactor, col:bioColonies }, inge:{ size:ingeSize, model:ingeModel, serre:ingeSerre },
+		run(sec){ for(let i=0; i<sec*30 && sim; i++) sim(1/30); }, get sim(){ return sim; } };
 }
 
 /* ---------- les dessins de la loupe : ce que l'on doit observer pour répondre à la clé ---------- */

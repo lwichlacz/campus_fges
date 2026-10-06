@@ -1013,6 +1013,7 @@ let profile = store.get("profile", null); if(!PROFILES[profile]) profile = null;
 let favs = new Set(store.get("favs", []));
 let stamps = new Set(store.get("stamps", []));
 let medals = store.get("medals", {});        // { comptoir:"Bien", … } : la meilleure mention de chaque mini-jeu
+let medalsSub = store.get("medalsSub", {});  // { jardin:{ biotech:"Bien" } } : les parcours réussis d'un jeu à parcours
 const MENTION_RANK = ["De justesse", "Assez bien", "Bien", "Très bien"];
 let found = new Set(store.get("found", []));
 let entered = false, current = null;
@@ -1261,7 +1262,7 @@ function carnetBody(){
 	const lifeIds = Object.keys(LIFE).filter(id => LIFE[id].pin);
 	const lf = lifeIds.map(id => `<span class="lifechip ${found.has(id) ? "got" : ""}" title="${LIFE[id].name}">${LIFE[id].icon}</span>`).join("");
 	const gk = Object.keys(GAME_INFO), won = gk.filter(k => medals[k]);
-	const md = gk.map(k => `<button class="medal ${medals[k] ? "got" : ""}" data-game="${GAME_INFO[k].fid}" title="${GAME_INFO[k].title}"><i>${medals[k] ? "🏅" : GAME_INFO[k].icon}</i><b>${GAME_INFO[k].title}</b><small>${medals[k] ? "Mention " + medals[k] : "À jouer"}</small></button>`).join("");
+	const md = gk.map(k => `<button class="medal ${medals[k] ? "got" : ""}" data-game="${GAME_INFO[k].fid}" title="${GAME_INFO[k].title}"><i>${medals[k] ? "🏅" : GAME_INFO[k].icon}</i><b>${GAME_INFO[k].title}</b><small>${medals[k] ? "Mention " + medals[k] : "À jouer"}${GAME_INFO[k].parcours ? ` · ${Object.keys(medalsSub[k] || {}).length}/${GAME_INFO[k].parcours.length} parcours` : ""}</small></button>`).join("");
 	return `<h3>Mes médailles (${won.length}/${gk.length})</h3><div class="medals">${md}</div>
 		<h3>Tampons de visite</h3><div class="stamps">${st}</div>
 		<h3>Lieux de vie découverts (${lifeIds.filter(id => found.has(id)).length}/${lifeIds.length})</h3><div class="lifes">${lf}</div>
@@ -1333,6 +1334,7 @@ function jeuxView(){
 	const card = ({ k, g, f }) => `<div class="gcard ${medals[k] ? "got" : ""}">
 			<div class="gtop"><span class="gic">${g.icon}</span><span><b>${g.title}</b><small>${f.name}</small></span>${medals[k] ? `<span class="gmed" title="Mention ${medals[k]}">🏅</span>` : ""}</div>
 			<p>${g.pitch}</p>
+			${g.parcours ? `<div class="gpar">${g.parcours.map(([id, ic, n]) => `<span class="${medalsSub[k] && medalsSub[k][id] ? "got" : ""}" title="${medalsSub[k] && medalsSub[k][id] ? "Mention " + medalsSub[k][id] : "À découvrir"}">${ic} ${n}${medalsSub[k] && medalsSub[k][id] ? " ✓" : ""}</span>`).join("")}</div>` : ""}
 			<div class="gmeta"><button data-place="${g.where}">📍 ${g.whereLabel}</button><span>⏱️ ${g.dur}</span>${mine.includes(f.level) ? "" : `<span>${f.level === "M" ? "Master" : f.level === "DU" ? "Formation continue" : "Licence"}</span>`}</div>
 			<button class="play wide" data-game="${g.fid}">${medals[k] ? `Rejouer · mention ${medals[k]}` : "🎮 Jouer"}</button>
 		</div>`;
@@ -1433,9 +1435,10 @@ function openGame(fid){
 		openLead:() => openLead([fid]),
 		formation:f, audio:Audio,
 		isFav:() => favs.has(fid), toggleFav:() => toggleFav(fid),
-		onEvent:(ev, v) => {
+		onEvent:(ev, v, sub) => {
 			if(ev !== "win") return;
 			won = true; mention = v;
+			if(sub){ const m = { ...(medalsSub[kind] || {}) }; if(MENTION_RANK.indexOf(v) > MENTION_RANK.indexOf(m[sub])) m[sub] = v; medalsSub = { ...medalsSub, [kind]:m }; store.set("medalsSub", medalsSub); }
 			if(MENTION_RANK.indexOf(v) > MENTION_RANK.indexOf(medals[kind])){ medals = { ...medals, [kind]:v }; store.set("medals", medals); }
 		},
 		onClose:() => {
@@ -1444,7 +1447,7 @@ function openGame(fid){
 			if(won && kind === "comptoir"){
 				const party = () => { interiors.atrium.celebrate(); Audio.play("win"); toast("🎓 Bravo, diplômé·e ! Toute l'atrium fête ta réussite !", 4500); setTimeout(suggest, 4200); };
 				if(mode === "atrium") party(); else enterInterior("atrium", party);
-			} else if(won){ Audio.play("win"); toast(`🏅 Médaille obtenue : mention ${mention} !`, 3500); suggest(); }
+			} else if(won){ Audio.play("win"); suggest(); }      // le bandeau de la vue Jeux annonce la médaille
 			else if(current) openPanel(current);
 		}
 	})).catch(() => { gamePaused = false; toast("Impossible de lancer le mini-jeu : vérifie ta connexion.", 3500); });
