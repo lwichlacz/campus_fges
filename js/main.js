@@ -307,7 +307,8 @@ function buildFalise(){
 	const Fm = MAP.falise;
 	const root = new THREE.Group(); root.position.set(Fm.x, 0, Fm.z); root.rotation.y = -Fm.ang; scene.add(root);
 	const M = mats("#c45a3b", "#ead9c2"); PLACES.falise.mats = M;
-	const L = Fm.L, D = Fm.D, wd = 6.4, H = 3*3.4;
+	// côtés mitoyens (Rizomm, maisons de la rue) : 40 cm de retrait pour que le débord du toit ne morde pas sur les voisins
+	const L = Fm.L, D = Fm.D - .8, wd = 6.4, H = 3*3.4;
 	const common = { floors:3, fh:3.4, roof:"mansard", rh:4, m:M, arch:true, ww:1.15, wh:1.5, sp:2.9, bands:false, dstyle:"brickTall" };
 	wing(root, { ...common, x:0, z:D/2 - wd/2, L, D:wd, faces:"fb", dormers:5 });
 	wing(root, { ...common, x:0, z:-(D/2 - wd/2), ry:Math.PI, L, D:wd, faces:"fb", dormers:5 });
@@ -574,7 +575,9 @@ if(city.pois.rizomm){
 /* =====================================================================
    Végétation
    ===================================================================== */
-const trees = [...city.trees, ...city.parkTrees, ...gardenTrees];
+// un arbre du jardin ne pousse jamais dans un bâtiment voisin (emprises OpenStreetMap)
+const inOsmBuilding = (x, z) => MAP.buildings.some(r => { const f = r[4], p = []; for(let k=0;k<f.length;k+=2) p.push([f[k], f[k+1]]); return pointInPoly(x, z, p); });
+const trees = [...city.trees, ...city.parkTrees, ...gardenTrees.filter(t => !inOsmBuilding(t.x, t.z))];
 const hp0 = HAG.localToWorld(V(0,0,0));
 for(const [x,z] of [[-12,-14],[12,-14],[-20,-10]]) { const p = HAG.localToWorld(V(x,0,z)); trees.push({ x:p.x, z:p.z, k:"d", s:1 }); }
 const decid = trees.filter(t => t.k === "d"), conif = trees.filter(t => t.k === "c");

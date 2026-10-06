@@ -112,6 +112,26 @@ KW_CAMPUS = ("junia", "isa ", "hei ", "faculté", "campus", "esme", "ieseg", "in
 BRICK = 5; PAINT = 7
 buildings, pois_src = [], {}
 skip = set(HA_IDS + [CHAPEL_ID] + FALISE_IDS)
+def inside(x, z, p):
+    c = False; j = len(p) - 1
+    for i in range(len(p)):
+        (xi, zi), (xj, zj) = p[i], p[j]
+        if (zi > z) != (zj > z) and x < (xj - xi)*(z - zi)/(zj - zi) + xi: c = not c
+        j = i
+    return c
+def bbox(p): xs = [v[0] for v in p]; zs = [v[1] for v in p]; return (min(xs), min(zs), max(xs), max(zs))
+def overlap(p, bp, q, bq, st=.5):
+    x0, z0, x1, z1 = max(bp[0], bq[0]), max(bp[1], bq[1]), min(bp[2], bq[2]), min(bp[3], bq[3])
+    if x1 <= x0 or z1 <= z0: return 0
+    n = 0; x = x0 + st/2
+    while x < x1:
+        z = z0 + st/2
+        while z < z1:
+            if inside(x, z, p) and inside(x, z, q): n += 1
+            z += st
+        x += st
+    return n*st*st
+cands = []
 for e in core:
     t = e["tags"]
     if "building" not in t or e["id"] in skip: continue
@@ -124,6 +144,20 @@ for e in core:
     if q[0] == q[-1] or math.dist(q[0], q[-1]) < .8: q = q[:-1]
     A = area(q)
     if A < 12: continue
+    cands.append((e, q, A, bbox(q)))
+# OpenStreetMap contient parfois le même bâtiment deux fois (bâtiment + « partie de bâtiment ») :
+# si deux emprises se recouvrent à plus de 30 % de la plus petite, on ne garde que la plus grande.
+drop = set()
+for a in range(len(cands)):
+    for b in range(a + 1, len(cands)):
+        ea, qa, Aa, ba = cands[a]; eb, qb, Ab, bb = cands[b]
+        o = overlap(qa, ba, qb, bb)
+        if o > .3*min(Aa, Ab): drop.add(a if Aa < Ab else b)
+print("bâtiments en double retirés :", len(drop))
+bpolys = [(c[1], c[3]) for k, c in enumerate(cands) if k not in drop] + [(P(byid[i]), bbox(P(byid[i]))) for i in skip if i in byid]
+for k, (e, q, A, _) in enumerate(cands):
+    if k in drop: continue
+    t = e["tags"]
     n = (t.get("name") or "").lower(); b = t.get("building", "yes")
     if "rameau" in n: kind = "glass"
     elif b in ("church", "chapel", "cathedral") or t.get("amenity") == "place_of_worship": kind = "church"
@@ -167,7 +201,23 @@ for e in core:
     if len(keep) < 2: continue
     w = WID[hw]
     code = 2 if t.get("name") == "Boulevard Vauban" else (1 if hw in ("pedestrian", "living_street") else 0)
-    roads.append([round(w*S, 2), code, flat(G(q) for q in keep)])
+    # une rue ne passe jamais à travers un bâtiment (passages couverts, porches) : on la coupe
+    dense = [keep[0]]
+    for a_, b_ in zip(keep, keep[1:]):
+        m = max(1, int(math.dist(a_, b_)))
+        dense += [(a_[0] + (b_[0]-a_[0])*k/m, a_[1] + (b_[1]-a_[1])*k/m) for k in range(1, m + 1)]
+    blocked = [any(bb[0] <= x <= bb[2] and bb[1] <= z <= bb[3] and inside(x, z, bp) for bp, bb in bpolys) for x, z in dense]
+    runs, cur = [], []
+    for v, bl in zip(dense, blocked):
+        if bl:
+            if len(cur) >= 2: runs.append(cur)
+            cur = []
+        else: cur.append(v)
+    if len(cur) >= 2: runs.append(cur)
+    for run in runs:
+        # on ne garde que les sommets utiles (tous les ~6 m, plus les extrémités)
+        pts = [run[0]] + [v for k, v in enumerate(run[1:-1], 1) if k % 6 == 0] + [run[-1]]
+        roads.append([round(w*S, 2), code, flat(G(q) for q in pts)])
     if hw != "service":
         ks = [q for q in p if dist(q) < 300]
         for a_, b_ in zip(ks, ks[1:]):

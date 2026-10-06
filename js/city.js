@@ -106,6 +106,95 @@ function capTris(B, p, y, uvFn){
 	try { ids = THREE.ShapeUtils.triangulateShape(contour, []); } catch(e){ return; }
 	for(const [i,j,k] of ids) tri(B, [p[i][0],y,p[i][1]], [p[j][0],y,p[j][1]], [p[k][0],y,p[k][1]], [0,1,0], uvFn(p[i]), uvFn(p[j]), uvFn(p[k]));
 }
+/* ---------- réverbères : toujours sur un trottoir libre ----------
+   Candidats en quinconce le long des rues, au bord du trottoir. Un candidat est refusé s'il tombe
+   dans un bâtiment (avec une marge), sur la chaussée d'une autre rue (carrefours), dans l'eau,
+   sur une emprise faite main (Hôtel Académique, Michel Falise, Wenov) ou trop près d'un autre :
+   on essaie alors le trottoir d'en face, sinon on n'en pose pas. */
+function segDist(x, z, ax, az, bx, bz){
+	const dx = bx - ax, dz = bz - az, l2 = dx*dx + dz*dz || 1;
+	const t = Math.max(0, Math.min(1, ((x - ax)*dx + (z - az)*dz)/l2));
+	return Math.hypot(x - ax - t*dx, z - az - t*dz);
+}
+function polyDist(x, z, p){ let d = 1e9; for(let i=0, j=p.length-1; i<p.length; j=i++) d = Math.min(d, segDist(x, z, p[j][0], p[j][1], p[i][0], p[i][1])); return d; }
+let SITE = null;
+function site(MAP){
+	if(SITE && SITE.MAP === MAP) return SITE;
+	const polys = MAP.buildings.map(r => { const f = r[4], p = []; for(let k=0;k<f.length;k+=2) p.push([f[k], f[k+1]]); const xs = p.map(q => q[0]), zs = p.map(q => q[1]); return { p, bb:[Math.min(...xs), Math.min(...zs), Math.max(...xs), Math.max(...zs)] }; });
+	const rect = o => { const c = Math.cos(o.ang), s = Math.sin(o.ang), L = o.L/2 + 1, D = o.D/2 + 1; return [[-L,-D],[L,-D],[L,D],[-L,D]].map(([a,b]) => [o.x + a*c - b*s, o.z + a*s + b*c]); };
+	const hand = [MAP.ha && rect(MAP.ha), MAP.falise && rect(MAP.falise)].filter(Boolean);
+	if(MAP.blan){ const f = MAP.blan.pts, p = []; for(let k=0;k<f.length;k+=2) p.push([f[k], f[k+1]]); hand.push(p); }
+	// grille de 10 × 10 : on ne teste que les bâtiments proches
+	const G = 10, grid = new Map(), key = (a, b) => a*100003 + b;
+	polys.forEach((o, k) => { for(let a = Math.floor(o.bb[0]/G); a <= Math.floor(o.bb[2]/G); a++) for(let b = Math.floor(o.bb[1]/G); b <= Math.floor(o.bb[3]/G); b++){ const kk = key(a, b); if(!grid.has(kk)) grid.set(kk, []); grid.get(kk).push(k); } });
+	const near = (x, z) => grid.get(key(Math.floor(x/G), Math.floor(z/G))) || [];
+	const inBuilding = (x, z, M) => {
+		const ks = M > 0 ? [...new Set([-M, M].flatMap(dx => [-M, M].flatMap(dz => near(x + dx, z + dz))))] : near(x, z);
+		return ks.some(k => { const { p, bb } = polys[k]; return x > bb[0] - M && x < bb[2] + M && z > bb[1] - M && z < bb[3] + M && (pointInPoly(x, z, p) || (M > 0 && polyDist(x, z, p) < M)); });
+	};
+	// surface (m²) d'un toit rectangulaire qui tombe sur un bâtiment voisin
+	const overNeighbours = (i, cx, cz, ang, L, D2) => {
+		const ux = Math.cos(ang), uz = Math.sin(ang), own = polys[i].p; let over = 0;
+		for(let s = -L/2 + .25; s < L/2; s += .5) for(let t = -D2 + .25; t < D2; t += .5){
+			const x = cx + ux*s - uz*t, z = cz + uz*s + ux*t;
+			if(!pointInPoly(x, z, own) && near(x, z).some(k => k !== i && pointInPoly(x, z, polys[k].p))) over += .25;
+		}
+		return over;
+	};
+	// le toit tel quel, puis sans débord de gouttière, puis un peu raccourci ; sinon null (toit plat)
+	const roofFit = (rec, i) => {
+		const [cx, cz, ang, L, D] = rec[3];
+		for(const [l, eave] of [[L, .25], [L, 0], [L*.92, 0], [L*.85, 0]])
+			if(overNeighbours(i, cx, cz, ang, l, D/2 + eave) <= .3) return [cx, cz, ang, l, D, eave];
+		return null;
+	};
+	// marge entre le point et le bord de la chaussée la plus proche (négatif = sur la chaussée)
+	const roadGap = (x, z) => { let g = 1e9, best = null; MAP.roads.forEach(([w, , p]) => { for(let i=0;i+3<p.length;i+=2){ const d = segDist(x, z, p[i], p[i+1], p[i+2], p[i+3]) - w/2; if(d < g){ g = d; best = [w, p[i], p[i+1], p[i+2], p[i+3]]; } } }); return { g, best }; };
+	const inWater = (x, z) => (MAP.canals || []).some(p => { for(let i=0;i+3<p.length;i+=2) if(segDist(x, z, p[i], p[i+1], p[i+2], p[i+3]) < 5.6) return true; return false; });
+	const inHand = (x, z) => hand.some(p => pointInPoly(x, z, p));
+	return SITE = { MAP, inBuilding, roadGap, inWater, inHand, roofFit };
+}
+/* Arbres : un arbre d'alignement OSM tombé sur la chaussée (nos rues sont un peu plus larges que les vraies)
+   est ramené sur le trottoir ; un arbre dans un bâtiment ou sans place libre est retiré. */
+function settleTrees(MAP, trees){
+	const S = site(MAP);
+	return trees.filter(t => {
+		if(S.inBuilding(t.x, t.z, .4)) return false;
+		const { g, best } = S.roadGap(t.x, t.z);
+		if(g >= .5) return true;
+		const [w, ax, az, bx, bz] = best, dx = bx - ax, dz = bz - az, l2 = dx*dx + dz*dz || 1;
+		const k = Math.max(0, Math.min(1, ((t.x - ax)*dx + (t.z - az)*dz)/l2)), px = ax + dx*k, pz = az + dz*k;
+		let nx = t.x - px, nz = t.z - pz, n = Math.hypot(nx, nz);
+		if(n < .05){ nx = -dz; nz = dx; n = Math.hypot(nx, nz); }
+		const x = px + nx/n*(w/2 + 1.1), z = pz + nz/n*(w/2 + 1.1);
+		if(S.inBuilding(x, z, .4) || S.roadGap(x, z).g < .5 || S.inWater(x, z)) return false;
+		t.x = x; t.z = z; return true;
+	});
+}
+function placeLamps(MAP, spots){
+	const S = site(MAP);
+	const free = (x, z) => !S.inBuilding(x, z, .3) && S.roadGap(x, z).g > .45 - 1e-6 && !S.inWater(x, z) && !S.inHand(x, z) && spots.every(([a, b]) => Math.hypot(a - x, b - z) > 7);
+	for(const [w, code, pts] of MAP.roads){
+		if(code === 1) continue;                                  // pas de réverbère sur les rues piétonnes
+		const step = code === 2 ? 9 : 14, off = w/2 + .7;          // au milieu du trottoir (1,3 de large)
+		// on avance le long de toute la rue (distance cumulée), pas segment par segment
+		let run = 0, next = step*.5, n = 0;
+		for(let i=0;i+3<pts.length;i+=2){
+			const ax = pts[i], az = pts[i+1], bx = pts[i+2], bz = pts[i+3];
+			const dx = bx-ax, dz = bz-az, l = Math.hypot(dx,dz); if(l < .01) continue;
+			const nx = -dz/l, nz = dx/l;
+			while(next <= run + l){
+				const k = (next - run)/l, cx = ax + dx*k, cz = az + dz*k, side = (n++ % 2) ? 1 : -1;
+				for(const sd of [side, -side]){
+					const x = cx + nx*off*sd, z = cz + nz*off*sd;
+					if(free(x, z)){ spots.push([x, z]); break; }
+				}
+				next += step;
+			}
+			run += l;
+		}
+	}
+}
 export function pointInPoly(x, z, p){
 	let ins = false;
 	for(let i=0, j=p.length-1; i<p.length; j=i++){
@@ -142,9 +231,9 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 		per += len;
 	}
 	if(roof){
-		const [cx, cz, ang, L, D] = roof;
+		const [cx, cz, ang, L, D, eave = .25] = roof;
 		const ux = Math.cos(ang), uz = Math.sin(ang), wx = -uz, wz = ux;
-		const L2 = L/2, D2 = D/2 + .25, rh = Math.min(D*.55, 3.4);
+		const L2 = L/2, D2 = D/2 + eave, rh = Math.min(D*.55, 3.4);
 		const P = (s, t, y) => [cx + ux*s + wx*t, y, cz + uz*s + wz*t];
 		const e1 = P(-L2,-D2,H), e2 = P(L2,-D2,H), e3 = P(L2,D2,H), e4 = P(-L2,D2,H), r1 = P(-L2,0,H+rh), r2 = P(L2,0,H+rh);
 		const nl = Math.hypot(rh, D2);
@@ -154,6 +243,8 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 		const g1 = P(-L/2,-D/2,H), g4 = P(-L/2,D/2,H), q1 = P(-L/2,0,H+rh), g2 = P(L/2,-D/2,H), g3 = P(L/2,D/2,H), q2 = P(L/2,0,H+rh);
 		const W = [.02,.02];
 		tri(Bw, g1, g4, q1, [-ux,0,-uz], W, W, W); tri(Bw, g2, g3, q2, [ux,0,uz], W, W, W);
+		// dalle sous le toit : ferme l'emprise là où le toit rectangulaire ne la couvre pas (formes irrégulières, toit raccourci)
+		capTris(Bf, p, H - .03, ([x,z]) => [x*.22, z*.22]);
 	} else {
 		capTris(Bf, p, H, ([x,z]) => [x*.22, z*.22]);
 		// éléments techniques sur les grands toits plats (climatisation, verrières)
@@ -206,7 +297,10 @@ export function buildCity(scene, MAP, opts={}){
 	const groups = new Map();   // clé matériau -> { w, r, f }
 	const get = (key) => { if(!groups.has(key)) groups.set(key, { w:bucket(), r:bucket(), f:bucket() }); return groups.get(key); };
 	const spires = [];
+	const S = site(MAP); let flattened = 0; out.stats = { get flattened(){ return flattened; } };
 	MAP.buildings.forEach((rec, i) => {
+		// un toit à deux pentes ne doit ni mordre sur le voisin, ni laisser l'emprise à découvert
+		if(rec[3] && rec[0] !== 4){ const fit = S.roofFit(rec, i); if(!fit) flattened++; rec = [rec[0], rec[1], rec[2], fit || 0, rec[4]]; }
 		const [kind, , col] = rec;
 		if(opts.exclude){ const f = rec[4]; let cx = 0, cz = 0; for(let k=0;k<f.length;k+=2){ cx += f[k]; cz += f[k+1]; } if(opts.exclude(cx/(f.length/2), cz/(f.length/2))) return; }
 		let wm;
@@ -288,18 +382,8 @@ export function buildCity(scene, MAP, opts={}){
 	for(const [w, code, pts] of MAP.roads){
 		ribbon(BW, pts, w + 2.6, .035);
 		ribbon(code === 1 ? BP : BR, pts, w, code === 1 ? .085 : .07);
-		if(code !== 1){
-			for(let i=0;i+3<pts.length;i+=2){
-				const ax = pts[i], az = pts[i+1], bx = pts[i+2], bz = pts[i+3];
-				const dx = bx-ax, dz = bz-az, l = Math.hypot(dx,dz);
-				const step = code === 2 ? 9 : 14;
-				for(let s = step*.5; s < l; s += step){
-					const k = s/l, side = (Math.floor(s/step) % 2) ? 1 : -1;
-					out.lampSpots.push([ax + dx*k + (-dz/l)*(w/2 + 1)*side, az + dz*k + (dx/l)*(w/2 + 1)*side]);
-				}
-			}
-		}
 	}
+	placeLamps(MAP, out.lampSpots);
 	for(const [B, m, y] of [[BW, walkM], [BR, roadM], [BP, pedM]]){ if(!B.pos.length) continue; const me = new THREE.Mesh(toGeo(B), m); me.receiveShadow = true; scene.add(me); }
 
 	/* ---------- espaces verts ---------- */
@@ -344,6 +428,7 @@ export function buildCity(scene, MAP, opts={}){
 
 	/* arbres d'alignement */
 	for(let i=0;i<MAP.trees.length;i+=2) out.trees.push({ x:MAP.trees[i], z:MAP.trees[i+1], k:"d", s:.85 + rnd()*.3 });
+	out.trees = settleTrees(MAP, out.trees); out.parkTrees = settleTrees(MAP, out.parkTrees);
 
 	/* saisons & nuit */
 	out.setSeason = S => {
