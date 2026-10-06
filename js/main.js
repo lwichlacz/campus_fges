@@ -2,13 +2,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, beam } from "./kit.js";
-import { FORMATIONS as F, GAMES, PROFILES, PLACES, LIFE, SEASONS, NIGHT, SEASON_ORDER } from "./data.js";
+import { FORMATIONS as F, GAMES, PROFILES, PLACES, LIFE, SEASONS, NIGHT, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES } from "./data.js";
 import { MAP } from "./vauban.js";
 import { buildCity, pointInPoly } from "./city.js";
 import { Audio } from "./audio.js";
-import { createAtrium } from "./atrium.js";
-import { createChapelle } from "./chapelle.js";
-import { openComptoir } from "./games/comptoir.js";
 import { DETAILS } from "./details.js";
 
 const store = {
@@ -26,7 +23,7 @@ const V = (x,y,z) => new THREE.Vector3(x,y,z);
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:"high-performance" }); }
 catch(e){
-	$("loader").innerHTML = '<p style="padding:24px;text-align:center">Ton navigateur ne peut pas afficher le campus en 3D.<br>Découvre nos formations sur <a href="https://www.fges.fr/formations/">fges.fr</a>.</p>';
+	$("loader").innerHTML = '<p style="padding:24px;text-align:center">Ton navigateur ne peut pas afficher le campus en 3D.<br><a href="liste.html">Découvre toutes nos formations en version liste</a>.</p>';
 	throw e;
 }
 renderer.setPixelRatio(Math.min(devicePixelRatio, small ? 1.5 : 2));
@@ -109,7 +106,7 @@ function wing(parent, o){
 	const rh = o.rh || D*.55;
 	if(o.roof === "gable"){
 		mesh(gable(L+.6, D+1, rh), M.slate, g, 0, top, 0);
-		if(o.gableEnds){ const t = gable(.5, D+.6, rh+.6); mesh(t, M.brick, g, L/2+.05, top-.1, 0); mesh(t, M.brick, g, -L/2-.05, top-.1, 0); }
+		if(o.gableEnds){ const t = gable(.5, D+.6, rh+.6); mesh(t, M.brick, g, L/2+.12, top-.1, 0); mesh(t, M.brick, g, -L/2-.12, top-.1, 0); }   // dépasse du toit (L/2+.3) : jamais dans le même plan
 	} else if(o.roof === "mansard"){
 		mesh(mansard(L+.4, D+.6, rh), M.slate, g, 0, top, 0);
 	} else if(o.roof === "parapet"){
@@ -513,7 +510,7 @@ function buildHorizon(){
 	});
 	body.castShadow = roof.castShadow = false; body.receiveShadow = true;
 	scene.add(body, roof);
-	return { roof, spots };
+	return { body, roof, spots };
 }
 function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 
@@ -657,6 +654,7 @@ for(const [lx,lz] of [[-6,-1],[-4.5,7.5],[6,7.5]]){
 for(const s of gardenChat) students.push(Object.assign(s, { chat:true, ph:R(0,6) }));
 function updateStudents(dt, t){
 	for(const s of students){
+		if(s.off) continue;
 		if(s.chat){ s.body.rotation.z = Math.sin(t*1.3 + s.ph)*.04; s.hat.position.y = 1.62 + Math.max(0, Math.sin(t*2.2 + s.ph))*.04; continue; }
 		if(s.wait > 0){ s.wait -= dt; s.body.position.y = .65; continue; }
 		const [x1,z1] = WN[s.from], [x2,z2] = WN[s.to];
@@ -882,7 +880,7 @@ function applyAmbiance(){
 	atriumRoof.emissiveIntensity = night ? .55 : 0;
 	atriumGlow.emissiveIntensity = night ? 2 : .4;
 	wenovGlass.emissiveIntensity = night ? .28 : 0;
-	partIM.count = reduceMotion ? 0 : S.parts.n;
+	partIM.count = reduceMotion ? 0 : Math.round(S.parts.n*QUALITY[quality].parts);
 	for(let i=0;i<PMAX;i++){ c.set(S.parts.colors[i % S.parts.colors.length]); partIM.setColorAt(i, c); respawn(parts[i], false); }
 	partIM.instanceColor.needsUpdate = true;
 	for(const k in interiors) if(interiors[k]) interiors[k].setNight(night);
@@ -893,12 +891,15 @@ function applyAmbiance(){
 function renderAmbiancePop(){
 	$("segSeason").innerHTML = SEASON_ORDER.map(k => `<button data-season="${k}" aria-pressed="${k === seasonKey}">${SEASONS[k].icon} ${SEASONS[k].label}</button>`).join("");
 	$("segTime").innerHTML = [["auto","🕰️ Heure réelle"],["jour","☀️ Jour"],["nuit","🌙 Nuit"]].map(([k,l]) => `<button data-time="${k}" aria-pressed="${k === timeMode}">${l}</button>`).join("");
+	$("segQuality").innerHTML = [["auto",`⚙️ Auto${qualityMode === "auto" ? ` (${QUALITY[quality].label})` : ""}`],["haute","Haute"],["moyenne","Moyenne"],["basse","Basse"]].map(([k,l]) => `<button data-quality="${k}" aria-pressed="${k === qualityMode}">${l}</button>`).join("");
 }
 $("ambiance").addEventListener("click", e => {
 	const s = e.target.closest("[data-season]"), t = e.target.closest("[data-time]");
 	if(s){ seasonKey = s.dataset.season; store.set("season", seasonKey); }
 	if(t){ timeMode = t.dataset.time; store.set("time", timeMode); }
 	if(s || t){ Audio.play("pop"); applyAmbiance(); }
+	const q = e.target.closest("[data-quality]");
+	if(q){ Audio.play("pop"); qualityMode = q.dataset.quality; store.set("quality", qualityMode); setQuality(qualityMode === "auto" ? guessQuality() : qualityMode); }
 	if(e.target.closest("[data-replay]")){ $("ambiance").hidden = true; closePanel(); if(mode !== "ext") exitInterior(true); else playIntro(); }
 });
 setInterval(() => { if(timeMode === "auto" && realNight() !== night) applyAmbiance(); }, 60000);
@@ -907,7 +908,13 @@ setInterval(() => { if(timeMode === "auto" && realNight() !== night) applyAmbian
    Intérieurs : atrium (Falise) et chapelle (Hôtel Académique)
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null };
-const MAKERS = { atrium:createAtrium, chapelle:createChapelle };
+/* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
+const MAKERS = { atrium:() => import("./atrium.js").then(m => m.createAtrium), chapelle:() => import("./chapelle.js").then(m => m.createChapelle) };
+const loadGame = () => import("./games/comptoir.js");
+function prefetchLater(){
+	const go = () => { MAKERS.atrium(); MAKERS.chapelle(); loadGame(); };
+	("requestIdleCallback" in window) ? requestIdleCallback(go, { timeout:8000 }) : setTimeout(go, 4000);
+}
 const RETURN = { atrium:"falise", chapelle:"chapelle" };
 let mode = "ext";
 function fade(mid){
@@ -916,8 +923,12 @@ function fade(mid){
 }
 function enterInterior(id, then){
 	closePanel(); setHover(null); Audio.play("pop");
-	fade(() => {
-		if(!interiors[id]){ interiors[id] = MAKERS[id]({ background:skyTex }); interiors[id].setNight(night); }
+	const ready = interiors[id] ? Promise.resolve() : MAKERS[id]().then(make => {
+		interiors[id] = make({ background:skyTex }); interiors[id].setNight(night); qualityInterior(interiors[id]);
+	});
+	const f = $("fade"); f.classList.add("on");
+	Promise.all([ready, new Promise(r => setTimeout(r, 420))]).then(() => {
+		setTimeout(() => f.classList.remove("on"), 80);
 		const I = interiors[id];
 		mode = id; fly = null;
 		applyLimits(I.limits);
@@ -930,7 +941,7 @@ function enterInterior(id, then){
 		const msg = id === "atrium" ? "Bienvenue dans l'atrium de Michel Falise ✨ Passe au Comptoir pour jouer !" : "Bienvenue dans la chapelle universitaire ✨";
 		setTimeout(() => toast(msg, 4200), 600);
 		if(then) setTimeout(then, 900);
-	});
+	}).catch(() => { f.classList.remove("on"); toast("Impossible d'ouvrir ce lieu : vérifie ta connexion et réessaie.", 3500); });
 }
 function exitInterior(replay){
 	const back = RETURN[mode];
@@ -1020,6 +1031,7 @@ function enter(){
 }
 function afterArrival(){
 	$("dock").classList.add("on");
+	if(BORNE) return;
 	if(!store.get("onboarded", false)) setTimeout(() => startCoach(), 600);
 	else setTimeout(() => toast(stamps.has("ha") ? "Content de te revoir sur le campus 👋" : "Commence par l'Hôtel Académique : touche-le pour entrer 🏛️", 4500), 500);
 }
@@ -1033,7 +1045,7 @@ $("btnMusic").addEventListener("click", () => {
 $("btnHome").addEventListener("click", () => { closePanel(); if(mode !== "ext") exitInterior(); else flyHome(1.4); });
 
 $("close").addEventListener("click", closePanel);
-addEventListener("keydown", e => { if(e.key === "Escape"){ closePanel(); $("ambiance").hidden = true; if(intro) endIntro(); if(coach) endCoach(); if(tour) stopTour(); } });
+addEventListener("keydown", e => { if(e.key === "Escape" && !$("lead").hidden){ closeLead(); return; } if(e.key === "Escape"){ closePanel(); $("ambiance").hidden = true; if(intro) endIntro(); if(coach) endCoach(); if(tour) stopTour(); } });
 
 /* ---------- Épingles : formations (grandes) et lieux de vie (petites) ---------- */
 let pins = [];
@@ -1056,7 +1068,7 @@ function buildPins(){
 		return { ...p, el:b, v:V(...p.pos) };
 	});
 }
-const v3 = new THREE.Vector3();
+const v3 = new THREE.Vector3(), v3b = new THREE.Vector3();
 function updatePins(){
 	const W = innerWidth, Hh = innerHeight;
 	for(const p of pins){
@@ -1069,6 +1081,8 @@ function updatePins(){
 			const hide = behind || p.far;
 			if(hide !== p.hid){ p.el.classList.toggle("hidden", hide); p.hid = hide; }
 			if(hide) continue;
+		} else if(mode === "ext" && !behind && y < 96 && p.place && (() => { const t = (PLACES[p.place] || LIFE[p.place]).target; if(!t) return false; v3b.set(...t).project(camera); const tx = (v3b.x*.5+.5)*W, ty = (-v3b.y*.5+.5)*Hh; return v3b.z < 1 && tx > 0 && tx < W && ty > 0 && ty < Hh; })()){
+			y = 96;      // le bâtiment est à l'écran : l'épingle reste en haut, sans flèche
 		} else if(mode === "ext" && (behind || x < 40 || x > W - 40 || y < 96 || y > Hh - 30)){
 			// lieu hors champ : l'épingle reste collée au bord, avec une flèche
 			if(behind){ x = W - x; y = Hh - y; }
@@ -1252,6 +1266,7 @@ function detailView(f){
 		(d.a ? `<div class="info"><b>Admission :</b> ${d.a}</div>` : "") +
 		`<div class="acts">
 			${GAMES[f.id] ? `<button class="play wide" data-game="${f.id}" style="margin:0">🎮 Jouer au mini-jeu</button>` : ""}
+			<button class="btn main wide" data-lead="${f.id}">📄 Recevoir la plaquette</button>
 			<button class="btn alt" data-favd="${f.id}">${favs.has(f.id) ? "♥ Dans mon carnet" : "♡ Garder"}</button>
 			<button class="btn alt" data-fly="${f.place}">📍 Voir le bâtiment</button>
 			<a class="btn alt wide" href="${f.url}" target="_blank" rel="noopener">Fiche officielle sur fges.fr ↗</a>
@@ -1331,7 +1346,8 @@ $("panel").addEventListener("click", e => {
 	const go = e.target.closest("[data-go]"); if(go){ enterInterior(go.dataset.go); return; }
 	const pl = e.target.closest("[data-place]"); if(pl){ selectPlace(pl.dataset.place); return; }
 	if(e.target.closest("[data-carnet]")) openPanel("carnet");
-	if(e.target.closest("[data-plaquette]")) toast("Prototype : le formulaire plaquette sera branché à l'étape suivante.", 3500);
+	if(e.target.closest("[data-plaquette]")) openLead([...favs]);
+	const ld = e.target.closest("[data-lead]"); if(ld) openLead([ld.dataset.lead]);
 });
 function toggleFav(id){
 	if(favs.has(id)) favs.delete(id); else { favs.add(id); toast("Ajouté à ton carnet 📒", 1600); Audio.play("pop"); }
@@ -1342,7 +1358,7 @@ function openGame(fid){
 	if(!f || GAMES[fid] !== "comptoir") return;
 	$("ambiance").hidden = true;
 	let won = false;
-	openComptoir({
+	loadGame().then(({ openComptoir }) => openComptoir({
 		formation:f, audio:Audio,
 		isFav:() => favs.has(fid), toggleFav:() => toggleFav(fid),
 		onEvent:(ev) => { if(ev === "win") won = true; },
@@ -1352,7 +1368,7 @@ function openGame(fid){
 				if(mode === "atrium") party(); else enterInterior("atrium", party);
 			} else if(current) openPanel(current);
 		}
-	});
+	})).catch(() => toast("Impossible de lancer le mini-jeu : vérifie ta connexion.", 3500));
 }
 function flyToPlace(id, dur){
 	const p = PLACES[id] || LIFE[id];
@@ -1388,6 +1404,68 @@ function markVisited(id){
 }
 
 /* =====================================================================
+   Formulaire plaquettes → relais serveur → CRM
+   (la clé du CRM n'est jamais dans le navigateur ; l'adresse du relais se règle
+    avec window.CAMPUS_LEAD_API sur la page d'intégration)
+   ===================================================================== */
+const LEAD_API = window.CAMPUS_LEAD_API || "api/lead";
+let leadOpenedAt = 0;
+function openLead(ids){
+	const list = (ids && ids.length ? ids : [...favs]).map(id => F.find(f => f.id === id)).filter(Boolean);
+	$("leadList").innerHTML = list.length
+		? list.map(f => `<label><input type="checkbox" name="f" value="${f.id}" checked><span>${f.name}<br><small style="color:var(--muted)">${f.school}</small></span></label>`).join("")
+		: `<p class="lead-p" style="margin:0">Aucune formation choisie : on t'enverra une présentation générale de la FGES.</p>`;
+	const form = $("leadForm").querySelector("form");
+	form.querySelector(".lead-err").hidden = true;
+	$("leadForm").hidden = false; $("leadDone").hidden = true;
+	$("lead").hidden = false;
+	leadOpenedAt = Date.now();
+	if(tour) pauseTour(true);
+	setTimeout(() => form.email.focus({ preventScroll:true }), 60);
+}
+function closeLead(){ $("lead").hidden = true; }
+$("lead").addEventListener("click", e => { if(e.target.closest("[data-lead-close]") || e.target === $("lead")) closeLead(); });
+$("leadForm").querySelector("form").addEventListener("submit", async e => {
+	e.preventDefault();
+	const form = e.currentTarget, err = form.querySelector(".lead-err"), btn = form.querySelector("button[type=submit]");
+	const fail = (msg, field) => { err.textContent = msg; err.hidden = false; if(field){ field.setAttribute("aria-invalid", "true"); field.focus(); } };
+	err.hidden = true; form.email.removeAttribute("aria-invalid");
+	const email = form.email.value.trim();
+	if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(email)) return fail("Indique une adresse e-mail valide.", form.email);
+	if(!form.consentement.checked) return fail("Coche la case de consentement pour qu'on puisse te recontacter.", form.consentement);
+	const chosen = [...form.querySelectorAll("input[name=f]:checked")].map(i => F.find(f => f.id === i.value)).filter(Boolean);
+	const qs = new URLSearchParams(location.search);
+	const body = {
+		prenom:form.prenom.value, nom:form.nom.value, email, telephone:form.telephone.value, code_postal:form.code_postal.value,
+		consentement:true, tracking:form.tracking.checked, website:form.website.value, elapsed:Date.now() - leadOpenedAt,
+		formations:chosen.map(f => ({ id:f.id, name:f.name, school:f.school })),
+		utm_source:qs.get("utm_source") || "", utm_medium:qs.get("utm_medium") || "", utm_campaign:qs.get("utm_campaign") || ""
+	};
+	btn.disabled = true; btn.textContent = "Envoi…";
+	try {
+		const r = await fetch(LEAD_API, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(body) });
+		const res = await r.json().catch(() => ({}));
+		if(!r.ok || !res.ok) throw new Error(res.error || "Envoi impossible pour le moment.");
+		store.set("leadSent", true);
+		Audio.play("win");
+		// plaquette PDF quand on l'a, sinon le catalogue de toutes les plaquettes
+		const direct = chosen.filter(f => PLAQUETTES[f.id]);
+		$("leadDoneP").textContent = (direct.length
+			? `Voici ${direct.length > 1 ? "tes plaquettes" : "ta plaquette"}. L'équipe de la FGES pourra aussi te recontacter pour répondre à tes questions.`
+			: "Toutes nos plaquettes sont à feuilleter ci-dessous. L'équipe de la FGES pourra aussi te recontacter pour répondre à tes questions.") + (res.dryRun ? " (Mode essai : rien n'a été transmis au CRM.)" : "");
+		const missing = chosen.length === 0 || chosen.some(f => !PLAQUETTES[f.id]);
+		$("leadLinks").innerHTML =
+			direct.map(f => `<a class="dl" href="${PLAQUETTES[f.id]}" target="_blank" rel="noopener">📄 Plaquette · ${f.name}<span>↓</span></a>`).join("") +
+			(missing ? `<a class="dl" href="${CATALOGUE_PLAQUETTES}" target="_blank" rel="noopener">📚 Feuilleter nos plaquettes<span>↗</span></a>` : "") +
+			chosen.map(f => `<a href="${f.url}" target="_blank" rel="noopener">${f.name} sur fges.fr<span>↗</span></a>`).join("");
+		$("leadForm").hidden = true; $("leadDone").hidden = false;
+		form.reset();
+	} catch(x){
+		fail(x.message || "Envoi impossible pour le moment. Réessaie dans un instant.");
+	} finally { btn.disabled = false; btn.textContent = "Recevoir les plaquettes"; }
+});
+
+/* =====================================================================
    Barre de navigation
    ===================================================================== */
 document.querySelectorAll("[data-dock]").forEach(b => b.addEventListener("click", () => {
@@ -1408,14 +1486,14 @@ const TOUR_IDS = ["ha","chapelle","falise","rizomm","jardin","bu","resto","all",
 const STOP = 9;
 let tour = null;
 const firstSentence = t => { const m = t.match(/^.{20,240}?[.!?](?=\s|$)/); if(m) return m[0]; const c = t.slice(0, 200); return c.slice(0, c.lastIndexOf(" ")) + "…"; };
-function startTour(){
-	if(mode !== "ext"){ exitInterior(); setTimeout(startTour, 700); return; }
+function startTour(idle){
+	if(mode !== "ext"){ exitInterior(); setTimeout(() => startTour(idle), 700); return; }
 	closePanel(); setHover(null);
 	tour = { stops:TOUR_IDS.filter(id => (PLACES[id] || LIFE[id]) && (PLACES[id] || LIFE[id]).target), i:-1, t:0, paused:false };
 	$("tour").hidden = false;
 	goStop(0);
 	syncDock();
-	toast("Visite guidée : laisse-toi porter, ou touche ⏸ pour prendre la main", 3200);
+	if(!idle) toast("Visite guidée : laisse-toi porter, ou touche ⏸ pour prendre la main", 3200);
 }
 function goStop(i){
 	const n = tour.stops.length;
@@ -1453,6 +1531,7 @@ function updateTour(dt){
    Accueil guidé (première visite)
    ===================================================================== */
 const touch = matchMedia("(pointer:coarse)").matches;
+const BORNE = /[?&]borne/.test(location.search);
 const COACH = [
 	{ ic:"👆", k:"1 / 3 · Se déplacer", t: touch ? "Glisse un doigt pour tourner" : "Glisse pour tourner autour du campus",
 	  p: touch ? "Pince avec deux doigts pour zoomer. Le bouton ⌂ te ramène à la vue d'ensemble." : "Molette pour zoomer, clic droit pour te déplacer. Le bouton ⌂ te ramène à la vue d'ensemble." },
@@ -1509,8 +1588,68 @@ const ease = k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k+2, 3)/2;
    ===================================================================== */
 const clock = new THREE.Clock();
 let first = true, lastMinute = -1;
+/* =====================================================================
+   Qualité graphique : devinée au départ, ajustée si l'appareil peine
+   ===================================================================== */
+const QUALITY = {
+	haute:   { label:"haute",   ratio: small ? 1.5 : 2, shadows:true,  map:small ? 1024 : 2048, parts:1,  horizon:true,  crowd:1,   far:430, rank:2 },
+	moyenne: { label:"moyenne", ratio:1.25,             shadows:true,  map:1024,                parts:.5, horizon:true,  crowd:.7,  far:390, rank:1 },
+	basse:   { label:"basse",   ratio:1,                shadows:false, map:512,                 parts:0,  horizon:false, crowd:.45, far:320, rank:0 }
+};
+let qualityMode = store.get("quality", "auto"); if(!["auto","haute","moyenne","basse"].includes(qualityMode)) qualityMode = "auto";
+let quality = "haute";
+function guessQuality(){
+	const remembered = store.get("qualityAuto", null);
+	if(remembered && QUALITY[remembered]) return remembered;
+	let gpu = "";
+	try { const gl = renderer.getContext(), ext = gl.getExtension("WEBGL_debug_renderer_info"); gpu = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : ""; } catch(e){}
+	const weakGpu = /mali|adreno \(?tm\)? ?[1-5]\d\d|powervr|intel.*hd graphics [2-5]|swiftshader|llvmpipe|software/i.test(gpu);
+	const cores = navigator.hardwareConcurrency || 4, mem = navigator.deviceMemory || 4;
+	if(weakGpu && (small || cores <= 4)) return "basse";
+	if(weakGpu || small || cores <= 4 || mem <= 4) return "moyenne";
+	return "haute";
+}
+function shadowsOn(light, on, size){
+	light.castShadow = on;
+	if(light.shadow.mapSize.x !== size){ light.shadow.mapSize.set(size, size); if(light.shadow.map){ light.shadow.map.dispose(); light.shadow.map = null; } }
+}
+function qualityInterior(I){
+	const Q = QUALITY[quality];
+	I.scene.traverse(o => { if(o.isDirectionalLight) shadowsOn(o, Q.shadows, Math.min(Q.map*2, 2048)); });
+}
+function setQuality(level){
+	quality = level;
+	const Q = QUALITY[level];
+	renderer.setPixelRatio(Math.min(devicePixelRatio, Q.ratio));
+	renderer.setSize(innerWidth, innerHeight);
+	shadowsOn(sun, Q.shadows, Q.map);
+	horizon.body.visible = horizon.roof.visible = Q.horizon;
+	const walkers = students.filter(s => !s.chat); walkers.forEach((s, i) => { s.off = (i + .5)/walkers.length > Q.crowd; s.g.visible = !s.off; });
+	scene.fog.far = Q.far; camera.far = Q.far + 60; camera.updateProjectionMatrix();
+	for(const k in interiors) if(interiors[k]) qualityInterior(interiors[k]);
+	partIM.count = reduceMotion ? 0 : Math.round(season.parts.n*Q.parts);
+	renderAmbiancePop();
+}
+/* En mode auto : si l'image tombe sous ~30 i/s pendant plusieurs secondes, on descend d'un cran. */
+const perf = { acc:0, n:0, slow:0, cool:6 };
+function watchPerf(rawDt){
+	if(qualityMode !== "auto" || document.hidden || !entered || intro || rawDt > .25) return;
+	perf.cool -= rawDt; perf.acc += rawDt; perf.n++;
+	if(perf.acc < 2) return;
+	const fps = perf.n/perf.acc; perf.acc = 0; perf.n = 0;
+	if(perf.cool > 0) return;
+	perf.slow = fps < 30 ? perf.slow + 1 : 0;
+	if(perf.slow >= 2 && QUALITY[quality].rank > 0){
+		const next = quality === "haute" ? "moyenne" : "basse";
+		setQuality(next); store.set("qualityAuto", next);
+		perf.slow = 0; perf.cool = 6;
+		toast(`Qualité graphique ajustée (${QUALITY[next].label}) pour plus de fluidité`, 2600);
+	}
+}
+
 function frame(){
-	const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
+	const rawDt = clock.getDelta(), dt = Math.min(rawDt, .05), t = clock.elapsedTime;
+	watchPerf(rawDt);
 
 	if(intro){
 		intro.k = Math.min(1, intro.k + dt/intro.dur);
@@ -1571,16 +1710,40 @@ function frame(){
 		renderer.render(scene, camera);
 	}
 	if(entered) updatePins();
-	if(first){ first = false; setTimeout(() => $("loader").classList.add("gone"), 150); }
+	if(first){ first = false; performance.mark("campus-ready"); setTimeout(() => $("loader").classList.add("gone"), 150); prefetchLater(); }
 	requestAnimationFrame(frame);
 }
 addEventListener("resize", () => {
 	camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
 	renderer.setSize(innerWidth, innerHeight);
 });
+/* =====================================================================
+   Écran de veille : sans interaction, la visite guidée se lance seule.
+   ?borne : mode stand (JPO, salons) — pas d'accueil, visite en boucle.
+   ===================================================================== */
+const IDLE_MS = BORNE ? 30000 : 60000;
+let lastInput = performance.now(), idleTour = false;
+for(const ev of ["pointerdown","keydown","wheel","touchstart"]){
+	addEventListener(ev, () => {
+		lastInput = performance.now();
+		if(idleTour && tour){ idleTour = false; stopTour(); }
+	}, { passive:true, capture:true });
+}
+setInterval(() => {
+	if(!entered || tour || intro || coach || mode !== "ext" || document.querySelector(".cg") || !$("welcome").classList.contains("gone")) return;
+	if(performance.now() - lastInput > IDLE_MS){ idleTour = true; startTour(true); }
+}, 2000);
+
 applyAmbiance();
+setQuality(qualityMode === "auto" ? guessQuality() : qualityMode);
 refreshHud();
-if(/[?&]debug/.test(location.search)) window.campus = { THREE, scene, camera, controls, renderer, selectPlace, enterInterior, exitInterior, openGame, PLACES, LIFE, MAP, interiors, get mode(){ return mode; },
+if(BORNE){
+	profile = profile || "lycee";
+	$("musicPref").checked = false;
+	enter();
+	lastInput = -1e9;      // la visite démarre dès la fin de l'intro
+}
+if(/[?&]debug/.test(location.search)) window.campus = { THREE, scene, camera, controls, renderer, city, selectPlace, enterInterior, exitInterior, openGame, PLACES, LIFE, MAP, interiors, get mode(){ return mode; },
 	view(px,py,pz,tx,ty,tz){ fly = null; intro = null; camera.position.set(px,py,pz); controls.target.set(tx,ty,tz); controls.update(); renderer.render(mode !== "ext" ? interiors[mode].scene : scene, camera); if(entered) updatePins(); },
-	set(k,v){ if(k === "season") seasonKey = v; if(k === "time") timeMode = v; applyAmbiance(); } };
+	set(k,v){ if(k === "season") seasonKey = v; if(k === "time") timeMode = v; applyAmbiance(); }, setQuality, get quality(){ return quality; } };
 requestAnimationFrame(frame);

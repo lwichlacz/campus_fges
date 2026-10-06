@@ -108,6 +108,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .go{width:100%;border:0;background:var(--bordeaux);color:#fff;border-radius:16px;padding:15px;font-weight:800;font-size:16px;box-shadow:0 8px 20px rgba(138,43,78,.35);transition:.15s ease}
 .go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(138,43,78,.4)}
 .go:disabled{opacity:.45;transform:none;box-shadow:none;cursor:default}
+.plain{display:inline-block;margin-top:12px;font-size:13px;font-weight:700;color:var(--muted)}
+.plain:hover{color:var(--bordeaux)}
 
 /* ---------- Panneau ---------- */
 #panel{position:fixed;top:84px;right:16px;bottom:16px;width:400px;background:var(--cream);border-radius:24px;box-shadow:var(--shadow);z-index:12;transform:translateX(calc(100% + 30px));transition:transform .5s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;overflow:hidden}
@@ -223,6 +225,36 @@ button{font:inherit;color:inherit;cursor:pointer}
 .acts .btn{margin:0}
 .acts .wide{grid-column:1/-1}
 
+/* ---------- Formulaire plaquettes ---------- */
+#lead{position:fixed;inset:0;z-index:42;display:grid;place-items:center;padding:12px;background:rgba(43,26,20,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);overflow:auto}
+#lead[hidden]{display:none}
+.lead-card{position:relative;width:100%;max-width:470px;max-height:100%;overflow:auto;background:var(--cream);border-radius:24px;box-shadow:var(--shadow);padding:22px 20px 18px;animation:rise .35s ease both}
+.lead-card h2{font:700 24px/1.15 Fraunces,Georgia,serif;margin:6px 40px 6px 0}
+.lead-p{color:var(--ink2);font-size:14.5px;margin:0 0 10px}
+.lead-f{border:0;margin:0 0 4px;padding:0}
+.lead-f legend{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.lead-f label{display:flex;gap:8px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin-bottom:5px;font-size:14px;font-weight:700}
+.lead-f input{margin-top:3px;accent-color:var(--bordeaux)}
+.lead-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fld{display:block;margin-top:8px}
+.fld span{display:block;font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.fld input{width:100%;min-height:44px;border:2px solid var(--line);border-radius:12px;padding:10px 12px;font:600 16px Nunito,sans-serif;background:#fff;color:var(--ink);outline:none}
+.fld input:focus{border-color:var(--bordeaux)}
+.fld input[aria-invalid=true]{border-color:#b91c1c}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.opt{display:flex;gap:10px;align-items:flex-start;margin-top:10px;font-size:13.5px;color:var(--ink2);cursor:pointer}
+.opt input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:var(--bordeaux)}
+.lead-err{background:#fde8e8;color:#9b1c1c;border-radius:10px;padding:8px 12px;font-weight:700;font-size:13.5px;margin:10px 0 0}
+.lead-card .go{margin-top:12px}
+.lead-note{font-size:11.5px;color:var(--muted);margin:10px 0 0}
+.lead-big{font-size:52px;text-align:center;margin-top:6px}
+#leadDone h2{text-align:center;margin-right:0}
+#leadDone .lead-p{text-align:center}
+#leadLinks{display:grid;gap:6px;margin-top:8px}
+#leadLinks a{display:flex;justify-content:space-between;background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:var(--navy);font-weight:800;font-size:14px}
+#leadLinks a.dl{background:var(--bordeaux);border-color:var(--bordeaux);color:#fff;font-size:15px;padding:12px 14px}
+@media (max-width:480px){ .lead-row{grid-template-columns:1fr} }
+
 /* ---------- Visite guidée ---------- */
 .tour{position:fixed;left:0;right:0;margin:0 auto;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 70px);z-index:13;width:min(460px,calc(100% - 24px));background:var(--cream);border-radius:22px;box-shadow:var(--shadow);padding:14px 16px 12px;animation:rise .4s ease both}
 .tour[hidden]{display:none}
@@ -279,8 +311,18 @@ button{font:inherit;color:inherit;cursor:pointer}
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"}}
 </script>
+<link rel="modulepreload" href="js/main.js">
+<link rel="modulepreload" href="js/kit.js">
+<link rel="modulepreload" href="js/data.js">
+<link rel="modulepreload" href="js/details.js">
+<link rel="modulepreload" href="js/vauban.js">
+<link rel="modulepreload" href="js/city.js">
+<link rel="modulepreload" href="js/audio.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/controls/OrbitControls.js" crossorigin>
 </head>
 <body>
+<noscript><p style="padding:24px;font:16px sans-serif">Le campus en 3D nécessite JavaScript. <a href="liste.html">Voir toutes les formations en version liste</a>.</p></noscript>
 <div id="scene"></div>
 <div id="loader"><div><i></i><p>Le campus se réveille…</p></div></div>
 <div id="pins"></div>
@@ -299,6 +341,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 <div id="ambiance" hidden>
 	<h4>Saison</h4><div class="seg" id="segSeason"></div>
 	<h4>Moment</h4><div class="seg" id="segTime"></div>
+	<h4>Qualité graphique</h4><div class="seg" id="segQuality"></div>
 	<button class="replay" data-replay>🎬 Revoir l'intro</button>
 </div>
 
@@ -319,6 +362,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 		</div>
 		<label class="toggle"><input type="checkbox" id="musicPref" checked> 🎵 Musique d'ambiance</label>
 		<button class="go" id="go" disabled>Entrer sur le campus</button>
+		<a class="plain" href="liste.html">Préférer une version sans 3D (liste des formations)</a>
 	</div>
 </div>
 
@@ -347,6 +391,42 @@ button{font:inherit;color:inherit;cursor:pointer}
 	<div class="coach-ic" id="coachIc"></div>
 	<div class="coach-tx"><div class="coach-k" id="coachK"></div><b id="coachT"></b><p id="coachP"></p></div>
 	<div class="coach-ctl"><button data-coach="skip">Passer</button><button data-coach="next" class="go-s" id="coachNext">Suivant</button></div>
+</div>
+
+<div id="lead" hidden>
+	<div class="lead-card" role="dialog" aria-modal="true" aria-labelledby="leadT">
+		<button class="close" data-lead-close aria-label="Fermer">×</button>
+		<div id="leadForm">
+			<div class="kick">FGES · Université Catholique de Lille</div>
+			<h2 id="leadT">Recevoir les plaquettes</h2>
+			<p class="lead-p">Laisse tes coordonnées : l'équipe de la FGES t'envoie les plaquettes et peut répondre à tes questions.</p>
+			<form novalidate>
+				<fieldset class="lead-f"><legend>Formations</legend><div id="leadList"></div></fieldset>
+				<div class="lead-row">
+					<label class="fld"><span>Prénom</span><input name="prenom" autocomplete="given-name" maxlength="80"></label>
+					<label class="fld"><span>Nom</span><input name="nom" autocomplete="family-name" maxlength="80"></label>
+				</div>
+				<label class="fld"><span>E-mail *</span><input name="email" type="email" autocomplete="email" inputmode="email" maxlength="190" placeholder="toi@exemple.fr" required></label>
+				<div class="lead-row">
+					<label class="fld"><span>Téléphone</span><input name="telephone" type="tel" autocomplete="tel" inputmode="tel" maxlength="25" placeholder="Facultatif"></label>
+					<label class="fld"><span>Code postal</span><input name="code_postal" autocomplete="postal-code" inputmode="numeric" maxlength="10" placeholder="Facultatif"></label>
+				</div>
+				<div class="hp" aria-hidden="true"><label>Site web<input name="website" tabindex="-1" autocomplete="off"></label></div>
+				<label class="opt"><input type="checkbox" name="consentement"><span>J'accepte que la FGES conserve mes informations afin de me recontacter au sujet de ces formations. <b>*</b></span></label>
+				<label class="opt"><input type="checkbox" name="tracking"><span>J'accepte de recevoir des informations personnalisées et le suivi de mes interactions (e-mails, liens).</span></label>
+				<p class="lead-err" role="alert" hidden></p>
+				<button class="go" type="submit">Recevoir les plaquettes</button>
+				<p class="lead-note">* Champs obligatoires. Tes données sont traitées par la FGES (Université Catholique de Lille) uniquement pour te recontacter au sujet de nos formations, conformément au RGPD ; tu peux demander leur suppression à tout moment. Tu as moins de 15 ans ? Parles-en à un parent avant d'envoyer ce formulaire.</p>
+			</form>
+		</div>
+		<div id="leadDone" hidden>
+			<div class="lead-big">📬</div>
+			<h2>Merci !</h2>
+			<p class="lead-p" id="leadDoneP"></p>
+			<div id="leadLinks"></div>
+			<button class="go" data-lead-close>Retourner au campus</button>
+		</div>
+	</div>
 </div>
 
 <aside id="panel" aria-live="polite">

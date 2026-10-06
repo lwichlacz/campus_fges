@@ -7,3 +7,8 @@ _*.png
 _*.svg
 _*.mp4
 _*.html
+
+# Secrets (clé du CRM) : jamais dans git
+.env
+.env.*
+!.env.example

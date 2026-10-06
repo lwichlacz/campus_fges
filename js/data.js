@@ -41,6 +41,13 @@ export const FORMATIONS = [
 	["duhm","Parcours Humanités & Management","FGES","DU","ha",0,"Sur mesure · sur devis","Conférences et ateliers d'éthique pour les équipes.","du-humanite-management/"]
 ].map(a => ({ id:a[0], name:a[1], school:a[2], level:a[3], place:a[4], seats:a[5], rhythm:a[6], pitch:a[7], url:U + a[8] }));
 
+/* Plaquettes : id de formation → lien direct vers le PDF (à compléter).
+   Tant qu'une formation n'a pas son lien, le visiteur reçoit le catalogue Calaméo de toutes les plaquettes. */
+export const PLAQUETTES = {
+	// gestion: "https://www.fges.fr/wp-content/uploads/…/plaquette-licence-gestion.pdf",
+};
+export const CATALOGUE_PLAQUETTES = "https://www.calameo.com/accounts/7206845";
+
 /* Mini-jeux disponibles : id de formation → id du jeu */
 export const GAMES = { gestion: "comptoir" };
 

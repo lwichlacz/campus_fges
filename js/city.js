@@ -12,32 +12,37 @@ const ROOFS = ["#4f5767","#5d6170","#8d4a3a","#4a505d"];
 
 /* ---------- textures de façade ---------- */
 function facade(wall, style){
-	/* 128 px, contours adoucis et contraste modéré : les fenêtres lointaines ne « fourmillent » plus. */
+	/* Fenêtres dessinées sans traits de moins d'un pixel (pas de croisillons fins ni de joints de brique) :
+	   ce sont ces lignes trop fines qui « fourmillaient » dès que la caméra bougeait. */
 	const c = document.createElement("canvas"); c.width = c.height = 128;
 	const x = c.getContext("2d");
 	x.fillStyle = wall; x.fillRect(0,0,128,128);
-	const brick = /^#[9a-c]/i.test(wall) && style !== "glass";
-	if(brick){ x.fillStyle = "rgba(0,0,0,.05)"; for(let y=6;y<128;y+=8) x.fillRect(0,y,128,2); }
-	x.filter = "blur(.8px)";
+	const glass = (x0, y0, w, h) => {
+		const g = x.createLinearGradient(0, y0, 0, y0 + h);
+		g.addColorStop(0, "#56677d"); g.addColorStop(1, "#3a4a5f");
+		x.fillStyle = g; x.fillRect(x0, y0, w, h);
+	};
+	x.filter = "blur(1px)";
 	if(style === "house"){
-		x.fillStyle = "#e9e0cf"; x.fillRect(38,16,52,80);
-		x.fillStyle = "#4a5a70"; x.fillRect(44,22,40,68);
-		x.fillStyle = "#e9e0cf"; x.fillRect(62,22,4,68); x.fillRect(44,52,40,4);
-		x.fillStyle = "rgba(255,255,255,.75)"; x.fillRect(34,94,60,6);
+		x.fillStyle = "#e4d9c6"; x.fillRect(36,14,56,84);          // encadrement épais
+		glass(44, 22, 40, 68);
+		x.fillStyle = "rgba(228,217,198,.35)"; x.fillRect(61,22,6,68);   // croisillon discret
+		x.fillStyle = "#e9e0cf"; x.fillRect(32,96,64,8);           // appui
 	} else if(style === "campus"){
-		x.fillStyle = "#e2dcd0"; x.fillRect(8,24,112,72);
-		x.fillStyle = "#4b5d74"; x.fillRect(12,28,104,64);
-		x.fillStyle = "#e2dcd0"; x.fillRect(62,28,4,64);
+		x.fillStyle = "#ddd6c9"; x.fillRect(6,22,116,76);
+		glass(14, 30, 100, 60);
+		x.fillStyle = "rgba(221,214,201,.35)"; x.fillRect(60,30,8,60);
 	} else if(style === "sport"){
-		x.fillStyle = "#4b5d74"; x.fillRect(0,12,128,28);
-		x.fillStyle = "#8a2b4e"; x.fillRect(0,44,128,8);
+		glass(0, 12, 128, 30);
+		x.fillStyle = "#8a2b4e"; x.fillRect(0,48,128,10);
 	} else if(style === "glass"){
 		x.fillStyle = "#cfe3e6"; x.fillRect(0,0,128,128);
-		x.fillStyle = "#f6f3ec"; for(let i=0;i<128;i+=32) x.fillRect(i,0,6,128); x.fillRect(0,0,128,6); x.fillRect(0,64,128,4);
+		x.fillStyle = "#f2efe8"; x.fillRect(0,0,128,10); x.fillRect(0,0,10,128); x.fillRect(64,0,8,128); x.fillRect(0,62,128,8);
 	}
 	x.filter = "none";
 	const t = new THREE.CanvasTexture(c);
-	t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+	t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace;
+	t.anisotropy = 4;
 	t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true;
 	return t;
 }
@@ -55,6 +60,26 @@ function litMap(style, seed){
 	const t = new THREE.CanvasTexture(c);
 	t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1/8, 1/4); t.colorSpace = THREE.SRGBColorSpace;
 	return t;
+}
+
+/* De loin, une fenêtre ne fait que 2 ou 3 pixels : on lit la texture un peu plus floue
+   (biais de mipmap) pour qu'elle ne « fourmille » pas quand la caméra bouge.
+   Le flou est progressif : nul de près (façades nettes), maximal au loin. */
+const MIP_BIAS = .8, BIAS_NEAR = 40, BIAS_FAR = 140;
+export function softenFar(mat){
+	mat.onBeforeCompile = sh => {
+		sh.fragmentShader = sh.fragmentShader
+			.replace("#include <map_fragment>", `float farBias = ${MIP_BIAS.toFixed(2)} * smoothstep( ${BIAS_NEAR.toFixed(1)}, ${BIAS_FAR.toFixed(1)}, length( vViewPosition ) );
+#ifdef USE_MAP
+	vec4 sampledDiffuseColor = texture2D( map, vMapUv, farBias );
+	diffuseColor *= sampledDiffuseColor;
+#endif`)
+			.replace("#include <emissivemap_fragment>", `#ifdef USE_EMISSIVEMAP
+	vec4 emissiveColor = texture2D( emissiveMap, vEmissiveMapUv, farBias );
+	totalEmissiveRadiance *= emissiveColor.rgb;
+#endif`);
+	};
+	mat.customProgramCacheKey = () => "softenFar";
 }
 
 /* ---------- accumulateurs de géométrie ---------- */
@@ -91,11 +116,14 @@ export function pointInPoly(x, z, p){
 }
 
 /* ---------- un bâtiment ---------- */
-function addBuilding(Bw, Br, Bf, rec){
+const PARAPET = .45;
+function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 	const [kind, lv, , roof, flat] = rec;
 	let p = ring(flat);
 	if(signedArea(p) < 0) p = p.reverse();
-	const H = kind === 3 ? lv*3.2 : kind === 6 ? 2.2 : kind === 4 ? lv*FH*1.35 : lv*FH;
+	// léger décalage par bâtiment : deux toits voisins ne sont jamais au même niveau (pas de clignotement)
+	const H = (kind === 3 ? lv*3.2 : kind === 6 ? 2.2 : kind === 4 ? lv*FH*1.35 : lv*FH) + (i % 7)*.035;
+	const flatRoof = !roof && kind !== 5;
 	let per = (rec[2]*3.7) % 5;
 	for(let i=0;i<p.length;i++){
 		const a = p[i], b = p[(i+1)%p.length];
@@ -105,12 +133,18 @@ function addBuilding(Bw, Br, Bf, rec){
 		const u0 = per/BAY, u1 = (per+len)/BAY, v1 = H/FH;
 		tri(Bw, [a[0],0,a[1]], [b[0],0,b[1]], [b[0],H,b[1]], n, [u0,0], [u1,0], [u1,v1]);
 		tri(Bw, [a[0],0,a[1]], [b[0],H,b[1]], [a[0],H,a[1]], n, [u0,0], [u1,v1], [u0,v1]);
+		if(flatRoof){
+			// acrotère : le mur dépasse un peu du toit plat (couleur pleine, sans fenêtre)
+			const W = [.02,.02], T = H + PARAPET;
+			tri(Bw, [a[0],H,a[1]], [b[0],H,b[1]], [b[0],T,b[1]], n, W, W, W);
+			tri(Bw, [a[0],H,a[1]], [b[0],T,b[1]], [a[0],T,a[1]], n, W, W, W);
+		}
 		per += len;
 	}
 	if(roof){
 		const [cx, cz, ang, L, D] = roof;
 		const ux = Math.cos(ang), uz = Math.sin(ang), wx = -uz, wz = ux;
-		const L2 = L/2 + .2, D2 = D/2 + .25, rh = Math.min(D*.55, 3.4);
+		const L2 = L/2, D2 = D/2 + .25, rh = Math.min(D*.55, 3.4);
 		const P = (s, t, y) => [cx + ux*s + wx*t, y, cz + uz*s + wz*t];
 		const e1 = P(-L2,-D2,H), e2 = P(L2,-D2,H), e3 = P(L2,D2,H), e4 = P(-L2,D2,H), r1 = P(-L2,0,H+rh), r2 = P(L2,0,H+rh);
 		const nl = Math.hypot(rh, D2);
@@ -121,7 +155,22 @@ function addBuilding(Bw, Br, Bf, rec){
 		const W = [.02,.02];
 		tri(Bw, g1, g4, q1, [-ux,0,-uz], W, W, W); tri(Bw, g2, g3, q2, [ux,0,uz], W, W, W);
 	} else {
-		capTris(Bf, p, H, ([x,z]) => [x*.2, z*.2]);
+		capTris(Bf, p, H, ([x,z]) => [x*.22, z*.22]);
+		// éléments techniques sur les grands toits plats (climatisation, verrières)
+		if(flatRoof && extras){
+			const A = Math.abs(signedArea(p));
+			if(A > 60){
+				const r = mulberry32(i*7 + 3), xs = p.map(q => q[0]), zs = p.map(q => q[1]);
+				const x0 = Math.min(...xs), x1 = Math.max(...xs), z0 = Math.min(...zs), z1 = Math.max(...zs);
+				const want = Math.min(6, 1 + Math.floor(A/90));
+				for(let k=0, t=0; k<want && t<40; t++){
+					const x = x0 + r()*(x1-x0), z = z0 + r()*(z1-z0);
+					if(!pointInPoly(x, z, p) || !pointInPoly(x+1.2, z, p) || !pointInPoly(x-1.2, z, p) || !pointInPoly(x, z+1.2, p) || !pointInPoly(x, z-1.2, p)) continue;
+					extras.push([x, H, z, r() < .3 ? 1 : 0, r()]);
+					k++;
+				}
+			}
+		}
 	}
 	return H;
 }
@@ -134,6 +183,7 @@ export function buildCity(scene, MAP, opts={}){
 	const litHouse = litMap("house", 7), litCampus = litMap("campus", 11);
 	const wallMat = (hex, style) => {
 		const m = new THREE.MeshStandardMaterial({ map:facade(hex, style), roughness:.92, emissive:"#ffffff", emissiveIntensity:0, emissiveMap: style === "house" ? litHouse : litCampus });
+		softenFar(m);
 		out.walls.push(m); return m;
 	};
 	const houseMats = HOUSE_WALLS.map(c => wallMat(c, "house"));
@@ -141,7 +191,15 @@ export function buildCity(scene, MAP, opts={}){
 	const sportMat = wallMat("#d8d2c6", "sport");
 	const glassMat = wallMat("#cfe3e6", "glass");
 	const roofMats = ROOFS.map(c => { const m = std(c, { roughness:.8 }); m.userData.base = c; out.roofs.push(m); return m; });
-	const flatMat = std("#77737b", { flatShading:false }); flatMat.userData.base = "#77737b"; out.flats.push(flatMat);
+	const roofTex = (() => {
+		const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
+		x.fillStyle = "#ffffff"; x.fillRect(0,0,64,64);
+		x.fillStyle = "rgba(0,0,0,.08)"; for(let i=0;i<64;i+=16) x.fillRect(i,0,2,64);
+		x.fillStyle = "rgba(0,0,0,.05)"; for(let i=0;i<64;i+=32) x.fillRect(0,i,64,2);
+		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+	})();
+	const flatMat = new THREE.MeshStandardMaterial({ color:"#8a857f", map:roofTex, roughness:.95 }); flatMat.userData.base = "#8a857f"; out.flats.push(flatMat);
+	const extras = [];
 	const glassRoof = new THREE.MeshStandardMaterial({ color:"#d9eef0", transparent:true, opacity:.55, roughness:.1, metalness:.2, emissive:"#ffd08a", emissiveIntensity:0 });
 	out.glassRoof = glassRoof;
 
@@ -162,7 +220,7 @@ export function buildCity(scene, MAP, opts={}){
 		if(poi === "rizomm") wm = campusMats[0];
 		if(poi){
 			const G = { w:bucket(), r:bucket(), f:bucket() };
-			const H = addBuilding(G.w, G.r, G.f, rec);
+			const H = addBuilding(G.w, G.r, G.f, rec, i, extras);
 			const grp = new THREE.Group(); scene.add(grp);
 			const w2 = wm.clone(), r2 = rm.clone(), f2 = kind === 5 ? glassRoof : flatMat.clone();
 			out.walls.push(w2); out.roofs.push(r2); if(f2 !== glassRoof) out.flats.push(f2);
@@ -172,7 +230,7 @@ export function buildCity(scene, MAP, opts={}){
 		}
 		const g = get(wm.uuid + "|" + rm.uuid);
 		g.wm = wm; g.rm = rm;
-		const H = addBuilding(g.w, g.r, (kind === 5 ? get("glassroof").f : g.f), rec);
+		const H = addBuilding(g.w, g.r, (kind === 5 ? get("glassroof").f : g.f), rec, i, extras);
 		if(kind === 5) get("glassroof").fm = glassRoof;
 		if(kind === 4 && rec[3]){ const [cx,cz,ang,L] = rec[3]; spires.push([cx + Math.cos(ang)*L*.42, cz + Math.sin(ang)*L*.42, H]); }
 	});
@@ -181,6 +239,20 @@ export function buildCity(scene, MAP, opts={}){
 			if(!B.pos.length || !m) continue;
 			const me = new THREE.Mesh(toGeo(B), m); me.castShadow = me.receiveShadow = true; scene.add(me);
 		}
+	}
+	{
+		// blocs techniques et petites verrières, instanciés
+		const unit = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1).translate(0,.5,0), std("#b9b6b0"), extras.length);
+		const sky = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1).translate(0,.5,0), std("#9fc3cf", { roughness:.2, metalness:.3 }), extras.length);
+		const d = new THREE.Object3D(); let nu = 0, ns = 0;
+		for(const [x, H, z, kind, r] of extras){
+			d.position.set(x, H, z); d.rotation.set(0, r*Math.PI, 0);
+			if(kind){ d.scale.set(2.2, .35, 1.4); d.updateMatrix(); sky.setMatrixAt(ns++, d.matrix); }
+			else { d.scale.set(.9 + r*.8, .7 + r*.5, .8 + r*.6); d.updateMatrix(); unit.setMatrixAt(nu++, d.matrix); }
+		}
+		unit.count = nu; sky.count = ns;
+		unit.castShadow = true; unit.receiveShadow = true;
+		scene.add(unit, sky);
 	}
 	for(const [x,z,H] of spires){
 		const s = new THREE.Mesh(new THREE.ConeGeometry(1.6, 13, 8).translate(0,6.5,0), roofMats[0]);
