@@ -1121,6 +1121,7 @@ function updatePins(){
 	const hit = (a, b) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
 	const big = shown.filter(p => !p.life).sort((a, b) => a.nedge - b.nedge), placed = [];
 	for(const p of big){
+		box(p); p.nx = Math.min(Math.max(p.nx, p.w/2 + 8), W - p.w/2 - 8);      // jamais coupée par le bord de l'écran
 		for(let n=0; n<4; n++){
 			const o = placed.find(q => hit(box(p), q)); if(!o) break;
 			p.ny = o[3] + p.h + 12;                              // juste en dessous de l'épingle déjà placée…
@@ -1302,7 +1303,7 @@ function detailView(f){
 	const head = `${backLbl ? `<button class="back" data-back>← ${backLbl}</button>` : ""}<div class="kick">${f.school} · ${P ? P.name : ""}</div><h2>${f.name}</h2><p>${f.pitch}</p>
 		<div class="facts">${[f.seats ? `${f.seats} places` : null, f.rhythm].filter(Boolean).map(x => `<span>${x}</span>`).join("")}</div>`;
 	const gk = GAMES[f.id], g = gk && GAME_INFO[gk];
-	const teaser = g ? `<button class="gteaser" data-game="${f.id}"><span class="gic">${g.icon}</span><span><b>${g.title}</b><small>Le mini-jeu de cette formation · ${g.dur}${medals[gk] ? ` · 🏅 ${medals[gk]}` : ""}</small></span><span class="go">${medals[gk] ? "Rejouer" : "Jouer"} ▶</span></button>` : "";
+	const teaser = g ? `<button class="gteaser" data-game="${f.id}"><span class="gic">${g.icon}</span><span><b>${g.title}</b><small>Le mini-jeu de cette formation · ${g.dur}${medals[gk] ? ` · 🏅 ${medals[gk]}` : ""}</small></span><span class="gplay">${medals[gk] ? "Rejouer" : "Jouer"} ▶</span></button>` : "";
 	const body = teaser + (d.p ? `<h3>Au programme</h3><ul class="prog">${d.p.map(([k,v]) => `<li><b>${k}</b><span>${v}</span></li>`).join("")}</ul>` : "") +
 		(d.j ? `<div class="info"><b>Et après ?</b> ${d.j}</div>` : "") +
 		(d.a ? `<div class="info"><b>Admission :</b> ${d.a}</div>` : "") +
