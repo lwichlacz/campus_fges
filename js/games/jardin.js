@@ -453,7 +453,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 			x.strokeStyle = "rgba(255,255,255,.35)"; x.lineWidth = 1;
 			for(let k=1;k<N;k++){ x.beginPath(); x.moveTo(k*s, 0); x.lineTo(k*s, 400); x.moveTo(0, k*s); x.lineTo(400, k*s); x.stroke(); }
 			x.font = "28px serif"; x.fillText("☀️", 360, 392);
-			for(const c of chosen){ x.strokeStyle = "#8a2b4e"; x.lineWidth = 4; x.strokeRect(c.i*s + 2, c.j*s + 2, s - 4, s - 4); }
+			for(const c of chosen){ x.strokeStyle = "#0b7a8e"; x.lineWidth = 4; x.strokeRect(c.i*s + 2, c.j*s + 2, s - 4, s - 4); }
 			const b = card.querySelector("[data-c]"); b.disabled = chosen.length < 4; b.textContent = `Compter (${chosen.length}/4)`;
 		};
 		drawMap();
@@ -480,7 +480,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 			const draw = () => {
 				const x = cv.getContext("2d");
 				x.fillStyle = "#8cc06a"; x.fillRect(0, 0, 400, 400);
-				x.strokeStyle = "#8a2b4e"; x.lineWidth = 8; x.strokeRect(4, 4, 392, 392);
+				x.strokeStyle = "#0b7a8e"; x.lineWidth = 8; x.strokeRect(4, 4, 392, 392);
 				c.pts.forEach(([u, v], k) => {
 					const px = u*400, py = v*400;
 					x.fillStyle = "#fffdf0"; for(let p=0;p<8;p++){ const a = p/8*Math.PI*2; x.beginPath(); x.ellipse(px + Math.cos(a)*11, py + Math.sin(a)*11, 8, 4, a, 0, 7); x.fill(); }

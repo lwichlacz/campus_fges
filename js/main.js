@@ -185,7 +185,7 @@ function signTexture(lines){
 	const x = c.getContext("2d");
 	x.fillStyle = "#6b4a35"; x.fillRect(0,0,512,220);
 	x.fillStyle = "#f6ead6"; x.fillRect(12,12,488,196);
-	x.fillStyle = "#8a2b4e"; x.textAlign = "center";
+	x.fillStyle = "#0b7a8e"; x.textAlign = "center";
 	x.font = "bold 54px Georgia, serif"; x.fillText(lines[0], 256, 96);
 	x.fillStyle = "#5b4f5f"; x.font = "28px Georgia, serif"; x.fillText(lines[1], 256, 150);
 	const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;

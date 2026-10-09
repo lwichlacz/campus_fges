@@ -44,7 +44,7 @@ const CSS = `
 .cz-top>*{pointer-events:auto}
 .cz-chip{background:rgba(255,248,236,.95);border-radius:999px;padding:7px 12px;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(40,20,10,.25);display:flex;gap:6px;align-items:center}
 .cz-chip b{font-size:15px}
-.cz-day{background:#8a2b4e;color:#fff} .cz-day:empty{display:none}
+.cz-day{background:#21b6ce;color:#0b2f67} .cz-day:empty{display:none}
 .cz-x{margin-left:auto;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,248,236,.95);font-size:22px;cursor:pointer;box-shadow:0 6px 18px rgba(40,20,10,.25)}
 .cz-bar{width:70px;height:8px;border-radius:8px;background:#ead9bf;overflow:hidden}
 .cz-bar i{display:block;height:100%;background:linear-gradient(90deg,#c4532f,#d9a441,#3d7a55);transition:width .4s}
@@ -66,7 +66,7 @@ const CSS = `
 .cz-order{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;margin:0 4px 8px;min-height:30px}
 .cz-order .it{font-size:24px;opacity:.4;filter:grayscale(1);transition:.15s}
 .cz-order .it.on{opacity:1;filter:none;transform:scale(1.15)}
-.cz-order .sp{margin-left:auto;color:#8a2b4e}
+.cz-order .sp{margin-left:auto;color:#0b7a8e}
 .cz-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .cz-keys button{border:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px #ead9bf,0 4px 0 #ead9bf;padding:10px 4px 8px;font:800 30px/1 Nunito,sans-serif;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;color:#2b2233}
 .cz-keys button small{display:block;font-size:12px;margin-top:4px;color:#5b4f5f}
@@ -89,7 +89,7 @@ const CSS = `
 .cz-lbtns button:disabled{opacity:.42;cursor:default}
 .cz-lbtns button.glow{box-shadow:inset 0 0 0 3px #d9a441,0 4px 0 #d9a441;animation:czGlow 1s ease-in-out infinite alternate}
 @keyframes czGlow{to{background:#fff3d6}}
-.cz-lbtns button .bar{position:absolute;left:0;bottom:0;height:4px;background:#8a2b4e;width:var(--p,0%)}
+.cz-lbtns button .bar{position:absolute;left:0;bottom:0;height:4px;background:#21b6ce;width:var(--p,0%)}
 .cz.gerant .cz-bub{pointer-events:auto;cursor:pointer}
 .cz.gerant .cz-bub.warn span{animation:czWarn .6s ease-in-out infinite alternate}
 .cz.gerant .cz-bub.warn span::after{content:"🍪";font-size:15px;margin-left:3px}
@@ -103,20 +103,20 @@ const CSS = `
 .cz-panel[hidden]{display:none}
 .cz-card{width:100%;max-width:470px;background:#fff8ec;border-radius:24px;box-shadow:0 30px 80px rgba(20,10,5,.45);padding:20px 18px 18px;animation:czUp .35s cubic-bezier(.2,.8,.2,1) both}
 @keyframes czUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-.cz-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a2b4e}
+.cz-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#0b7a8e}
 .cz-h{font:700 23px/1.15 Fraunces,Georgia,serif;margin:4px 0 6px}
 .cz-p{margin:0 0 12px;color:#5b4f5f;font-size:14.5px}
 .cz-row{background:#fff;border:1px solid #ead9bf;border-radius:16px;padding:11px 13px;margin-bottom:8px}
 .cz-row .t{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:14px}
 .cz-row small{display:block;color:#8a7d86;font-weight:700;font-size:12px;margin-top:3px}
-.cz-row input[type=range]{width:100%;accent-color:#8a2b4e;margin-top:8px}
+.cz-row input[type=range]{width:100%;accent-color:#0b7a8e;margin-top:8px}
 .cz-step{display:flex;align-items:center;gap:8px}
 .cz-step button{width:36px;height:36px;border-radius:12px;border:2px solid #ead9bf;background:#fff;font:800 18px Nunito,sans-serif;cursor:pointer}
 .cz-step b{min-width:42px;text-align:center;font-size:17px}
 .cz-seg{display:flex;gap:6px}
 .cz-seg button{flex:1;border:2px solid #ead9bf;background:#fff;border-radius:12px;padding:8px 4px;font:800 14px Nunito,sans-serif;cursor:pointer}
-.cz-seg button[aria-pressed=true]{border-color:#8a2b4e;background:#fbe9ef;color:#8a2b4e}
-.cz-go{display:block;width:100%;border:0;border-radius:16px;padding:14px;background:#8a2b4e;color:#fff;font:800 16px Nunito,sans-serif;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(138,43,78,.35);text-align:center;text-decoration:none}
+.cz-seg button[aria-pressed=true]{border-color:#0b7a8e;background:#e4f6f9;color:#0b7a8e}
+.cz-go{display:block;width:100%;border:0;border-radius:16px;padding:14px;background:#21b6ce;color:#0b2f67;font:800 16px Nunito,sans-serif;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(20,140,160,.35);text-align:center;text-decoration:none}
 .cz-go:disabled{opacity:.45;cursor:default}
 .cz-alt{display:block;width:100%;border:2px solid #ead9bf;border-radius:16px;padding:12px;background:#fff;color:#1e305e;font:800 14px Nunito,sans-serif;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none}
 .cz-hint{font-size:12.5px;font-weight:700;color:#7a6a3a;background:#fbefd0;border-radius:10px;padding:6px 10px;margin-top:8px}
@@ -127,7 +127,7 @@ const CSS = `
 .cz-pos{color:#2f6b45}.cz-neg{color:#b91c1c}
 .cz-chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
 .cz-tok{border:2px dashed #d9b98a;background:#fff;border-radius:12px;padding:9px 12px;font:800 15px Nunito,sans-serif;cursor:pointer}
-.cz-tok[aria-pressed=true]{border-style:solid;border-color:#8a2b4e;background:#fbe9ef}
+.cz-tok[aria-pressed=true]{border-style:solid;border-color:#0b7a8e;background:#e4f6f9}
 .cz-tok.used{opacity:.3;pointer-events:none}
 .cz-slot{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;border:2px dashed #ead9bf;background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:7px;font:700 14px Nunito,sans-serif;cursor:pointer;text-align:left}
 .cz-slot b{min-width:80px;text-align:right}
@@ -145,7 +145,7 @@ const CSS = `
 .cz-big{font-size:50px;text-align:center}
 .cz-list{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
 .cz-list li{background:#fff;border:1px solid #ead9bf;border-radius:12px;padding:8px 12px;font-size:14px;font-weight:700}
-.cz-list li span{color:#8a2b4e;font-weight:800;margin-right:6px}
+.cz-list li span{color:#0b7a8e;font-weight:800;margin-right:6px}
 @media (max-width:560px){ .cz-chip{font-size:12px;padding:6px 9px} .cz-bar{width:46px} .cz-h{font-size:20px} }
 `;
 
@@ -246,7 +246,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	for(const [x,z,r] of SEATS){ const s = makeStudent(scene, true); s.g.scale.setScalar(.9); s.g.position.set(x, -.1, z); s.g.rotation.y = r; deco.push(s); }
 	// baristas
 	const BX = [-2.2, -.2, 1.8];
-	const baristas = BX.map(x => { const s = makeStudent(scene); s.g.scale.setScalar(.9); s.g.position.set(x, 0, -1.05); const apron = new THREE.Mesh(new THREE.BoxGeometry(.6,.55,.08), std("#8a2b4e")); apron.position.set(0,.6,.32); s.g.add(apron); return { s, cust:null, t:0 }; });
+	const baristas = BX.map(x => { const s = makeStudent(scene); s.g.scale.setScalar(.9); s.g.position.set(x, 0, -1.05); const apron = new THREE.Mesh(new THREE.BoxGeometry(.6,.55,.08), std("#21b6ce")); apron.position.set(0,.6,.32); s.g.add(apron); return { s, cust:null, t:0 }; });
 	// ta caisse : le poste du joueur, au bout du comptoir (tablier doré, étoile au-dessus)
 	const PX = 3.0;
 	const me = makeStudent(scene); me.g.scale.setScalar(.9); me.g.position.set(PX, 0, -1.05);

@@ -14,17 +14,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{ --cream:#fff8ec; --cream2:#f6ead6; --ink:#2b2233; --ink2:#4f4453; --muted:#6e6270; --bordeaux:#8a2b4e; --navy:#1e305e; --gold:#b9862f; --line:#e3cfae; }
+:root{ --cream:#fff8ec; --cream2:#f6ead6; --ink:#2b2233; --ink2:#4f4453; --muted:#6e6270; --brand:#21b6ce; --brand-ink:#0b7a8e; --on-brand:#0b2f67; --brand-soft:#e4f6f9; --navy:#1e305e; --gold:#b9862f; --line:#e3cfae; }
 *{box-sizing:border-box}
 body{margin:0;background:var(--cream);color:var(--ink);font:400 16px/1.55 Nunito,system-ui,sans-serif}
 a{color:var(--navy);font-weight:700}
-a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--bordeaux);outline-offset:2px}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--brand-ink);outline-offset:2px}
 .skip{position:absolute;left:-999px;top:8px;background:#fff;padding:8px 12px;border-radius:8px}
 .skip:focus{left:8px}
-header{background:var(--bordeaux);color:#fff;padding:28px 20px 24px}
+header{background:var(--brand);color:var(--on-brand);padding:28px 20px 24px}
 header .in,main{max-width:860px;margin:0 auto}
 header p{margin:6px 0 0;opacity:.92}
-header a{color:#fff}
+header a{color:var(--on-brand)}
 h1{font:700 32px/1.1 Fraunces,Georgia,serif;margin:0}
 h2{font:700 24px/1.2 Fraunces,Georgia,serif;margin:34px 0 4px}
 h2 small{display:block;font:700 14px Nunito,sans-serif;color:var(--muted);margin-top:4px}
@@ -34,23 +34,23 @@ main{padding:8px 20px 60px}
 .tools input{width:100%;border:2px solid var(--line);border-radius:12px;padding:12px 14px;font:600 16px Nunito,sans-serif;background:#fff;color:var(--ink)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .chips button{border:2px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font:800 14px Nunito,sans-serif;color:var(--ink);cursor:pointer}
-.chips button[aria-pressed=true]{border-color:var(--bordeaux);background:#fbe9ef;color:var(--bordeaux)}
+.chips button[aria-pressed=true]{border-color:var(--brand-ink);background:var(--brand-soft);color:var(--brand-ink)}
 .count{margin:10px 0 0;font-weight:700;color:var(--muted)}
 details{background:#fff;border:1px solid var(--line);border-radius:14px;margin:10px 0;padding:0 16px}
 summary{cursor:pointer;padding:14px 0;list-style:none}
 summary::-webkit-details-marker{display:none}
 summary b{display:block;font:700 18px/1.3 Fraunces,Georgia,serif}
 summary span{display:block;color:var(--muted);font-weight:700;font-size:14px}
-summary:after{content:"Afficher le détail ▾";display:inline-block;margin-top:6px;font-size:13px;font-weight:800;color:var(--bordeaux)}
+summary:after{content:"Afficher le détail ▾";display:inline-block;margin-top:6px;font-size:13px;font-weight:800;color:var(--brand-ink)}
 details[open] summary:after{content:"Masquer ▴"}
 .det{padding:0 0 16px}
-.det h3{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--bordeaux);margin:12px 0 6px}
+.det h3{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--brand-ink);margin:12px 0 6px}
 .det ul{margin:0;padding-left:20px}
 .det li{margin-bottom:6px}
 .det .game{background:#fff3d6;border-radius:12px;padding:10px 12px;margin:12px 0 0}
 .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .acts a{display:inline-block;padding:9px 14px;border-radius:10px;border:2px solid var(--line);text-decoration:none;background:#fff}
-.acts a.main{background:var(--bordeaux);border-color:var(--bordeaux);color:#fff}
+.acts a.main{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
 .place{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0}
 .place h3{margin:0 0 4px;font:700 18px Fraunces,Georgia,serif}
 .place p{margin:0 0 6px;color:var(--ink2)}
