@@ -1160,11 +1160,15 @@ function toast(msg, ms=3200){
 	t.classList.toggle("side", innerWidth > 720 && $("panel").classList.contains("on"));     // centré dans la partie libre, pas sur la fiche
 	clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("on"), ms);
 }
+const buzz = ms => { try { if(touch && !reduceMotion && navigator.userActivation?.hasBeenActive !== false) navigator.vibrate?.(ms); } catch(e){} };
 function refreshHud(){
 	$("carnetN").textContent = favs.size;
 	$("btnProfile").innerHTML = profile ? `${PROFILES[profile].icon} <span class="lbl">${PROFILES[profile].label}</span>` : "👤";
 	$("btnMusic").textContent = Audio.on ? "🎵" : "🔇";
 	$("btnMusic").setAttribute("aria-pressed", String(Audio.on));
+	$("moreProfile").innerHTML = profile ? `${PROFILES[profile].icon} ${PROFILES[profile].label} · changer` : "👤 Mon profil";
+	$("moreMusic").textContent = Audio.on ? "🎵 Musique : oui" : "🔇 Musique : non";
+	buildCarousel();
 }
 document.querySelectorAll(".profile").forEach(b => {
 	b.setAttribute("aria-pressed", String(b.dataset.p === profile));
@@ -1190,15 +1194,19 @@ function enter(){
 	if(!store.get("introSeen", false) && !reduceMotion) playIntro();
 	else { flyHome(2.4); setTimeout(afterArrival, 2300); }
 }
+const startHint = () => isPhone() ? "Fais défiler les cartes du bas pour visiter 👇" : "Commence par l'Hôtel Académique : touche-le pour entrer 🏛️";
 function afterArrival(){
 	$("dock").classList.add("on");
 	if(BORNE) return;
 	if(!store.get("onboarded", false)) setTimeout(() => startCoach(), 600);
-	else setTimeout(() => !gamePaused && toast(stamps.has("ha") ? "Content de te revoir sur le campus 👋" : "Commence par l'Hôtel Académique : touche-le pour entrer 🏛️", 4500), 500);
+	else setTimeout(() => !gamePaused && toast(stamps.has("ha") ? "Content de te revoir sur le campus 👋" : startHint(), 4500), 500);
 }
 $("btnProfile").addEventListener("click", () => { closePanel(); $("welcome").classList.remove("gone"); });
 $("btnTheme").addEventListener("click", e => { e.stopPropagation(); $("ambiance").hidden = !$("ambiance").hidden; });
-document.addEventListener("click", e => { if(!$("ambiance").hidden && !e.target.closest("#ambiance") && !e.target.closest("#btnTheme")) $("ambiance").hidden = true; });
+$("btnMore").addEventListener("click", e => { e.stopPropagation(); Audio.play("pop"); $("ambiance").hidden = !$("ambiance").hidden; });
+$("moreProfile").addEventListener("click", () => { $("ambiance").hidden = true; $("btnProfile").click(); });
+$("moreMusic").addEventListener("click", () => $("btnMusic").click());
+document.addEventListener("click", e => { if(!$("ambiance").hidden && !e.target.closest("#ambiance") && !e.target.closest("#btnTheme") && !e.target.closest("#btnMore")) $("ambiance").hidden = true; });
 $("btnMusic").addEventListener("click", () => {
 	if(Audio.on){ Audio.disable(); musicWanted = false; } else { Audio.enable(); musicWanted = true; }
 	store.set("music", musicWanted); $("musicPref").checked = musicWanted; refreshHud();
@@ -1245,7 +1253,9 @@ function updatePins(){
 			hide = behind || p.far;
 		} else if(mode === "ext" && !behind && y < TOP && p.place && (() => { const t = (PLACES[p.place] || LIFE[p.place]).target; if(!t) return false; v3b.set(...t).project(camera); const tx = (v3b.x*.5+.5)*W, ty = (-v3b.y*.5+.5)*Hh; return v3b.z < 1 && tx > 0 && tx < W && ty > 0 && ty < Hh; })()){
 			y = TOP;      // le bâtiment est à l'écran : l'épingle reste en haut, sans flèche
-		} else if(mode === "ext" && (behind || x < 40 || x > W - 40 || y < TOP || y > Hh - 30)){
+		} else if(mode === "ext" && W <= 720 && (behind || x < 16 || x > W - 16 || y < TOP || y > Hh - (carouselOn ? 170 : 80))){
+			hide = true;
+		} else if(mode === "ext" && W > 720 && (behind || x < 40 || x > W - 40 || y < TOP || y > Hh - 30)){
 			// lieu hors champ : l'épingle reste collée au bord, avec une flèche
 			if(behind){ x = W - x; y = Hh - y; }
 			const cx = W/2, cy = Hh/2, dx = x - cx, dy = y - cy;
@@ -1258,7 +1268,8 @@ function updatePins(){
 	}
 	// lisibilité : les épingles des bâtiments ne se recouvrent jamais (elles s'empilent),
 	// et une petite épingle « vie de campus » s'efface si elle cache le nom d'un bâtiment
-	const box = p => { if(!p.w){ p.w = p.el.offsetWidth || 120; p.h = p.el.offsetHeight || 36; } return [p.nx - p.w/2 - 4, p.ny - p.h - 10, p.nx + p.w/2 + 4, p.ny + 4]; };
+	// (l'épingle active déplie son nom : on la remesure)
+	const box = p => { if(!p.w || p.place === hovered){ p.w = p.el.offsetWidth || 120; p.h = p.el.offsetHeight || 36; } return [p.nx - p.w/2 - 4, p.ny - p.h - 10, p.nx + p.w/2 + 4, p.ny + 4]; };
 	const hit = (a, b) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
 	const big = shown.filter(p => !p.life).sort((a, b) => a.nedge - b.nedge), placed = [];
 	for(const p of big){
@@ -1306,7 +1317,7 @@ function refreshTints(){
 function setHover(id){
 	if(hovered === id) return;
 	hovered = id;
-	for(const p of pins) p.el.classList.toggle("hover", p.place === id && !!id);
+	for(const p of pins){ p.el.classList.toggle("hover", p.place === id && !!id); p.w = 0; }
 	refreshTints();
 	renderer.domElement.style.cursor = id ? "pointer" : "";
 }
@@ -1454,7 +1465,8 @@ function detailView(f){
 			<button class="btn alt" data-fly="${f.place}">📍 Voir le bâtiment</button>
 			${candidater(f)}
 			<a class="more wide" href="${f.url}" target="_blank" rel="noopener">Fiche officielle sur fges.fr ↗</a>
-		</div>`;
+		</div>
+		<div class="stickycta"><button class="btn alt fv" data-favd="${f.id}" data-short aria-label="Garder dans mon carnet">${favs.has(f.id) ? "♥" : "♡"}</button><button class="btn main" data-lead="${f.id}">📄 Recevoir la plaquette</button></div>`;
 	return [head, body];
 }
 function gameHere(id){
@@ -1469,7 +1481,10 @@ function jeuxView(){
 	const won = Object.keys(GAME_INFO).filter(k => medals[k]).length, total = Object.keys(GAME_INFO).length;
 	const head = `<div class="kick">Mini-jeux · ${won}/${total} médaille${won > 1 ? "s" : ""}</div><h2>Joue une formation</h2>
 		<p>Chaque jeu te fait vivre une formation en quelques minutes, avec de vrais exercices de cours.</p>`;
-	const banner = justWon ? `<div class="wonbar">🏅 Médaille <b>${GAME_INFO[justWon].title}</b> : mention ${medals[justWon]} ! Tu as aimé ? Essaie aussi :</div>` : "";
+	const wf = justWon && GAME_INFO[justWon].fid;
+	const banner = justWon ? `<div class="wonbar">🏅 Médaille <b>${GAME_INFO[justWon].title}</b> : mention ${medals[justWon]} !
+		<div class="wonacts"><button class="btn main" data-lead="${wf}">📄 Recevoir la plaquette</button><button class="btn alt" data-favd="${wf}">${favs.has(wf) ? "♥ Dans mon carnet" : "♡ Garder"}</button></div>
+		<small>Tu as aimé ? Essaie aussi :</small></div>` : "";
 	const card = ({ k, g, f }) => `<div class="gcard ${medals[k] ? "got" : ""}">
 			<div class="gtop"><span class="gic">${g.icon}</span><span><b>${g.title}</b><small>${f.name}</small></span>${medals[k] ? `<span class="gmed" title="Mention ${medals[k]}">🏅</span>` : ""}</div>
 			<p>${g.pitch}</p>
@@ -1532,6 +1547,7 @@ function openPanel(id){
 	}
 	if(!String(id).startsWith("nav:") && !String(id).startsWith("f:")) body += linksHTML(LIFE[id] || PLACES[id]);
 	$("phead").innerHTML = head; $("pbody").innerHTML = body; $("pbody").scrollTop = 0;
+	if(isPhone() && !$("panel").classList.contains("on")){ sheet.h = sheetSnaps()[1]; $("panel").style.height = sheet.h + "px"; }
 	$("panel").classList.add("on");
 	panelShift = true;
 	if(id === "nav:formations"){
@@ -1548,7 +1564,11 @@ $("panel").addEventListener("click", e => {
 	const lv = e.target.closest("[data-flv]"); if(lv){ flv = lv.dataset.flv; document.querySelectorAll("[data-flv]").forEach(b => b.setAttribute("aria-pressed", String(b === lv))); renderFList(); return; }
 	if(e.target.closest("[data-back]")){ const b = panelBack; openPanel(b); return; }
 	const det = e.target.closest("[data-detail]"); if(det){ if(!String(current).startsWith("f:")) panelBack = current; openPanel("f:" + det.dataset.detail); Audio.play("pop"); return; }
-	const fd = e.target.closest("[data-favd]"); if(fd){ toggleFav(fd.dataset.favd); fd.textContent = favs.has(fd.dataset.favd) ? "♥ Dans mon carnet" : "♡ Garder"; return; }
+	const fd = e.target.closest("[data-favd]"); if(fd){
+		toggleFav(fd.dataset.favd); const on = favs.has(fd.dataset.favd);
+		$("pbody").querySelectorAll(`[data-favd="${fd.dataset.favd}"]`).forEach(b => b.textContent = b.hasAttribute("data-short") ? (on ? "♥" : "♡") : on ? "♥ Dans mon carnet" : "♡ Garder");
+		if(on) buzz(15);
+		return; }
 	const fl = e.target.closest("[data-fly]"); if(fl){ flyToPlace(fl.dataset.fly); return; }
 	const fav = e.target.closest("[data-fav]");
 	if(fav){ toggleFav(fav.dataset.fav); fav.setAttribute("aria-pressed", String(favs.has(fav.dataset.fav))); fav.textContent = favs.has(fav.dataset.fav) ? "♥" : "♡"; if(current === "carnet" && !favs.has(fav.dataset.fav)) openPanel("carnet"); return; }
@@ -1586,7 +1606,7 @@ function openGame(fid){
 			if(won && kind === "comptoir"){
 				const party = () => { interiors.atrium.celebrate(); Audio.play("win"); toast("🎓 Bravo, diplômé·e ! Toute l'atrium fête ta réussite !", 4500); setTimeout(suggest, 4200); };
 				if(mode === "atrium") party(); else enterInterior("atrium", party);
-			} else if(won){ Audio.play("win"); suggest(); }      // le bandeau de la vue Jeux annonce la médaille
+			} else if(won){ Audio.play("win"); buzz([30, 70, 30, 70, 60]); suggest(); }      // le bandeau de la vue Jeux annonce la médaille
 			else if(current) openPanel(current);
 		}
 	})).catch(() => { gamePaused = false; toast("Impossible de lancer le mini-jeu : vérifie ta connexion.", 3500); });
@@ -1606,6 +1626,7 @@ function selectPlace(id){
 	if(!p || !p.target) return;
 	if(tour) stopTour();
 	if(mode !== "ext"){ exitInterior(); setTimeout(() => selectPlace(id), 650); return; }
+	lastPlace = id;
 	flyToPlace(id);
 	openPanel(id);
 	Audio.play("pop");
@@ -1616,7 +1637,7 @@ function markVisited(id){
 	const mark = () => { for(const pin of pins) if(pin.place === id) pin.el.querySelector("s").textContent = "✓"; };
 	if(PLACES[id] && !stamps.has(id)){
 		stamps.add(id); store.set("stamps", [...stamps]); mark();
-		setTimeout(() => { Audio.play("stamp"); toast(stamps.size === 3 ? "Tour du campus terminé ! Ouvre ton carnet 📒" : `Tampon obtenu : ${p.name} (${stamps.size}/3)`, 3000); }, 900);
+		setTimeout(() => { Audio.play("stamp"); buzz([20, 60, 30]); toast(stamps.size === 3 ? "Tour du campus terminé ! Ouvre ton carnet 📒" : `Tampon obtenu : ${p.name} (${stamps.size}/3)`, 3000); }, 900);
 	} else if(LIFE[id] && !found.has(id)){
 		found.add(id); store.set("found", [...found]); mark();
 		const total = Object.keys(LIFE).filter(k => LIFE[k].pin).length;
@@ -1703,6 +1724,128 @@ document.querySelectorAll("[data-dock]").forEach(b => b.addEventListener("click"
 }));
 
 /* =====================================================================
+   Téléphone : carrousel des lieux et fiche à tirer
+   - les cartes du bas défilent au pouce, la caméra vole vers le lieu de la carte centrale ;
+   - la fiche se tire (réduite, moitié, plein écran) et se ferme d'un glissement vers le bas ;
+   - la caméra garde le lieu visé au milieu de ce qui reste visible au-dessus.
+   ===================================================================== */
+const isPhone = () => innerWidth <= 720;
+const car = $("carousel");
+let carouselOn = false, carIdx = 0, carSettle = 0, lastPlace = null;
+function carouselIds(){
+	const life = Object.keys(LIFE).filter(k => LIFE[k].pin);
+	return ["_hub", "ha", "falise", ...life.filter(k => GAME_AT[k]), "wenov", ...life.filter(k => !GAME_AT[k])];
+}
+function buildCarousel(){
+	const nGames = Object.keys(GAME_INFO).length, nWon = Object.keys(GAME_INFO).filter(k => medals[k]).length;
+	const left = car.scrollLeft;
+	car.innerHTML = carouselIds().map(id => {
+		if(id === "_hub") return `<button class="ccard hub" data-id="_hub"><span class="gic">🎮</span><span><b>Joue une formation</b><small>${nWon ? `${nWon}/${nGames} médaille${nWon > 1 ? "s" : ""} · ` : ""}${nGames} mini-jeux · 6 à 7 min</small></span><span class="go-c">Jouer</span></button>`;
+		const p = PLACES[id] || LIFE[id], games = (GAME_AT[id] || []).length, done = stamps.has(id) || found.has(id);
+		const n = PLACES[id] && profile ? listFor(id).length : 0;
+		const sub = PLACES[id] ? (n ? `${n} formation${n > 1 ? "s" : ""} pour toi` : p.kicker) : p.kicker;
+		return `<button class="ccard" data-id="${id}"><span class="gic">${p.icon}</span><span><b>${p.name}${done ? ' <span class="ok">✓</span>' : ""}</b><small>${games ? `🎮 ${games} jeu${games > 1 ? "x" : ""} · ` : ""}${sub}</small></span><span class="go-c">Voir</span></button>`;
+	}).join("");
+	car.children[carIdx]?.classList.add("cur");
+	car.scrollLeft = left;
+}
+function carouselShow(id){       // recale le carrousel sur un lieu, sans faire voler la caméra
+	const i = carouselIds().indexOf(id), c = car.children[i];
+	if(!c) return;
+	carIdx = i;
+	[...car.children].forEach((x, j) => x.classList.toggle("cur", j === i));
+	car.scrollTo({ left:c.offsetLeft - (car.clientWidth - c.offsetWidth)/2, behavior:"instant" });
+}
+car.addEventListener("scroll", () => { clearTimeout(carSettle); carSettle = setTimeout(() => {
+	const cards = [...car.children], mid = car.scrollLeft + car.clientWidth/2;
+	let best = 0, bd = Infinity;
+	cards.forEach((c, i) => { const d = Math.abs(c.offsetLeft + c.offsetWidth/2 - mid); if(d < bd){ bd = d; best = i; } });
+	if(best === carIdx) return;
+	carIdx = best; cards.forEach((c, i) => c.classList.toggle("cur", i === best));
+	const id = cards[best].dataset.id;
+	Audio.play("pop");
+	lastPlace = id === "_hub" ? null : id;
+	if(id === "_hub"){ setHover(null); flyHome(1.4); } else { flyToPlace(id); setHover(id); }
+}, 120); }, { passive:true });
+car.addEventListener("click", e => {
+	const c = e.target.closest(".ccard"); if(!c) return;
+	if(c.dataset.id === "_hub"){ Audio.play("pop"); openPanel("nav:jeux"); }
+	else selectPlace(c.dataset.id);
+});
+function syncCarousel(){          // appelé à chaque image : n'agit que si l'état change
+	const on = isPhone() && entered && mode === "ext" && !intro && !tour && !coach && !gamePaused && $("dock").classList.contains("on") && !$("panel").classList.contains("on");
+	document.body.classList.toggle("inside", mode !== "ext");
+	if(on === carouselOn) return;
+	carouselOn = on; car.classList.toggle("on", on);
+	if(on && lastPlace) carouselShow(lastPlace);
+	if(on && hovered == null && carIdx > 0) setHover(car.children[carIdx]?.dataset.id || null);
+}
+
+const sheet = { h:0 };
+const panelEl = $("panel"), pbody = $("pbody");
+function sheetSnaps(){
+	const a = innerHeight - $("dock").offsetHeight - 10;
+	return [Math.round(a*.4), Math.round(a*.64), a];
+}
+function setSheet(h, anim){ sheet.h = h; panelEl.classList.toggle("dragging", !anim); panelEl.style.height = h + "px"; }
+function sheetRelease(v){          // v : vitesse en px/ms, positive vers le bas
+	const [lo, mid, hi] = sheetSnaps(), h = sheet.h;
+	if(h < lo*.7 || (v > .9 && h <= mid + 4)){ closePanel(); return; }
+	let to = [lo, mid, hi].reduce((a, b) => Math.abs(b - h) < Math.abs(a - h) ? b : a);
+	if(v > .45) to = h > mid ? mid : lo;
+	else if(v < -.45) to = h < mid ? mid : hi;
+	setSheet(to, true);
+}
+let drag = null;
+const dragStart = (y, from) => { drag = { y0:y, h0:sheet.h || panelEl.offsetHeight, y:y, t:performance.now(), v:0, moved:false, from }; };
+const dragMove = y => {
+	const now = performance.now(), dt = Math.max(1, now - drag.t);
+	drag.v = .7*drag.v + .3*((y - drag.y)/dt); drag.y = y; drag.t = now;
+	if(Math.abs(y - drag.y0) > 4) drag.moved = true;
+	setSheet(Math.max(60, Math.min(sheetSnaps()[2], drag.h0 + (drag.y0 - y))), false);
+};
+const dragEnd = () => {
+	const d = drag; drag = null; if(!d) return;
+	if(!d.moved){ if(d.from === "grab"){ const [, mid, hi] = sheetSnaps(); setSheet(sheet.h >= hi - 4 ? mid : hi, true); } else panelEl.classList.remove("dragging"); return; }
+	sheetRelease(d.v);
+};
+// en-tête de la fiche (et sa poignée) : on la tire directement
+panelEl.querySelector(".ph").addEventListener("pointerdown", e => {
+	if(!isPhone() || e.button > 0 || e.target.closest("button:not(.grab),input,a,select,textarea,label")) return;
+	dragStart(e.clientY, e.target.closest(".grab") ? "grab" : "head");
+	try { e.currentTarget.setPointerCapture(e.pointerId); } catch(x){}
+});
+panelEl.querySelector(".ph").addEventListener("pointermove", e => { if(drag && drag.from !== "body") dragMove(e.clientY); });
+panelEl.querySelector(".ph").addEventListener("pointerup", () => { if(drag && drag.from !== "body") dragEnd(); });
+panelEl.querySelector(".ph").addEventListener("pointercancel", () => { if(drag && drag.from !== "body") dragEnd(); });
+// contenu : tiré vers le bas quand il est déjà en haut, ou vers le haut tant que la fiche n'est pas en plein écran
+let touchY = null;
+pbody.addEventListener("touchstart", e => { touchY = isPhone() ? e.touches[0].clientY : null; }, { passive:true });
+pbody.addEventListener("touchmove", e => {
+	if(touchY == null) return;
+	const y = e.touches[0].clientY;
+	if(!drag){
+		const dy = y - touchY;
+		if(Math.abs(dy) < 6) return;
+		const atTop = pbody.scrollTop <= 0, full = sheet.h >= sheetSnaps()[2] - 4;
+		if((dy > 0 && atTop) || (dy < 0 && !full)) dragStart(touchY, "body"); else { touchY = null; return; }
+	}
+	e.preventDefault(); dragMove(y);
+}, { passive:false });
+pbody.addEventListener("touchend", () => { touchY = null; if(drag && drag.from === "body") dragEnd(); });
+pbody.addEventListener("touchcancel", () => { touchY = null; if(drag && drag.from === "body") dragEnd(); });
+addEventListener("resize", () => {
+	if(!isPhone()){ panelEl.style.height = ""; sheet.h = 0; }
+	else if(panelEl.classList.contains("on")) setSheet(Math.min(sheet.h || sheetSnaps()[1], sheetSnaps()[2]), false);
+});
+// décalage vertical de la vue (px) : le lieu visé reste au milieu de l'espace libre entre la barre du haut et la fiche
+function phoneOffsetY(){
+	const top = 64, dock = $("dock").offsetHeight;
+	const bottom = panelEl.classList.contains("on") ? dock + (sheet.h || panelEl.offsetHeight) : carouselOn ? dock + 96 : dock;
+	return Math.min(innerHeight*.36, Math.max(0, (bottom - top)/2));
+}
+
+/* =====================================================================
    Visite guidée : la caméra enchaîne les lieux, une carte raconte chacun
    ===================================================================== */
 const TOUR_IDS = ["ha","chapelle","falise","rizomm","jardin","bu","resto","all","maison","sport","residence","rameau","citadelle","wenov"];
@@ -1757,7 +1900,7 @@ const touch = matchMedia("(pointer:coarse)").matches;
 const BORNE = /[?&]borne/.test(location.search);
 const COACH = [
 	{ ic:"👆", k:"1 / 3 · Se déplacer", t: touch ? "Glisse un doigt pour tourner" : "Glisse pour tourner autour du campus",
-	  p: touch ? "Pince avec deux doigts pour zoomer. Le bouton ⌂ te ramène à la vue d'ensemble." : "Molette pour zoomer, clic droit pour te déplacer. Le bouton ⌂ te ramène à la vue d'ensemble." },
+	  p: touch ? "Pince avec deux doigts pour zoomer. Fais défiler les cartes du bas : la caméra t'emmène à chaque lieu." : "Molette pour zoomer, clic droit pour te déplacer. Le bouton ⌂ te ramène à la vue d'ensemble." },
 	{ ic:"🏛️", k:"2 / 3 · Explorer", t:"Touche un bâtiment ou une épingle", p:"La barre du bas t'emmène directement aux formations, aux lieux du campus ou dans une visite guidée.", dock:true },
 	{ ic:"♡", k:"3 / 3 · Garder", t:"Garde les formations qui te plaisent", p:"Touche ♡ sur une formation : elle rejoint ton carnet 📒, avec tes tampons de visite." }
 ];
@@ -1774,14 +1917,14 @@ function endCoach(){ coach = null; $("coach").hidden = true; $("dock").classList
 $("coach").addEventListener("click", e => {
 	const b = e.target.closest("[data-coach]"); if(!b) return;
 	Audio.play("pop");
-	if(b.dataset.coach === "skip" || coach.i === COACH.length - 1){ endCoach(); if(b.dataset.coach !== "skip") toast("Commence par l'Hôtel Académique : touche-le pour entrer 🏛️", 4000); return; }
+	if(b.dataset.coach === "skip" || coach.i === COACH.length - 1){ endCoach(); if(b.dataset.coach !== "skip") toast(startHint(), 4000); return; }
 	coach.i++; showCoach();
 });
 
 /* =====================================================================
    Caméra
    ===================================================================== */
-let fly = null, panelShift = false, shift = 0;
+let fly = null, panelShift = false, offX = 0, offY = 0;
 function flyTo(pos, target, dur){
 	fly = { p0:camera.position.clone(), t0:controls.target.clone(), p1:pos, t1:target, k:0, dur: reduceMotion ? .01 : dur };
 	controls.enabled = false;
@@ -1907,11 +2050,12 @@ function frame(){
 		controls.update();
 	}
 
-	shift += ((panelShift ? 1 : 0) - shift)*Math.min(1, dt*5);
-	if(shift > .002){
-		const mobile = innerWidth <= 720;
-		camera.setViewOffset(innerWidth, innerHeight, mobile ? 0 : 210*shift, mobile ? innerHeight*.3*shift : 0, innerWidth, innerHeight);
-	} else if(camera.view && camera.view.enabled) camera.clearViewOffset();
+	// fiche ouverte (ordinateur : à droite) ou fiche / carrousel (téléphone : en bas) : la vue se décale
+	const phone = isPhone(), k5 = Math.min(1, dt*5);
+	offX += ((!phone && panelShift ? 210 : 0) - offX)*k5;
+	offY += ((phone ? phoneOffsetY() : 0) - offY)*(drag ? 1 : k5);
+	if(Math.abs(offX) > .5 || Math.abs(offY) > .5) camera.setViewOffset(innerWidth, innerHeight, offX, offY, innerWidth, innerHeight);
+	else if(camera.view && camera.view.enabled) camera.clearViewOffset();
 
 	if(mode !== "ext"){
 		interiors[mode].update(dt, t, camera);
@@ -1944,7 +2088,7 @@ function frame(){
 		if(mode === "ext") fogFollow();
 		renderer.render(scene, camera);
 	}
-	if(entered) updatePins();
+	if(entered){ syncCarousel(); updatePins(); }
 	if(first){ first = false; performance.mark("campus-ready"); setTimeout(() => $("loader").classList.add("gone"), 150); prefetchLater(); }
 	requestAnimationFrame(frame);
 }

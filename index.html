@@ -199,6 +199,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .gpar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
 .gpar span{font-size:12px;font-weight:800;border:1.5px dashed var(--line);border-radius:999px;padding:3px 9px;color:var(--muted)}
 .gpar span.got{border:1.5px solid #3d7a55;background:#eef8f0;color:#2f6b45}
+.wonacts{display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin:10px 0 8px}
+.wonacts .btn{margin:0;padding:11px 8px;font-size:13.5px}
+.wonbar small{display:block;font-size:12.5px}
 .wonbar{background:#eef8f0;border:2px solid #3d7a55;border-radius:16px;padding:10px 12px;margin-bottom:10px;font-size:14px;font-weight:700;color:#2f6b45}
 .medals{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:6px}
 .medal{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;background:#fff;border:2px dashed var(--line);border-radius:16px;padding:10px 6px;cursor:pointer;font:inherit;color:var(--ink2)}
@@ -332,6 +335,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .coach-ctl button{border:0;border-radius:12px;padding:9px 14px;font-weight:800;background:var(--cream2)}
 .coach-ctl .go-s{background:var(--brand);color:var(--on-brand)}
 
+#btnMore,.more-row,.carousel,.grab,.stickycta{display:none}
 @media (min-width:721px){ #panel{bottom:88px} }
 @media (max-width:720px){
 	.dock{left:0;right:0;bottom:0;transform:translateY(30px);border-radius:20px 20px 0 0;justify-content:space-around;padding:6px 6px max(6px,env(safe-area-inset-bottom))}
@@ -340,16 +344,50 @@ button{font:inherit;color:inherit;cursor:pointer}
 	.dock button i{font-size:20px}
 	.dock .n{position:absolute;top:2px;right:calc(50% - 22px)}
 	.tour,.coach{bottom:calc(env(safe-area-inset-bottom) + 76px)}
-	.osm{bottom:calc(env(safe-area-inset-bottom) + 72px)}
+	.osm{bottom:calc(env(safe-area-inset-bottom) + 160px)}
 	.hud{left:12px;right:12px;gap:6px}
 	.brand{padding:5px 8px;border-radius:12px}
 	.brand img{height:30px}
 	.actions{gap:6px}
 	.chip{padding:10px 12px}
 	.chip .lbl{display:none}
-	#ambiance{top:66px;right:12px}
-	#panel{top:auto;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom));width:auto;height:60vh;height:60dvh;border-radius:24px 24px 0 0;transform:translateY(calc(100% + 90px));box-shadow:0 -10px 40px rgba(60,35,20,.2)}
-	#panel .ph{padding:18px 18px 12px}
+	#ambiance{top:66px;right:12px;z-index:46}
+	#panel{top:auto;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom));width:auto;height:60vh;height:60dvh;border-radius:24px 24px 0 0;transform:translateY(calc(100% + 90px));box-shadow:0 -10px 40px rgba(60,35,20,.2);transition:transform .5s cubic-bezier(.2,.8,.2,1),height .35s cubic-bezier(.2,.8,.2,1)}
+	#panel.dragging{transition:none}
+	#panel .ph{padding:24px 18px 12px;touch-action:none}
+	.grab{display:block;position:absolute;left:0;right:0;top:0;height:24px;cursor:grab}
+	.grab:after{content:"";position:absolute;left:50%;top:9px;width:42px;height:5px;border-radius:3px;background:#d8c5a8;transform:translateX(-50%)}
+	/* barre du haut : le logo et un seul bouton de réglages */
+	#btnProfile,#btnTheme,#btnMusic,#btnHome{display:none}
+	body.inside #btnHome{display:inline-flex}     /* dans un intérieur : le bouton pour ressortir reste là */
+	#btnMore{display:inline-flex;justify-content:center;width:46px;min-height:46px;padding:0;font-size:22px;font-weight:900;letter-spacing:1px}
+	.more-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 4px}
+	.more-row button{border:0;background:var(--cream2);border-radius:14px;padding:10px;min-height:46px;font-weight:800;font-size:13.5px}
+	/* carrousel des lieux */
+	.carousel{display:flex;position:fixed;left:0;right:0;bottom:calc(68px + env(safe-area-inset-bottom));z-index:11;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 16px 8px;scrollbar-width:none;opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .3s ease,transform .3s ease;overscroll-behavior-x:contain}
+	.carousel::-webkit-scrollbar{display:none}
+	.carousel.on{opacity:1;transform:none;pointer-events:auto}
+	.ccard{flex:0 0 80%;max-width:330px;scroll-snap-align:center;display:flex;align-items:center;gap:10px;border:0;text-align:left;background:var(--cream);border-radius:18px;padding:10px 12px;box-shadow:0 8px 24px rgba(60,35,20,.18),0 1px 3px rgba(60,35,20,.12);font:inherit;color:var(--ink);min-height:74px;cursor:pointer;transition:transform .2s ease}
+	.ccard:not(.cur){transform:scale(.96)}
+	.ccard>span:nth-child(2){flex:1;min-width:0}
+	.ccard b{display:block;font:700 16px/1.15 Fraunces,Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+	.ccard small{display:block;margin-top:2px;font-size:12px;color:var(--ink2);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+	.ccard .ok{color:#3f8a4f;font-weight:900}
+	.ccard .go-c{flex:none;background:var(--brand);color:var(--on-brand);border-radius:999px;padding:8px 12px;font-weight:800;font-size:13px}
+	.ccard.hub{background:linear-gradient(135deg,#fff3d6,#fbe3b0);box-shadow:inset 0 0 0 2px #e8c27a,0 8px 24px rgba(60,35,20,.18)}
+	.ccard.hub .go-c{background:var(--navy);color:#fff}
+	/* épingles compactes : le nom s'affiche pour le lieu de la carte du carrousel */
+	.pin span{padding:4px;gap:0}
+	.pin span em{width:32px;height:32px;font-size:17px;background:#fff}
+	.pin span i{max-width:0;overflow:hidden;transition:max-width .25s ease,margin .25s ease}
+	.pin.hover span i{max-width:240px;margin:0 6px}
+	.pin span s:not(:empty){margin-right:4px}
+	/* fiche formation : l'action principale reste sous le pouce */
+	.stickycta{display:flex;gap:8px;position:sticky;bottom:-22px;z-index:2;margin:16px -18px -22px;padding:12px 18px 14px;background:linear-gradient(rgba(255,248,236,0),var(--cream) 22%)}
+	.stickycta .btn{margin:0}
+	.stickycta .main{flex:1}
+	.stickycta .fv{flex:none;width:auto;padding:13px 16px;font-size:17px}
+	.acts [data-lead],.acts [data-favd]{display:none}
 	#panel .ph h2{font-size:22px}
 	.card{padding:22px 18px 18px}
 	.card h1{font-size:28px}
@@ -386,9 +424,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 		<button class="chip" id="btnTheme" title="Ambiance" aria-haspopup="true"></button>
 		<button class="chip icon" id="btnMusic" title="Musique et sons" aria-label="Musique et sons">🔇</button>
 		<button class="chip icon" id="btnHome" title="Vue d'ensemble" aria-label="Vue d'ensemble">⌂</button>
+		<button class="chip icon" id="btnMore" aria-label="Réglages : profil, musique, ambiance" aria-haspopup="true">⋯</button>
 	</div>
 </header>
 <div id="ambiance" hidden>
+	<div class="more-row"><button id="moreProfile"></button><button id="moreMusic"></button></div>
 	<h4>Saison</h4><div class="seg" id="segSeason"></div>
 	<h4>Moment</h4><div class="seg" id="segTime"></div>
 	<h4>Qualité graphique</h4><div class="seg" id="segQuality"></div>
@@ -415,6 +455,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 		<a class="plain" href="liste.html">Préférer une version sans 3D (liste des formations)</a>
 	</div>
 </div>
+
+<!-- téléphone : les lieux défilent en cartes au-dessus de la barre du bas, la caméra suit -->
+<div class="carousel" id="carousel" aria-label="Lieux du campus"></div>
 
 <nav class="dock" id="dock" aria-label="Navigation">
 	<button data-dock="formations"><i>🎓</i><span>Formations</span></button>
@@ -481,7 +524,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 </div>
 
 <aside id="panel" aria-live="polite">
-	<div class="ph"><button class="close" id="close" aria-label="Fermer">×</button><div id="phead"></div></div>
+	<div class="ph"><div class="grab" id="grab" aria-hidden="true"></div><button class="close" id="close" aria-label="Fermer">×</button><div id="phead"></div></div>
 	<div class="pb" id="pbody"></div>
 </aside>
 
