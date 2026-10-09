@@ -47,6 +47,9 @@ export const PLAQUETTES = {
 	// gestion: "https://www.fges.fr/wp-content/uploads/…/plaquette-licence-gestion.pdf",
 };
 export const CATALOGUE_PLAQUETTES = "https://www.calameo.com/accounts/7206845";
+/* Relais du formulaire en production (plugin WordPress fourni dans tools/wordpress/).
+   Vide : le site utilise le relais local (tools/serve.py), ou le mode démo une fois en ligne. */
+export const LEAD_ENDPOINT = "";     // ex. "https://www.fges.fr/wp-json/campus-fges/v1/lead"
 
 /* Mini-jeux disponibles : id de formation → id du jeu */
 export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit" };

@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, beam } from "./kit.js";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES } from "./data.js";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js";
 import { MAP } from "./vauban.js";
 import { buildCity, pointInPoly } from "./city.js";
 import { Audio } from "./audio.js";
@@ -1629,9 +1629,9 @@ function markVisited(id){
    (la clé du CRM n'est jamais dans le navigateur ; l'adresse du relais se règle
     avec window.CAMPUS_LEAD_API sur la page d'intégration)
    ===================================================================== */
-const LEAD_API = window.CAMPUS_LEAD_API || "api/lead";
+const LEAD_API = window.CAMPUS_LEAD_API || LEAD_ENDPOINT || "api/lead";
 // version de test en ligne (GitHub Pages, Netlify, Cloudflare…) ou ?demo : le formulaire ne transmet rien
-const LEAD_DEMO = !window.CAMPUS_LEAD_API && (/[?&]demo/.test(location.search) || /\.(github\.io|netlify\.app|pages\.dev)$/.test(location.hostname));
+const LEAD_DEMO = !window.CAMPUS_LEAD_API && !LEAD_ENDPOINT && (/[?&]demo/.test(location.search) || /\.(github\.io|netlify\.app|pages\.dev)$/.test(location.hostname));
 let leadOpenedAt = 0;
 function openLead(ids){
 	const list = (ids && ids.length ? ids : [...favs]).map(id => F.find(f => f.id === id)).filter(Boolean);

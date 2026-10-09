@@ -41,7 +41,9 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/games/comptoir.js` | Mini-jeu « Le Comptoir » (Licence Gestion) ; variante « caisse » avec `?caisse` |
 | `js/games/jardin.js` | Mini-jeu « Mission Jardin Boulay » (Licence Sciences de la Vie, 3 parcours en L3) |
 | `js/games/audit.js` | Mini-jeu « L'Enquête de l'auditeur » (Licence Comptabilité-Finance-Audit) |
-| `docs/validation-*.md` | Fiches de validation des mini-jeux, à faire relire par un enseignant de chaque formation |
+| `docs/validation-*.md` | Fiches de validation des mini-jeux (contenus validés par les enseignants) |
+| `docs/mise-en-ligne.md` | **Mise en ligne** : GitHub Pages, branchement du formulaire sur le CRM |
+| `tools/wordpress/` | Relais du formulaire pour la production (extension WordPress) |
 | `js/audio.js` | Musique lofi, ambiances et effets sonores générés |
 | `js/kit.js` | Outils 3D partagés (formes, fenêtres, étudiants) |
 | `tools/build_map.py` | Régénère `js/vauban.js` depuis les extraits de `tools/osm/` |
@@ -61,6 +63,10 @@ En local, `tools/serve.py` fait office de relais :
 Le relais vérifie l'e-mail et le consentement, ignore les robots (champ piège, envoi trop rapide) et limite
 les envois (5 par 10 minutes par adresse IP). Le serveur local n'écoute que sur ce poste et ne sert jamais
 les fichiers cachés (`.env`, `.git`) ni le dossier `tools/`.
+
+En ligne, le relais est l'extension WordPress `tools/wordpress/campus-fges-relais.php` (adresse à renseigner
+dans `LEAD_ENDPOINT`, `js/data.js`). Tant qu'elle n'est pas branchée, la version en ligne est en **mode démo** :
+le formulaire ne transmet rien. Voir `docs/mise-en-ligne.md`.
 
 Après l'envoi, le visiteur reçoit tout de suite ses plaquettes : le lien PDF de chaque formation
 (table `PLAQUETTES` dans `js/data.js`, à compléter) ou, à défaut, le catalogue Calaméo de toutes les plaquettes.

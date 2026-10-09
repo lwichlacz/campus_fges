@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f3dcb8">
 <title>Campus FGES</title>
+<meta name="description" content="Promène-toi dans le campus 3D de la FGES (Université Catholique de Lille), découvre ses 36 formations et joue une licence : tiens un café, mène une enquête d'audit, inventorie un jardin botanique…">
+<!-- aperçu du lien (WhatsApp, Instagram, LinkedIn, e-mail) : l'image doit être une adresse complète, à mettre à jour si le site change d'adresse -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="FGES · Université Catholique de Lille">
+<meta property="og:title" content="Campus FGES · visite le campus en 3D et joue une formation">
+<meta property="og:description" content="Promène-toi dans le vrai quartier Vauban, entre dans les bâtiments et teste une licence en quelques minutes avec un mini-jeu.">
+<meta property="og:image" content="https://lwichlacz.github.io/campus_fges/img/apercu.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Le campus de la FGES en 3D : l'Hôtel Académique et le quartier Vauban à l'automne">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/icone.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -61,6 +74,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .toast{position:fixed;left:50%;top:84px;transform:translate(-50%,-14px);background:var(--cream);padding:12px 18px;border-radius:16px;box-shadow:var(--shadow);font-weight:700;font-size:14px;opacity:0;transition:.4s ease;z-index:45;max-width:calc(100% - 32px);text-align:center;pointer-events:none;border-left:5px solid var(--gold)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .toast.side{left:calc((100% - 432px)/2);max-width:calc(100% - 464px)}
+.osm a{color:inherit;text-decoration:none} .osm a:hover{text-decoration:underline}
 .osm{position:fixed;left:10px;bottom:max(6px,env(safe-area-inset-bottom));z-index:3;font-size:10.5px;font-weight:700;color:rgba(43,34,51,.6);background:rgba(255,248,236,.55);padding:2px 7px;border-radius:6px;text-decoration:none}
 
 /* ---------- Étiquettes ---------- */
@@ -282,7 +296,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .opt input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:var(--bordeaux)}
 .lead-err{background:#fde8e8;color:#9b1c1c;border-radius:10px;padding:8px 12px;font-weight:700;font-size:13.5px;margin:10px 0 0}
 .lead-card .go{margin-top:12px}
-.lead-note{font-size:11.5px;color:var(--muted);margin:10px 0 0}
+.lead-note{font-size:11.5px;color:var(--muted);margin:10px 0 0} .lead-note a{color:var(--bordeaux);font-weight:700}
 .lead-big{font-size:52px;text-align:center;margin-top:6px}
 #leadDone h2{text-align:center;margin-right:0}
 #leadDone .lead-p{text-align:center}
@@ -383,7 +397,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 <div class="hint" id="hint">Glisse pour tourner · Pince ou molette pour zoomer · Touche un bâtiment</div>
 <div class="toast" id="toast"></div>
-<a class="osm" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">Carte © les contributeurs d'OpenStreetMap</a>
+<div class="osm"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">Carte © les contributeurs d'OpenStreetMap</a> · <a href="https://www.fges.fr/mentions-legales/" target="_blank" rel="noopener">Mentions légales</a></div>
 <div id="fade"></div>
 
 <div id="welcome">
@@ -453,7 +467,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 				<label class="opt"><input type="checkbox" name="tracking"><span>J'accepte de recevoir des informations personnalisées et le suivi de mes interactions (e-mails, liens).</span></label>
 				<p class="lead-err" role="alert" hidden></p>
 				<button class="go" type="submit">Recevoir les plaquettes</button>
-				<p class="lead-note">* Champs obligatoires. Tes données sont traitées par la FGES (Université Catholique de Lille) uniquement pour te recontacter au sujet de nos formations, conformément au RGPD ; tu peux demander leur suppression à tout moment. Tu as moins de 15 ans ? Parles-en à un parent avant d'envoyer ce formulaire.</p>
+				<p class="lead-note">* Champs obligatoires. Tes données sont traitées par la FGES (Université Catholique de Lille) uniquement pour te recontacter au sujet de nos formations, conformément au RGPD ; tu peux demander leur suppression à tout moment. Tu as moins de 15 ans ? Parles-en à un parent avant d'envoyer ce formulaire. <a href="https://www.fges.fr/mentions-legales/" target="_blank" rel="noopener">Protection de tes données</a> · délégué à la protection des données : <a href="mailto:dpo@univ-catholille.fr">dpo@univ-catholille.fr</a></p>
 			</form>
 		</div>
 		<div id="leadDone" hidden>
