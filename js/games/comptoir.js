@@ -44,7 +44,7 @@ const CSS = `
 .cz-top>*{pointer-events:auto}
 .cz-chip{background:rgba(255,248,236,.95);border-radius:999px;padding:7px 12px;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(40,20,10,.25);display:flex;gap:6px;align-items:center}
 .cz-chip b{font-size:15px}
-.cz-day{background:#8a2b4e;color:#fff}
+.cz-day{background:#8a2b4e;color:#fff} .cz-day:empty{display:none}
 .cz-x{margin-left:auto;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,248,236,.95);font-size:22px;cursor:pointer;box-shadow:0 6px 18px rgba(40,20,10,.25)}
 .cz-bar{width:70px;height:8px;border-radius:8px;background:#ead9bf;overflow:hidden}
 .cz-bar i{display:block;height:100%;background:linear-gradient(90deg,#c4532f,#d9a441,#3d7a55);transition:width .4s}
@@ -54,6 +54,7 @@ const CSS = `
 .cz-bub.mine span{border-color:#d9a441;box-shadow:0 0 0 4px rgba(242,193,78,.55),0 4px 12px rgba(40,20,10,.3);transform:scale(1.1)}
 .cz-bub.angry span{border-color:#c4532f;background:#fde8e8}
 .cz-bub.busy span{border-color:#d9a441;opacity:.85}
+.cz.tall .cz-bub span{font-size:13px;padding:3px 6px;border-width:2px;border-radius:12px}
 .cz-pop{position:absolute;z-index:3;font-weight:800;font-size:15px;color:#2f6b45;text-shadow:0 1px 0 #fff,0 0 8px #fff;pointer-events:none;animation:czPop 1.1s ease-out forwards}
 .cz-pop.bad{color:#b91c1c}
 @keyframes czPop{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-46px)}}
@@ -195,12 +196,15 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	const planks = (() => { const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
 		x.fillStyle = "#c99a6b"; x.fillRect(0,0,128,128); for(let i=0;i<4;i++){ x.fillStyle = i % 2 ? "rgba(0,0,0,.05)" : "rgba(255,255,255,.04)"; x.fillRect(0, i*32, 128, 32); } x.fillStyle = "rgba(60,30,10,.18)"; for(let i=0;i<4;i++) x.fillRect(0, i*32, 128, 3);
 		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(6, 4); t.colorSpace = THREE.SRGBColorSpace; return t; })();
-	const floor = new THREE.Mesh(new THREE.PlaneGeometry(24, 14).rotateX(-Math.PI/2), new THREE.MeshStandardMaterial({ map:planks, roughness:.85 }));
-	floor.position.set(3, 0, 2); floor.receiveShadow = true; scene.add(floor);
+	// sur téléphone (écran en hauteur), la file d'attente descend vers l'écran au lieu de filer vers la droite :
+	// la salle tient alors dans la largeur et remplit toute la hauteur
+	const TALL = innerWidth < innerHeight; root.classList.toggle("tall", TALL);
+	const floor = new THREE.Mesh(new THREE.PlaneGeometry(24, 18).rotateX(-Math.PI/2), new THREE.MeshStandardMaterial({ map:planks, roughness:.85 }));
+	floor.position.set(3, 0, 4); floor.receiveShadow = true; scene.add(floor);
 	const brick = std("#b5563d"), cream = std("#efe3cc"), wood = std("#8a5a3c"), dark = std("#2e2c30");
 	box(scene, 24, 6, .4, brick, 3, 0, -2.6);
 	for(const x of [-6.5, 7, 12]){ box(scene, 2.2, 3, .2, std("#3b4d63"), x, 1.4, -2.4); box(scene, 2.5, .25, .3, cream, x, 1.25, -2.35); }
-	box(scene, .4, 6, 14, brick, -9, 0, 2);
+	box(scene, .4, 6, 18, brick, -9, 0, 4);
 	// comptoir, machine, vitrine
 	box(scene, 6.6, 1.05, 1.3, wood, -.2, 0, 0);
 	box(scene, 6.9, .1, 1.5, cream, -.2, 1.05, 0);
@@ -225,12 +229,21 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		menuTex.needsUpdate = true;
 	}
 	// porte, tables, plantes
-	box(scene, .3, 3.2, .3, wood, 9.3, 0, 2.2); box(scene, .3, 3.2, .3, wood, 9.3, 0, 4.4); box(scene, .3, .3, 2.5, wood, 9.3, 3.1, 3.3);
-	const doorGlow = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 3), std("#fff3d6", { emissive:"#ffe2a8", emissiveIntensity:.6 })); doorGlow.position.set(9.45, 1.5, 3.3); doorGlow.rotation.y = -Math.PI/2; scene.add(doorGlow);
-	for(const [x,z] of [[-6, 3.5],[-3.5, 4.8]]){ cyl(scene, .7, .7, .08, wood, x, .78, z, 14); cyl(scene, .07, .07, .78, dark, x, 0, z, 6); }
-	for(const [x,z] of [[-8.2, -1.6],[8.4, -1.8]]){ cyl(scene, .4, .32, .6, std("#c98a5a"), x, 0, z, 10); mesh(new THREE.IcosahedronGeometry(.7, 0), std("#5f8f4a"), scene, x, 1.15, z); }
+	if(TALL){
+		// porte au premier plan : deux montants et un rai de lumière au sol, rien qui cache la file
+		box(scene, .3, 3.2, .3, wood, 5.1, 0, 10.4); box(scene, .3, 3.2, .3, wood, 7.3, 0, 10.4); box(scene, 2.5, .3, .3, wood, 6.2, 3.1, 10.4);
+		const glow = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 2.4).rotateX(-Math.PI/2), std("#fff3d6", { emissive:"#ffe2a8", emissiveIntensity:.5, transparent:true, opacity:.55 }));
+		glow.position.set(6.2, .02, 9.6); scene.add(glow);
+	} else {
+		box(scene, .3, 3.2, .3, wood, 9.3, 0, 2.2); box(scene, .3, 3.2, .3, wood, 9.3, 0, 4.4); box(scene, .3, .3, 2.5, wood, 9.3, 3.1, 3.3);
+		const doorGlow = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 3), std("#fff3d6", { emissive:"#ffe2a8", emissiveIntensity:.6 })); doorGlow.position.set(9.45, 1.5, 3.3); doorGlow.rotation.y = -Math.PI/2; scene.add(doorGlow);
+	}
+	const TABLES = TALL ? [[-1.6, 6.2],[1.2, 8.2]] : [[-6, 3.5],[-3.5, 4.8]];
+	for(const [x,z] of TABLES){ cyl(scene, .7, .7, .08, wood, x, .78, z, 14); cyl(scene, .07, .07, .78, dark, x, 0, z, 6); }
+	for(const [x,z] of TALL ? [[-3.4, -1.7],[7.6, -1.8]] : [[-8.2, -1.6],[8.4, -1.8]]){ cyl(scene, .4, .32, .6, std("#c98a5a"), x, 0, z, 10); mesh(new THREE.IcosahedronGeometry(.7, 0), std("#5f8f4a"), scene, x, 1.15, z); }
 	const deco = [];
-	for(const [x,z,r] of [[-6.6, 3.5, Math.PI/2],[-5.4, 3.5, -Math.PI/2],[-3.5, 5.6, Math.PI]]){ const s = makeStudent(scene, true); s.g.scale.setScalar(.9); s.g.position.set(x, -.1, z); s.g.rotation.y = r; deco.push(s); }
+	const SEATS = TALL ? [[-2.2, 6.2, Math.PI/2],[-1, 6.2, -Math.PI/2],[1.2, 9, Math.PI]] : [[-6.6, 3.5, Math.PI/2],[-5.4, 3.5, -Math.PI/2],[-3.5, 5.6, Math.PI]];
+	for(const [x,z,r] of SEATS){ const s = makeStudent(scene, true); s.g.scale.setScalar(.9); s.g.position.set(x, -.1, z); s.g.rotation.y = r; deco.push(s); }
 	// baristas
 	const BX = [-2.2, -.2, 1.8];
 	const baristas = BX.map(x => { const s = makeStudent(scene); s.g.scale.setScalar(.9); s.g.position.set(x, 0, -1.05); const apron = new THREE.Mesh(new THREE.BoxGeometry(.6,.55,.08), std("#8a2b4e")); apron.position.set(0,.6,.32); s.g.add(apron); return { s, cust:null, t:0 }; });
@@ -257,11 +270,11 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	function layout(){
 		const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w/h;
 		// recule la caméra juste assez pour voir du comptoir à la porte (≈ 13 m de large), même sur téléphone
-		const portrait = w < h, aspect = w/h;
-		camera.fov = portrait ? 50 : 40;
+		const portrait = TALL, aspect = w/h;
+		camera.fov = portrait ? 46 : 40;
 		const halfW = Math.tan(THREE.MathUtils.degToRad(camera.fov/2)) * aspect;
-		const dist = Math.max(17, 7 / halfW), tx = portrait ? 3.1 : 3, tz = portrait ? 1.9 : 1.6;
-		const dir = new THREE.Vector3(0, portrait ? 1 : .56, portrait ? .5 : .63).normalize();
+		const dist = portrait ? 5.9 / halfW : Math.max(17, 7 / halfW), tx = portrait ? 2.1 : 3, tz = portrait ? 4.4 : 1.6;
+		const dir = new THREE.Vector3(0, portrait ? 1 : .56, portrait ? .62 : .63).normalize();
 		camera.position.set(tx + dir.x*dist, .6 + dir.y*dist, tz + dir.z*dist);
 		camera.lookAt(tx, .6, tz);
 		camera.updateProjectionMatrix();
@@ -269,8 +282,8 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	addEventListener("resize", layout); layout();
 
 	/* ---------- clients ---------- */
-	const SERVE_Z = 1.45, Q0 = [3.7, 0, 2.3], DOOR = [9.6, 0, 3.3];
-	const qPos = i => [Q0[0] + i*.95, 0, Q0[2] + i*.13];
+	const SERVE_Z = 1.45, Q0 = TALL ? [3.6, 0, 3.7] : [3.7, 0, 2.3], DOOR = TALL ? [6.2, 0, 10.6] : [9.6, 0, 3.3];
+	const qPos = TALL ? (i => [Q0[0] + (i % 2 ? 1.9 : 0), 0, Q0[2] + i*.7]) : (i => [Q0[0] + i*.95, 0, Q0[2] + i*.13]);
 	const ICON = { cafe:"☕", lait:"🥛", croissant:"🥐" }, KEYS = ["cafe", "lait", "croissant"];
 	const orderIcons = o => KEYS.filter(k => o[k]).map(k => ICON[k]).join("");
 	const drinkCost = o => ECO.cafe + ECO.gobelet + (o.lait ? ECO.lait + D.laitExtra : 0);
@@ -635,7 +648,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	}
 	function prep(){
 		const def = DAYS[S.day];
-		paintMenu();
+		paintMenu(); $("#czDay").textContent = `${def.year} · ${def.title.split(" · ")[0]}`;
 		const est = () => Math.round(def.base*BASE_K * priceFactor(S.price) * (.75 + .5*S.rep));
 		const render = () => {
 			const n = est(), marge = S.price - ECO.tasse, fixe = S.staff*ECO.salaire;

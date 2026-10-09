@@ -1157,6 +1157,7 @@ let musicWanted = store.get("music", true);
 
 function toast(msg, ms=3200){
 	const t = $("toast"); t.textContent = msg; t.classList.add("on");
+	t.classList.toggle("side", innerWidth > 720 && $("panel").classList.contains("on"));     // centré dans la partie libre, pas sur la fiche
 	clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove("on"), ms);
 }
 function refreshHud(){
@@ -1193,7 +1194,7 @@ function afterArrival(){
 	$("dock").classList.add("on");
 	if(BORNE) return;
 	if(!store.get("onboarded", false)) setTimeout(() => startCoach(), 600);
-	else setTimeout(() => toast(stamps.has("ha") ? "Content de te revoir sur le campus 👋" : "Commence par l'Hôtel Académique : touche-le pour entrer 🏛️", 4500), 500);
+	else setTimeout(() => !gamePaused && toast(stamps.has("ha") ? "Content de te revoir sur le campus 👋" : "Commence par l'Hôtel Académique : touche-le pour entrer 🏛️", 4500), 500);
 }
 $("btnProfile").addEventListener("click", () => { closePanel(); $("welcome").classList.remove("gone"); });
 $("btnTheme").addEventListener("click", e => { e.stopPropagation(); $("ambiance").hidden = !$("ambiance").hidden; });
@@ -1231,17 +1232,20 @@ function buildPins(){
 const v3 = new THREE.Vector3(), v3b = new THREE.Vector3();
 function updatePins(){
 	const W = innerWidth, Hh = innerHeight, shown = [];
+	// sur téléphone, la fiche ouverte ne laisse qu'une bande de ciel : seule l'épingle du lieu affiché y reste
+	const solo = W <= 720 && panelShift && current, TOP = W <= 720 ? 112 : 96;     // sous la barre du haut
 	for(const p of pins){
 		v3.copy(p.v).project(camera);
 		let x = (v3.x*.5 + .5)*W, y = (-v3.y*.5 + .5)*Hh, edge = false, hide = false;
 		const behind = v3.z > 1;
-		if(p.life){
+		if(solo && p.place !== current) hide = true;
+		else if(p.life){
 			const dist = camera.position.distanceTo(p.v);
 			p.far = p.far ? dist > 215 : dist > 240;          // hystérésis : pas de clignotement au seuil
 			hide = behind || p.far;
-		} else if(mode === "ext" && !behind && y < 96 && p.place && (() => { const t = (PLACES[p.place] || LIFE[p.place]).target; if(!t) return false; v3b.set(...t).project(camera); const tx = (v3b.x*.5+.5)*W, ty = (-v3b.y*.5+.5)*Hh; return v3b.z < 1 && tx > 0 && tx < W && ty > 0 && ty < Hh; })()){
-			y = 96;      // le bâtiment est à l'écran : l'épingle reste en haut, sans flèche
-		} else if(mode === "ext" && (behind || x < 40 || x > W - 40 || y < 96 || y > Hh - 30)){
+		} else if(mode === "ext" && !behind && y < TOP && p.place && (() => { const t = (PLACES[p.place] || LIFE[p.place]).target; if(!t) return false; v3b.set(...t).project(camera); const tx = (v3b.x*.5+.5)*W, ty = (-v3b.y*.5+.5)*Hh; return v3b.z < 1 && tx > 0 && tx < W && ty > 0 && ty < Hh; })()){
+			y = TOP;      // le bâtiment est à l'écran : l'épingle reste en haut, sans flèche
+		} else if(mode === "ext" && (behind || x < 40 || x > W - 40 || y < TOP || y > Hh - 30)){
 			// lieu hors champ : l'épingle reste collée au bord, avec une flèche
 			if(behind){ x = W - x; y = Hh - y; }
 			const cx = W/2, cy = Hh/2, dx = x - cx, dy = y - cy;
@@ -1455,7 +1459,7 @@ function detailView(f){
 }
 function gameHere(id){
 	return (GAME_AT[id] || []).map(k => { const g = GAME_INFO[k];
-		return `<button class="play wide" data-game="${g.fid}">${g.icon} ${g.title} · le mini-jeu de la ${F.find(f => f.id === g.fid).name}</button>`; }).join("");
+		return `<button class="gteaser" data-game="${g.fid}"><span class="gic">${g.icon}</span><span><b>${g.title}</b><small>${F.find(f => f.id === g.fid).name} · ${g.dur}${medals[k] ? ` · 🏅 ${medals[k]}` : ""}</small></span><span class="gplay">${medals[k] ? "Rejouer" : "Jouer"} ▶</span></button>`; }).join("");
 }
 let justWon = null;      // après une victoire, la vue Jeux félicite et suggère la suite
 function jeuxView(){
