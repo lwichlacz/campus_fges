@@ -1630,6 +1630,8 @@ function markVisited(id){
     avec window.CAMPUS_LEAD_API sur la page d'intégration)
    ===================================================================== */
 const LEAD_API = window.CAMPUS_LEAD_API || "api/lead";
+// version de test en ligne (GitHub Pages, Netlify, Cloudflare…) ou ?demo : le formulaire ne transmet rien
+const LEAD_DEMO = !window.CAMPUS_LEAD_API && (/[?&]demo/.test(location.search) || /\.(github\.io|netlify\.app|pages\.dev)$/.test(location.hostname));
 let leadOpenedAt = 0;
 function openLead(ids){
 	const list = (ids && ids.length ? ids : [...favs]).map(id => F.find(f => f.id === id)).filter(Boolean);
@@ -1664,8 +1666,8 @@ $("leadForm").querySelector("form").addEventListener("submit", async e => {
 	};
 	btn.disabled = true; btn.textContent = "Envoi…";
 	try {
-		const r = await fetch(LEAD_API, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(body) });
-		const res = await r.json().catch(() => ({}));
+		const r = LEAD_DEMO ? { ok:true } : await fetch(LEAD_API, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(body) });
+		const res = LEAD_DEMO ? { ok:true, dryRun:true } : await r.json().catch(() => ({}));
 		if(!r.ok || !res.ok) throw new Error(res.error || "Envoi impossible pour le moment.");
 		store.set("leadSent", true);
 		Audio.play("win");
