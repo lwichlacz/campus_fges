@@ -1056,7 +1056,8 @@ const MAKERS = { atrium:() => import("./atrium.js").then(m => m.createAtrium), c
 const GAME_LOADERS = {
 	comptoir:() => import("./games/comptoir.js").then(m => m.openComptoir),
 	jardin:() => import("./games/jardin.js").then(m => m.openJardin),
-	audit:() => import("./games/audit.js").then(m => m.openAudit)
+	audit:() => import("./games/audit.js").then(m => m.openAudit),
+	robot:() => import("./games/robot.js").then(m => m.openRobot)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -1480,6 +1481,7 @@ function interiorAction(id){
 	if(mode === "eura"){ focusEura(id); return; }
 	if(mode === "wenovin"){
 		if(id === "sortir") exitInterior();
+		else if(id === "robot") openGame("spi");
 		else { const I = interiors.wenovin, p = I.spots[id]; if(p) flyTo(V(...p.cam), V(...p.target), 1.2); openPanel(id === "salle" ? "wenov" : id); Audio.play("pop"); }
 		return;
 	}
@@ -1531,7 +1533,7 @@ const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
 function hitAt(cx, cy){
 	ptr.set(cx/innerWidth*2-1, -(cy/innerHeight)*2+1);
 	ray.setFromCamera(ptr, camera);
-	return ray.intersectObjects(mode !== "ext" ? interiors[mode].pickables : pickables, false)[0] || null;
+	return ray.intersectObjects(mode !== "ext" ? (interiors[mode].pickables || []) : pickables, false)[0] || null;      // le quartier et Wenov n'ont pas de bâtiment cliquable
 }
 let down = null, lastChime = -99;
 renderer.domElement.addEventListener("pointerdown", e => { down = { x:e.clientX, y:e.clientY }; if(tour && !tour.paused) pauseTour(true); });
