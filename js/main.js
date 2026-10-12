@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT } from "./render.js";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js";
 import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js";
 import { MAP } from "./vauban.js";
 import { buildLandmarks } from "./landmarks.js";
@@ -185,6 +185,16 @@ const HAG = new THREE.Group();
 }
 const city = buildCity(scene, MAP);
 const lawnMat = city.ground.lawn, waterMat = city.ground.water;
+// ombres de nuages sur le sol, les rues, les toits et les façades
+for(const m of [groundMat, lawnMat, city.ground.road, city.ground.ped, city.ground.walk, ...city.roofs, ...city.flats, ...city.walls]) if(m) cloudShade(m);
+const rain = createRain(scene);
+// rues mouillées : chaussée et trottoirs plus sombres et brillants sous la pluie
+const wetBase = [city.ground.road, city.ground.ped].map(m => ({ m, c:m.color.clone(), r:m.roughness }));
+function setWet(on){
+	for(const { m, c, r } of wetBase){ m.color.copy(c).multiplyScalar(on ? .7 : 1); m.roughness = on ? .26 : r; m.metalness = on ? .15 : 0; }
+	const w = city.ground.walk; w.color.multiplyScalar(on ? .74 : 1); w.roughness = on ? .32 : .92; w.metalness = on ? .1 : 0;
+	if(on) solU.uPaved.value.multiplyScalar(.74);
+}
 const woodMat = std("#9b6b45"), benchLeg = std("#3a3540");
 function flat(parent, w, d, mat, x, z, y=.03, ry=0){
 	const m = new THREE.Mesh(BOX, mat); m.scale.set(w, .04, d); m.position.set(x, y-.02, z); m.rotation.y = ry; m.receiveShadow = true; parent.add(m); return m;
@@ -1163,6 +1173,37 @@ let season = SEASONS[seasonKey], night = false;
 const realNight = () => { const h = new Date().getHours(); return h < 7 || h >= 19; };
 const realGolden = () => new Date().getHours() === 18;          // la dernière heure avant la nuit
 let golden = false;
+/* Météo : réelle (Open-Meteo, coordonnées du campus, sans donnée personnelle) ou choisie dans le menu */
+const WEATHERS = [["auto","🛰️ Réelle"],["soleil","☀️ Soleil"],["nuageux","⛅ Nuageux"],["pluie","🌧️ Pluie"],["brouillard","🌫️ Brouillard"]];
+let weatherMode = store.get("weather", "auto"); if(!WEATHERS.some(([k]) => k === weatherMode)) weatherMode = "auto";
+let realWeather = "soleil", weather = "soleil";
+const weatherNow = () => weatherMode === "auto" ? realWeather : weatherMode;
+function fetchWeather(){
+	fetch("https://api.open-meteo.com/v1/forecast?latitude=50.6327&longitude=3.0464&current=weather_code,cloud_cover")
+		.then(r => r.json()).then(d => {
+			const c = d.current.weather_code, cc = d.current.cloud_cover;          // codes météo de l'OMM
+			const w = (c >= 51 && c <= 67) || (c >= 80 && c <= 82) || c >= 95 ? "pluie" : (c === 45 || c === 48) ? "brouillard"
+				: (c >= 71 && c <= 77) || c === 85 || c === 86 || c === 3 || cc > 60 ? "nuageux" : "soleil";
+			if(w !== realWeather){ realWeather = w; if(weatherMode === "auto" && light) applyAmbiance(false, 4); }
+		}).catch(() => {});
+}
+fetchWeather(); setInterval(fetchWeather, 30*60000);
+// la météo change la lumière visée : ciel gris et soleil voilé sous la pluie, laiteux dans le brouillard
+function weatherize(o){
+	const W = weatherNow();
+	if(W === "pluie" || W === "brouillard"){
+		const grey = new THREE.Color(night ? "#2b2f3b" : W === "pluie" ? "#97a0ab" : "#dadde0");
+		for(const c of ["skyTop","skyBot","fog","cloud"]) o[c].lerp(grey, W === "pluie" ? .78 : .72);
+		o.hemiSky.lerp(grey, .5); o.sun.lerp(grey, .4);
+		o.sunI *= W === "pluie" ? .22 : .42; o.hemiI *= 1.12;
+		if(W === "pluie") o.exposure *= .92;
+		else { o.skyBot.copy(o.fog); o.skyTop.lerp(o.fog, .6); }          // dans le brouillard, le ciel se fond dans la brume
+	} else if(W === "nuageux"){
+		o.sunI *= .82;
+		for(const c of ["skyTop","skyBot"]) o[c].lerp(new THREE.Color(night ? "#262a38" : "#c2c8d0"), .38);
+	}
+	return o;
+}
 const LCOL = ["skyTop","skyBot","fog","hemiSky","hemiGround","sun","cloud"], LNUM = ["hemiI","sunI","exposure","nightK"];
 const lightOf = (L, k) => { const o = { sunPos:V(...L.sunPos), nightK:L.nightK ?? k }; for(const c of LCOL) o[c] = new THREE.Color(L[c]); for(const n of LNUM) if(n !== "nightK") o[n] = L[n]; return o; };
 const copyLight = l => { const o = { ...l, sunPos:l.sunPos.clone() }; for(const c of LCOL) o[c] = l[c].clone(); return o; };
@@ -1226,7 +1267,12 @@ function applyAmbiance(instant, dur = 1.8){
 	bushIM.instanceColor.needsUpdate = true;
 	paintFar(S);
 	// lumière : tout de suite au chargement, en fondu ensuite
-	const target = lightOf(L, night ? 1 : 0);
+	weather = weatherNow();
+	const target = weatherize(lightOf(L, night ? 1 : 0));
+	CLOUDS.value = night ? 0 : weather === "soleil" ? .3 : weather === "nuageux" ? .6 : 0;
+	rain.set(weather === "pluie" ? (night ? .7 : 1) : 0);
+	setWet(weather === "pluie");
+	fogFollow(true);
 	sky.set(target); scene.environment = sky.renderEnvironment();
 	if(!light || instant || reduceMotion){ light = copyLight(target); lightTween = null; showLight(); }
 	else { lightTween = { a:copyLight(light), b:target, k:0, dur }; sky.set(light); }
@@ -1241,14 +1287,16 @@ function applyAmbiance(instant, dur = 1.8){
 }
 function renderAmbiancePop(){
 	$("segSeason").innerHTML = SEASON_ORDER.map(k => `<button data-season="${k}" aria-pressed="${k === seasonKey}">${SEASONS[k].icon} ${SEASONS[k].label}</button>`).join("");
+	$("segWeather").innerHTML = WEATHERS.map(([k,l]) => `<button data-weather="${k}" aria-pressed="${k === weatherMode}">${l}</button>`).join("");
 	$("segTime").innerHTML = [["auto","🕰️ Heure réelle"],["jour","☀️ Jour"],["doree","🌇 Heure dorée"],["nuit","🌙 Nuit"]].map(([k,l]) => `<button data-time="${k}" aria-pressed="${k === timeMode}">${l}</button>`).join("");
 	$("segQuality").innerHTML = [["auto",`⚙️ Auto${qualityMode === "auto" ? ` (${QUALITY[quality].label})` : ""}`],["haute","Haute"],["moyenne","Moyenne"],["basse","Basse"]].map(([k,l]) => `<button data-quality="${k}" aria-pressed="${k === qualityMode}">${l}</button>`).join("");
 }
 $("ambiance").addEventListener("click", e => {
-	const s = e.target.closest("[data-season]"), t = e.target.closest("[data-time]");
+	const s = e.target.closest("[data-season]"), t = e.target.closest("[data-time]"), w = e.target.closest("[data-weather]");
 	if(s){ seasonKey = s.dataset.season; store.set("season", seasonKey); }
 	if(t){ timeMode = t.dataset.time; store.set("time", timeMode); }
-	if(s || t){ Audio.play("pop"); applyAmbiance(); }
+	if(w){ weatherMode = w.dataset.weather; store.set("weather", weatherMode); }
+	if(s || t || w){ Audio.play("pop"); applyAmbiance(); }
 	const q = e.target.closest("[data-quality]");
 	if(q){ Audio.play("pop"); qualityMode = q.dataset.quality; store.set("quality", qualityMode); setQuality(qualityMode === "auto" ? guessQuality() : qualityMode); }
 	if(e.target.closest("[data-replay]")){ $("ambiance").hidden = true; closePanel(); if(mode !== "ext") exitInterior(true); else playIntro(); }
@@ -2404,7 +2452,9 @@ function homeView(){
    même quand la caméra recule (vue d'ensemble sur téléphone), et seul l'horizon s'estompe. */
 function fogFollow(force){
 	const d = camera.position.distanceTo(controls.target), Q = QUALITY[quality];
-	const near = Math.max(170, d*1.05), far = Math.max(Q.far, near + 260);
+	let near = Math.max(170, d*1.05), far = Math.max(Q.far, near + 260);
+	if(weather === "brouillard"){ near = Math.max(30, d*.5); far = near + 240; }          // brouillard du matin : le lointain disparaît
+	else if(weather === "pluie"){ near = Math.max(90, d*.7); far = Math.max(near + 200, Q.far*.85); }
 	if(!force && Math.abs(far - scene.fog.far) < 8 && Math.abs(near - scene.fog.near) < 8) return;
 	scene.fog.near = near; scene.fog.far = far;
 	camera.far = far + 60; camera.updateProjectionMatrix();
@@ -2588,6 +2638,7 @@ function frame(){
 		if(partIM.count) updateParts(dt, t);
 		updateSmoke(dt);
 		updateBoats(dt, t);
+		rain.follow(camera.position);
 		for(const d of ducks){
 			const c = d.line, n = c.length/2 - 1; if(n < 1) continue;
 			const k = ((Math.sin(t*.02 + d.ph)*.5 + .5)*.8 + .1)*n, i = Math.floor(k), f = k - i;

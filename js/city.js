@@ -493,6 +493,7 @@ export function buildCity(scene, MAP, opts={}){
 	const roadM = layer(std("#57525c", { flatShading:false, side:THREE.DoubleSide }), -1);
 	const pedM = layer(std("#c9b9a1", { flatShading:false, side:THREE.DoubleSide }), -2);
 	const walkM = layer(std("#cbc1b2", { flatShading:false, side:THREE.DoubleSide }), 2);
+	out.ground.road = roadM; out.ground.ped = pedM; out.ground.walk = walkM;
 	const curbM = std("#bdb2a3", { flatShading:false, side:THREE.DoubleSide });
 	out.ground.walk = walkM;
 	const BR = bucket(), BP = bucket(), BW = bucket();

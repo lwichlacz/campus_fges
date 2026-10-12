@@ -319,3 +319,69 @@ export async function createPost(renderer, scene, camera){
 		dispose(){ composer.dispose(); rt.dispose(); }
 	};
 }
+
+/* =====================================================================
+   Météo : ombres de nuages qui glissent sur la ville, rideau de pluie autour de la caméra
+   ===================================================================== */
+// CLOUDS.value : force des ombres de nuages (0 : ciel dégagé ou couvert, 1 : beaux cumulus)
+export const CLOUDS = { value:0 };
+export function cloudShade(mat){
+	chain(mat, "clouds", sh => {
+		sh.uniforms.uTime = TIME; sh.uniforms.uClouds = CLOUDS;
+		sh.vertexShader = sh.vertexShader
+			.replace("#include <common>", "#include <common>\nvarying vec2 vCloudXZ;")
+			.replace("#include <project_vertex>", `#include <project_vertex>\n	{ ${WORLD_VS}\n	vCloudXZ = fxW.xz; }`);
+		sh.fragmentShader = sh.fragmentShader
+			.replace("#include <common>", `#include <common>
+uniform float uTime; uniform float uClouds; varying vec2 vCloudXZ;
+float cnoise( vec2 p ){ vec2 i = floor( p ), f = fract( p ); f = f*f*( 3.0 - 2.0*f );
+	float a = fract( sin( dot( i, vec2( 127.1, 311.7 ) ) )*43758.5453 ), b = fract( sin( dot( i + vec2( 1.0, 0.0 ), vec2( 127.1, 311.7 ) ) )*43758.5453 );
+	float c = fract( sin( dot( i + vec2( 0.0, 1.0 ), vec2( 127.1, 311.7 ) ) )*43758.5453 ), d = fract( sin( dot( i + vec2( 1.0, 1.0 ), vec2( 127.1, 311.7 ) ) )*43758.5453 );
+	return mix( mix( a, b, f.x ), mix( c, d, f.x ), f.y ); }`)
+			.replace("#include <lights_fragment_end>", `#include <lights_fragment_end>
+	if( uClouds > 0.0 ){
+		vec2 q = vCloudXZ*0.011 + vec2( uTime*0.012, uTime*0.005 );          // le vent pousse les nuages
+		float n = cnoise( q )*0.65 + cnoise( q*2.3 + 7.1 )*0.35;
+		float shade = 1.0 - uClouds*0.62*smoothstep( 0.48, 0.66, n );
+		reflectedLight.directDiffuse *= shade; reflectedLight.directSpecular *= shade; }`);
+	});
+}
+
+/* Pluie : des traits qui tombent dans une boîte qui suit la caméra (tout est calculé par la carte graphique). */
+export function createRain(scene, n = 2600){
+	const W = 90, H = 46;
+	const pos = new Float32Array(n*2*3), seed = new Float32Array(n*2*3);
+	for(let i=0;i<n;i++){
+		const s = [Math.random()*W, Math.random()*H, Math.random()*W];
+		for(let k=0;k<2;k++){ seed.set(s, (i*2 + k)*3); pos.set([0, k, 0], (i*2 + k)*3); }
+	}
+	const g = new THREE.BufferGeometry();
+	g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+	g.setAttribute("aSeed", new THREE.BufferAttribute(seed, 3));
+	const U = { uTime:TIME, uCam:{ value:new THREE.Vector3() }, uK:{ value:0 }, uColor:{ value:new THREE.Color("#c9d6e6") } };
+	const m = new THREE.ShaderMaterial({
+		uniforms:U, transparent:true, depthWrite:false,
+		vertexShader:`
+			attribute vec3 aSeed; uniform float uTime; uniform vec3 uCam; varying float vA;
+			void main(){
+				float W = ${W.toFixed(1)}, H = ${H.toFixed(1)};
+				vec3 p;
+				p.x = mod( aSeed.x - uCam.x - uTime*2.0, W ) + uCam.x - W*0.5;
+				p.z = mod( aSeed.z - uCam.z, W ) + uCam.z - W*0.5;
+				p.y = mod( aSeed.y - uTime*26.0, H ) + max( uCam.y - H*0.7, 0.0 );
+				p += vec3( 0.08, 1.0, 0.0 )*position.y*0.9;            // un trait légèrement penché par le vent
+				vA = position.y;
+				gl_Position = projectionMatrix*viewMatrix*vec4( p, 1.0 );
+			}`,
+		fragmentShader:`
+			uniform vec3 uColor; uniform float uK; varying float vA;
+			void main(){ gl_FragColor = vec4( uColor, uK*( 0.12 + 0.3*vA ) ); }`
+	});
+	const lines = new THREE.LineSegments(g, m);
+	lines.frustumCulled = false; lines.visible = false; lines.renderOrder = 6;
+	scene.add(lines);
+	return {
+		set(k){ U.uK.value = k; lines.visible = k > .01; },
+		follow(camPos){ U.uCam.value.copy(camPos); }
+	};
+}
