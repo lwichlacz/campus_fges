@@ -138,6 +138,11 @@ export const LIFE = {
 		text:"Le quartier est bordé par la Deûle : quais piétons, jardin Le Blan-Lafont et pistes cyclables le long de l'eau. Le bon endroit pour une pause entre deux cours, ou pour rejoindre Vauban à vélo en longeant la rivière.",
 		facts:["Bord de Deûle","Jardin Le Blan-Lafont","Pistes cyclables"]
 	},
+	cormontaigne: {
+		icon:"🚇", name:"Métro Cormontaigne", kicker:"Ligne 2 · rue de Turenne",
+		text:"La station de métro du campus Vauban. Trois stations de ligne 2 plus loin, Canteleu – Euratechnologies te dépose au pied de Wenov, le campus de l'École du Numérique, au cœur d'Euratechnologies.",
+		facts:["Ligne 2","3 stations jusqu'à Wenov","Vauban ⇄ Euratechnologies"], action:{ label:"🚇 Prendre la ligne 2 vers Wenov", go:"eura" }
+	},
 	chapelle: {
 		icon:"⛪", name:"Chapelle universitaire", kicker:"Hôtel Académique · aile sud",
 		text:"Construite dans les années 1920 dans un style néogothique d'influence anglo-saxonne, unique en France. Restaurée en 2020 : voûtes blanches et dorées, vitraux remis en lumière. Concerts, conférences et célébrations s'y tiennent toute l'année.",

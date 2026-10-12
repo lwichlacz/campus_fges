@@ -261,6 +261,8 @@ for e in far:
     elif t.get("name") in ("Jardin Vauban", "Bois de Boulogne"): parks.append([t["name"], flat(G(q) for q in p[:-1])])
     elif "Blan-Lafont" in (t.get("name") or ""): blan = { "pts":flat(G(q) for q in p[:-1]), "ang":round(Gdir(obb(p)[0]),3) }
 cit = G((-135, -947))
+# station Cormontaigne (ligne 2), la plus proche du campus : 50.62623 N, 3.04029 E (OpenStreetMap)
+metro = G(mp({ "lat":50.62623, "lon":3.04029 }))
 
 def poi(name):
     for k, v in pois_src.items():
@@ -279,7 +281,7 @@ if jb: POIS["jardin"] = { "x":round(sum(jb[1][0::2])/(len(jb[1])/2),2), "z":roun
 
 out = {
     "S":S, "ha":HA, "falise":FAL, "court":[round(c,2) for c in court], "buildings":buildings, "roads":roads, "greens":greens,
-    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS
+    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro
 }
 js = ("/* Généré par tools/build_map.py — ne pas modifier à la main.\n"
       "   Données © les contributeurs d'OpenStreetMap (ODbL). */\n"

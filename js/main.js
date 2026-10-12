@@ -396,45 +396,29 @@ function buildWenov(){
 	const sheds = new THREE.Group(); sheds.position.set(cx, 9, cz); sheds.rotation.y = -ang; scene.add(sheds);
 	for(let k=-3;k<=3;k++) mesh(extrudeShed(), std("#cfe2e8", { transparent:true, opacity:.8 }), sheds, 0, 0, k*3.2, 0);
 	const chim = cyl(scene, 1.1, 1.5, 22, brick, cx + Math.cos(ang)*14, 0, cz + Math.sin(ang)*14, 10);
-	// Wenov, juste à côté
-	// on pose Wenov là où il est le plus loin de l'eau, à côté du Blan-Lafont
-	const waterDist = (x, z) => { let m = 1e9; for(const c of MAP.canals) for(let i=0;i<c.length;i+=2) m = Math.min(m, Math.hypot(x-c[i], z-c[i+1])); return m; };
-	let best = null;
-	for(let k=0;k<16;k++){
-		const a = k/16*Math.PI*2;
-		for(const r of [40, 48, 56]){
-			const x = cx + Math.cos(a)*r, z = cz + Math.sin(a)*r, d = waterDist(x, z) - r*.15;
-			if(!best || d > best.d) best = { x, z, d, a };
-		}
-	}
-	const dir = V(cx - best.x, 0, cz - best.z).normalize().multiplyScalar(-1);
-	const wx = best.x, wz = best.z;
-	LIFE.wenovPos = { x:wx, z:wz };
-	const root = new THREE.Group(); root.position.set(wx, 0, wz); scene.add(root);
-	const white = std("#f2f0ea"), navy = std("#2d3550");
-	PLACES.wenov.mats = { brick:white, stone:navy };
-	const glassTex = (() => {
-		const c = document.createElement("canvas"); c.width = 64; c.height = 64; const x = c.getContext("2d");
-		const g = x.createLinearGradient(0,0,64,64); g.addColorStop(0,"#7d9ab3"); g.addColorStop(1,"#4c6a86");
-		x.fillStyle = g; x.fillRect(0,0,64,64); x.fillStyle = "#eef2f4"; x.fillRect(0,0,4,64);
-		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(12,1); t.colorSpace = THREE.SRGBColorSpace; return t;
-	})();
-	wenovGlass = new THREE.MeshStandardMaterial({ map:glassTex, roughness:.25, metalness:.2, emissive:"#ffd08a", emissiveIntensity:0 });
-	// Wenov vu de loin : un îlot de béton clair en R+4 autour d'un patio planté, sur pilotis (comme dans le quartier détaillé)
-	const fh = 3.3, OW = 30, OD = 26, T = 7;
-	const ring4 = (y, h, m, grow = 0) => {
-		box(root, OW + grow, h, T + grow/2, m, 0, y, -(OD - T)/2); box(root, OW + grow, h, T + grow/2, m, 0, y, (OD - T)/2);
-		box(root, T + grow/2, h, OD - 2*T, m, -(OW - T)/2, y, 0); box(root, T + grow/2, h, OD - 2*T, m, (OW - T)/2, y, 0);
-	};
-	ring4(0, fh, navy);
-	for(let f=1; f<5; f++){ ring4(f*fh, fh - .5, wenovGlass); ring4(f*fh - .5, .5, white, .6); }
-	ring4(5*fh - .5, .6, white, .6);
-	for(const z of [-3, 3]) for(const x of [-6, 0, 6]){ const m = std("#466f48"); pineMats.push(m); cone(root, 1.6, 3.2, m, x, 0, z, 7); cone(root, 1.1, 2.4, m, x, 2.2, z, 7); }
-	flat(root, 60, 60, std("#c8c0b4", { flatShading:false }), 0, -4, .02);
-	register(root, "wenov");
-	const wp = root.localToWorld(V(0, 18, 0));
-	Object.assign(PLACES.wenov, { pin:wp.toArray(), target:[wx, 4, wz], cam:[wx + 34, 58, wz + 84] });
+	// Wenov ne se voit plus depuis Vauban : on le rejoint uniquement en métro (ligne 2, station Cormontaigne)
+	wenovGlass = std("#ffffff", { emissive:"#ffd08a", emissiveIntensity:0 });
+	buildMetroVauban();
 	LIFE.euratech = { x:cx, z:cz };
+}
+/* Station Cormontaigne (ligne 2), rue de Turenne : la porte d'entrée vers Wenov */
+function buildMetroVauban(){
+	if(!MAP.metro) return;
+	const [mx, mz] = MAP.metro;
+	const g = new THREE.Group(); g.position.set(mx, 0, mz); scene.add(g);
+	flat(g, 16, 12, std("#c9c0b2", { flatShading:false }), 0, 0, .06);
+	box(g, 4.4, .25, 7.2, std("#3c3a40"), 0, 0, 0);                                   // trémie de l'escalier
+	for(const sx of [-2.3, 2.3]) box(g, .18, 1.1, 7.2, std("#2f3a4a", { metalness:.4, roughness:.4 }), sx, .25, 0);
+	const canopy = new THREE.MeshStandardMaterial({ color:"#cfe2ea", transparent:true, opacity:.55, roughness:.1, metalness:.3 });
+	box(g, 5.2, .2, 7.8, canopy, 0, 3.1, .2);
+	for(const [x, z] of [[-2.4, -3.6], [2.4, -3.6], [-2.4, 3.8], [2.4, 3.8]]) cyl(g, .09, .09, 3.1, std("#2f3a4a"), x, 0, z, 6);
+	const tex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"); x.fillStyle = "#d6213a"; x.fillRect(0,0,64,64); x.fillStyle = "#fff"; x.font = "bold 48px Arial"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("M", 32, 35); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+	cyl(g, .1, .1, 5.2, std("#2f3a4a"), 3.6, 0, -4.4, 6);
+	const sign = new THREE.Mesh(new THREE.BoxGeometry(1.3, 1.3, .16), new THREE.MeshStandardMaterial({ map:tex, emissive:"#ffffff", emissiveMap:tex, emissiveIntensity:.25 }));
+	sign.position.set(3.6, 5.5, -4.4); g.add(sign);
+	register(g, "cormontaigne");
+	Object.assign(LIFE.cormontaigne, { pin:[mx, 9, mz], target:[mx, 1, mz], cam:[mx + 26, 30, mz + 40] });
+	Object.assign(PLACES.wenov, { target:[mx, 1, mz], cam:[mx + 26, 30, mz + 40] });
 }
 function extrudeShed(){
 	return cached("shed", () => new THREE.ExtrudeGeometry(new THREE.Shape([new THREE.Vector2(-1.6,0), new THREE.Vector2(1.6,0), new THREE.Vector2(1.6,2.2)]), { depth:20, bevelEnabled:false }).rotateY(Math.PI/2).translate(-10,0,0));
@@ -487,7 +471,7 @@ function buildHorizon(){
 		const [cx, cz] = MAP.citadelle; if(Math.hypot(x-cx, z-cz) < 62) return true;
 		for(const c of MAP.canals) for(let i=0;i<c.length;i+=2) if(Math.hypot(x-c[i], z-c[i+1]) < 10) return true;
 		if(LIFE.euratech && Math.hypot(x-LIFE.euratech.x, z-LIFE.euratech.z) < 60) return true;
-		if(LIFE.wenovPos && Math.hypot(x-LIFE.wenovPos.x, z-LIFE.wenovPos.z) < 60) return true;
+		if(MAP.metro && Math.hypot(x-MAP.metro[0], z-MAP.metro[1]) < 16) return true;
 		return false;
 	};
 	for(let gx=-300; gx<=300; gx+=7) for(let gz=-340; gz<=260; gz+=7){
@@ -1067,7 +1051,7 @@ function prefetchLater(){
 	const go = () => { MAKERS.atrium(); MAKERS.chapelle(); loadGame(); };
 	("requestIdleCallback" in window) ? requestIdleCallback(go, { timeout:8000 }) : setTimeout(go, 4000);
 }
-const RETURN = { atrium:"falise", chapelle:"chapelle", eura:"wenov", wenovin:"wenov" };
+const RETURN = { atrium:"falise", chapelle:"chapelle", eura:"cormontaigne", wenovin:"wenov" };
 let mode = "ext";
 function fade(mid){
 	const f = $("fade"); f.classList.add("on");
@@ -1143,8 +1127,9 @@ function rideMetro(toEura, swap, then){
 	$("mtStations").innerHTML = st.map((n, i) => `<li class="${i === 0 ? "on here" : ""}">${n}</li>`).join("");
 	$("mtNext").textContent = st[1];
 	M.classList.add("on"); Audio.play("metro"); buzz(20);
-	const dur = reduceMotion ? 1400 : 3800, step = dur/(st.length - 1), lis = [...$("mtStations").children], timers = [];
-	for(let i=1; i<st.length; i++) timers.push(setTimeout(() => {
+	const last = toEura && !reduceMotion ? st.length - 2 : st.length - 1;
+	const dur = reduceMotion ? 1400 : toEura ? 2800 : 3800, step = dur/(last + .4), lis = [...$("mtStations").children], timers = [];
+	for(let i=1; i<=last; i++) timers.push(setTimeout(() => {
 		lis.forEach((li, k) => { li.classList.toggle("on", k <= i); li.classList.toggle("here", k === i); });
 		$("mtNext").textContent = i < st.length - 1 ? st[i + 1] : st[i];
 		if(i === st.length - 1) M.querySelector(".mt-next small").textContent = "Terminus pour toi";
@@ -1194,6 +1179,9 @@ $("skip").addEventListener("click", endIntro);
 let profile = store.get("profile", null); if(!PROFILES[profile]) profile = null;
 let favs = new Set(store.get("favs", []));
 let stamps = new Set(store.get("stamps", []));
+// tampons du quartier Euratechnologies (récompensent l'exploration autour de Wenov)
+const EURA_STAMPS = ["wenov", "cyber", "blan", "pionnieres"];
+let euraStamps = new Set(store.get("euraStamps", []));
 let medals = store.get("medals", {});        // { comptoir:"Bien", … } : la meilleure mention de chaque mini-jeu
 let medalsSub = store.get("medalsSub", {});  // { jardin:{ biotech:"Bien" } } : les parcours réussis d'un jeu à parcours
 const MENTION_RANK = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -1269,14 +1257,15 @@ function buildPins(){
 	let list;
 	if(mode !== "ext") list = interiors[mode].pins.map(p => ({ ...p, act:() => interiorAction(p.id), place: interiors[mode].zone ? p.id : undefined }));
 	else list = [
-		...Object.entries(PLACES).map(([id,p]) => ({ id, icon:p.icon, name:p.name, pos:p.pin, act:() => selectPlace(id), place:id, game:!!GAME_AT[id] })),
+		...Object.entries(PLACES).filter(([id]) => id !== "wenov").map(([id,p]) => ({ id, icon:p.icon, name:p.name, pos:p.pin, act:() => selectPlace(id), place:id, game:!!GAME_AT[id] })),
 		...Object.entries(LIFE).filter(([,p]) => p.pin).map(([id,p]) => ({ id, icon:p.icon, name:p.name, pos:p.pin, act:() => selectPlace(id), place:id, life:true, game:!!GAME_AT[id] }))
 	];
 	pins = list.map(p => {
 		const b = document.createElement("button");
 		b.className = "pin" + (p.life ? " life" : "") + (p.game ? " hasgame" : "");
 		b.setAttribute("aria-label", p.name);
-		b.innerHTML = `<span><em>${p.icon}</em><i>${p.name}</i><s>${p.place && (stamps.has(p.place) || found.has(p.place)) ? "✓" : ""}</s></span>`;
+		const done = p.place && (mode === "eura" ? euraStamps.has(p.place) : stamps.has(p.place) || found.has(p.place));
+		b.innerHTML = `<span><em>${p.icon}</em><i>${p.name}</i><s>${done ? "✓" : ""}</s></span>`;
 		b.addEventListener("click", p.act);
 		if(p.place){ b.addEventListener("mouseenter", () => setHover(p.place)); b.addEventListener("mouseleave", () => setHover(null)); }
 		$("pins").appendChild(b);
@@ -1341,16 +1330,53 @@ function focusEura(id, open = true){
 	const p = interiors.eura && interiors.eura.places[id];
 	if(!p){ if(open && (LIFE[id] || PLACES[id])) openPanel(id); return; }
 	flyTo(V(...p.cam), V(...p.target), 1.4);
-	if(open){ openPanel(id); Audio.play("pop"); }
+	if(open){ openPanel(id); Audio.play("pop"); euraStamp(id); }
+}
+function euraStamp(id){
+	if(!EURA_STAMPS.includes(id) || euraStamps.has(id)) return;
+	euraStamps.add(id); store.set("euraStamps", [...euraStamps]);
+	for(const pin of pins) if(pin.place === id) pin.el.querySelector("s").textContent = "✓";
+	const n = euraStamps.size, p = PLACES[id] || LIFE[id];
+	setTimeout(() => {
+		Audio.play("stamp"); buzz([20, 60, 30]);
+		toast(n === EURA_STAMPS.length ? "🏅 Quartier Euratechnologies complété : tous les tampons sont dans ton carnet !" : `Tampon Euratechnologies : ${p.name} (${n}/${EURA_STAMPS.length})`, 3200);
+	}, 900);
 }
 function goEura(id){
 	if(mode === "eura"){ if(id) focusEura(id); return; }
 	if(mode === "wenovin"){ enterInterior("eura", () => id && focusEura(id), true); return; }
 	rideMetro(true, () => loadInterior("eura").then(() => placeIn("eura")), () => {
-		if(id) focusEura(id);
-		else toast(WELCOME.eura, 4200);
+		// première venue : visite guidée du quartier ; ensuite, droit au lieu demandé
+		const first = !store.get("euraToured", false);
+		playArrival(id || "wenov", () => {
+			if(first){ store.set("euraToured", true); startTour(); }
+			else if(id) focusEura(id);
+			else toast(WELCOME.eura, 4200);
+		});
 	});
 }
+/* Arrivée en 3D : la rame entre en station souterraine, les portes s'ouvrent, on remonte à la rue */
+let cine = null;
+function playArrival(id, done){
+	const I = interiors.eura, A = I && I.arrival, p = I && I.places[id];
+	if(!A || !p || reduceMotion){ done(); return; }
+	controls.enabled = false; $("pins").classList.remove("on");
+	A.start(V(...p.cam), V(...p.target));
+	cine = { A, done, end:[V(...p.cam), V(...p.target)], fov:camera.fov };
+	$("dock").classList.remove("on");
+	$("cineSkip").hidden = false;
+	cine.chime = setTimeout(() => Audio.play("good"), 4500);          // ouverture des portes
+}
+function endArrival(skipped){
+	if(!cine) return;
+	const cine0 = cine, { A, done, end } = cine; clearTimeout(cine.chime); cine = null;
+	A.stop(); controls.enabled = true; $("pins").classList.add("on"); $("cineSkip").hidden = true; $("fade").classList.remove("on");
+	$("dock").classList.add("on");
+	if(camera.fov !== cine0.fov){ camera.fov = cine0.fov; camera.updateProjectionMatrix(); }
+	if(skipped){ camera.position.copy(end[0]); controls.target.copy(end[1]); }
+	done();
+}
+$("cineSkip").addEventListener("click", () => { Audio.play("pop"); endArrival(true); });
 function interiorAction(id){
 	if(mode === "eura"){ focusEura(id); return; }
 	if(mode === "wenovin"){
@@ -1483,6 +1509,7 @@ function carnetBody(){
 	const md = gk.map(k => `<button class="medal ${medals[k] ? "got" : ""}" data-game="${GAME_INFO[k].fid}" title="${GAME_INFO[k].title}"><i>${medals[k] ? "🏅" : GAME_INFO[k].icon}</i><b>${GAME_INFO[k].title}</b><small>${medals[k] ? "Mention " + medals[k] : "À jouer"}${GAME_INFO[k].parcours ? ` · ${Object.keys(medalsSub[k] || {}).length}/${GAME_INFO[k].parcours.length} parcours` : ""}</small></button>`).join("");
 	return `<h3>Mes médailles (${won.length}/${gk.length})</h3><div class="medals">${md}</div>
 		<h3>Tampons de visite</h3><div class="stamps">${st}</div>
+		<h3>Tampons Euratechnologies (${EURA_STAMPS.filter(id => euraStamps.has(id)).length}/${EURA_STAMPS.length})</h3><div class="stamps">${EURA_STAMPS.map(id => { const p = PLACES[id] || LIFE[id]; return `<div class="stamp ${euraStamps.has(id) ? "got" : ""}"><i>${p.icon}</i>${p.name.replace("Campus ", "").replace("Les squares des pionnières", "Pionnières")}</div>`; }).join("")}</div>
 		<h3>Lieux de vie découverts (${lifeIds.filter(id => found.has(id)).length}/${lifeIds.length})</h3><div class="lifes">${lf}</div>
 		<h3>Mes formations (${list.length})</h3>
 		${list.length ? list.map(formationCard).join("") : `<div class="empty">Ton carnet est vide. Entre dans un bâtiment et touche ♡ sur une formation.</div>`}
@@ -1810,7 +1837,7 @@ let carouselOn = false, carIdx = 0, carSettle = 0, lastPlace = null;
 function carouselIds(){
 	if(mode === "eura") return [...Object.keys(interiors.eura.places), "_vauban"];
 	const life = Object.keys(LIFE).filter(k => LIFE[k].pin);
-	return ["_hub", "ha", "falise", ...life.filter(k => GAME_AT[k]), "wenov", ...life.filter(k => !GAME_AT[k])];
+	return ["_hub", "ha", "falise", ...life.filter(k => GAME_AT[k]), "cormontaigne", ...life.filter(k => !GAME_AT[k] && k !== "cormontaigne")];
 }
 let carMode = null;
 function buildCarousel(){
@@ -1822,7 +1849,7 @@ function buildCarousel(){
 		if(id === "_hub") return `<button class="ccard hub" data-id="_hub"><span class="gic">🎮</span><span><b>Joue une formation</b><small>${nWon ? `${nWon}/${nGames} médaille${nWon > 1 ? "s" : ""} · ` : ""}${nGames} mini-jeux · 6 à 7 min</small></span><span class="go-c">Jouer</span></button>`;
 		const p = PLACES[id] || LIFE[id], games = (GAME_AT[id] || []).length, done = stamps.has(id) || found.has(id);
 		const n = PLACES[id] && profile ? listFor(id).length : 0;
-		const sub = (id === "wenov" && mode === "ext" ? "🚇 Ligne 2 · " : "") + (PLACES[id] ? (n ? `${n} formation${n > 1 ? "s" : ""} pour toi` : p.kicker) : p.kicker);
+		const sub = id === "cormontaigne" ? "Ligne 2 → Wenov · École du Numérique" : PLACES[id] ? (n ? `${n} formation${n > 1 ? "s" : ""} pour toi` : p.kicker) : p.kicker;
 		return `<button class="ccard" data-id="${id}"><span class="gic">${p.icon}</span><span><b>${p.name}${done ? ' <span class="ok">✓</span>' : ""}</b><small>${games ? `🎮 ${games} jeu${games > 1 ? "x" : ""} · ` : ""}${sub}</small></span><span class="go-c">Voir</span></button>`;
 	}).join("");
 	car.children[carIdx]?.classList.add("cur");
@@ -1853,13 +1880,14 @@ car.addEventListener("click", e => {
 	if(c.dataset.id === "_hub"){ Audio.play("pop"); openPanel("nav:jeux"); }
 	else if(c.dataset.id === "_eura") goEura();
 	else if(c.dataset.id === "_vauban") exitInterior();
+	else if(c.dataset.id === "cormontaigne") goEura("wenov");
 	else if(mode === "eura") focusEura(c.dataset.id);
 	else selectPlace(c.dataset.id);
 });
 function syncCarousel(){          // appelé à chaque image : n'agit que si l'état change
 	const zone = mode === "ext" || mode === "eura";
 	if(zone && carMode !== mode){ carMode = mode; carIdx = 0; buildCarousel(); car.scrollLeft = 0; }
-	const on = isPhone() && entered && zone && !intro && !tour && !coach && !gamePaused && $("dock").classList.contains("on") && !$("panel").classList.contains("on");
+	const on = isPhone() && entered && zone && !intro && !cine && !tour && !coach && !gamePaused && $("dock").classList.contains("on") && !$("panel").classList.contains("on");
 	document.body.classList.toggle("inside", mode !== "ext");
 	if(on === carouselOn) return;
 	carouselOn = on; car.classList.toggle("on", on);
@@ -1934,14 +1962,16 @@ function phoneOffsetY(){
 /* =====================================================================
    Visite guidée : la caméra enchaîne les lieux, une carte raconte chacun
    ===================================================================== */
-const TOUR_IDS = ["ha","chapelle","falise","rizomm","jardin","bu","resto","all","maison","sport","residence","rameau","citadelle","wenov"];
+const TOUR_IDS = ["ha","chapelle","falise","rizomm","jardin","bu","resto","all","maison","sport","residence","rameau","citadelle","cormontaigne"];
 const STOP = 9;
 let tour = null;
 const firstSentence = t => { const m = t.match(/^.{20,240}?[.!?](?=\s|$)/); if(m) return m[0]; const c = t.slice(0, 200); return c.slice(0, c.lastIndexOf(" ")) + "…"; };
+const EURA_TOUR = ["wenov", "cyber", "blan", "berges", "pionnieres", "factory", "frenchtech", "metro"];
 function startTour(idle){
-	if(mode !== "ext"){ exitInterior(false, () => startTour(idle)); return; }
+	if(mode === "wenovin"){ exitInterior(false, () => startTour(idle)); return; }
+	if(mode !== "ext" && mode !== "eura"){ exitInterior(false, () => startTour(idle)); return; }
 	closePanel(); setHover(null);
-	tour = { stops:TOUR_IDS.filter(id => (PLACES[id] || LIFE[id]) && (PLACES[id] || LIFE[id]).target), i:-1, t:0, paused:false };
+	tour = { stops: mode === "eura" ? EURA_TOUR.filter(id => interiors.eura.places[id]) : TOUR_IDS.filter(id => (PLACES[id] || LIFE[id]) && (PLACES[id] || LIFE[id]).target), i:-1, t:0, paused:false };
 	$("tour").hidden = false;
 	goStop(0);
 	syncDock();
@@ -1952,11 +1982,11 @@ function goStop(i){
 	tour.i = (i + n) % n; tour.t = 0;
 	const id = tour.stops[tour.i], p = PLACES[id] || LIFE[id];
 	flyToPlace(id, 2.6);
-	$("tourK").textContent = PLACES[id] ? "Bâtiment des formations" : "Vie de campus";
+	$("tourK").textContent = mode === "eura" ? "Quartier Euratechnologies" : PLACES[id] ? "Bâtiment des formations" : "Vie de campus";
 	$("tourDots").textContent = `${tour.i + 1} / ${n}`;
 	$("tourT").textContent = `${p.icon} ${p.name}`;
 	$("tourP").textContent = firstSentence(p.text);
-	markVisited(id, true);
+	if(mode === "eura") euraStamp(id); else markVisited(id, true);
 }
 function pauseTour(v){ if(!tour) return; tour.paused = v; $("tourPause").textContent = v ? "▶" : "⏸"; $("tourPause").setAttribute("aria-label", v ? "Reprendre" : "Pause"); if(v) controls.autoRotate = false; }
 function stopTour(){ if(!tour) return; tour = null; $("tour").hidden = true; controls.autoRotate = false; syncDock(); }
@@ -2114,7 +2144,15 @@ function frame(){
 	const rawDt = clock.getDelta(), dt = Math.min(rawDt, .05), t = clock.elapsedTime;
 	watchPerf(rawDt);
 
-	if(intro){
+	if(cine){
+		const r = cine.A.cam();
+		camera.position.copy(r.pos); controls.target.copy(r.target); camera.lookAt(controls.target);
+		// sur le quai, un champ de vision plus large (surtout en portrait) ; on revient à la normale pendant le fondu
+		const fov = r.under ? (innerWidth < innerHeight ? 74 : 54) : cine.fov;
+		if(camera.fov !== fov){ camera.fov = fov; camera.updateProjectionMatrix(); }
+		$("fade").classList.toggle("on", !!r.fade);          // fondu au pied de l'escalier
+		if(r.done){ $("fade").classList.remove("on"); endArrival(); }
+	} else if(intro){
 		intro.k = Math.min(1, intro.k + dt/intro.dur);
 		const e = ease(intro.k);
 		camera.position.copy(intro.pos.getPoint(e)); controls.target.copy(intro.tgt.getPoint(e));
