@@ -240,5 +240,7 @@ export const SEASONS = {
 		day:{ skyTop:"#8dc4e6", skyBot:"#e6f4f4", fog:"#d8ecef", hemiSky:"#e6f5ff", hemiGround:"#6b7b4a", hemiI:1.05, sun:"#fff2d6", sunI:2.7, sunPos:[-55,80,55], cloud:"#ffffff", exposure:1 }
 	}
 };
+// heure dorée : soleil bas à l'ouest, ombres longues, ciel rose ; les premières fenêtres s'allument (nightK)
+export const GOLDEN = { skyTop:"#7d8cc6", skyBot:"#ffb487", fog:"#efb894", hemiSky:"#ffcaa0", hemiGround:"#6a4733", hemiI:.98, sun:"#ff9a4f", sunI:2.9, sunPos:[-95,17,28], cloud:"#ffc2a0", exposure:1.1, nightK:.3 };
 export const NIGHT = { skyTop:"#141a38", skyBot:"#4f4b7c", fog:"#33375f", hemiSky:"#8394cc", hemiGround:"#221f38", hemiI:.6, sun:"#a8b9ff", sunI:.65, sunPos:[60,55,-30], cloud:"#4f5684", exposure:1.05 };
 export const SEASON_ORDER = ["automne","hiver","printemps"];

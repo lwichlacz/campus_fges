@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js";
 import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate } from "./render.js";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js";
 import { MAP } from "./vauban.js";
 import { buildLandmarks } from "./landmarks.js";
 import { buildCity, pointInPoly, polyDist } from "./city.js";
@@ -1100,11 +1100,13 @@ scene.environmentIntensity = ENV_I;
    La lumière passe en douceur d'une ambiance à l'autre ; au crépuscule (heure réelle), les fenêtres s'allument une à une.
    ===================================================================== */
 let seasonKey = store.get("season", "automne"); if(!SEASONS[seasonKey]) seasonKey = "automne";
-let timeMode = store.get("time", "auto"); if(!["auto","jour","nuit"].includes(timeMode)) timeMode = "auto";
+let timeMode = store.get("time", "auto"); if(!["auto","jour","doree","nuit"].includes(timeMode)) timeMode = "auto";
 let season = SEASONS[seasonKey], night = false;
 const realNight = () => { const h = new Date().getHours(); return h < 7 || h >= 19; };
+const realGolden = () => new Date().getHours() === 18;          // la dernière heure avant la nuit
+let golden = false;
 const LCOL = ["skyTop","skyBot","fog","hemiSky","hemiGround","sun","cloud"], LNUM = ["hemiI","sunI","exposure","nightK"];
-const lightOf = (L, k) => { const o = { sunPos:V(...L.sunPos), nightK:k }; for(const c of LCOL) o[c] = new THREE.Color(L[c]); for(const n of LNUM) if(n !== "nightK") o[n] = L[n]; return o; };
+const lightOf = (L, k) => { const o = { sunPos:V(...L.sunPos), nightK:L.nightK ?? k }; for(const c of LCOL) o[c] = new THREE.Color(L[c]); for(const n of LNUM) if(n !== "nightK") o[n] = L[n]; return o; };
 const copyLight = l => { const o = { ...l, sunPos:l.sunPos.clone() }; for(const c of LCOL) o[c] = l[c].clone(); return o; };
 let light = null, lightTween = null;
 function showLight(){
@@ -1141,7 +1143,8 @@ function stepLight(dt){
 function applyAmbiance(instant, dur = 1.8){
 	season = SEASONS[seasonKey];
 	night = timeMode === "nuit" || (timeMode === "auto" && realNight());
-	const S = season, L = night ? NIGHT : S.day;
+	golden = !night && (timeMode === "doree" || (timeMode === "auto" && realGolden()));
+	const S = season, L = night ? NIGHT : golden ? GOLDEN : S.day;
 	paintSky(L.skyTop, L.skyBot);
 	document.body.style.background = L.fog;
 	groundMat.color.set(S.grass);
@@ -1172,12 +1175,12 @@ function applyAmbiance(instant, dur = 1.8){
 	partIM.instanceColor.needsUpdate = true;
 	for(const k in interiors) if(interiors[k]) interiors[k].setAmbiance ? interiors[k].setAmbiance(S, L, night) : interiors[k].setNight(night);
 	Audio.setAmbience({ night, snowy:!!S.snowy, outside: mode === "ext" });
-	$("btnTheme").innerHTML = `${S.icon}${night ? "🌙" : "☀️"} <span class="lbl">${S.label}</span>`;
+	$("btnTheme").innerHTML = `${S.icon}${night ? "🌙" : golden ? "🌇" : "☀️"} <span class="lbl">${S.label}</span>`;
 	renderAmbiancePop();
 }
 function renderAmbiancePop(){
 	$("segSeason").innerHTML = SEASON_ORDER.map(k => `<button data-season="${k}" aria-pressed="${k === seasonKey}">${SEASONS[k].icon} ${SEASONS[k].label}</button>`).join("");
-	$("segTime").innerHTML = [["auto","🕰️ Heure réelle"],["jour","☀️ Jour"],["nuit","🌙 Nuit"]].map(([k,l]) => `<button data-time="${k}" aria-pressed="${k === timeMode}">${l}</button>`).join("");
+	$("segTime").innerHTML = [["auto","🕰️ Heure réelle"],["jour","☀️ Jour"],["doree","🌇 Heure dorée"],["nuit","🌙 Nuit"]].map(([k,l]) => `<button data-time="${k}" aria-pressed="${k === timeMode}">${l}</button>`).join("");
 	$("segQuality").innerHTML = [["auto",`⚙️ Auto${qualityMode === "auto" ? ` (${QUALITY[quality].label})` : ""}`],["haute","Haute"],["moyenne","Moyenne"],["basse","Basse"]].map(([k,l]) => `<button data-quality="${k}" aria-pressed="${k === qualityMode}">${l}</button>`).join("");
 }
 $("ambiance").addEventListener("click", e => {
@@ -1189,7 +1192,7 @@ $("ambiance").addEventListener("click", e => {
 	if(q){ Audio.play("pop"); qualityMode = q.dataset.quality; store.set("quality", qualityMode); setQuality(qualityMode === "auto" ? guessQuality() : qualityMode); }
 	if(e.target.closest("[data-replay]")){ $("ambiance").hidden = true; closePanel(); if(mode !== "ext") exitInterior(true); else playIntro(); }
 });
-setInterval(() => { if(timeMode === "auto" && realNight() !== night) applyAmbiance(false, 8); }, 60000);     // crépuscule lent
+setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night && realGolden() !== golden))) applyAmbiance(false, 8); }, 60000);     // crépuscule lent
 
 /* =====================================================================
    Intérieurs : atrium (Falise) et chapelle (Hôtel Académique)
