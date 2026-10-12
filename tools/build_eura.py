@@ -10,7 +10,7 @@ identique à Vauban. Pas de compression : tout est à l'échelle sur CORE mètre
 Wenov n'est pas dessiné dans OpenStreetMap : son emprise est reconstituée à partir des rues qui
 bordent l'îlot, et il est modélisé à la main (js/eura.js), comme le Blan-Lafont et sa tour.
 
-Données © les contributeurs d'OpenStreetMap (ODbL).
+Données © les contributeurs d'OpenStreetMap (ODbL) ; bâtiments © IGN BD TOPO (Licence Ouverte Etalab 2.0).
 Usage : python tools/build_eura.py
 """
 import json, math, hashlib
@@ -136,10 +136,66 @@ for a in range(len(cands)):
         if o > .3*min(cands[a][2], cands[b][2]): drop.add(a if cands[a][2] < cands[b][2] else b)
 print("doublons retirés :", len(drop))
 
+# --- BD TOPO (IGN) : emprises du cadastre, étages, hauteur du toit, matériaux (tools/osm/bdtopo_eura.json) ---
+# OpenStreetMap garde les bâtiments nommés, les bureaux et les écoles ; ailleurs, la BD TOPO remplace les maisons devinées.
+VX = 2.3/(3.1*S)                     # un étage = 2,3 unités dans ce quartier (échelle des modèles faits main de Wenov)
+def mat1(code):
+    for ch in (code or ""):
+        if ch != "0": return ch
+    return None
+def bd_levels(b):
+    h_, e_ = b["h"], b["e"]
+    if h_ and h_ > 0:
+        lh = max(1, round(h_/3.1)); return min(18, e_ if e_ and abs(e_ - lh) <= 1 else lh)
+    return min(18, e_ or 2)
+def bd_col(b, r):
+    m = mat1(b["mw"])
+    if m == "4": return r % 5 if r % 100 < 85 else 5 + r % 7
+    if m in ("1", "2"): return (5, 6, 9, 10, 7)[r % 5]
+    if m in ("3", "5"): return (11, 7, 8, 6)[r % 4]
+    return r % 12
+def bd_rec(b, q, A, kind=None, lv=None, col=None):
+    r = h(b["id"])
+    if not kind:
+        kind = "church" if b["n"] in ("Eglise", "Chapelle") else "sport" if b["u"] == "Sportif" else \
+               "shed" if b["u"] == "Annexe" or b["l"] or A < 30 or (b["h"] or 9) < 3.5 else "house"
+    rt = b["rt"]; roof, rh = 0, 0
+    if kind in ("house", "church", "campus") and rt and rt >= 1.2 and not (rt > 7 and A > 400):
+        rh = round(min(rt, 6)*S*VX, 2)
+        a, cx, cz, L, D = obb(q)
+        if A/(L*D) > .8 and D <= 18: roof = [*G((cx, cz)), round(Gdir(a), 3), round(L*S, 2), round(D*S, 2)]
+    m = mat1(b["mw"]); style = 1 if (m == "3" or b["n"].startswith("Industriel")) and kind == "house" else 0
+    rm = { "1":1, "2":2, "3":3 }.get(mat1(b["mr"]), 0) or (0 if not rh else (1 if r % 10 < 7 else 2))
+    rec = { "house":0, "campus":1, "modern":1, "sport":3, "church":4, "shed":6, "office":7 }[kind]
+    return [rec, lv or bd_levels(b), bd_col(b, r) if col is None else col, roof, flat(G(v) for v in q), rh, style, rm]
+BD = []
+for b in json.load(open(ROOT / "tools" / "osm" / "bdtopo_eura.json", encoding="utf-8"))["buildings"]:
+    q = [mp({ "lon":c[0], "lat":c[1] }) for c in b["g"]]
+    q2 = [q[0]]
+    for v in q[1:]:
+        if math.dist(v, q2[-1]) > .8: q2.append(v)
+    if len(q2) > 1 and math.dist(q2[0], q2[-1]) < .8: q2 = q2[:-1]
+    if len(q2) < 3 or area(q2) < 12: continue
+    c = cen(q2)
+    if dist(c) > CORE or inside(*c, wen_m) or inside(*c, P(blan_e)) or inside(*c, tp): continue          # Wenov, Blan-Lafont : faits main
+    BD.append((b, q2, area(q2), c))
+keep = [k for k in range(len(cands)) if k not in drop]
+pieces, free = {}, []
+for bd in BD:
+    k = next((k for k in keep if inside(*bd[3], cands[k][1])), None)
+    if k is None: free.append(bd)
+    else: pieces.setdefault(k, []).append(bd)
+print("BD TOPO :", len(BD), "bâtiments, dont", len(free), "absents d'OpenStreetMap")
+
 buildings, pois_src = [], {}
 for k, (e, q, A, _) in enumerate(cands):
     if k in drop: continue
     t = e["tags"]; n = (t.get("name") or "").lower(); b = t.get("building", "yes")
+    ps = pieces.get(k, [])
+    osm_house = not t.get("name") and b not in ("church", "chapel", "office", "commercial", "school", "college", "university") and not any(w in n for w in OFFICE_NAMES)
+    if ps and osm_house:
+        for bb, bq, bA, _ in ps: buildings.append(bd_rec(bb, bq, bA))
+        continue
     lv = t.get("building:levels")
     try: lv = max(1, min(18, int(float(lv))))
     except: lv = None
@@ -166,8 +222,12 @@ for k, (e, q, A, _) in enumerate(cands):
     rec = { "house":0, "campus":1, "modern":1, "sport":3, "church":4, "shed":6, "office":7 }[kind]
     if kind == "modern": col = 1                                     # béton clair des immeubles récents
     gp = [G(v) for v in q]
+    if ps and not t.get("building:levels"):          # bâtiment nommé : sa hauteur réelle d'après la BD TOPO
+        lv = max(bd_levels(x[0]) for x in ps)
     buildings.append([rec, lv, col, roof, flat(gp)])
     if t.get("name"): pois_src[t["name"]] = (len(buildings) - 1, gp, lv)
+for bb, bq, bA, _ in free: buildings.append(bd_rec(bb, bq, bA))
+print("bâtiments :", len(buildings))
 
 # --- rues ---
 WID = { "primary":12, "secondary":10, "tertiary":9, "residential":7.5, "living_street":6, "unclassified":7, "pedestrian":6, "service":4.5, "cycleway":3 }
