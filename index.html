@@ -337,6 +337,27 @@ button{font:inherit;color:inherit;cursor:pointer}
 .coach-ctl .go-s{background:var(--brand);color:var(--on-brand)}
 
 #btnMore,.more-row,.carousel,.grab,.stickycta{display:none}
+#metro{position:fixed;inset:0;z-index:48;background:#0f1420;color:#fff;display:grid;grid-template-rows:auto 1fr auto auto;align-items:center;justify-items:center;padding:max(22px,env(safe-area-inset-top)) 20px max(26px,env(safe-area-inset-bottom));opacity:0;pointer-events:none;transition:opacity .45s ease;overflow:hidden}
+#metro.on{opacity:1;pointer-events:auto}
+.mt-tunnel{position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,214,150,0) 0 120px,rgba(255,214,150,.55) 120px 128px,rgba(255,214,150,0) 128px 340px),linear-gradient(#0f1420 0 30%,#1b2333 30% 70%,#0f1420 70%);background-size:340px 100%,100% 100%;animation:mtRun .32s linear infinite;opacity:.5}
+@keyframes mtRun{to{background-position:-340px 0,0 0}}
+.mt-top{position:relative;display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px;letter-spacing:.02em}
+.mt-line{background:#d6213a;color:#fff;border-radius:8px;padding:4px 9px;font-weight:900}
+.mt-train{position:relative;width:min(560px,92vw);animation:mtBob .5s ease-in-out infinite alternate}
+.mt-train svg{width:100%;height:auto;display:block;filter:drop-shadow(0 18px 24px rgba(0,0,0,.45))}
+@keyframes mtBob{to{transform:translateY(2px)}}
+.mt-next{position:relative;text-align:center;margin:6px 0 18px}
+.mt-next small{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.75;font-weight:800}
+.mt-next b{display:block;font:700 26px/1.15 Fraunces,Georgia,serif;margin-top:4px}
+.mt-strip{position:relative;list-style:none;margin:0;padding:0 6px;display:flex;justify-content:space-between;width:min(560px,92vw)}
+.mt-strip:before{content:"";position:absolute;left:14px;right:14px;top:9px;height:5px;border-radius:3px;background:#d6213a}
+.mt-strip li{position:relative;flex:1;text-align:center;font-size:12px;font-weight:700;opacity:.55;transition:opacity .3s}
+.mt-strip li:before{content:"";display:block;width:16px;height:16px;margin:0 auto 6px;border-radius:50%;background:#0f1420;border:4px solid #d6213a;transition:background .3s,transform .3s}
+.mt-strip li.on{opacity:1}
+.mt-strip li.on:before{background:#fff;transform:scale(1.15)}
+.mt-strip li.here:before{background:#ffd28f;box-shadow:0 0 0 6px rgba(255,210,143,.25)}
+.mt-skip{position:absolute;right:14px;top:max(14px,env(safe-area-inset-top));border:0;border-radius:999px;padding:9px 14px;background:rgba(255,255,255,.14);color:#fff;font-weight:800}
+@media (prefers-reduced-motion:reduce){ .mt-tunnel,.mt-train{animation:none} }
 @media (min-width:721px){ #panel{bottom:88px} }
 @media (max-width:720px){
 	.dock{left:0;right:0;bottom:0;transform:translateY(30px);border-radius:20px 20px 0 0;justify-content:space-around;padding:6px 6px max(6px,env(safe-area-inset-bottom))}
@@ -467,6 +488,16 @@ button{font:inherit;color:inherit;cursor:pointer}
 	<button data-dock="visite" title="Visite guidée"><i>🧭</i><span>Visite</span></button>
 	<button data-dock="carnet"><i>📒</i><span>Carnet</span><b class="n" id="carnetN">0</b></button>
 </nav>
+
+<!-- trajet en métro (ligne 2) entre le campus Vauban et Wenov -->
+<div id="metro" aria-live="polite">
+	<div class="mt-tunnel"></div>
+	<div class="mt-top"><span class="mt-line">M2</span><span id="mtDir"></span></div>
+	<div class="mt-train"><svg viewBox="0 0 560 96" aria-hidden="true"><g transform="translate(0,0)"><rect x="0" y="8" width="268" height="78" rx="16" fill="#eef0f2"/><rect x="0" y="66" width="268" height="20" rx="6" fill="#c9cdd2"/><rect x="10" y="22" width="248" height="30" rx="7" fill="#26303d"/><g fill="#ffd28f" opacity=".85"><rect x="18" y="26" width="44" height="22" rx="3"/><rect x="72" y="26" width="44" height="22" rx="3"/><rect x="152" y="26" width="44" height="22" rx="3"/><rect x="206" y="26" width="44" height="22" rx="3"/></g><rect x="122" y="22" width="24" height="56" rx="3" fill="#3a4554"/><rect x="0" y="56" width="268" height="5" fill="#d6213a"/></g><g transform="translate(282,0)"><rect x="0" y="8" width="268" height="78" rx="16" fill="#eef0f2"/><rect x="0" y="66" width="268" height="20" rx="6" fill="#c9cdd2"/><rect x="10" y="22" width="248" height="30" rx="7" fill="#26303d"/><g fill="#ffd28f" opacity=".85"><rect x="18" y="26" width="44" height="22" rx="3"/><rect x="72" y="26" width="44" height="22" rx="3"/><rect x="152" y="26" width="44" height="22" rx="3"/><rect x="206" y="26" width="44" height="22" rx="3"/></g><rect x="122" y="22" width="24" height="56" rx="3" fill="#3a4554"/><rect x="0" y="56" width="268" height="5" fill="#d6213a"/></g><rect x="268" y="40" width="14" height="30" fill="#8b9098"/></svg></div>
+	<div class="mt-next"><small>Prochain arrêt</small><b id="mtNext"></b></div>
+	<ol class="mt-strip" id="mtStations"></ol>
+	<button class="mt-skip" id="mtSkip">Passer ⏭</button>
+</div>
 
 <div class="tour" id="tour" hidden>
 	<div class="tour-top"><span class="tour-k" id="tourK"></span><span class="tour-dots" id="tourDots"></span></div>

@@ -1054,9 +1054,9 @@ setInterval(() => { if(timeMode === "auto" && realNight() !== night) applyAmbian
 /* =====================================================================
    Intérieurs : atrium (Falise) et chapelle (Hôtel Académique)
    ===================================================================== */
-const interiors = { atrium:null, chapelle:null, eura:null };
+const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js").then(m => m.createAtrium), chapelle:() => import("./chapelle.js").then(m => m.createChapelle), eura:() => import("./eura.js").then(m => m.createEura) };
+const MAKERS = { atrium:() => import("./atrium.js").then(m => m.createAtrium), chapelle:() => import("./chapelle.js").then(m => m.createChapelle), eura:() => import("./eura.js").then(m => m.createEura), wenovin:() => import("./wenovin.js").then(m => m.createWenovIn) };
 const GAME_LOADERS = {
 	comptoir:() => import("./games/comptoir.js").then(m => m.openComptoir),
 	jardin:() => import("./games/jardin.js").then(m => m.openJardin),
@@ -1067,47 +1067,97 @@ function prefetchLater(){
 	const go = () => { MAKERS.atrium(); MAKERS.chapelle(); loadGame(); };
 	("requestIdleCallback" in window) ? requestIdleCallback(go, { timeout:8000 }) : setTimeout(go, 4000);
 }
-const RETURN = { atrium:"falise", chapelle:"chapelle", eura:"wenov" };
+const RETURN = { atrium:"falise", chapelle:"chapelle", eura:"wenov", wenovin:"wenov" };
 let mode = "ext";
 function fade(mid){
 	const f = $("fade"); f.classList.add("on");
 	setTimeout(() => { mid(); setTimeout(() => f.classList.remove("on"), 80); }, 420);
 }
-function enterInterior(id, then){
-	closePanel(); setHover(null); Audio.play("pop");
-	const ready = interiors[id] ? Promise.resolve() : MAKERS[id]().then(make => {
+function loadInterior(id){
+	return interiors[id] ? Promise.resolve() : MAKERS[id]().then(make => {
 		interiors[id] = make({ background:skyTex }); qualityInterior(interiors[id]);
 		if(interiors[id].setAmbiance) interiors[id].setAmbiance(season, night ? NIGHT : season.day, night); else interiors[id].setNight(night);
 	});
+}
+// installe une scène (intérieur ou quartier) derrière un écran opaque : caméra au point de départ, épingles, sons
+function placeIn(id){
+	const I = interiors[id];
+	mode = id; fly = null;
+	applyLimits(I.limits);
+	camera.position.copy(I.home.pos); controls.target.copy(I.home.target);
+	buildPins();
+	Audio.setAmbience({ outside: id === "eura" });
+}
+function placeExt(back){
+	mode = "ext"; fly = null;
+	applyLimits(EXT_LIMITS);
+	Audio.setAmbience({ outside:true });
+	const p = PLACES[back] || LIFE[back];
+	camera.position.set(...p.cam); controls.target.set(...p.target);
+	buildPins();
+}
+const WELCOME = {
+	atrium:"Bienvenue dans l'atrium de Michel Falise ✨ Passe au Comptoir pour jouer !",
+	chapelle:"Bienvenue dans la chapelle universitaire ✨",
+	eura:"Bienvenue à Euratechnologies 💡 le quartier de l'École du Numérique",
+	wenovin:"Bienvenue dans Wenov 💡 salles de l'École du Numérique, Campus Cyber et coworking"
+};
+function enterInterior(id, then, quiet){
+	if(id === "eura" && mode !== "wenovin"){ goEura(); return; }      // le quartier se rejoint en métro
+	closePanel(); setHover(null); Audio.play("pop");
 	const f = $("fade"); f.classList.add("on");
-	Promise.all([ready, new Promise(r => setTimeout(r, 420))]).then(() => {
+	Promise.all([loadInterior(id), new Promise(r => setTimeout(r, 420))]).then(() => {
 		setTimeout(() => f.classList.remove("on"), 80);
+		placeIn(id);
 		const I = interiors[id];
-		mode = id; fly = null;
-		applyLimits(I.limits);
-		camera.position.copy(I.home.pos); controls.target.copy(I.home.target);
 		const tgt = I.home.target.clone(), pos = I.home.pos.clone().sub(tgt).multiplyScalar(innerWidth < innerHeight ? 1.5 : .82).add(tgt);
 		if(innerWidth < innerHeight && id === "atrium"){ tgt.x -= 4; pos.x -= 4; }
-		flyTo(pos, tgt, 2.2);
-		buildPins();
-		Audio.setAmbience({ outside: id === "eura" });
-		const msg = id === "atrium" ? "Bienvenue dans l'atrium de Michel Falise ✨ Passe au Comptoir pour jouer !" : id === "eura" ? "Bienvenue à Euratechnologies 💡 le quartier de l'École du Numérique" : "Bienvenue dans la chapelle universitaire ✨";
-		setTimeout(() => toast(msg, 4200), 600);
-		if(then) setTimeout(then, 900);
+		if(!quiet) flyTo(pos, tgt, 2.2);
+		if(!quiet) setTimeout(() => toast(WELCOME[id], 4200), 600);
+		if(then) setTimeout(then, quiet ? 120 : 900);
 	}).catch(() => { f.classList.remove("on"); toast("Impossible d'ouvrir ce lieu : vérifie ta connexion et réessaie.", 3500); });
 }
-function exitInterior(replay){
+function exitInterior(replay, then){
 	const back = RETURN[mode];
 	closePanel(); Audio.play("pop");
+	if(mode === "wenovin"){ enterInterior("eura", () => { focusEura("wenov", false); if(then) then(); }, true); return; }
+	if(mode === "eura"){ rideMetro(false, () => placeExt(back), () => { if(then) then(); else flyToPlace(back); }); return; }
 	fade(() => {
-		mode = "ext"; fly = null;
-		applyLimits(EXT_LIMITS);
-		Audio.setAmbience({ outside:true });
-		const p = PLACES[back] || LIFE[back];
-		camera.position.set(...p.cam); controls.target.set(...p.target);
-		buildPins();
+		placeExt(back);
 		if(replay) playIntro();
+		if(then) setTimeout(then, 80);
 	});
+}
+
+/* =====================================================================
+   Métro ligne 2 : Vauban (Cormontaigne) ⇄ Wenov (Canteleu – Euratechnologies)
+   La rame roule pendant que la scène suivante se charge derrière ; on peut passer.
+   ===================================================================== */
+const LINE2 = ["Cormontaigne", "Port de Lille", "Bois Blancs", "Canteleu – Euratechnologies"];
+let riding = false;
+function rideMetro(toEura, swap, then){
+	if(riding) return; riding = true;
+	closePanel(); setHover(null); if(tour) stopTour();
+	const st = toEura ? LINE2 : [...LINE2].reverse(), M = $("metro");
+	$("mtDir").textContent = toEura ? "Direction Saint-Philibert" : "Direction C.H. Dron";
+	$("mtStations").innerHTML = st.map((n, i) => `<li class="${i === 0 ? "on here" : ""}">${n}</li>`).join("");
+	$("mtNext").textContent = st[1];
+	M.classList.add("on"); Audio.play("metro"); buzz(20);
+	const dur = reduceMotion ? 1400 : 3800, step = dur/(st.length - 1), lis = [...$("mtStations").children], timers = [];
+	for(let i=1; i<st.length; i++) timers.push(setTimeout(() => {
+		lis.forEach((li, k) => { li.classList.toggle("on", k <= i); li.classList.toggle("here", k === i); });
+		$("mtNext").textContent = i < st.length - 1 ? st[i + 1] : st[i];
+		if(i === st.length - 1) M.querySelector(".mt-next small").textContent = "Terminus pour toi";
+	}, i*step - 250));
+	let skip; const skipped = new Promise(r => skip = r);
+	$("mtSkip").onclick = () => { Audio.play("pop"); skip(); };
+	const work = Promise.resolve().then(swap);
+	Promise.all([work, Promise.race([new Promise(r => setTimeout(r, dur)), skipped])]).then(() => {
+		timers.forEach(clearTimeout);
+		M.classList.remove("on"); riding = false;
+		setTimeout(() => { M.querySelector(".mt-next small").textContent = "Prochain arrêt"; }, 500);
+		if(then) setTimeout(then, 150);
+	}).catch(() => { M.classList.remove("on"); riding = false; toast("Impossible de rejoindre Wenov : vérifie ta connexion et réessaie.", 3500); });
 }
 
 /* =====================================================================
@@ -1289,16 +1339,25 @@ function updatePins(){
 /* ---------- Quartier Euratechnologies : on y entre depuis Wenov, on y circule de lieu en lieu ---------- */
 function focusEura(id, open = true){
 	const p = interiors.eura && interiors.eura.places[id];
-	if(!p) return;
+	if(!p){ if(open && (LIFE[id] || PLACES[id])) openPanel(id); return; }
 	flyTo(V(...p.cam), V(...p.target), 1.4);
 	if(open){ openPanel(id); Audio.play("pop"); }
 }
 function goEura(id){
-	if(mode === "eura"){ focusEura(id); return; }
-	enterInterior("eura", id ? () => focusEura(id) : null);
+	if(mode === "eura"){ if(id) focusEura(id); return; }
+	if(mode === "wenovin"){ enterInterior("eura", () => id && focusEura(id), true); return; }
+	rideMetro(true, () => loadInterior("eura").then(() => placeIn("eura")), () => {
+		if(id) focusEura(id);
+		else toast(WELCOME.eura, 4200);
+	});
 }
 function interiorAction(id){
 	if(mode === "eura"){ focusEura(id); return; }
+	if(mode === "wenovin"){
+		if(id === "sortir") exitInterior();
+		else { const I = interiors.wenovin, p = I.spots[id]; if(p) flyTo(V(...p.cam), V(...p.target), 1.2); openPanel(id === "salle" ? "wenov" : id); Audio.play("pop"); }
+		return;
+	}
 	if(id === "comptoir") openGame("gestion");
 	else if(id === "salles") openPanel("falise");
 	else if(id === "sortir") exitInterior();
@@ -1554,7 +1613,8 @@ function openPanel(id){
 			const list = listFor(id);
 			body = list.length ? groupBySchool(list) : `<div class="empty">Pas de formation pour ton profil ici. ${otherPlaceHint(id)}</div>`;
 			if(id === "falise" && mode === "ext") body = `<button class="btn atrium" data-go="atrium">✨ Entrer dans l'atrium</button>` + body;
-			if(id === "wenov" && mode !== "eura") body = `<button class="btn atrium eura" data-go="eura">🏙️ Explorer le quartier Euratechnologies</button>` + body;
+			if(id === "wenov" && mode === "ext") body = `<button class="btn atrium eura" data-go="eura">🚇 Prendre le métro jusqu'à Wenov</button>` + body;
+			if(id === "wenov" && mode === "eura") body = `<button class="btn atrium eura" data-go="wenovin">✨ Entrer dans Wenov</button>` + body;
 			body = gameHere(id) + body;
 		}
 	}
@@ -1582,7 +1642,7 @@ $("panel").addEventListener("click", e => {
 		$("pbody").querySelectorAll(`[data-favd="${fd.dataset.favd}"]`).forEach(b => b.textContent = b.hasAttribute("data-short") ? (on ? "♥" : "♡") : on ? "♥ Dans mon carnet" : "♡ Garder");
 		if(on) buzz(15);
 		return; }
-	const fl = e.target.closest("[data-fly]"); if(fl){ flyToPlace(fl.dataset.fly); return; }
+	const fl = e.target.closest("[data-fly]"); if(fl){ if(fl.dataset.fly === "wenov") goEura("wenov"); else flyToPlace(fl.dataset.fly); return; }
 	const fav = e.target.closest("[data-fav]");
 	if(fav){ toggleFav(fav.dataset.fav); fav.setAttribute("aria-pressed", String(favs.has(fav.dataset.fav))); fav.textContent = favs.has(fav.dataset.fav) ? "♥" : "♡"; if(current === "carnet" && !favs.has(fav.dataset.fav)) openPanel("carnet"); return; }
 	const g = e.target.closest("[data-game]"); if(g){ openGame(g.dataset.game); return; }
@@ -1628,7 +1688,7 @@ function flyToPlace(id, dur){
 	if(mode === "eura" && interiors.eura.places[id]){ focusEura(id, false); return true; }
 	const p = PLACES[id] || LIFE[id];
 	if(!p || !p.target) return false;
-	if(mode !== "ext"){ exitInterior(); setTimeout(() => flyToPlace(id, dur), 650); return true; }
+	if(mode !== "ext"){ exitInterior(false, () => flyToPlace(id, dur)); return true; }
 	const tg = V(...p.target), a = innerWidth/innerHeight;
 	const k = a < 1 ? THREE.MathUtils.clamp(1.6/a, 1.6, 3) : 1;
 	flyTo(V(...p.cam).sub(tg).multiplyScalar(k).add(tg), tg, dur || (id === "wenov" || id === "citadelle" ? 3.2 : 1.5));
@@ -1636,11 +1696,11 @@ function flyToPlace(id, dur){
 }
 function selectPlace(id){
 	setHover(null);
-	if((mode === "eura" && interiors.eura.places[id]) || (LIFE[id] && LIFE[id].zone === "eura")){ if(tour) stopTour(); goEura(id); return; }
+	if((mode === "eura" && interiors.eura.places[id]) || (LIFE[id] && LIFE[id].zone === "eura") || id === "wenov"){ if(tour) stopTour(); if(id === "wenov") markVisited(id); goEura(id); return; }
 	const p = PLACES[id] || LIFE[id];
 	if(!p || !p.target) return;
 	if(tour) stopTour();
-	if(mode !== "ext"){ exitInterior(); setTimeout(() => selectPlace(id), 650); return; }
+	if(mode !== "ext"){ exitInterior(false, () => selectPlace(id)); return; }
 	lastPlace = id;
 	flyToPlace(id);
 	openPanel(id);
@@ -1750,7 +1810,7 @@ let carouselOn = false, carIdx = 0, carSettle = 0, lastPlace = null;
 function carouselIds(){
 	if(mode === "eura") return [...Object.keys(interiors.eura.places), "_vauban"];
 	const life = Object.keys(LIFE).filter(k => LIFE[k].pin);
-	return ["_hub", "ha", "falise", ...life.filter(k => GAME_AT[k]), "wenov", "_eura", ...life.filter(k => !GAME_AT[k])];
+	return ["_hub", "ha", "falise", ...life.filter(k => GAME_AT[k]), "wenov", ...life.filter(k => !GAME_AT[k])];
 }
 let carMode = null;
 function buildCarousel(){
@@ -1762,7 +1822,7 @@ function buildCarousel(){
 		if(id === "_hub") return `<button class="ccard hub" data-id="_hub"><span class="gic">🎮</span><span><b>Joue une formation</b><small>${nWon ? `${nWon}/${nGames} médaille${nWon > 1 ? "s" : ""} · ` : ""}${nGames} mini-jeux · 6 à 7 min</small></span><span class="go-c">Jouer</span></button>`;
 		const p = PLACES[id] || LIFE[id], games = (GAME_AT[id] || []).length, done = stamps.has(id) || found.has(id);
 		const n = PLACES[id] && profile ? listFor(id).length : 0;
-		const sub = PLACES[id] ? (n ? `${n} formation${n > 1 ? "s" : ""} pour toi` : p.kicker) : p.kicker;
+		const sub = (id === "wenov" && mode === "ext" ? "🚇 Ligne 2 · " : "") + (PLACES[id] ? (n ? `${n} formation${n > 1 ? "s" : ""} pour toi` : p.kicker) : p.kicker);
 		return `<button class="ccard" data-id="${id}"><span class="gic">${p.icon}</span><span><b>${p.name}${done ? ' <span class="ok">✓</span>' : ""}</b><small>${games ? `🎮 ${games} jeu${games > 1 ? "x" : ""} · ` : ""}${sub}</small></span><span class="go-c">Voir</span></button>`;
 	}).join("");
 	car.children[carIdx]?.classList.add("cur");
@@ -1879,7 +1939,7 @@ const STOP = 9;
 let tour = null;
 const firstSentence = t => { const m = t.match(/^.{20,240}?[.!?](?=\s|$)/); if(m) return m[0]; const c = t.slice(0, 200); return c.slice(0, c.lastIndexOf(" ")) + "…"; };
 function startTour(idle){
-	if(mode !== "ext"){ exitInterior(); setTimeout(() => startTour(idle), 700); return; }
+	if(mode !== "ext"){ exitInterior(false, () => startTour(idle)); return; }
 	closePanel(); setHover(null);
 	tour = { stops:TOUR_IDS.filter(id => (PLACES[id] || LIFE[id]) && (PLACES[id] || LIFE[id]).target), i:-1, t:0, paused:false };
 	$("tour").hidden = false;

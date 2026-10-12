@@ -108,6 +108,11 @@ export const LIFE = {
 		text:"Une filature de coton construite en 1896, qui a employé jusqu'à 2 500 ouvriers. Réhabilitée sur 20 000 m², elle accueille depuis 2009 Euratechnologies, l'un des plus grands pôles d'innovation numérique d'Europe : incubateur, accélérateur, start-up et grands groupes, à deux pas de tes cours.",
 		facts:["Filature de 1896","20 000 m² réhabilités","Euratechnologies depuis 2009"]
 	},
+	hiptown: {
+		zone:"eura", icon:"☕", name:"Coworking et café Hiptown", kicker:"Rez-de-chaussée de Wenov",
+		text:"Au pied des salles de cours, Wenov accueille des espaces de coworking et de bureaux Hiptown, des start-up et un café : on y croise des étudiants, des développeurs et des entrepreneurs, autour d'un patio planté.",
+		facts:["Coworking","Start-up","Patio planté"]
+	},
 	factory: {
 		zone:"eura", icon:"🛏️", name:"Student Factory", kicker:"Résidence étudiante · îlot Wenov",
 		text:"Une résidence étudiante de 206 logements, livrée en 2021 au cœur de l'îlot Wenov : on y descend en chaussons pour aller en cours, ou presque.",

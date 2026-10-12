@@ -181,7 +181,19 @@ const SFX = {
 	swipe(){ const t = ctx.currentTime, n = ctx.createBufferSource(); n.buffer = noise(); const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.setValueAtTime(600, t); bp.frequency.exponentialRampToValueAtTime(2400, t + .18); const g = ctx.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.12, t + .05); g.gain.exponentialRampToValueAtTime(.001, t + .22); n.connect(bp).connect(g).connect(sfx); n.start(t); n.stop(t + .25); },
 	good(){ const t = ctx.currentTime; [72,76,79].forEach((m,i) => bell(m, t + i*.08, 1.2, .18)); },
 	bad(){ const t = ctx.currentTime; [64,61].forEach((m,i) => bell(m, t + i*.14, 1, .16)); },
-	win(){ const t = ctx.currentTime; [72,76,79,84,88].forEach((m,i) => bell(m, t + i*.11, 2, .2)); }
+	win(){ const t = ctx.currentTime; [72,76,79,84,88].forEach((m,i) => bell(m, t + i*.11, 2, .2)); },
+	// rame de métro : carillon de fermeture des portes, puis roulement qui accélère et ralentit
+	metro(){
+		const t = ctx.currentTime;
+		[76, 72, 79].forEach((m,i) => bell(m, t + i*.18, .9, .16));
+		const n = ctx.createBufferSource(); n.buffer = noise(); n.loop = true;
+		const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.setValueAtTime(180, t + .5); lp.frequency.linearRampToValueAtTime(620, t + 2); lp.frequency.linearRampToValueAtTime(220, t + 3.6);
+		const g = ctx.createGain(); g.gain.setValueAtTime(.0001, t + .5); g.gain.linearRampToValueAtTime(.16, t + 1.4); g.gain.linearRampToValueAtTime(.12, t + 2.8); g.gain.exponentialRampToValueAtTime(.001, t + 3.9);
+		const o = ctx.createOscillator(), og = ctx.createGain(); o.type = "triangle"; o.frequency.setValueAtTime(70, t + .5); o.frequency.linearRampToValueAtTime(190, t + 2); o.frequency.linearRampToValueAtTime(80, t + 3.6);
+		og.gain.setValueAtTime(.0001, t + .5); og.gain.linearRampToValueAtTime(.05, t + 1.6); og.gain.exponentialRampToValueAtTime(.0005, t + 3.8);
+		n.connect(lp).connect(g).connect(sfx); o.connect(og).connect(sfx);
+		n.start(t + .5); n.stop(t + 4); o.start(t + .5); o.stop(t + 4);
+	}
 };
 
 export const Audio = {
