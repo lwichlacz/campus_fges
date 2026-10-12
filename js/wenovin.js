@@ -71,12 +71,17 @@ export function createWenovIn({ background }){
 	const lampM = std("#fff6e2", { emissive:"#ffe2a8", emissiveIntensity:1.1, flatShading:false });
 
 	/* sol, patio, socle */
-	// socle sous le sol (son dessus ne doit pas être à la même hauteur que le sol : sinon les deux scintillent)
-	box(scene, W + 2, .6, D + 2, std("#8c867e"), 0, -.66, 0, 0, false);
-	const fl = new THREE.Mesh(new THREE.PlaneGeometry(W, D).rotateX(-Math.PI/2), floorM); fl.receiveShadow = true; scene.add(fl);
-	floorM.polygonOffset = true; floorM.polygonOffsetFactor = 2; floorM.polygonOffsetUnits = 4;       // le sol passe toujours sous le patio
-	const pa = new THREE.Mesh(new THREE.PlaneGeometry(PX*2, PZ*2).rotateX(-Math.PI/2), patioM); pa.position.y = .05; pa.receiveShadow = true; scene.add(pa);
-	for(let i=-6; i<=6; i++) box(scene, .08, .03, PZ*2, std("#c4beb3"), i*2.2, .06, 0, 0, false);       // calepinage des dalles
+	/* Sol d'un seul tenant : rien n'est empilé à quelques centimètres (sinon les téléphones, dont la profondeur est
+	   moins précise, font scintiller les surfaces). Le sol des ailes entoure le patio sans le recouvrir ;
+	   les joints des dalles du patio sont dessinés dans sa texture. */
+	box(scene, W + 2, .6, D + 2, std("#8c867e"), 0, -.9, 0, 0, false);                           // socle, bien sous le sol
+	const ringShape = new THREE.Shape([new THREE.Vector2(-W/2, -D/2), new THREE.Vector2(W/2, -D/2), new THREE.Vector2(W/2, D/2), new THREE.Vector2(-W/2, D/2)]);
+	ringShape.holes.push(new THREE.Path([new THREE.Vector2(-PX, -PZ), new THREE.Vector2(-PX, PZ), new THREE.Vector2(PX, PZ), new THREE.Vector2(PX, -PZ)]));
+	const fl = new THREE.Mesh(new THREE.ShapeGeometry(ringShape).rotateX(-Math.PI/2), floorM); fl.receiveShadow = true; scene.add(fl);
+	const dalles = canvasTex(256, 256, (x) => { x.fillStyle = "#d9d4ca"; x.fillRect(0, 0, 256, 256); x.fillStyle = "#c4beb3"; x.fillRect(0, 0, 256, 6); x.fillRect(0, 0, 6, 256); });
+	dalles.wrapS = dalles.wrapT = THREE.RepeatWrapping; dalles.repeat.set(PX*2/2.2, PZ*2/2.2);
+	patioM.map = dalles; patioM.color.set("#ffffff");
+	const pa = new THREE.Mesh(new THREE.PlaneGeometry(PX*2, PZ*2).rotateX(-Math.PI/2), patioM); pa.receiveShadow = true; scene.add(pa);
 
 	/* murs extérieurs (trame de façade) : celui côté caméra s'efface */
 	const walls = [];
