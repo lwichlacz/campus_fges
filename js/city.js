@@ -6,9 +6,12 @@ import * as THREE from "three";
 import { std, mulberry32 } from "./kit.js";
 
 const FH = 2.3, BAY = 1.4;
+let FHc = FH;          // hauteur d'un étage pour la carte en cours (MAP.fh : à l'échelle de l'Hôtel Académique)
 const HOUSE_WALLS = ["#b5563d","#a84e3a","#c46a4a","#9c4a38","#b9603f","#efe6d6","#e6d9c1","#d9cbb5","#f3eee6","#cdbfa8","#e9d3b4","#c9c2b8"];
 const CAMPUS_WALLS = ["#a9533c","#ebe6dc","#c9b8a0"];
-const ROOFS = ["#4f5767","#5d6170","#8d4a3a","#4a505d"];
+// ardoises (0, 1, 3, 7), tuiles flamandes (2, 4, 5), zinc (6) ; la teinte vue sur la photo aérienne (rec[8]) prime
+const ROOFS = ["#4f5767","#5d6170","#8d4a3a","#4a505d","#a9583c","#b86a4b","#7f8791","#3b3d42"];
+const ROOF_OF = { 1:[2,4,5], 2:[0,3,1], 3:[6] };          // matériau réel du toit (BD TOPO) -> teintes
 
 /* ---------- textures de façade ---------- */
 function facade(wall, style){
@@ -32,6 +35,16 @@ function facade(wall, style){
 		x.fillStyle = "#ddd6c9"; x.fillRect(6,22,116,76);
 		glass(14, 30, 100, 60);
 		x.fillStyle = "rgba(221,214,201,.35)"; x.fillRect(60,30,8,60);
+	} else if(style === "modern"){
+		// immeuble des années 1950-1980 : bandeaux de fenêtres en longueur, allège pleine
+		glass(6, 34, 116, 50);
+		x.fillStyle = "rgba(255,255,255,.18)"; x.fillRect(0, 92, 128, 10);      // nez de dalle
+		x.fillStyle = wall; x.fillRect(60, 34, 8, 50);
+	} else if(style === "recent"){
+		// bâtiment récent : grandes baies toute hauteur, cadre sombre
+		x.fillStyle = "#3b3f46"; x.fillRect(14, 8, 100, 108);
+		glass(20, 14, 88, 96);
+		x.fillStyle = "rgba(59,63,70,.6)"; x.fillRect(62, 14, 4, 96);
 	} else if(style === "sport"){
 		glass(0, 12, 128, 30);
 		x.fillStyle = "#8a2b4e"; x.fillRect(0,48,128,10);
@@ -234,13 +247,40 @@ export function pointInPoly(x, z, p){
 
 /* ---------- un bâtiment ---------- */
 const PARAPET = .45;
+/* Toit à pans brisés (mansarde lilloise) sur une emprise quelconque : le pourtour est rentré de d vers l'intérieur
+   (sommets en onglet). Renvoie null si l'emprise est trop étroite ou trop découpée pour ce retrait. */
+function insetRing(p, d){
+	const n = p.length, q = [];
+	if(n > 40) return null;
+	for(let i=0;i<n;i++){
+		const a = p[(i+n-1)%n], b = p[i], c = p[(i+1)%n];
+		const l1 = Math.hypot(b[0]-a[0], b[1]-a[1]) || 1, l2 = Math.hypot(c[0]-b[0], c[1]-b[1]) || 1;
+		const n1x = -(b[1]-a[1])/l1, n1z = (b[0]-a[0])/l1, n2x = -(c[1]-b[1])/l2, n2z = (c[0]-b[0])/l2;
+		const k = 1 + n1x*n2x + n1z*n2z;
+		if(k < .35) return null;                                    // angle trop aigu
+		q.push([b[0] + d*(n1x + n2x)/k, b[1] + d*(n1z + n2z)/k]);
+	}
+	// chaque côté garde son sens, et le contour rentré ne se recoupe pas
+	for(let i=0;i<n;i++){ const a = p[i], b = p[(i+1)%n], qa = q[i], qb = q[(i+1)%n]; if((b[0]-a[0])*(qb[0]-qa[0]) + (b[1]-a[1])*(qb[1]-qa[1]) <= 0) return null; }
+	if(signedArea(q) < .5) return null;
+	const cross = (a, b, c) => (b[0]-a[0])*(c[1]-a[1]) - (b[1]-a[1])*(c[0]-a[0]);
+	for(let i=0;i<n;i++) for(let j=i+2;j<n;j++){
+		if(i === 0 && j === n-1) continue;
+		const a = q[i], b = q[i+1], c = q[j], e = q[(j+1)%n];
+		if(cross(a,b,c)*cross(a,b,e) < 0 && cross(c,e,a)*cross(c,e,b) < 0) return null;
+	}
+	return q;
+}
 function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 	const [kind, lv, , roof, flat] = rec;
+	const rh = rec.length > 5 ? rec[5] : -1;         // hauteur réelle du toit (BD TOPO) ; -1 : inconnue
 	let p = ring(flat);
 	if(signedArea(p) < 0) p = p.reverse();
 	// léger décalage par bâtiment : deux toits voisins ne sont jamais au même niveau (pas de clignotement)
-	const H = (kind === 3 ? lv*3.2 : kind === 6 ? 2.2 : kind === 4 ? lv*FH*1.35 : kind === 7 ? lv*FH*1.25 : lv*FH) + (i % 7)*.035;
-	const flatRoof = !roof && kind !== 5;
+	const k = FHc/FH, H = (kind === 3 ? lv*3.2*k : kind === 6 ? 2.2*k : kind === 4 ? lv*FHc*1.35 : kind === 7 ? lv*FHc*1.25 : lv*FHc) + (i % 7)*.035;
+	let mans = null;
+	if(!roof && rh > 0) for(const d of [rh*.5, rh*.32, rh*.2]) if(d >= .3 && (mans = insetRing(p, d))){ mans.d = d; break; }
+	const flatRoof = !roof && !mans && kind !== 5;
 	const tr = mulberry32(i*131 + 17), wv = .9 + tr()*.17, wh = (tr() - .5)*.05;
 	const wallTint = [wv*(1 + wh), wv, wv*(1 - wh)], rv = .84 + tr()*.3, roofTint = [rv*(1 + (tr() - .5)*.08), rv, rv*(1 + (tr() - .5)*.1)];
 	TINT = wallTint;
@@ -250,7 +290,7 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 		const dx = b[0]-a[0], dz = b[1]-a[1], len = Math.hypot(dx, dz);
 		if(len < .01) continue;
 		const n = [dz/len, 0, -dx/len];
-		const u0 = per/BAY, u1 = (per+len)/BAY, v1 = H/FH;
+		const bay = BAY*FHc/FH, u0 = per/bay, u1 = (per+len)/bay, v1 = H/FHc;
 		tri(Bw, [a[0],0,a[1]], [b[0],0,b[1]], [b[0],H,b[1]], n, [u0,0], [u1,0], [u1,v1]);
 		tri(Bw, [a[0],0,a[1]], [b[0],H,b[1]], [a[0],H,a[1]], n, [u0,0], [u1,v1], [u0,v1]);
 		if(flatRoof){
@@ -264,7 +304,7 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 	if(roof){
 		const [cx, cz, ang, L, D, eave = .25] = roof;
 		const ux = Math.cos(ang), uz = Math.sin(ang), wx = -uz, wz = ux;
-		const L2 = L/2, D2 = D/2 + eave, rh = Math.min(D*.55, 3.4);
+		const L2 = L/2, D2 = D/2 + eave, rh = rec.length > 5 && rec[5] > 0 ? Math.min(rec[5], D*.75) : Math.min(D*.55, 3.4);
 		const P = (s, t, y) => [cx + ux*s + wx*t, y, cz + uz*s + wz*t];
 		const e1 = P(-L2,-D2,H), e2 = P(L2,-D2,H), e3 = P(L2,D2,H), e4 = P(-L2,D2,H), r1 = P(-L2,0,H+rh), r2 = P(L2,0,H+rh);
 		const nl = Math.hypot(rh, D2);
@@ -278,6 +318,26 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 		tri(Bw, g1, g4, q1, [-ux,0,-uz], W, W, W); tri(Bw, g2, g3, q2, [ux,0,uz], W, W, W);
 		// dalle sous le toit : ferme l'emprise là où le toit rectangulaire ne la couvre pas (formes irrégulières, toit raccourci)
 		capTris(Bf, p, H - .03, ([x,z]) => [x*.22, z*.22]);
+	} else if(mans){
+		// pans brisés tout autour, terrasson presque plat au sommet
+		const d = mans.d, T = H + rh;
+		TINT = roofTint;
+		let per2 = 0;
+		for(let k=0;k<p.length;k++){
+			const a = p[k], b = p[(k+1)%p.length], qa = mans[k], qb = mans[(k+1)%p.length];
+			const dx = b[0]-a[0], dz = b[1]-a[1], len = Math.hypot(dx, dz);
+			if(len < .01) continue;
+			const nx = dz/len, nz = -dx/len, nl = Math.hypot(rh, d);
+			const nrm = [nx*rh/nl, d/nl, nz*rh/nl];
+			const s = nl/1.6;
+			tri(Br, [a[0],H,a[1]], [b[0],H,b[1]], [qb[0],T,qb[1]], nrm, [per2,0], [per2+len,0], [per2+len,s]);
+			tri(Br, [a[0],H,a[1]], [qb[0],T,qb[1]], [qa[0],T,qa[1]], nrm, [per2,0], [per2+len,s], [per2,s]);
+			per2 += len;
+		}
+		// terrasson : zinc gris (toit plat) dès qu'il est grand, dans la teinte du toit sur une petite maison
+		TINT = [1, 1, 1];
+		if(Math.abs(signedArea(mans)) > 20) capTris(Bf, mans, T, ([x,z]) => [x*.22, z*.22]);
+		else { TINT = roofTint; capTris(Br, mans, T, ([x,z]) => [x*.5, z*.5]); }
 	} else {
 		TINT = roofTint;
 		capTris(Bf, p, H, ([x,z]) => [x*.22, z*.22]);
@@ -302,6 +362,7 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 }
 
 export function buildCity(scene, MAP, opts={}){
+	FHc = MAP.fh || FH;
 	const out = { walls:[], roofs:[], flats:[], pois:{}, poiMats:{}, lampSpots:[], trees:[], parkTrees:[], ground:{}, nightU:{ value:0 } };
 	const poiIndex = new Map(Object.entries(MAP.pois).filter(([,v]) => v && v.i !== undefined).map(([k,v]) => [v.i, k]));
 
@@ -313,6 +374,9 @@ export function buildCity(scene, MAP, opts={}){
 		out.walls.push(m); return m;
 	};
 	const houseMats = HOUSE_WALLS.map(c => wallMat(c, "house"));
+	// façades selon l'époque réelle (BD TOPO) : immeubles des années 1950-1980, bâtiments récents (créées au besoin)
+	const eraMats = { 1:[], 2:[] };
+	const eraMat = (style, col) => eraMats[style][col] || (eraMats[style][col] = wallMat(HOUSE_WALLS[col], style === 1 ? "modern" : "recent"));
 	const campusMats = CAMPUS_WALLS.map(c => wallMat(c, "campus"));
 	const sportMat = wallMat("#d8d2c6", "sport");
 	const glassMat = wallMat("#cfe3e6", "glass");
@@ -333,6 +397,9 @@ export function buildCity(scene, MAP, opts={}){
 		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
 	})();
 	const flatMat = new THREE.MeshStandardMaterial({ color:"#8a857f", map:roofTex, roughness:.95, vertexColors:true }); flatMat.userData.base = "#8a857f"; out.flats.push(flatMat);
+	// toits plats vus d'avion : gravier clair, gris, bitume sombre, végétalisé
+	const flatMats = { 11:flatMat };
+	for(const [k, c] of [[10, "#a8a39a"], [12, "#626369"], [13, "#7f8c5c"]]){ const m = flatMat.clone(); m.color.set(c); m.userData.base = c; out.flats.push(m); flatMats[k] = m; }
 	const extras = [];
 	const glassRoof = new THREE.MeshStandardMaterial({ color:"#d9eef0", transparent:true, opacity:.55, roughness:.1, metalness:.2, emissive:"#ffd08a", emissiveIntensity:0 });
 	out.glassRoof = glassRoof;
@@ -343,8 +410,9 @@ export function buildCity(scene, MAP, opts={}){
 	const S = site(MAP); let flattened = 0; out.stats = { get flattened(){ return flattened; } };
 	MAP.buildings.forEach((rec, i) => {
 		// un toit à deux pentes ne doit ni mordre sur le voisin, ni laisser l'emprise à découvert
-		if(rec[3] && rec[0] !== 4){ const fit = S.roofFit(rec, i); if(!fit) flattened++; rec = [rec[0], rec[1], rec[2], fit || 0, rec[4]]; }
-		const [kind, , col] = rec;
+		// (sans place pour deux pentes, un toit de hauteur connue devient un toit à pans brisés)
+		if(rec[3] && rec[0] !== 4){ const fit = S.roofFit(rec, i); if(!fit) flattened++; rec = rec.slice(); rec[3] = fit || 0; }
+		const [kind, , col] = rec, style = rec[6] || 0;
 		if(opts.exclude){ const f = rec[4]; let cx = 0, cz = 0; for(let k=0;k<f.length;k+=2){ cx += f[k]; cz += f[k+1]; } if(opts.exclude(cx/(f.length/2), cz/(f.length/2))) return; }
 		let wm;
 		if(kind === 0 || kind === 2 || kind === 6) wm = houseMats[col % houseMats.length];
@@ -353,7 +421,10 @@ export function buildCity(scene, MAP, opts={}){
 		else if(kind === 7) wm = officeMats[col % officeMats.length] || campusMats[1];
 		else if(kind === 4) wm = houseMats[0];
 		else wm = glassMat;
-		const rm = roofMats[(col + i) % (kind === 0 ? 4 : 2)];
+		if(style && (kind === 0 || kind === 2)) wm = eraMat(style, col % HOUSE_WALLS.length);
+		const real = ROOF_OF[rec[7]], seen = rec.length > 8 ? rec[8] : -1;
+		const rm = seen >= 0 && seen < 8 ? roofMats[seen] : real ? roofMats[real[i % real.length]] : roofMats[(col + i) % (kind === 0 ? 4 : 2)];
+		const fm = flatMats[seen] || flatMat;
 		const poi = poiIndex.get(i);
 		if(poi === "rizomm") wm = campusMats[0];
 		if(poi){
@@ -367,8 +438,8 @@ export function buildCity(scene, MAP, opts={}){
 			out.pois[poi] = { group:grp, H, mats:[w2, r2, f2] };
 			return;
 		}
-		const g = get(wm.uuid + "|" + rm.uuid);
-		g.wm = wm; g.rm = rm;
+		const g = get(wm.uuid + "|" + rm.uuid + "|" + fm.uuid);
+		g.wm = wm; g.rm = rm; if(fm !== flatMat) g.fm = fm;
 		const H = addBuilding(g.w, g.r, (kind === 5 ? get("glassroof").f : g.f), rec, i, extras);
 		if(kind === 5) get("glassroof").fm = glassRoof;
 		if(kind === 4 && rec[3]){ const [cx,cz,ang,L] = rec[3]; spires.push([cx + Math.cos(ang)*L*.42, cz + Math.sin(ang)*L*.42, H]); }
