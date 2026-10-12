@@ -418,7 +418,7 @@ export function buildCity(scene, MAP, opts={}){
 
 	const groups = new Map();   // clé matériau -> { w, r, f }
 	const get = (key) => { if(!groups.has(key)) groups.set(key, { w:bucket(), r:bucket(), f:bucket() }); return groups.get(key); };
-	const spires = [];
+	const spires = [], oldRoofs = [];
 	const S = site(MAP); let flattened = 0; out.inBuilding = S.inBuilding; out.roadGap = S.roadGap; out.stats = { get flattened(){ return flattened; } };
 	MAP.buildings.forEach((rec, i) => {
 		// un toit à deux pentes ne doit ni mordre sur le voisin, ni laisser l'emprise à découvert
@@ -453,6 +453,8 @@ export function buildCity(scene, MAP, opts={}){
 		const g = get(wm.uuid + "|" + rm.uuid + "|" + fm.uuid);
 		g.wm = wm; g.rm = rm; if(fm !== flatMat) g.fm = fm;
 		const H = addBuilding(g.w, g.r, (kind === 5 ? get("glassroof").f : g.f), rec, i, extras);
+		// maison ancienne à deux pentes : cheminées aux murs mitoyens, lucarnes côté rue
+		if(kind === 0 && rec[3] && !(rec[6] > 0)) oldRoofs.push([rec[3], H, rec.length > 5 && rec[5] > 0 ? Math.min(rec[5], rec[3][4]*.75) : Math.min(rec[3][4]*.55, 3.4), i]);
 		if(kind === 5) get("glassroof").fm = glassRoof;
 		if(kind === 4 && rec[3]){ const [cx,cz,ang,L] = rec[3]; spires.push([cx + Math.cos(ang)*L*.42, cz + Math.sin(ang)*L*.42, H]); }
 	});
@@ -461,6 +463,42 @@ export function buildCity(scene, MAP, opts={}){
 			if(!B.pos.length || !m) continue;
 			const me = new THREE.Mesh(toGeo(B), m); me.castShadow = me.receiveShadow = true; scene.add(me);
 		}
+	}
+	{
+		// lucarnes et cheminées des toits anciens (maisons lilloises), instanciées
+		const lucBody = [], lucRoof = [], chim = [];
+		for(const [[cx, cz, ang, L, D, eave = .25], H, rh, i] of oldRoofs){
+			const r = mulberry32(i*977 + 5), ux = Math.cos(ang), uz = Math.sin(ang), wx = -uz, wz = ux, D2 = D/2;
+			const top = H + rh;
+			// cheminées : au faîtage, à un bout ou aux deux (murs mitoyens)
+			for(const e of r() < .55 ? [-1, 1] : [r() < .5 ? -1 : 1]) chim.push([cx + ux*e*(L/2 - .3), top - .35, cz + uz*e*(L/2 - .3), ang]);
+			// lucarnes : sur le pan qui regarde la rue la plus proche
+			if(L < 1.8 || rh < 1) continue;
+			const side = S.roadGap(cx + wx*(D2 + 2), cz + wz*(D2 + 2)).g < S.roadGap(cx - wx*(D2 + 2), cz - wz*(D2 + 2)).g ? 1 : -1;
+			const n = Math.min(3, Math.max(1, Math.floor(L/2.3))), t = D2*.52, y = H + rh*(1 - t/D2) - .15;
+			for(let k=0;k<n;k++){
+				if(n > 1 && r() < .2) continue;
+				const s = (k - (n - 1)/2)*(L/n);
+				lucBody.push([cx + ux*s + wx*t*side, y, cz + uz*s + wz*t*side, ang + (side > 0 ? 0 : Math.PI)]);
+			}
+		}
+		const dO = new THREE.Object3D();
+		const inst = (geo, mat, list, sc) => {
+			const m = new THREE.InstancedMesh(geo, mat, Math.max(1, list.length));
+			list.forEach(([x, y, z, a], k) => { dO.position.set(x, y, z); dO.rotation.set(0, -a, 0); dO.scale.set(...sc); dO.updateMatrix(); m.setMatrixAt(k, dO.matrix); });
+			m.count = list.length; m.castShadow = m.receiveShadow = true; scene.add(m); return m;
+		};
+		// lucarne : façade claire avec sa fenêtre (repère local : x le long du faîtage, z vers la rue)
+		const lb = new THREE.BoxGeometry(.85, .95, 1).translate(0, .47, -.1);
+		const lw = new THREE.BoxGeometry(.5, .6, .04).translate(0, .45, .41);
+		const lr = new THREE.ExtrudeGeometry(new THREE.Shape([new THREE.Vector2(-.55, 0), new THREE.Vector2(.55, 0), new THREE.Vector2(0, .5)]), { depth:1.15, bevelEnabled:false }).translate(0, .93, -.67);
+		const white = g => { g.setAttribute("color", new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count*3).fill(1), 3)); return g; };
+		inst(lb, std("#ece4d4"), lucBody, [1, 1, 1]);
+		inst(lw, std("#3e4c5e", { roughness:.3 }), lucBody, [1, 1, 1]);
+		inst(white(lr), roofMats[0], lucBody, [1, 1, 1]);
+		inst(new THREE.BoxGeometry(.55, 1.25, .95).translate(0, .62, 0), std("#7d3f2f"), chim, [1, 1, 1]);
+		inst(new THREE.BoxGeometry(.7, .12, 1.1).translate(0, 1.3, 0), std("#cfc5b5"), chim, [1, 1, 1]);
+		out.stats.dormers = lucBody.length; out.stats.chimneys = chim.length;
 	}
 	{
 		// blocs techniques et petites verrières, instanciés
