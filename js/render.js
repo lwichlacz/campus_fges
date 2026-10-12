@@ -327,20 +327,20 @@ export async function createPost(renderer, scene, camera){
 export const CLOUDS = { value:0 };
 export function cloudShade(mat){
 	chain(mat, "clouds", sh => {
-		sh.uniforms.uTime = TIME; sh.uniforms.uClouds = CLOUDS;
+		sh.uniforms.uCloudT = TIME;          // nom propre : uTime est déjà déclaré par d'autres effets (fenêtres, vent) sh.uniforms.uClouds = CLOUDS;
 		sh.vertexShader = sh.vertexShader
 			.replace("#include <common>", "#include <common>\nvarying vec2 vCloudXZ;")
 			.replace("#include <project_vertex>", `#include <project_vertex>\n	{ ${WORLD_VS}\n	vCloudXZ = fxW.xz; }`);
 		sh.fragmentShader = sh.fragmentShader
 			.replace("#include <common>", `#include <common>
-uniform float uTime; uniform float uClouds; varying vec2 vCloudXZ;
+uniform float uCloudT; uniform float uClouds; varying vec2 vCloudXZ;
 float cnoise( vec2 p ){ vec2 i = floor( p ), f = fract( p ); f = f*f*( 3.0 - 2.0*f );
 	float a = fract( sin( dot( i, vec2( 127.1, 311.7 ) ) )*43758.5453 ), b = fract( sin( dot( i + vec2( 1.0, 0.0 ), vec2( 127.1, 311.7 ) ) )*43758.5453 );
 	float c = fract( sin( dot( i + vec2( 0.0, 1.0 ), vec2( 127.1, 311.7 ) ) )*43758.5453 ), d = fract( sin( dot( i + vec2( 1.0, 1.0 ), vec2( 127.1, 311.7 ) ) )*43758.5453 );
 	return mix( mix( a, b, f.x ), mix( c, d, f.x ), f.y ); }`)
 			.replace("#include <lights_fragment_end>", `#include <lights_fragment_end>
 	if( uClouds > 0.0 ){
-		vec2 q = vCloudXZ*0.011 + vec2( uTime*0.012, uTime*0.005 );          // le vent pousse les nuages
+		vec2 q = vCloudXZ*0.011 + vec2( uCloudT*0.012, uCloudT*0.005 );          // le vent pousse les nuages
 		float n = cnoise( q )*0.65 + cnoise( q*2.3 + 7.1 )*0.35;
 		float shade = 1.0 - uClouds*0.62*smoothstep( 0.48, 0.66, n );
 		reflectedLight.directDiffuse *= shade; reflectedLight.directSpecular *= shade; }`);
