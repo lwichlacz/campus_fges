@@ -505,7 +505,7 @@ function buildKiosque(){
 /* =====================================================================
    La ville continue à l'horizon (silhouettes instanciées)
    ===================================================================== */
-function buildHorizon(){
+function buildHorizon(F){
 	// les vrais bâtiments au-delà de la zone à l'échelle réelle (BD TOPO), en miniature puisque le lointain est compressé ;
 	// la Citadelle et Euratechnologies ont leurs propres modèles
 	const blockedFar = (x, z) => {
@@ -513,7 +513,9 @@ function buildHorizon(){
 		if(LIFE.euratech && Math.hypot(x-LIFE.euratech.x, z-LIFE.euratech.z) < 60) return true;
 		return false;
 	};
-	const spots = (MAP.far || []).filter(([x, z]) => !blockedFar(x, z) && !(ZONE && pointInPoly(x, z, ZONE)));
+	// valeurs entières du fichier : positions et tailles au dixième, angle au centième, hauteur du toit au dixième
+	const spots = F.map(([x, z, a, w, dp, lv, rh, col, rm]) => [x/10, z/10, a/100, w/10, dp/10, lv, rh/10, col, rm])
+		.filter(([x, z]) => !blockedFar(x, z) && !(ZONE && pointInPoly(x, z, ZONE)));
 	const body = new THREE.InstancedMesh(BOX, std("#ffffff"), spots.length);
 	const roof = new THREE.InstancedMesh(gable(1, 1, 1), std("#ffffff"), spots.length);
 	const d = new THREE.Object3D(), c = new THREE.Color(), ZERO = new THREE.Matrix4().makeScale(0, 0, 0), base = [];
@@ -666,7 +668,7 @@ function buildRameau(){
 }
 
 buildHA(); buildFalise(); buildWenov(); buildCitadelle(); buildKiosque(); buildRameau();
-const horizon = buildHorizon();
+let horizon = null, farWood = null;          // le lointain arrive après le campus (js/vauban_far.js), voir loadFar
 WB.build(scene, glassLit, glassDark, frameMat);
 scene.updateMatrixWorld(true);
 
@@ -722,18 +724,8 @@ if(city.pois.rizomm){
 // un arbre du jardin ne pousse jamais dans un bâtiment voisin (emprises OpenStreetMap)
 const inOsmBuilding = (x, z) => MAP.buildings.some(r => { const f = r[4], p = []; for(let k=0;k<f.length;k+=2) p.push([f[k], f[k+1]]); return pointInPoly(x, z, p); });
 const trees = [...city.trees, ...city.parkTrees, ...gardenTrees.filter(t => !inOsmBuilding(t.x, t.z))];
-// bois et parcs du lointain, plantés d'après la photo aérienne (sauf dans l'étoile de la Citadelle et à Euratechnologies)
-{
-	const f = MAP.ftrees || [], [cx, cz] = MAP.citadelle, fr = mulberry(11);
-	for(let i=0;i<f.length;i+=2){
-		const x = f[i], z = f[i+1];
-		if(Math.hypot(x - cx, z - cz) < 56 || (LIFE.euratech && Math.hypot(x - LIFE.euratech.x, z - LIFE.euratech.z) < 60)) continue;
-		trees.push({ x, z, k: fr() < .22 ? "c" : "d", s:.95 + fr()*.4, far:true });
-	}
-}
 const hp0 = HAG.localToWorld(V(0,0,0));
 for(const [x,z] of [[-12,-14],[12,-14],[-20,-10]]) { const p = HAG.localToWorld(V(x,0,z)); trees.push({ x:p.x, z:p.z, k:"d", s:1 }); }
-trees.sort((a, b) => (a.far ? 1 : 0) - (b.far ? 1 : 0));          // les arbres du lointain en dernier (voir treeCounts)
 const decid = trees.filter(t => t.k === "d"), conif = trees.filter(t => t.k === "c");
 trees.forEach(t => { t.c = rng(); });
 const trunkIM = new THREE.InstancedMesh(cached("trunk", () => new THREE.CylinderGeometry(.22,.34,2.4,6).translate(0,1.2,0)), std("#6b4a35"), trees.length);
@@ -756,8 +748,57 @@ const conifIM = new THREE.InstancedMesh(new THREE.ConeGeometry(1, 1, 7).translat
 	});
 	conifIM.count = conif.length*2;
 }
-// les arbres du lointain sont rangés en fin de liste : en qualité basse, on ne dessine que les proches
-const treeCounts = { all:[trees.length, decid.length*2, conif.length*2], near:[trees.filter(t => !t.far).length, decid.filter(t => !t.far).length*2, conif.filter(t => !t.far).length*2] };
+/* Le lointain : les vrais bâtiments en miniature et les bois (Bois de Boulogne…) plantés d'après la photo aérienne.
+   Chargé une fois le campus affiché ; ses arbres, sans tronc, ne projettent pas d'ombre. */
+function buildFarWood(f){
+	const [cx, cz] = MAP.citadelle, fr = mulberry(11), list = [];
+	for(let i=0;i<f.length;i+=2){
+		const x = f[i]/10, z = f[i+1]/10;
+		if(Math.hypot(x - cx, z - cz) < 56 || (LIFE.euratech && Math.hypot(x - LIFE.euratech.x, z - LIFE.euratech.z) < 60)) continue;
+		list.push({ x, z, k: fr() < .22 ? "c" : "d", s:.95 + fr()*.4, c:fr() });
+	}
+	const dl = list.filter(t => t.k === "d"), cl = list.filter(t => t.k === "c");
+	const can = new THREE.InstancedMesh(canopyIM.geometry, canopyIM.material, Math.max(1, dl.length*2));
+	const con = new THREE.InstancedMesh(conifIM.geometry, conifIM.material, Math.max(1, cl.length*2));
+	const d = new THREE.Object3D();
+	dl.forEach((t,i) => {
+		const s = t.s;
+		d.position.set(t.x, 3.2*s, t.z); d.rotation.set(fr(), fr()*3, fr()); d.scale.set(2.2*s, 1.9*s, 2.2*s); d.updateMatrix(); can.setMatrixAt(i*2, d.matrix);
+		d.position.set(t.x + (fr() - .5)*2*s, 4.6*s, t.z + (fr() - .5)*2*s); d.scale.set(1.45*s, 1.35*s, 1.45*s); d.updateMatrix(); can.setMatrixAt(i*2+1, d.matrix);
+	});
+	cl.forEach((t,i) => {
+		const s = t.s; d.rotation.set(0, fr()*3, 0);
+		d.position.set(t.x, .6*s, t.z); d.scale.set(2.2*s, 4.6*s, 2.2*s); d.updateMatrix(); con.setMatrixAt(i*2, d.matrix);
+		d.position.set(t.x, 3*s, t.z); d.scale.set(1.5*s, 3.3*s, 1.5*s); d.updateMatrix(); con.setMatrixAt(i*2+1, d.matrix);
+	});
+	can.count = dl.length*2; con.count = cl.length*2;
+	can.receiveShadow = con.receiveShadow = true; can.castShadow = con.castShadow = false;
+	scene.add(can, con);
+	return { can, con, dl, cl };
+}
+function paintFar(S){
+	const c = new THREE.Color();
+	if(horizon && horizon.roof.instanceColor){ horizon.base.forEach((b, i) => { c.set(S.snowy ? "#dfe6ee" : b); horizon.roof.setColorAt(i, c); }); horizon.roof.instanceColor.needsUpdate = true; }
+	if(!farWood) return;
+	farWood.dl.forEach((t,i) => {
+		c.set(S.trees[Math.floor(t.c*S.trees.length)]); farWood.can.setColorAt(i*2, c);
+		c.set(S.trees[Math.floor(((t.c*7.3)%1)*S.trees.length)]); farWood.can.setColorAt(i*2+1, c);
+	});
+	farWood.cl.forEach((t,i) => { c.set(S.conifer); farWood.con.setColorAt(i*2, c); c.set(S.snowy ? "#e8eef6" : S.conifer).offsetHSL(0,0,.03); farWood.con.setColorAt(i*2+1, c); });
+	for(const m of [farWood.can, farWood.con]) if(m.instanceColor) m.instanceColor.needsUpdate = true;
+}
+let farLoading = false;
+function loadFar(){
+	if(farLoading) return; farLoading = true;
+	import("./vauban_far.js").then(({ FAR }) => {
+		horizon = buildHorizon(FAR.far);
+		farWood = buildFarWood(FAR.ftrees);
+		paintFar(season);
+		const on = QUALITY[quality].horizon;
+		horizon.body.visible = horizon.roof.visible = farWood.can.visible = farWood.con.visible = on;
+		shadowDirty = true;
+	}).catch(() => { farLoading = false; });
+}
 const bushes = [];
 for(const [lx, lz, n, rad] of [[-10,-3,6,2.2],[10,6,6,2.2],[-4,6,5,1.6],[6,-1,4,1.4],[-11,8,4,1.5]]){
 	for(let i=0;i<n;i++){ const p = HAG.localToWorld(V(lx + R(-rad,rad), 0, lz + R(-rad,rad))); bushes.push({ x:p.x, z:p.z, s:R(.5,.85), c:rng() }); }
@@ -1117,7 +1158,7 @@ function applyAmbiance(instant, dur = 1.8){
 	if(conifIM.instanceColor) conifIM.instanceColor.needsUpdate = true;
 	bushes.forEach((b,i) => { c.set(S.bush[Math.floor(b.c*S.bush.length)]); bushIM.setColorAt(i, c); });
 	bushIM.instanceColor.needsUpdate = true;
-	if(horizon.roof.instanceColor){ horizon.base.forEach((b, i) => { c.set(S.snowy ? "#dfe6ee" : b); horizon.roof.setColorAt(i, c); }); horizon.roof.instanceColor.needsUpdate = true; }
+	paintFar(S);
 	// lumière : tout de suite au chargement, en fondu ensuite
 	const target = lightOf(L, night ? 1 : 0);
 	sky.set(target); scene.environment = sky.renderEnvironment();
@@ -2375,8 +2416,8 @@ function setQuality(level){
 	if(post) post.setSize(innerWidth, innerHeight, renderer.getPixelRatio());
 	shadowsOn(sun, Q.shadows, Q.map);
 	shadowDirty = true;
-	horizon.body.visible = horizon.roof.visible = Q.horizon;
-	[trunkIM.count, canopyIM.count, conifIM.count] = treeCounts[Q.horizon ? "all" : "near"];
+	if(horizon) horizon.body.visible = horizon.roof.visible = Q.horizon;
+	if(farWood) farWood.can.visible = farWood.con.visible = Q.horizon;
 	const walkers = students.filter(s => !s.chat); walkers.forEach((s, i) => { s.off = (i + .5)/walkers.length > Q.crowd; s.g.visible = !s.off; });
 	fogFollow(true);
 	for(const k in interiors) if(interiors[k]) qualityInterior(interiors[k]);
@@ -2506,7 +2547,7 @@ function frame(){
 		draw(scene, camera, true);
 	}
 	if(entered){ syncCarousel(); updatePins(); }
-	if(first){ first = false; performance.mark("campus-ready"); setTimeout(() => $("loader").classList.add("gone"), 150); prefetchLater(); }
+	if(first){ first = false; performance.mark("campus-ready"); setTimeout(() => $("loader").classList.add("gone"), 150); prefetchLater(); setTimeout(loadFar, 400); }
 	requestAnimationFrame(frame);
 }
 addEventListener("resize", () => {

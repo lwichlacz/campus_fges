@@ -706,14 +706,32 @@ POIS = {
 jb = next((g for g in greens if g[0] == 2), None)
 if jb: POIS["jardin"] = { "x":round(sum(jb[1][0::2])/(len(jb[1])/2),2), "z":round(sum(jb[1][1::2])/(len(jb[1])/2),2), "lv":0 }
 
+# Contours des bâtiments et tracés des rues : entiers au centième, en écarts d'un point au suivant (fichier deux fois plus léger),
+# décodés au chargement par vauban.js lui-même.
+def enc(f):
+    out_, px, pz = [], 0, 0
+    for i in range(0, len(f), 2):
+        x, z = round(f[i]*100), round(f[i+1]*100)
+        out_ += [x - px, z - pz]; px, pz = x, z
+    return out_
+for b in buildings: b[4] = enc(b[4])
+for r in roads: r[2] = enc(r[2])
 out = {
     "S":S, "ha":HA, "falise":FAL, "court":[round(c,2) for c in court], "buildings":buildings, "roads":roads, "greens":greens,
-    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro, "stations":stations, "zone":zone, "far":far_out, "sol":sol, "fh":FH_MAP, "ftrees":ftrees
+    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro, "stations":stations, "zone":zone, "sol":sol, "fh":FH_MAP
 }
-js = ("/* Généré par tools/build_map.py — ne pas modifier à la main.\n"
-      "   Données © les contributeurs d'OpenStreetMap (ODbL) ; © IGN BD TOPO et BD ORTHO (Licence Ouverte). */\n"
-      "export const MAP = " + json.dumps(out, ensure_ascii=False, separators=(",", ":")) + ";\n")
+HEAD = ("/* Généré par tools/build_map.py — ne pas modifier à la main.\n"
+        "   Données © les contributeurs d'OpenStreetMap (ODbL) ; © IGN BD TOPO et BD ORTHO (Licence Ouverte). */\n")
+DEC = ("const dec = f => { let x = 0, z = 0; for(let i=0;i<f.length;i+=2){ x += f[i]; z += f[i+1]; f[i] = x/100; f[i+1] = z/100; } };\n"
+       "for(const b of MAP.buildings) dec(b[4]);\nfor(const r of MAP.roads) dec(r[2]);\n")
+js = HEAD + "export const MAP = " + json.dumps(out, ensure_ascii=False, separators=(",", ":")) + ";\n" + DEC
 (ROOT / "js" / "vauban.js").write_text(js, encoding="utf-8")
+# le lointain (bâtiments en miniature, bois) : chargé après l'arrivée sur le campus (js/vauban_far.js), au dixième d'unité
+far_i = [[round(v*10) if k in (0, 1, 3, 4, 6) else (round(v*100) if k == 2 else v) for k, v in enumerate(r)] for r in far_out]
+jsf = HEAD + "/* [x, z, angle, largeur, profondeur] ×10 (angle ×100), étages, hauteur du toit ×10, teinte, toit ; arbres ×10 */\n" \
+      + "export const FAR = " + json.dumps({ "far":far_i, "ftrees":[round(v*10) for v in ftrees] }, separators=(",", ":")) + ";\n"
+(ROOT / "js" / "vauban_far.js").write_text(jsf, encoding="utf-8")
+print("lointain :", round(len(jsf)/1024), "Ko")
 print(f"bâtiments {len(buildings)}  rues {len(roads)}  verts {len(greens)}  arbres {len(trees)//2}  marche {len(walk['n'])//2} nœuds")
 print("HA", HA, "cour", out["court"]); print("Falise", FAL)
 print("POIs", {k:(v and (v['x'], v['z'])) for k, v in POIS.items()})
