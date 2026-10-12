@@ -498,7 +498,31 @@ function starShape(rOut, rIn, n=5){
 	for(let i=0;i<=n*2;i++){ const r = i % 2 ? rIn : rOut, a = i*Math.PI/n - Math.PI/2; const x = Math.cos(a)*r, y = Math.sin(a)*r; i ? s.lineTo(x, y) : s.moveTo(x, y); }
 	return s;
 }
+// la vraie Citadelle (MAP.citadel) : enceinte bastionnée de Vauban en brique, rempart engazonné, place d'armes ;
+// les douves sont dessinées avec l'eau du quartier (MAP.water), les bâtiments avec la ville (MAP.buildings)
+let citadelTurf = null;
+const citadelRing = MAP.citadel ? (() => { const f = MAP.citadel.outline, p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; })() : null;
+const inCitadel = (x, z) => citadelRing ? pointInPoly(x, z, citadelRing) : Math.hypot(x - MAP.citadelle[0], z - MAP.citadelle[1]) < 56;
+function buildCitadelleReal(){
+	const [cx, cz] = MAP.citadelle, P = citadelRing;
+	const shape = pts => new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x - cx, -(z - cz))));
+	const inner = P.map(([x, z]) => [cx + (x - cx)*.8, cz + (z - cz)*.8]);          // le rempart fait un cinquième du rayon
+	const ring = shape(P); ring.holes.push(new THREE.Path(inner.map(([x, z]) => new THREE.Vector2(x - cx, -(z - cz)))));
+	const g = new THREE.Group(); g.position.set(cx, 0, cz); scene.add(g);
+	const wall = new THREE.Mesh(new THREE.ExtrudeGeometry(ring, { depth:3.4, bevelEnabled:false }).rotateX(-Math.PI/2), std("#a9533c"));
+	wall.castShadow = wall.receiveShadow = true; g.add(wall);
+	const turf = std("#8fa957", { flatShading:false }); citadelTurf = turf;          // rempart engazonné (sans décalage de profondeur : il est bien au-dessus de la brique)
+	const top = new THREE.Mesh(new THREE.ShapeGeometry(ring).rotateX(-Math.PI/2), turf); top.position.y = 3.46; top.receiveShadow = true; g.add(top);
+	const cordS = shape(P.map(([x, z]) => [cx + (x - cx)*1.004, cz + (z - cz)*1.004]));
+	cordS.holes.push(new THREE.Path(P.map(([x, z]) => new THREE.Vector2((x - cx)*.985, -(z - cz)*.985))));
+	const cord = new THREE.Mesh(new THREE.ExtrudeGeometry(cordS, { depth:.25, bevelEnabled:false }).rotateX(-Math.PI/2), std("#e3d7c1"));
+	cord.position.y = 3.2; g.add(cord);                                                             // cordon de pierre blanche
+	const court = new THREE.Mesh(new THREE.ShapeGeometry(shape(inner)).rotateX(-Math.PI/2), std("#cdbf9f", { flatShading:false })); court.position.y = .08;          // place d'armes en gravier court.receiveShadow = true; g.add(court);
+	LIFE.citadelle.pos = V(cx, 0, cz);
+	register(g, "citadelle");
+}
 function buildCitadelle(){
+	if(citadelRing) return buildCitadelleReal();
 	const [cx, cz] = MAP.citadelle;
 	const slab = (shape, h, mat, y) => { const g = new THREE.ExtrudeGeometry(shape, { depth:h, bevelEnabled:false }).rotateX(-Math.PI/2); const m = new THREE.Mesh(g, mat); m.position.set(cx, y, cz); m.receiveShadow = m.castShadow = true; scene.add(m); return m; };
 	slab(starShape(52, 34), .1, waterMat, .03).castShadow = false;
@@ -534,7 +558,7 @@ function buildHorizon(F){
 	// les vrais bâtiments au-delà de la zone à l'échelle réelle (BD TOPO), en miniature puisque le lointain est compressé ;
 	// la Citadelle et Euratechnologies ont leurs propres modèles
 	const blockedFar = (x, z) => {
-		const [cx, cz] = MAP.citadelle; if(Math.hypot(x-cx, z-cz) < 62) return true;
+		if(inCitadel(x, z)) return true;
 		if(LIFE.euratech && Math.hypot(x-LIFE.euratech.x, z-LIFE.euratech.z) < 60) return true;
 		return false;
 	};
@@ -789,7 +813,7 @@ function buildFarWood(f){
 	const [cx, cz] = MAP.citadelle, fr = mulberry(11), list = [];
 	for(let i=0;i<f.length;i+=2){
 		const x = f[i]/10, z = f[i+1]/10;
-		if(Math.hypot(x - cx, z - cz) < 56 || (LIFE.euratech && Math.hypot(x - LIFE.euratech.x, z - LIFE.euratech.z) < 60)) continue;
+		if(inCitadel(x, z) || (LIFE.euratech && Math.hypot(x - LIFE.euratech.x, z - LIFE.euratech.z) < 60)) continue;
 		if(nearCanal(x, z, 6.5)) continue;          // pas d'arbre dans la Deûle ni sur son quai
 		list.push({ x, z, k: fr() < .22 ? "c" : "d", s:.95 + fr()*.4, c:fr() });
 	}
@@ -1265,6 +1289,7 @@ function applyAmbiance(instant, dur = 1.8){
 	paintSky(L.skyTop, L.skyBot);
 	document.body.style.background = L.fog;
 	groundMat.color.set(S.grass);
+	if(citadelTurf) citadelTurf.color.set(S.lawn);
 	solU.uPaved.value.set(S.snowy ? "#dde3ec" : "#b3aa9b");
 	slateMats.forEach(m => m.color.set(S.slate));
 	zincMats.forEach(m => m.color.set(S.snowy ? "#dfe6ee" : "#9aa5b1"));

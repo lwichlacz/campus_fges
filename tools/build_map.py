@@ -696,6 +696,34 @@ for e in far:
     elif t.get("name") in ("Jardin Vauban", "Bois de Boulogne"): parks.append([t["name"], flat(G(q) for q in p[:-1])])
     elif "Blan-Lafont" in (t.get("name") or ""): blan = { "pts":flat(G(q) for q in p[:-1]), "ang":round(Gdir(obb(p)[0]),3) }
 cit = G((-135, -947))
+# --- la Citadelle à sa vraie forme : enceinte bastionnée (OpenStreetMap), douves (IGN), bâtiments de la place d'armes ---
+citadel = None
+_cf = OSM / "osm_citadelle.json"
+if _cf.exists():
+    _ce = json.load(open(_cf, encoding="utf-8"))["elements"]
+    _out = next((e for e in _ce if e.get("tags", {}).get("historic") == "castle" and "geometry" in e), None)
+    if _out:
+        oq = [mp(c) for c in _out["geometry"]][:-1]
+        og = [G(q) for q in oq]
+        cit = (round(sum(x for x, _ in og)/len(og), 2), round(sum(z for _, z in og)/len(og), 2))
+        cb = []
+        for e in _ce:
+            t = e.get("tags", {})
+            if "building" not in t or "geometry" not in e: continue
+            q = [mp(c) for c in e["geometry"]][:-1]
+            if len(q) < 3 or not inside(*cen(q), oq) or area(q) < 30: continue
+            a_, cx_, cz_, L_, D_ = obb(q)
+            gq = [G(v) for v in q]
+            roof = [*G((cx_, cz_)), round(Gdir(a_), 3), round(L_*S*.55, 2), round(D_*S*.55, 2)] if area(q)/(L_*D_) > .8 and D_ < 22 else 0
+            buildings.append([KIND["house"], 2, 2, roof, flat(gq), round(5*S*VX*.7, 2), 0, 2]); cb.append(1)          # brique et ardoise de Vauban
+        water = []
+        wf = OSM / "bdtopo_citadelle_eau.json"
+        if wf.exists():
+            for pl in json.load(open(wf, encoding="utf-8"))["polygons"]:
+                q = [mp({ "lon":c[0], "lat":c[1] }) for c in pl][:-1]
+                if len(q) >= 3 and area(q) > 150 and len(q) < 600: water.append(flat(G(v) for v in q))
+        citadel = { "outline":flat(og), "water":water }
+        print("Citadelle :", len(og), "sommets d'enceinte,", len(cb), "bâtiments,", len(water), "plans d'eau ; centre", cit)
 # station Cormontaigne (ligne 2), la plus proche du campus : 50.62623 N, 3.04029 E (OpenStreetMap)
 metro = G(mp({ "lat":50.62623, "lon":3.04029 }))
 
@@ -796,7 +824,7 @@ for b in buildings: b[4] = enc(b[4])
 for r in roads: r[2] = enc(r[2])
 out = {
     "S":S, "ha":HA, "falise":FAL, "court":[round(c,2) for c in court], "buildings":buildings, "roads":roads, "greens":greens,
-    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro, "stations":stations, "zone":zone, "sol":sol, "fh":FH_MAP, "streets":STREETS, "places":places, "monuments":monuments
+    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro, "stations":stations, "zone":zone, "sol":sol, "fh":FH_MAP, "streets":STREETS, "places":places, "monuments":monuments, "citadel":citadel, "water":(citadel or {}).get("water", [])
 }
 HEAD = ("/* Généré par tools/build_map.py — ne pas modifier à la main.\n"
         "   Données © les contributeurs d'OpenStreetMap (ODbL) ; © IGN BD TOPO et BD ORTHO (Licence Ouverte). */\n")
