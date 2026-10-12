@@ -73,8 +73,9 @@ function litMap(style, seed){
    (biais de mipmap) pour qu'elle ne « fourmille » pas quand la caméra bouge.
    Le flou est progressif : nul de près (façades nettes), maximal au loin. */
 const MIP_BIAS = .8, BIAS_NEAR = 40, BIAS_FAR = 140;
-export function softenFar(mat){
+export function softenFar(mat, nightU){
 	mat.onBeforeCompile = sh => {
+		if(nightU){ sh.uniforms.uNight = nightU; sh.fragmentShader = "uniform float uNight;\n" + sh.fragmentShader; }
 		sh.fragmentShader = sh.fragmentShader
 			.replace("#include <map_fragment>", `float farBias = ${MIP_BIAS.toFixed(2)} * smoothstep( ${BIAS_NEAR.toFixed(1)}, ${BIAS_FAR.toFixed(1)}, length( vViewPosition ) );
 #ifdef USE_MAP
@@ -84,24 +85,28 @@ export function softenFar(mat){
 			.replace("#include <emissivemap_fragment>", `#ifdef USE_EMISSIVEMAP
 	vec4 emissiveColor = texture2D( emissiveMap, vEmissiveMapUv, farBias );
 	totalEmissiveRadiance *= emissiveColor.rgb;
+	${nightU ? `{ vec2 cell = floor( vEmissiveMapUv*vec2( 8.0, 4.0 ) ); float hh = fract( sin( dot( cell, vec2( 12.9898, 78.233 ) ) )*43758.5453 );
+	  totalEmissiveRadiance *= step( hh*0.92 + 0.04, uNight ); }` : ""}
 #endif`);
 	};
-	mat.customProgramCacheKey = () => "softenFar";
+	mat.customProgramCacheKey = () => nightU ? "softenFar|night" : "softenFar";
 }
 
 /* ---------- accumulateurs de géométrie ---------- */
-function bucket(){ return { pos:[], nor:[], uv:[] }; }
+function bucket(){ return { pos:[], nor:[], uv:[], col:[] }; }
+let TINT = [1, 1, 1];
 function tri(B, a, b, c, n, ua=[0,0], ub=[0,0], uc=[0,0]){
 	const e1x=b[0]-a[0], e1y=b[1]-a[1], e1z=b[2]-a[2], e2x=c[0]-a[0], e2y=c[1]-a[1], e2z=c[2]-a[2];
 	const cx=e1y*e2z-e1z*e2y, cy=e1z*e2x-e1x*e2z, cz=e1x*e2y-e1y*e2x;
 	if(cx*n[0] + cy*n[1] + cz*n[2] < 0){ [b,c] = [c,b]; [ub,uc] = [uc,ub]; }
-	B.pos.push(...a,...b,...c); B.nor.push(...n,...n,...n); B.uv.push(...ua,...ub,...uc);
+	B.pos.push(...a,...b,...c); B.nor.push(...n,...n,...n); B.uv.push(...ua,...ub,...uc); B.col.push(...TINT,...TINT,...TINT);
 }
 function toGeo(B){
 	const g = new THREE.BufferGeometry();
 	g.setAttribute("position", new THREE.Float32BufferAttribute(B.pos, 3));
 	g.setAttribute("normal", new THREE.Float32BufferAttribute(B.nor, 3));
 	g.setAttribute("uv", new THREE.Float32BufferAttribute(B.uv, 2));
+	g.setAttribute("color", new THREE.Float32BufferAttribute(B.col, 3));
 	g.computeBoundingSphere();
 	return g;
 }
@@ -123,7 +128,7 @@ function segDist(x, z, ax, az, bx, bz){
 	const t = Math.max(0, Math.min(1, ((x - ax)*dx + (z - az)*dz)/l2));
 	return Math.hypot(x - ax - t*dx, z - az - t*dz);
 }
-function polyDist(x, z, p){ let d = 1e9; for(let i=0, j=p.length-1; i<p.length; j=i++) d = Math.min(d, segDist(x, z, p[j][0], p[j][1], p[i][0], p[i][1])); return d; }
+export function polyDist(x, z, p){ let d = 1e9; for(let i=0, j=p.length-1; i<p.length; j=i++) d = Math.min(d, segDist(x, z, p[j][0], p[j][1], p[i][0], p[i][1])); return d; }
 let SITE = null;
 function site(MAP){
 	if(SITE && SITE.MAP === MAP) return SITE;
@@ -158,7 +163,20 @@ function site(MAP){
 		return null;
 	};
 	// marge entre le point et le bord de la chaussée la plus proche (négatif = sur la chaussée)
-	const roadGap = (x, z) => { let g = 1e9, best = null; MAP.roads.forEach(([w, , p]) => { for(let i=0;i+3<p.length;i+=2){ const d = segDist(x, z, p[i], p[i+1], p[i+2], p[i+3]) - w/2; if(d < g){ g = d; best = [w, p[i], p[i+1], p[i+2], p[i+3]]; } } }); return { g, best }; };
+	// grille de 8 × 8 pour les tronçons de rue : on ne mesure que les rues proches (au-delà de 8 m, « pas de rue »)
+	const RG = 8, rgrid = new Map();
+	MAP.roads.forEach(([w, , p]) => { for(let i=0;i+3<p.length;i+=2){
+		const s = [w, p[i], p[i+1], p[i+2], p[i+3]], m = w/2;
+		for(let a = Math.floor((Math.min(p[i], p[i+2]) - m)/RG); a <= Math.floor((Math.max(p[i], p[i+2]) + m)/RG); a++)
+			for(let b = Math.floor((Math.min(p[i+1], p[i+3]) - m)/RG); b <= Math.floor((Math.max(p[i+1], p[i+3]) + m)/RG); b++){ const kk = key(a, b); if(!rgrid.has(kk)) rgrid.set(kk, []); rgrid.get(kk).push(s); }
+	} });
+	const roadGap = (x, z) => {
+		let g = 1e9, best = null; const ca = Math.floor(x/RG), cb = Math.floor(z/RG);
+		for(let a = ca - 1; a <= ca + 1; a++) for(let b = cb - 1; b <= cb + 1; b++) for(const s of rgrid.get(key(a, b)) || []){
+			const d = segDist(x, z, s[1], s[2], s[3], s[4]) - s[0]/2; if(d < g){ g = d; best = s; }
+		}
+		return { g, best };
+	};
 	const inWater = (x, z) => (MAP.canals || []).some(p => { for(let i=0;i+3<p.length;i+=2) if(segDist(x, z, p[i], p[i+1], p[i+2], p[i+3]) < 5.6) return true; return false; })
 		|| waterPolys.some(p => pointInPoly(x, z, p) || polyDist(x, z, p) < 1);
 	const inHand = (x, z) => hand.some(p => pointInPoly(x, z, p));
@@ -223,6 +241,9 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 	// léger décalage par bâtiment : deux toits voisins ne sont jamais au même niveau (pas de clignotement)
 	const H = (kind === 3 ? lv*3.2 : kind === 6 ? 2.2 : kind === 4 ? lv*FH*1.35 : kind === 7 ? lv*FH*1.25 : lv*FH) + (i % 7)*.035;
 	const flatRoof = !roof && kind !== 5;
+	const tr = mulberry32(i*131 + 17), wv = .9 + tr()*.17, wh = (tr() - .5)*.05;
+	const wallTint = [wv*(1 + wh), wv, wv*(1 - wh)], rv = .84 + tr()*.3, roofTint = [rv*(1 + (tr() - .5)*.08), rv, rv*(1 + (tr() - .5)*.1)];
+	TINT = wallTint;
 	let per = (rec[2]*3.7) % 5;
 	for(let i=0;i<p.length;i++){
 		const a = p[i], b = p[(i+1)%p.length];
@@ -247,15 +268,18 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 		const P = (s, t, y) => [cx + ux*s + wx*t, y, cz + uz*s + wz*t];
 		const e1 = P(-L2,-D2,H), e2 = P(L2,-D2,H), e3 = P(L2,D2,H), e4 = P(-L2,D2,H), r1 = P(-L2,0,H+rh), r2 = P(L2,0,H+rh);
 		const nl = Math.hypot(rh, D2);
+		TINT = roofTint;
 		const n1 = [-wx*rh/nl, D2/nl, -wz*rh/nl], n2 = [wx*rh/nl, D2/nl, wz*rh/nl];
 		tri(Br, e1, e2, r2, n1, [0,0], [L,0], [L,1]); tri(Br, e1, r2, r1, n1, [0,0], [L,1], [0,1]);
 		tri(Br, e3, e4, r1, n2, [0,0], [L,0], [L,1]); tri(Br, e3, r1, r2, n2, [0,0], [L,1], [0,1]);
 		const g1 = P(-L/2,-D/2,H), g4 = P(-L/2,D/2,H), q1 = P(-L/2,0,H+rh), g2 = P(L/2,-D/2,H), g3 = P(L/2,D/2,H), q2 = P(L/2,0,H+rh);
 		const W = [.02,.02];
+		TINT = wallTint;
 		tri(Bw, g1, g4, q1, [-ux,0,-uz], W, W, W); tri(Bw, g2, g3, q2, [ux,0,uz], W, W, W);
 		// dalle sous le toit : ferme l'emprise là où le toit rectangulaire ne la couvre pas (formes irrégulières, toit raccourci)
 		capTris(Bf, p, H - .03, ([x,z]) => [x*.22, z*.22]);
 	} else {
+		TINT = roofTint;
 		capTris(Bf, p, H, ([x,z]) => [x*.22, z*.22]);
 		// éléments techniques sur les grands toits plats (climatisation, verrières)
 		if(flatRoof && extras){
@@ -273,18 +297,19 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 			}
 		}
 	}
+	TINT = [1, 1, 1];
 	return H;
 }
 
 export function buildCity(scene, MAP, opts={}){
-	const out = { walls:[], roofs:[], flats:[], pois:{}, poiMats:{}, lampSpots:[], trees:[], parkTrees:[], ground:{} };
+	const out = { walls:[], roofs:[], flats:[], pois:{}, poiMats:{}, lampSpots:[], trees:[], parkTrees:[], ground:{}, nightU:{ value:0 } };
 	const poiIndex = new Map(Object.entries(MAP.pois).filter(([,v]) => v && v.i !== undefined).map(([k,v]) => [v.i, k]));
 
 	/* matériaux */
 	const litHouse = litMap("house", 7), litCampus = litMap("campus", 11);
 	const wallMat = (hex, style) => {
-		const m = new THREE.MeshStandardMaterial({ map:facade(hex, style), roughness: style === "office" ? .38 : .92, metalness: style === "office" ? .25 : 0, emissive:"#ffffff", emissiveIntensity:0, emissiveMap: style === "house" ? litHouse : litCampus });
-		softenFar(m);
+		const m = new THREE.MeshStandardMaterial({ map:facade(hex, style), roughness: style === "office" ? .38 : .92, metalness: style === "office" ? .25 : 0, emissive:"#ffffff", emissiveIntensity:0, emissiveMap: style === "house" ? litHouse : litCampus, vertexColors:true });
+		softenFar(m, out.nightU);
 		out.walls.push(m); return m;
 	};
 	const houseMats = HOUSE_WALLS.map(c => wallMat(c, "house"));
@@ -292,7 +317,14 @@ export function buildCity(scene, MAP, opts={}){
 	const sportMat = wallMat("#d8d2c6", "sport");
 	const glassMat = wallMat("#cfe3e6", "glass");
 	const officeMats = opts.offices ? ["#2f3b4a", "#d6d9dc", "#3b4656", "#c4c9ce"].map(c => wallMat(c, "office")) : [];
-	const roofMats = ROOFS.map(c => { const m = std(c, { roughness:.8 }); m.userData.base = c; out.roofs.push(m); return m; });
+	// ardoises : des rangs doux dans le sens de la pente (sans trait fin, pour ne pas « fourmiller » de loin)
+	const slateTex = (() => {
+		const c = document.createElement("canvas"); c.width = 16; c.height = 128; const x = c.getContext("2d");
+		x.fillStyle = "#ffffff"; x.fillRect(0, 0, 16, 128);
+		for(let j=0; j<8; j++){ const g = x.createLinearGradient(0, j*16, 0, j*16 + 16); g.addColorStop(0, "rgba(0,0,0,.02)"); g.addColorStop(.75, "rgba(0,0,0,.09)"); g.addColorStop(1, "rgba(0,0,0,.16)"); x.fillStyle = g; x.fillRect(0, j*16, 16, 16); }
+		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.repeat.set(1, 1.6); t.anisotropy = 4; return t;
+	})();
+	const roofMats = ROOFS.map(c => { const m = std(c, { roughness:.8, map:slateTex, vertexColors:true }); m.userData.base = c; out.roofs.push(m); return m; });
 	const roofTex = (() => {
 		const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
 		x.fillStyle = "#ffffff"; x.fillRect(0,0,64,64);
@@ -300,7 +332,7 @@ export function buildCity(scene, MAP, opts={}){
 		x.fillStyle = "rgba(0,0,0,.05)"; for(let i=0;i<64;i+=32) x.fillRect(0,i,64,2);
 		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
 	})();
-	const flatMat = new THREE.MeshStandardMaterial({ color:"#8a857f", map:roofTex, roughness:.95 }); flatMat.userData.base = "#8a857f"; out.flats.push(flatMat);
+	const flatMat = new THREE.MeshStandardMaterial({ color:"#8a857f", map:roofTex, roughness:.95, vertexColors:true }); flatMat.userData.base = "#8a857f"; out.flats.push(flatMat);
 	const extras = [];
 	const glassRoof = new THREE.MeshStandardMaterial({ color:"#d9eef0", transparent:true, opacity:.55, roughness:.1, metalness:.2, emissive:"#ffd08a", emissiveIntensity:0 });
 	out.glassRoof = glassRoof;
@@ -329,6 +361,7 @@ export function buildCity(scene, MAP, opts={}){
 			const H = addBuilding(G.w, G.r, G.f, rec, i, extras);
 			const grp = new THREE.Group(); scene.add(grp);
 			const w2 = wm.clone(), r2 = rm.clone(), f2 = kind === 5 ? glassRoof : flatMat.clone();
+			softenFar(w2, out.nightU);
 			out.walls.push(w2); out.roofs.push(r2); if(f2 !== glassRoof) out.flats.push(f2);
 			for(const [B, m] of [[G.w, w2], [G.r, r2], [G.f, f2]]){ if(!B.pos.length) continue; const me = new THREE.Mesh(toGeo(B), m); me.castShadow = me.receiveShadow = true; grp.add(me); }
 			out.pois[poi] = { group:grp, H, mats:[w2, r2, f2] };
@@ -360,10 +393,12 @@ export function buildCity(scene, MAP, opts={}){
 		unit.castShadow = true; unit.receiveShadow = true;
 		scene.add(unit, sky);
 	}
+	// ces formes n'ont pas de teinte par sommet : on leur en donne une neutre (matériaux en vertexColors)
+	const white = g => { g.setAttribute("color", new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count*3).fill(1), 3)); return g; };
 	for(const [x,z,H] of spires){
-		const s = new THREE.Mesh(new THREE.ConeGeometry(1.6, 13, 8).translate(0,6.5,0), roofMats[0]);
+		const s = new THREE.Mesh(white(new THREE.ConeGeometry(1.6, 13, 8).translate(0,6.5,0)), roofMats[0]);
 		s.position.set(x, H, z); s.castShadow = true; scene.add(s);
-		const b = new THREE.Mesh(new THREE.BoxGeometry(3.2, 4, 3.2).translate(0,2,0), houseMats[0]);
+		const b = new THREE.Mesh(white(new THREE.BoxGeometry(3.2, 4, 3.2).translate(0,2,0)), houseMats[0]);
 		b.position.set(x, H - 1, z); b.castShadow = true; scene.add(b);
 	}
 
@@ -435,7 +470,7 @@ export function buildCity(scene, MAP, opts={}){
 	for(const [B, m] of [[BL, lawnM], [BPi, pitchM]]){ if(!B.pos.length) continue; const me = new THREE.Mesh(toGeo(B), m); me.receiveShadow = true; scene.add(me); }
 
 	/* ---------- la Deûle ---------- */
-	const waterM = layer(std("#6e9aa4", { roughness:.25, metalness:.1, flatShading:false, side:THREE.DoubleSide }), 4);
+	const waterM = layer(std("#6e9aa4", { roughness:.14, metalness:.1, flatShading:false, side:THREE.DoubleSide }), 4);
 	const quayM = layer(std("#cbbfae", { flatShading:false, side:THREE.DoubleSide }), 3);
 	out.ground.water = waterM;
 	const BQ = bucket(), BWa = bucket();
@@ -454,10 +489,13 @@ export function buildCity(scene, MAP, opts={}){
 		lawnM.color.set(S.lawn); pitchM.color.set(S.snowy ? "#e9eff7" : "#6fa35a");
 		walkM.color.set(S.snowy ? "#e3e7ee" : "#cbc1b2");
 	};
+	/* night : booléen, ou de 0 (jour) à 1 (nuit) pendant une transition : les fenêtres s'allument une à une */
+	const waterDay = new THREE.Color("#6e9aa4"), waterNight = new THREE.Color("#2c3f5c");
 	out.setNight = night => {
-		for(const m of out.walls) m.emissiveIntensity = night ? 1.25 : 0;
-		glassRoof.emissiveIntensity = night ? .8 : 0;
-		waterM.color.set(night ? "#2c3f5c" : "#6e9aa4");
+		const k = +night; out.nightU.value = k;
+		for(const m of out.walls) m.emissiveIntensity = k > 0 ? 1.25 : 0;
+		glassRoof.emissiveIntensity = .8*k;
+		waterM.color.lerpColors(waterDay, waterNight, k);
 	};
 	return out;
 }

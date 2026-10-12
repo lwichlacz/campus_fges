@@ -1,10 +1,11 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, beam } from "./kit.js";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate } from "./render.js";
 import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js";
 import { MAP } from "./vauban.js";
-import { buildCity, pointInPoly } from "./city.js";
+import { buildCity, pointInPoly, polyDist } from "./city.js";
 import { buildStation } from "./station.js";
 import { createRame } from "./rame.js";
 import { Audio } from "./audio.js";
@@ -36,7 +37,10 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, small ? 1.5 : 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.shadowMap.autoUpdate = false;     // le quartier est immobile : la carte d'ombres n'est recalculée que si le soleil ou la vue bouge
+let shadowDirty = true;
+// rendu des couleurs « Neutral » (Khronos) : fidèle aux teintes choisies, sans virer à l'orange ni saturer les rouges comme ACES
+renderer.toneMapping = THREE.NeutralToneMapping;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 $("scene").appendChild(renderer.domElement);
 
@@ -51,7 +55,10 @@ controls.screenSpacePanning = false;
 controls.enabled = false;
 controls.autoRotate = !reduceMotion;
 controls.autoRotateSpeed = .3;
-const EXT_LIMITS = { minDistance:22, maxDistance:300, minPolarAngle:.3, maxPolarAngle:1.2, box:[-260,230,-320,150] };
+/* Zone du quartier dessinée à l'échelle réelle (campus + chemin jusqu'aux stations de métro) : la caméra peut s'y promener. */
+const ZONE = MAP.zone ? MAP.zone.reduce((a, v, i) => (i % 2 ? a[a.length-1].push(v) : a.push([v]), a), []) : null;
+const zx = ZONE ? ZONE.map(p => p[0]) : [0], zz = ZONE ? ZONE.map(p => p[1]) : [0];
+const EXT_LIMITS = { minDistance:22, maxDistance:300, minPolarAngle:.3, maxPolarAngle:1.2, box:[Math.min(-260, Math.min(...zx) + 10), 230, -320, Math.max(150, Math.max(...zz) - 10)] };
 let limits = EXT_LIMITS;
 function applyLimits(l){ limits = l; Object.assign(controls, { minDistance:l.minDistance, maxDistance:l.maxDistance, minPolarAngle:l.minPolarAngle, maxPolarAngle:l.maxPolarAngle }); }
 applyLimits(EXT_LIMITS);
@@ -142,7 +149,8 @@ function wing(parent, o){
 /* =====================================================================
    Sol & quartier (OpenStreetMap)
    ===================================================================== */
-const groundMat = std("#a9b05c", { flatShading:false });
+// le sol passe derrière toutes les couches posées dessus (eau, quais, trottoirs, pelouses…), même vues de biais
+const groundMat = Object.assign(std("#a9b05c", { flatShading:false }), { polygonOffset:true, polygonOffsetFactor:6, polygonOffsetUnits:12 });
 const ground = new THREE.Mesh(new THREE.CircleGeometry(900, 80).rotateX(-Math.PI/2), groundMat);
 ground.receiveShadow = true; scene.add(ground);
 /* Repère « historique » de l'Hôtel Académique (ancienne racine en z = -6), calé sur la carte. */
@@ -230,6 +238,7 @@ function buildHA(){
 	const hh = new THREE.Mesh(BOX, handM); hh.scale.set(.12,.55,.04); hourHand.add(hh);
 	const mh = new THREE.Mesh(BOX, handM); mh.scale.set(.08,.85,.04); minHand.add(mh);
 	clockHands = { hourHand, minHand };
+	hourHand.userData.dynamic = minHand.userData.dynamic = true;
 	box(G, .16, 1.6, .16, M.dark, 0, 7.6, 0);
 	box(G, .8, .16, .16, M.dark, 0, 8.6, 0);
 	for(const s of [-1,1]){
@@ -280,7 +289,7 @@ function buildHA(){
 		cyl(HAG, .07, .09, 11, std("#e8e4dc"), x, 0, -2.4);
 		const geo = new THREE.PlaneGeometry(2.2, 1.45, 10, 1).translate(1.1, 0, 0);
 		const f = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map:flagTexture(k), side:THREE.DoubleSide, roughness:.9 }));
-		f.position.set(x+.05, 10.1, -2.4); f.castShadow = true; HAG.add(f);
+		f.position.set(x+.05, 10.1, -2.4); f.userData.dynamic = true; HAG.add(f);
 		flags.push({ mesh:f, base:geo.attributes.position.array.slice(), ph:R(0,6) });
 	});
 	for(const [x,z,r] of [[-5,8.4,0],[5,8.4,0],[cs*12,-1,-cs*Math.PI/2]]) bench(HAG, x, z, r);
@@ -372,7 +381,7 @@ function buildFalise(){
 	for(const [x,z] of [[-15, -4],[13, -4.5],[-15, 4],[-4, 4.6],[12, 4.4]]) gardenTrees.push({ x:gx + x, z:gz + z, k:"d", s:R(.8,1.05) });
 	for(const [x,z] of [[-3, -1],[3, 2]]) for(let k=0;k<2;k++){ const s = makeStudent(scene), a = k ? Math.PI : 0; s.g.position.set(gx + x + Math.sin(a)*.75, 0, gz + z + Math.cos(a)*.75); s.g.rotation.y = a + Math.PI; gardenChat.push(s); }
 }
-const gardenTrees = [], gardenChat = [];
+const gardenTrees = [], gardenChat = [], extraCrowd = [];
 function picnic(parent, x, z){
 	const g = new THREE.Group(); g.position.set(x,0,z); parent.add(g);
 	box(g, 2.8, .14, 1.2, woodMat, 0, .85, 0);
@@ -483,13 +492,15 @@ function buildHorizon(){
 		const [cx, cz] = MAP.citadelle; if(Math.hypot(x-cx, z-cz) < 62) return true;
 		for(const c of MAP.canals) for(let i=0;i<c.length;i+=2) if(Math.hypot(x-c[i], z-c[i+1]) < 10) return true;
 		if(LIFE.euratech && Math.hypot(x-LIFE.euratech.x, z-LIFE.euratech.z) < 60) return true;
-		for(const st of MAP.stations || []) if(Math.hypot(x - st.x, z - st.z) < st.r + 6) return true;     // îlots réels autour des stations
 		return false;
 	};
-	for(let gx=-300; gx<=300; gx+=7) for(let gz=-340; gz<=260; gz+=7){
+	// les silhouettes entourent la zone dessinée à l'échelle réelle (campus + chemin jusqu'aux stations), sans y entrer
+	const near = (x, z) => ZONE ? (pointInPoly(x, z, ZONE) ? -1 : polyDist(x, z, ZONE)) : Math.hypot(x, z + 10) - 150;
+	for(let gx=-480; gx<=320; gx+=7) for(let gz=-360; gz<=280; gz+=7){
 		const d = Math.hypot(gx, gz + 10);
-		if(d < 150 || d > 330 || rr() < .38) continue;
-		const x = gx + rr()*2, z = gz + rr()*2;
+		if(d > 470 || rr() < .38) continue;
+		const x = gx + rr()*2, z = gz + rr()*2, k = near(x, z);
+		if(k < 4 || (d > 330 && k > 95)) continue;
 		if(blockedFar(x, z)) continue;
 		spots.push([x, z, 2 + Math.floor(rr()*3), rr()]);
 	}
@@ -686,7 +697,7 @@ if(city.pois.rizomm){
 		for(const dx of [-1, 1]) box(st, .08, .9, 1, wood, dx, 0, 0);
 		mesh(new THREE.TorusGeometry(.22, .05, 6, 16), std("#d9a441"), st, .5, 1.25, 0).rotation.x = -.6;
 		box(st, .6, .25, .4, std("#dfeee0"), -.5, .98, 0);
-		const sci = makeStudent(st); sci.g.position.set(.2, 0, 1.4); sci.g.scale.setScalar(.9);
+		const sci = makeStudent(st); sci.g.position.set(.2, 0, 1.4); sci.g.scale.setScalar(.9); extraCrowd.push(sci.g);
 		scene.add(st);
 	}
 	const [cx, cz] = MAP.citadelle;
@@ -781,8 +792,22 @@ const startNodes = WN.map((_,i) => i).filter(i => ADJ[i].length && Math.hypot(WN
 for(let i=0; i<34; i++){
 	const s = makeStudent(scene);
 	const from = i < 8 ? c0 + (i % 4) : pick(startNodes), nb = pick(ADJ[from]);
-	Object.assign(s, { from, to:nb[0], w:nb[1], t:rng(), speed:R(1.5,2.2), wait:0, side:rng() < .5 ? -1 : 1, ph:R(0,6) });
+	Object.assign(s, { from, to:nb[0], w:nb[1], t:rng(), speed:R(1.5,2.2), wait:0, side:rng() < .5 ? -1 : 1, ph:R(0,6), hx:0, hz:-10, range:85 });
 	students.push(s);
+}
+// passants du quartier : autour des deux stations de métro, et sur le chemin entre le campus et chaque station
+{
+	const around = (x, z, r) => WN.map((_,i) => i).filter(i => ADJ[i].length && Math.hypot(WN[i][0] - x, WN[i][1] - z) < r);
+	for(const st of MAP.stations || []){
+		for(const [hx, hz, n, range] of [[st.x, st.z, 9, 60], [(st.x + 0)/2, (st.z - 10)/2, 7, 80]]){
+			const near = around(hx, hz, 45); if(!near.length) continue;
+			for(let i=0; i<n; i++){
+				const s = makePerson(scene), from = pick(near), nb = pick(ADJ[from]);
+				Object.assign(s, { from, to:nb[0], w:nb[1], t:rng(), speed:R(1.3,2), wait:0, side:rng() < .5 ? -1 : 1, ph:R(0,6), hx, hz, range });
+				students.push(s);
+			}
+		}
+	}
 }
 for(const [lx,lz] of [[-6,-1],[-4.5,7.5],[6,7.5]]){
 	for(let k=0;k<2;k++){
@@ -805,7 +830,8 @@ function updateStudents(dt, t){
 			const nb = ADJ[s.to].filter(([n]) => n !== s.from);
 			const next = nb.length && rng() < .9 ? pick(nb) : pick(ADJ[s.to]);
 			s.from = s.to; s.to = next[0]; s.w = next[1]; s.t = 0;
-			if(Math.hypot(WN[s.from][0], WN[s.from][1] + 10) > 85 && rng() < .7){ const back = ADJ[s.from].find(([n]) => Math.hypot(WN[n][0], WN[n][1] + 10) < Math.hypot(WN[s.from][0], WN[s.from][1] + 10)); if(back){ s.to = back[0]; s.w = back[1]; } }
+			const far = n => Math.hypot(WN[n][0] - s.hx, WN[n][1] - s.hz);
+			if(far(s.from) > s.range && rng() < .7){ const back = ADJ[s.from].find(([n]) => far(n) < far(s.from)); if(back){ s.to = back[0]; s.w = back[1]; } }
 			if(rng() < .25) s.wait = R(1, 5);
 			continue;
 		}
@@ -954,7 +980,7 @@ const smoke = [];
 const smokeSpots = [[-16,15.7,-18.4],[10.5,15.7,-18.4],[16,15.7,-18.4]];
 for(let i=0;i<36;i++){
 	const m = new THREE.Mesh(cached("sm", () => new THREE.IcosahedronGeometry(.6,0)), new THREE.MeshLambertMaterial({ color:"#d9d4e6", transparent:true, opacity:0, depthWrite:false }));
-	m.visible = false; HAG.add(m); smoke.push({ m, life:1 + i/36*6, src:i%3 });
+	m.visible = false; m.userData.dynamic = true; HAG.add(m); smoke.push({ m, life:1 + i/36*6, src:i%3 });
 }
 function updateSmoke(dt){
 	const on = night || !!season.snowy;
@@ -970,39 +996,92 @@ function updateSmoke(dt){
 }
 
 /* =====================================================================
-   Ciel
+   Allègement du rendu : le décor immobile est fusionné par matériau, les petits personnages sont instanciés
+   ===================================================================== */
+// une ombre ronde au pied de chaque passant (ils ne projettent plus d'ombre dans la carte d'ombres)
+for(const g of [...students.map(s => s.g), ...extraCrowd]){ const b = blobShadow(); b.scale.setScalar(1.05); b.position.y = .08; g.add(b); }
+const crowd = proxyInstances(scene, [...students.map(s => s.g), ...extraCrowd, ...pigeons.map(p => p.g), ...ducks.map(d => d.g), ...clouds.map(c => c.g)]);
+bakeStatic(scene);
+pickables.length = 0;
+scene.traverse(o => { if(o.isMesh && o.userData.place && o.layers.mask === 1) pickables.push(o); });
+{
+	// ombre de contact au pied des murs, vent dans les arbres, vaguelettes, fenêtres qui s'allument une à une
+	const seen = new Set();
+	scene.traverse(o => { const m = o.material; if(!o.isMesh || !m || Array.isArray(m) || seen.has(m)) return; seen.add(m); if(m.isMeshStandardMaterial && !m.transparent) contactShade(m); });
+	windSway(canopyIM.material, .06); windSway(conifIM.material, .035); windSway(bushIM.material, .03);
+	waterRipples(waterMat);
+	windowsGate(glassLit, city.nightU);
+}
+
+/* =====================================================================
+   Ciel : dégradé, brume, soleil (ou lune), rendu dans un cube qui sert aussi de reflet (environnement)
    ===================================================================== */
 const skyCanvas = document.createElement("canvas"); skyCanvas.width = 2; skyCanvas.height = 256;
-const skyTex = new THREE.CanvasTexture(skyCanvas); skyTex.colorSpace = THREE.SRGBColorSpace;
-scene.background = skyTex;
+const skyTex = new THREE.CanvasTexture(skyCanvas); skyTex.colorSpace = THREE.SRGBColorSpace;      // fond des intérieurs
 function paintSky(top, bot){
 	const x = skyCanvas.getContext("2d"), g = x.createLinearGradient(0,0,0,256);
 	g.addColorStop(0, top); g.addColorStop(.75, bot); g.addColorStop(1, bot);
 	x.fillStyle = g; x.fillRect(0,0,2,256); skyTex.needsUpdate = true;
 }
+const sky = createSky(renderer);
+scene.background = sky.background;
+const ENV_I = .5, HEMI_K = .72;     // part de la lumière qui vient des reflets du ciel ; la lumière hémisphérique baisse d'autant
+scene.environmentIntensity = ENV_I;
 
 /* =====================================================================
    Ambiance : saison × moment de la journée
+   La lumière passe en douceur d'une ambiance à l'autre ; au crépuscule (heure réelle), les fenêtres s'allument une à une.
    ===================================================================== */
 let seasonKey = store.get("season", "automne"); if(!SEASONS[seasonKey]) seasonKey = "automne";
 let timeMode = store.get("time", "auto"); if(!["auto","jour","nuit"].includes(timeMode)) timeMode = "auto";
 let season = SEASONS[seasonKey], night = false;
 const realNight = () => { const h = new Date().getHours(); return h < 7 || h >= 19; };
-function applyAmbiance(){
+const LCOL = ["skyTop","skyBot","fog","hemiSky","hemiGround","sun","cloud"], LNUM = ["hemiI","sunI","exposure","nightK"];
+const lightOf = (L, k) => { const o = { sunPos:V(...L.sunPos), nightK:k }; for(const c of LCOL) o[c] = new THREE.Color(L[c]); for(const n of LNUM) if(n !== "nightK") o[n] = L[n]; return o; };
+const copyLight = l => { const o = { ...l, sunPos:l.sunPos.clone() }; for(const c of LCOL) o[c] = l[c].clone(); return o; };
+let light = null, lightTween = null;
+function showLight(){
+	const st = light, k = st.nightK;
+	scene.fog.color.copy(st.fog);
+	hemi.color.copy(st.hemiSky); hemi.groundColor.copy(st.hemiGround); hemi.intensity = st.hemiI*HEMI_K;
+	sun.color.copy(st.sun); sun.intensity = st.sunI;
+	renderer.toneMappingExposure = st.exposure*.94;
+	cloudMat.color.copy(st.cloud);
+	sky.set(st); sky.renderBackground();
+	const lamp = THREE.MathUtils.smoothstep(k, .12, .5);
+	glassLit.emissiveIntensity = k > 0 ? 1.7 : 0;          // fenêtre par fenêtre : voir windowsGate
+	lampMat.emissiveIntensity = 2.2*lamp;
+	glowPts.visible = lamp > .01; glowPts.material.opacity = lamp;
+	faliseGlass.emissiveIntensity = .9*k;
+	if(rameauGlass) rameauGlass.forEach(m => m.emissiveIntensity = .8*k);
+	atriumRoof.emissiveIntensity = .55*k;
+	atriumGlow.emissiveIntensity = .4 + 1.6*k;
+	wenovGlass.emissiveIntensity = .28*k;
+	city.setNight(k);
+	blobMaterial().opacity = .34 - .18*k;
+	if(post) post.setNight(k);
+}
+function stepLight(dt){
+	if(!lightTween) return;
+	const T = lightTween; T.k = Math.min(1, T.k + dt/T.dur);
+	const e = ease(T.k);
+	for(const c of LCOL) light[c].lerpColors(T.a[c], T.b[c], e);
+	for(const n of LNUM) light[n] = T.a[n] + (T.b[n] - T.a[n])*e;
+	light.sunPos.lerpVectors(T.a.sunPos, T.b.sunPos, e);
+	showLight(); shadowDirty = true;
+	if(T.k >= 1) lightTween = null;
+}
+function applyAmbiance(instant, dur = 1.8){
 	season = SEASONS[seasonKey];
 	night = timeMode === "nuit" || (timeMode === "auto" && realNight());
 	const S = season, L = night ? NIGHT : S.day;
 	paintSky(L.skyTop, L.skyBot);
-	scene.fog.color.set(L.fog);
 	document.body.style.background = L.fog;
-	hemi.color.set(L.hemiSky); hemi.groundColor.set(L.hemiGround); hemi.intensity = L.hemiI;
-	sun.color.set(L.sun); sun.intensity = L.sunI;
-	renderer.toneMappingExposure = L.exposure;
 	groundMat.color.set(S.grass);
 	slateMats.forEach(m => m.color.set(S.slate));
 	zincMats.forEach(m => m.color.set(S.snowy ? "#dfe6ee" : "#9aa5b1"));
 	cedarMat.color.set(S.conifer); pineMats.forEach(m => m.color.set(S.conifer));
-	city.setSeason(S); city.setNight(night);
+	city.setSeason(S);
 	const c = new THREE.Color();
 	decid.forEach((t,i) => {
 		c.set(S.trees[Math.floor(t.c*S.trees.length)]); canopyIM.setColorAt(i*2, c);
@@ -1014,15 +1093,12 @@ function applyAmbiance(){
 	bushes.forEach((b,i) => { c.set(S.bush[Math.floor(b.c*S.bush.length)]); bushIM.setColorAt(i, c); });
 	bushIM.instanceColor.needsUpdate = true;
 	if(horizon.roof.instanceColor){ horizon.spots.forEach(([, , , r], i) => { c.set(S.snowy ? "#dfe6ee" : ["#4f5767","#5d6170","#8d4a3a"][Math.floor(r*7)%3]); horizon.roof.setColorAt(i, c); }); horizon.roof.instanceColor.needsUpdate = true; }
-	cloudMat.color.set(L.cloud);
-	glassLit.emissiveIntensity = night ? 1.7 : 0;
-	lampMat.emissiveIntensity = night ? 2.2 : 0;
-	glowPts.visible = night;
-	faliseGlass.emissiveIntensity = night ? .9 : 0;
-	if(rameauGlass) rameauGlass.forEach(m => m.emissiveIntensity = night ? .8 : 0);
-	atriumRoof.emissiveIntensity = night ? .55 : 0;
-	atriumGlow.emissiveIntensity = night ? 2 : .4;
-	wenovGlass.emissiveIntensity = night ? .28 : 0;
+	// lumière : tout de suite au chargement, en fondu ensuite
+	const target = lightOf(L, night ? 1 : 0);
+	sky.set(target); scene.environment = sky.renderEnvironment();
+	if(!light || instant || reduceMotion){ light = copyLight(target); lightTween = null; showLight(); }
+	else { lightTween = { a:copyLight(light), b:target, k:0, dur }; sky.set(light); }
+	shadowDirty = true;
 	partIM.count = reduceMotion ? 0 : Math.round(S.parts.n*QUALITY[quality].parts);
 	for(let i=0;i<PMAX;i++){ c.set(S.parts.colors[i % S.parts.colors.length]); partIM.setColorAt(i, c); respawn(parts[i], false); }
 	partIM.instanceColor.needsUpdate = true;
@@ -1045,7 +1121,7 @@ $("ambiance").addEventListener("click", e => {
 	if(q){ Audio.play("pop"); qualityMode = q.dataset.quality; store.set("quality", qualityMode); setQuality(qualityMode === "auto" ? guessQuality() : qualityMode); }
 	if(e.target.closest("[data-replay]")){ $("ambiance").hidden = true; closePanel(); if(mode !== "ext") exitInterior(true); else playIntro(); }
 });
-setInterval(() => { if(timeMode === "auto" && realNight() !== night) applyAmbiance(); }, 60000);
+setInterval(() => { if(timeMode === "auto" && realNight() !== night) applyAmbiance(false, 8); }, 60000);     // crépuscule lent
 
 /* =====================================================================
    Intérieurs : atrium (Falise) et chapelle (Hôtel Académique)
@@ -1061,7 +1137,16 @@ const GAME_LOADERS = {
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
-	const go = () => { MAKERS.atrium(); MAKERS.chapelle(); loadGame(); };
+	const go = () => {
+		MAKERS.atrium(); MAKERS.chapelle(); loadGame();
+		// les intérieurs les plus visités et la rame sont construits, et leurs shaders préparés, pendant que le navigateur est libre
+		setTimeout(() => {
+			loadInterior("atrium").then(() => loadInterior("chapelle")).then(() => {
+				rame = rame || createRame();
+				return renderer.compileAsync(rame.scene, rame.camera);
+			}).catch(() => {});
+		}, 2500);
+	};
 	("requestIdleCallback" in window) ? requestIdleCallback(go, { timeout:8000 }) : setTimeout(go, 4000);
 }
 const RETURN = { atrium:"falise", chapelle:"chapelle", eura:"cormontaigne", wenovin:"wenov" };
@@ -1074,6 +1159,8 @@ function loadInterior(id){
 	return interiors[id] ? Promise.resolve() : MAKERS[id]().then(make => {
 		interiors[id] = make({ background:skyTex }); qualityInterior(interiors[id]);
 		if(interiors[id].setAmbiance) interiors[id].setAmbiance(season, night ? NIGHT : season.day, night); else interiors[id].setNight(night);
+		// shaders préparés à l'avance (en parallèle si le navigateur le permet) : pas d'à-coup à l'entrée
+		return renderer.compileAsync(interiors[id].scene, camera).catch(() => {});
 	});
 }
 // installe une scène (intérieur ou quartier) derrière un écran opaque : caméra au point de départ, épingles, sons
@@ -2169,7 +2256,12 @@ $("coach").addEventListener("click", e => {
    ===================================================================== */
 let fly = null, panelShift = false, offX = 0, offY = 0;
 function flyTo(pos, target, dur){
-	fly = { p0:camera.position.clone(), t0:controls.target.clone(), p1:pos, t1:target, k:0, dur: reduceMotion ? .01 : dur };
+	const p0 = camera.position.clone(), t0 = controls.target.clone(), far = Math.max(p0.distanceTo(pos), t0.distanceTo(target));
+	if(fly && fly.fov0) camera.fov = fly.fov0;
+	// à l'extérieur, un long trajet passe en arc au-dessus des toits (jamais dans un intérieur : il y a un plafond)
+	const outside = mode === "ext" && !cine;
+	fly = { p0, t0, p1:pos, t1:target, k:0, dur: reduceMotion ? .01 : Math.max(dur, Math.min(3.4, .9 + far/150)),
+		arc: outside ? Math.min(45, far*.2) : 0, fov0: outside && far > 40 ? camera.fov : 0 };
 	controls.enabled = false;
 }
 function homeView(){
@@ -2188,9 +2280,11 @@ function fogFollow(force){
 function flyHome(d){ const h = homeView(); flyTo(h.pos, h.target, d); }
 /* La source d'ombre suit la caméra par pas d'un texel : sans ça, les bords d'ombre « grouillent ». */
 const _sx = new THREE.Vector3(), _sy = new THREE.Vector3(), _sz = new THREE.Vector3(), _up = new THREE.Vector3(0,1,0);
+const _sunWas = new THREE.Vector3();
 function placeSun(L){
 	const t = controls.target;
-	_sz.set(L.sunPos[0], L.sunPos[1], L.sunPos[2]);
+	_sunWas.copy(sun.position);
+	_sz.copy(L.sunPos);
 	const dist = _sz.length(); _sz.normalize();
 	_sx.crossVectors(_up, _sz).normalize(); _sy.crossVectors(_sz, _sx);
 	const texel = (sun.shadow.camera.right - sun.shadow.camera.left)/sun.shadow.mapSize.x;
@@ -2198,6 +2292,7 @@ function placeSun(L){
 	sun.target.position.set(0,0,0).addScaledVector(_sx, a).addScaledVector(_sy, b).addScaledVector(_sz, c);
 	sun.position.copy(sun.target.position).addScaledVector(_sz, dist);
 	sun.target.updateMatrixWorld();
+	return sun.position.distanceToSquared(_sunWas) > 1e-6;
 }
 const ease = k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k+2, 3)/2;
 
@@ -2210,10 +2305,21 @@ let first = true, lastMinute = -1;
    Qualité graphique : devinée au départ, ajustée si l'appareil peine
    ===================================================================== */
 const QUALITY = {
-	haute:   { label:"haute",   ratio: small ? 1.5 : 2, shadows:true,  map:small ? 1024 : 2048, parts:1,  horizon:true,  crowd:1,   far:430, rank:2 },
-	moyenne: { label:"moyenne", ratio:1.25,             shadows:true,  map:1024,                parts:.5, horizon:true,  crowd:.7,  far:390, rank:1 },
-	basse:   { label:"basse",   ratio:1,                shadows:false, map:512,                 parts:0,  horizon:false, crowd:.45, far:320, rank:0 }
+	haute:   { label:"haute",   ratio: small ? 1.5 : 2, shadows:true,  map:small ? 1024 : 2048, parts:1,  horizon:true,  crowd:1,   far:430, rank:2, post:true,  ao:!small },
+	moyenne: { label:"moyenne", ratio:1.25,             shadows:true,  map:1024,                parts:.5, horizon:true,  crowd:.7,  far:390, rank:1, post:false, ao:false },
+	basse:   { label:"basse",   ratio:1,                shadows:false, map:512,                 parts:0,  horizon:false, crowd:.45, far:320, rank:0, post:false, ao:false }
 };
+/* Post-traitement (qualité haute) : chargé à la demande, la première fois qu'on passe en qualité haute */
+let post = null, postOn = false, postLoading = null;
+function wantPost(on){
+	postOn = on;
+	if(!on || post || postLoading) return;
+	postLoading = createPost(renderer, scene, camera).then(p => {
+		post = p; postLoading = null;
+		post.setSize(innerWidth, innerHeight, renderer.getPixelRatio());
+		post.setNight(light ? light.nightK : 0);
+	}).catch(e => { console.warn("post-traitement indisponible", e); postLoading = null; postOn = false; });
+}
 let qualityMode = store.get("quality", "auto"); if(!["auto","haute","moyenne","basse"].includes(qualityMode)) qualityMode = "auto";
 let quality = "haute";
 function guessQuality(){
@@ -2238,9 +2344,12 @@ function qualityInterior(I){
 function setQuality(level){
 	quality = level;
 	const Q = QUALITY[level];
-	renderer.setPixelRatio(Math.min(devicePixelRatio, Q.ratio));
+	renderer.setPixelRatio(Math.min(devicePixelRatio, Q.ratio)*perf.dyn);
 	renderer.setSize(innerWidth, innerHeight);
+	wantPost(Q.post);
+	if(post) post.setSize(innerWidth, innerHeight, renderer.getPixelRatio());
 	shadowsOn(sun, Q.shadows, Q.map);
+	shadowDirty = true;
 	horizon.body.visible = horizon.roof.visible = Q.horizon;
 	const walkers = students.filter(s => !s.chat); walkers.forEach((s, i) => { s.off = (i + .5)/walkers.length > Q.crowd; s.g.visible = !s.off; });
 	fogFollow(true);
@@ -2248,14 +2357,30 @@ function setQuality(level){
 	partIM.count = reduceMotion ? 0 : Math.round(season.parts.n*Q.parts);
 	renderAmbiancePop();
 }
-/* En mode auto : si l'image tombe sous ~30 i/s pendant plusieurs secondes, on descend d'un cran. */
-const perf = { acc:0, n:0, slow:0, cool:6 };
+/* En mode auto : la résolution s'ajuste en continu (60 → 100 %) pour garder l'image fluide ;
+   si l'image reste sous ~30 i/s malgré tout, on descend d'un cran de qualité. */
+const perf = { acc:0, n:0, slow:0, cool:6, dyn:1, test:null, good:0, ceil:1.01, locked:false };
+function setDyn(v){
+	perf.dyn = v;
+	renderer.setPixelRatio(Math.min(devicePixelRatio, QUALITY[quality].ratio)*v);
+	renderer.setSize(innerWidth, innerHeight);
+	if(post) post.setSize(innerWidth, innerHeight, renderer.getPixelRatio());
+}
 function watchPerf(rawDt){
 	if(qualityMode !== "auto" || document.hidden || !entered || intro || rawDt > .25) return;
 	perf.cool -= rawDt; perf.acc += rawDt; perf.n++;
-	if(perf.acc < 2) return;
+	if(perf.acc < 1.5) return;
 	const fps = perf.n/perf.acc; perf.acc = 0; perf.n = 0;
 	if(perf.cool > 0) return;
+	// on vient de baisser la résolution : si ce n'est pas plus fluide, ce n'est pas elle qui limite (écran bridé à 30 i/s…) → on revient
+	if(perf.test){
+		const T = perf.test; perf.test = null; perf.cool = 1;
+		if(fps < T.fps + 3){ setDyn(T.dyn); perf.locked = true; } else perf.ceil = T.dyn;
+		return;
+	}
+	if(fps < 48 && !perf.locked && perf.dyn > .62){ perf.test = { fps, dyn:perf.dyn }; setDyn(Math.max(.6, perf.dyn - .12)); perf.good = 0; perf.cool = .5; return; }
+	if(fps > 57){ if(perf.dyn < 1 && perf.dyn + .1 < perf.ceil && ++perf.good >= 3){ setDyn(Math.min(1, perf.dyn + .1)); perf.good = 0; perf.cool = 1; } }
+	else perf.good = 0;
 	perf.slow = fps < 30 ? perf.slow + 1 : 0;
 	if(perf.slow >= 2 && QUALITY[quality].rank > 0){
 		const next = quality === "haute" ? "moyenne" : "basse";
@@ -2270,6 +2395,8 @@ function frame(){
 	if(gamePaused){ clock.getDelta(); requestAnimationFrame(frame); return; }
 	const rawDt = clock.getDelta(), dt = Math.min(rawDt, .05), t = clock.elapsedTime;
 	watchPerf(rawDt);
+	TIME.value = t;
+	stepLight(dt);
 
 	if(cine){
 		cine.A.tick(dt);
@@ -2293,7 +2420,10 @@ function frame(){
 			const e = ease(fly.k);
 			camera.position.lerpVectors(fly.p0, fly.p1, e);
 			controls.target.lerpVectors(fly.t0, fly.t1, e);
-			if(fly.k >= 1){ fly = null; controls.enabled = entered; }
+			const bump = Math.sin(Math.PI*e);
+			if(fly.arc) camera.position.y += bump*fly.arc;
+			if(fly.fov0){ camera.fov = fly.fov0 + 3.5*bump; camera.updateProjectionMatrix(); }
+			if(fly.k >= 1){ if(fly.fov0){ camera.fov = fly.fov0; camera.updateProjectionMatrix(); } fly = null; controls.enabled = entered; }
 		}
 		updateTour(dt);
 		const b = limits.box;
@@ -2311,12 +2441,14 @@ function frame(){
 
 	if(rame && rame.on){
 		rame.update(dt, t);
-		renderer.render(rame.scene, rame.camera);
+		renderer.shadowMap.autoUpdate = true;
+		draw(rame.scene, rame.camera);
 	} else if(mode !== "ext"){
 		interiors[mode].update(dt, t, camera);
-		renderer.render(interiors[mode].scene, camera);
+		renderer.shadowMap.autoUpdate = true;
+		draw(interiors[mode].scene, camera);
 	} else {
-		placeSun(night ? NIGHT : season.day);
+		if(placeSun(light)) shadowDirty = true;
 		updateStudents(dt, t);
 		updateFlocks(dt, t);
 		updatePigeons(dt, t);
@@ -2341,7 +2473,11 @@ function frame(){
 		if(now.getMinutes() === 0 && lastMinute === 59 && entered){ Audio.play("chime"); setTimeout(scarePigeons, 250); }
 		lastMinute = now.getMinutes();
 		if(mode === "ext") fogFollow();
-		renderer.render(scene, camera);
+		crowd.update();
+		// la rame et la station souterraine bougent pendant les cinématiques : ombres en continu ; sinon à la demande
+		renderer.shadowMap.autoUpdate = !!cine;
+		if(shadowDirty){ renderer.shadowMap.needsUpdate = true; shadowDirty = false; }
+		draw(scene, camera, true);
 	}
 	if(entered){ syncCarousel(); updatePins(); }
 	if(first){ first = false; performance.mark("campus-ready"); setTimeout(() => $("loader").classList.add("gone"), 150); prefetchLater(); }
@@ -2350,7 +2486,14 @@ function frame(){
 addEventListener("resize", () => {
 	camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
 	renderer.setSize(innerWidth, innerHeight);
+	if(post) post.setSize(innerWidth, innerHeight, renderer.getPixelRatio());
+	shadowDirty = true;
 });
+/* Rendu d'une image : directement, ou par le post-traitement en qualité haute (occlusion ambiante dehors seulement) */
+function draw(sc, cam, outside){
+	if(post && postOn) post.render(sc, cam, outside && QUALITY[quality].ao);
+	else renderer.render(sc, cam);
+}
 /* =====================================================================
    Écran de veille : sans interaction, la visite guidée se lance seule.
    ?borne : mode stand (JPO, salons) — pas d'accueil, visite en boucle.
@@ -2370,7 +2513,7 @@ setInterval(() => {
 	if(performance.now() - lastInput > IDLE_MS){ idleTour = true; startTour(true); }
 }, 2000);
 
-applyAmbiance();
+applyAmbiance(true);
 setQuality(qualityMode === "auto" ? guessQuality() : qualityMode);
 refreshHud();
 if(BORNE){
@@ -2380,6 +2523,6 @@ if(BORNE){
 	lastInput = -1e9;      // la visite démarre dès la fin de l'intro
 }
 if(/[?&]debug/.test(location.search)) window.campus = { THREE, scene, camera, controls, renderer, city, selectPlace, enterInterior, exitInterior, openGame, PLACES, LIFE, MAP, interiors, get mode(){ return mode; },
-	view(px,py,pz,tx,ty,tz){ fly = null; intro = null; camera.position.set(px,py,pz); controls.target.set(tx,ty,tz); controls.update(); renderer.render(mode !== "ext" ? interiors[mode].scene : scene, camera); if(entered) updatePins(); },
-	set(k,v){ if(k === "season") seasonKey = v; if(k === "time") timeMode = v; applyAmbiance(); }, setQuality, get quality(){ return quality; } };
+	view(px,py,pz,tx,ty,tz){ fly = null; intro = null; camera.position.set(px,py,pz); controls.target.set(tx,ty,tz); controls.update(); if(entered) updatePins(); },
+	set(k,v){ if(k === "season") seasonKey = v; if(k === "time") timeMode = v; applyAmbiance(true); }, setQuality, get post(){ return post; }, crowd, get quality(){ return quality; } };
 requestAnimationFrame(frame);

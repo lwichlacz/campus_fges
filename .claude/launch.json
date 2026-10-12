@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "campus",
-      "runtimeExecutable": "python",
+      "runtimeExecutable": "python3",
       "runtimeArgs": ["tools/serve.py"],
       "port": 8765
     }

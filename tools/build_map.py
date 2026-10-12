@@ -44,6 +44,12 @@ def extents(p, a):
     return (cu*c - cv*s, cu*s + cv*c, max(us)-min(us), max(vs)-min(vs))
 
 core = load("osm2.json"); trees_n = load("osm3.json"); far = load("osm5.json")
+# osm_ext.json : bâtiments, rues, verts et arbres entre le campus et les deux stations de métro (Overpass)
+_ext = load("osm_ext.json") if (OSM / "osm_ext.json").exists() else []
+_ids = {e["id"] for e in core}
+core = core + [e for e in _ext if e["type"] == "way" and "geometry" in e and e["id"] not in _ids and e.get("tags")]
+_tids = {e["id"] for e in trees_n}
+trees_n = trees_n + [e for e in _ext if e["type"] == "node" and e.get("tags", {}).get("natural") == "tree" and e["id"] not in _tids]
 byid = {e["id"]: e for e in core}
 P = lambda e: [mp(q) for q in e["geometry"]]
 
@@ -64,12 +70,53 @@ hc = extents(ha_pts, a_ha)
 HAC = (hc[0], hc[1])
 if (-uz)*(mx-HAC[0]) + ux*(mz-HAC[1]) < 0: ux, uz = -ux, -uz
 vx, vz = -uz, ux
+# le cœur du campus garde l'extrait d'origine (osm2) ; osm_ext ne complète que l'extérieur du cercle CORE
+core = [e for e in core if e["id"] in _ids or math.dist(cen(P(e)), HAC) > CORE]
+byid = {e["id"]: e for e in core}
+
+# --- zone dessinée à l'échelle réelle : le cœur du campus et le chemin jusqu'aux deux stations de la ligne 2 ---
+# C'est l'enveloppe convexe du cercle du campus (CORE) et d'un cercle autour de chaque station : le quartier
+# est continu de l'Hôtel Académique aux bouches de métro. Au-delà, le lointain est compressé (FAR) comme avant.
+STATIONS_SRC = [("cormontaigne", "Cormontaigne", 50.6262337, 3.0402863), ("portdelille", "Port de Lille", 50.6299287, 3.0357396)]
+R_ST = 120.0
+def hull(pts):
+    pts = sorted(set(pts))
+    def cross(o, a, b): return (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0])
+    lo, hi = [], []
+    for p in pts:
+        while len(lo) >= 2 and cross(lo[-2], lo[-1], p) <= 0: lo.pop()
+        lo.append(p)
+    for p in reversed(pts):
+        while len(hi) >= 2 and cross(hi[-2], hi[-1], p) <= 0: hi.pop()
+        hi.append(p)
+    return lo[:-1] + hi[:-1]
+_circ = [(HAC, CORE)] + [(mp({ "lat":la, "lon":lo }), R_ST) for _, _, la, lo in STATIONS_SRC]
+ZONE = hull([(round(c[0] + r*math.cos(k/48*math.tau), 3), round(c[1] + r*math.sin(k/48*math.tau), 3)) for c, r in _circ for k in range(48)])
+def zone_r(a):
+    """rayon de la zone (m) depuis l'Hôtel Académique dans la direction a"""
+    dx, dz = math.cos(a), math.sin(a); best = CORE
+    for i in range(len(ZONE)):
+        (x1, z1), (x2, z2) = ZONE[i], ZONE[(i+1) % len(ZONE)]
+        ax, az, bx, bz = x1-HAC[0], z1-HAC[1], x2-HAC[0], z2-HAC[1]
+        den = dx*(bz-az) - dz*(bx-ax)
+        if abs(den) < 1e-9: continue
+        t = (ax*(bz-az) - az*(bx-ax)) / den; s = (ax*dz - az*dx) / den
+        if t > 0 and -1e-9 <= s <= 1 + 1e-9: best = max(best, t)
+    return best
+_ZR = [zone_r(k/720*math.tau) for k in range(720)]
+def zr(dx, dz):
+    a = math.atan2(dz, dx) % math.tau; f = a/math.tau*720; i = int(f) % 720
+    return _ZR[i] + (_ZR[(i+1) % 720] - _ZR[i])*(f - int(f))
+def in_zone(q, m=0):
+    dx, dz = q[0]-HAC[0], q[1]-HAC[1]
+    return math.hypot(dx, dz) < zr(dx, dz) + m
 
 def G(q, compress=True):
     dx, dz = q[0]-HAC[0], q[1]-HAC[1]
     d = math.hypot(dx, dz)
-    if compress and d > R0:
-        f = (R0 + (d-R0)*FAR) / d; dx *= f; dz *= f
+    R0d = zr(dx, dz) - (CORE - R0) if d > 1e-6 else R0
+    if compress and d > R0d:
+        f = (R0d + (d-R0d)*FAR) / d; dx *= f; dz *= f
     return (round(S*(dx*ux + dz*uz), 2), round(S*(dx*vx + dz*vz) + OZ, 2))
 def Gdir(a):
     c, s = math.cos(a), math.sin(a)
@@ -136,7 +183,7 @@ for e in core:
     t = e["tags"]
     if "building" not in t or e["id"] in skip: continue
     p = P(e)
-    if len(p) < 4 or dist(cen(p)) > CORE: continue
+    if len(p) < 4 or not in_zone(cen(p), -4): continue
     q = [p[0]]
     for v in p[1:]:
         if math.dist(v, q[-1]) > .8: q.append(v)
@@ -148,13 +195,24 @@ for e in core:
 # OpenStreetMap contient parfois le même bâtiment deux fois (bâtiment + « partie de bâtiment ») :
 # si deux emprises se recouvrent à plus de 30 % de la plus petite, on ne garde que la plus grande.
 drop = set()
-for a in range(len(cands)):
-    for b in range(a + 1, len(cands)):
-        ea, qa, Aa, ba = cands[a]; eb, qb, Ab, bb = cands[b]
-        o = overlap(qa, ba, qb, bb)
-        if o > .3*min(Aa, Ab): drop.add(a if Aa < Ab else b)
+CELL = 25.0
+def cells(bb): return [(i, j) for i in range(int(bb[0]//CELL), int(bb[2]//CELL) + 1) for j in range(int(bb[1]//CELL), int(bb[3]//CELL) + 1)]
+cgrid = {}
+for k, c in enumerate(cands):
+    for cl in cells(c[3]): cgrid.setdefault(cl, []).append(k)
+pairs = set()
+for lst in cgrid.values():
+    for x in range(len(lst)):
+        for y in range(x + 1, len(lst)): pairs.add((lst[x], lst[y]))
+for a, b in sorted(pairs):
+    ea, qa, Aa, ba = cands[a]; eb, qb, Ab, bb = cands[b]
+    o = overlap(qa, ba, qb, bb)
+    if o > .3*min(Aa, Ab): drop.add(a if Aa < Ab else b)
 print("bâtiments en double retirés :", len(drop))
 bpolys = [(c[1], c[3]) for k, c in enumerate(cands) if k not in drop] + [(P(byid[i]), bbox(P(byid[i]))) for i in skip if i in byid]
+bgrid = {}
+for k, (bp, bb) in enumerate(bpolys):
+    for cl in cells(bb): bgrid.setdefault(cl, []).append(k)
 for k, (e, q, A, _) in enumerate(cands):
     if k in drop: continue
     t = e["tags"]
@@ -183,7 +241,7 @@ for k, (e, q, A, _) in enumerate(cands):
     if area(gp) < 0: pass
     rec = { "house":0, "campus":1, "dorm":2, "sport":3, "church":4, "glass":5, "shed":6 }[kind]
     buildings.append([rec, lv, col, roof, flat(gp)])
-    if t.get("name"): pois_src[t["name"]] = (len(buildings)-1, gp, lv)
+    if t.get("name") and dist(cen(q)) < CORE: pois_src[t["name"]] = (len(buildings)-1, gp, lv)
 
 # --- rues ---
 WID = { "primary":12, "secondary":10, "tertiary":9, "residential":7.5, "living_street":6, "unclassified":7, "pedestrian":6, "service":4.5 }
@@ -197,7 +255,7 @@ for e in core:
     t = e["tags"]; hw = t.get("highway")
     if hw not in WID: continue
     p = P(e)
-    keep = [q for q in p if dist(q) < CORE + 30]
+    keep = [q for q in p if in_zone(q, 30)]
     if len(keep) < 2: continue
     w = WID[hw]
     code = 2 if t.get("name") == "Boulevard Vauban" else (1 if hw in ("pedestrian", "living_street") else 0)
@@ -206,7 +264,7 @@ for e in core:
     for a_, b_ in zip(keep, keep[1:]):
         m = max(1, int(math.dist(a_, b_)))
         dense += [(a_[0] + (b_[0]-a_[0])*k/m, a_[1] + (b_[1]-a_[1])*k/m) for k in range(1, m + 1)]
-    blocked = [any(bb[0] <= x <= bb[2] and bb[1] <= z <= bb[3] and inside(x, z, bp) for bp, bb in bpolys) for x, z in dense]
+    blocked = [any(bb[0] <= x <= bb[2] and bb[1] <= z <= bb[3] and inside(x, z, bp) for bp, bb in (bpolys[k] for k in bgrid.get((int(x//CELL), int(z//CELL)), ()))) for x, z in dense]
     runs, cur = [], []
     for v, bl in zip(dense, blocked):
         if bl:
@@ -219,7 +277,7 @@ for e in core:
         pts = [run[0]] + [v for k, v in enumerate(run[1:-1], 1) if k % 6 == 0] + [run[-1]]
         roads.append([round(w*S, 2), code, flat(G(q) for q in pts)])
     if hw != "service":
-        ks = [q for q in p if dist(q) < 300]
+        ks = [q for q in p if in_zone(q, -8)]
         for a_, b_ in zip(ks, ks[1:]):
             i, j = node(a_), node(b_)
             if i != j: walk_edges[(min(i,j), max(i,j))] = round(w*S, 2)
@@ -246,12 +304,12 @@ for e in core:
     kind = t.get("leisure") or t.get("landuse")
     if kind not in ("park", "garden", "pitch", "grass", "playground"): continue
     p = P(e)
-    if len(p) < 4 or dist(cen(p)) > CORE: continue
+    if len(p) < 4 or not in_zone(cen(p)): continue
     code = 2 if e["id"] == 95069542 else (1 if kind == "pitch" else 0)
     greens.append([code, flat(G(q) for q in p[:-1] if True)])
 
 # --- arbres ---
-trees = flat(G(mp(n)) for n in trees_n if n["type"] == "node" and dist(mp(n)) < CORE)
+trees = flat(G(mp(n)) for n in trees_n if n["type"] == "node" and in_zone(mp(n), -2))
 
 # --- lointain : Deûle, parcs, Citadelle, Euratechnologies ---
 canals, parks, blan = [], [], None
@@ -264,56 +322,15 @@ cit = G((-135, -947))
 # station Cormontaigne (ligne 2), la plus proche du campus : 50.62623 N, 3.04029 E (OpenStreetMap)
 metro = G(mp({ "lat":50.62623, "lon":3.04029 }))
 
-# --- les deux stations de la ligne 2 côté Vauban, chacune avec son îlot de bâtiments réels ---
-# Elles sont hors du cœur de la carte (≈ 800 m) : leur centre est placé comme le reste du lointain (compressé),
-# mais leurs abords sont dessinés à l'échelle réelle, pour que la station ne paraisse jamais isolée.
+# --- les deux stations de la ligne 2 côté Vauban : leurs bouches (le quartier autour est dans la zone réelle) ---
 metro_raw = load("osm_metro.json")
-STATIONS_SRC = [("cormontaigne", "Cormontaigne", 50.6262337, 3.0402863), ("portdelille", "Port de Lille", 50.6299287, 3.0357396)]
-R_ISL = 95.0
 stations = []
 for sid, sname, la, lo in STATIONS_SRC:
     sp = mp({ "lat":la, "lon":lo }); gs = G(sp)
-    def Lm(q, sp=sp, gs=gs):
-        dx, dz = q[0]-sp[0], q[1]-sp[1]
-        return (round(gs[0] + S*(dx*ux + dz*uz), 2), round(gs[1] + S*(dx*vx + dz*vz), 2))
-    nb = 0
-    for e in metro_raw:
-        t = e.get("tags", {})
-        if e["type"] != "way" or "building" not in t or "geometry" not in e: continue
-        p = [mp(q) for q in e["geometry"]]
-        if len(p) < 4 or math.dist(cen(p), sp) > R_ISL: continue
-        q = [p[0]]
-        for v in p[1:]:
-            if math.dist(v, q[-1]) > .8: q.append(v)
-        if len(q) < 4: continue
-        if math.dist(q[0], q[-1]) < .8: q = q[:-1]
-        A = area(q)
-        if A < 12: continue
-        b = t.get("building", "yes"); r = h(e["id"])
-        lv = t.get("building:levels")
-        try: lv = max(1, min(14, int(float(lv))))
-        except: lv = None
-        kind = "shed" if b in ("garage", "garages", "shed", "roof") or A < 30 else "house"
-        if lv is None: lv = [3, 4, 4, 5, 3][r % 5] if kind == "house" else 1
-        if b in ("apartments", "commercial", "office") and lv < 4: lv = 5
-        a, cx, cz, L, D = obb(q)
-        roof = 0
-        if kind == "house" and A/(L*D) > .78 and D < 15 and lv <= 4:
-            roof = [*Lm((cx, cz)), round(Gdir(a), 3), round(L*S, 2), round(D*S, 2)]
-        col = (r // 7) % (BRICK + PAINT)
-        buildings.append([0 if kind == "house" else 6, lv, col, roof, flat(Lm(v) for v in q)]); nb += 1
-    for e in metro_raw:
-        t = e.get("tags", {}); hw = t.get("highway")
-        if e["type"] != "way" or hw not in WID or "geometry" not in e or t.get("tunnel") == "yes": continue
-        p = [mp(q) for q in e["geometry"]]
-        keep = [q for q in p if math.dist(q, sp) < R_ISL + 15]
-        if len(keep) < 2: continue
-        roads.append([round(WID[hw]*S, 2), 1 if hw in ("pedestrian", "living_street") else 0, flat(Lm(q) for q in keep)])
-    tr = [Lm(mp(n)) for n in metro_raw if n["type"] == "node" and n.get("tags", {}).get("natural") == "tree" and math.dist(mp(n), sp) < R_ISL]
-    trees += flat(tr)
-    exits = [list(Lm(mp(n))) for n in metro_raw if n["type"] == "node" and n.get("tags", {}).get("railway") == "subway_entrance" and math.dist(mp(n), sp) < 60]
-    stations.append({ "id":sid, "name":sname, "x":gs[0], "z":gs[1], "r":round(R_ISL*S, 1), "exits":exits })
-    print(f"station {sname} : centre {gs}, {nb} bâtiments, {len(exits)} bouches")
+    exits = [list(G(mp(n))) for n in metro_raw if n["type"] == "node" and n.get("tags", {}).get("railway") == "subway_entrance" and math.dist(mp(n), sp) < 60]
+    stations.append({ "id":sid, "name":sname, "x":gs[0], "z":gs[1], "r":round(R_ST*S, 1), "exits":exits })
+    print(f"station {sname} : centre {gs}, {len(exits)} bouches")
+zone = flat(G(q) for q in ZONE)
 
 
 def poi(name):
@@ -333,7 +350,7 @@ if jb: POIS["jardin"] = { "x":round(sum(jb[1][0::2])/(len(jb[1])/2),2), "z":roun
 
 out = {
     "S":S, "ha":HA, "falise":FAL, "court":[round(c,2) for c in court], "buildings":buildings, "roads":roads, "greens":greens,
-    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro, "stations":stations
+    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro, "stations":stations, "zone":zone
 }
 js = ("/* Généré par tools/build_map.py — ne pas modifier à la main.\n"
       "   Données © les contributeurs d'OpenStreetMap (ODbL). */\n"

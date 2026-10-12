@@ -117,6 +117,7 @@ export function makeStudent(parent, seated=false){
 	if(!seated && rng() < .45){ const bag = new THREE.Mesh(BOXC, pick(bodyMats)); bag.scale.set(.5,.55,.25); bag.position.set(0,.85,-.38); bag.castShadow = true; g.add(bag); }
 	if(seated){ body.scale.y = .75; body.position.y = .95; head.position.y = 1.62; hat.position.y = 1.82; }
 	g.scale.setScalar(1.25);
+	g.userData.dynamic = true;
 	parent.add(g);
 	return { g, body, hat, tassel };
 }
@@ -155,6 +156,7 @@ export function makePerson(parent, seated=false, kind=null){
 	}
 	if(seated){ body.scale.y = .75; body.position.y = .95; head.position.y = 1.62; hat.position.y = 1.82; }
 	g.scale.setScalar(1.25*(kind === "senior" ? .95 : .92 + rng()*.14));
+	g.userData.dynamic = true;
 	parent.add(g);
 	return { g, body, hat, tassel, kind };
 }
