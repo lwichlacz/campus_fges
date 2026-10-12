@@ -47,6 +47,8 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/audio.js` | Musique lofi, ambiances et effets sonores générés |
 | `js/kit.js` | Outils 3D partagés (formes, fenêtres, étudiants) |
 | `tools/build_map.py` | Régénère `js/vauban.js` depuis les extraits de `tools/osm/` |
+| `js/eura.js` | Quartier Euratechnologies en 3D (Wenov, le Blan-Lafont, la Deûle, le métro), chargé à la demande |
+| `js/euramap.js` | Données du quartier Euratechnologies, **générées** par `tools/build_eura.py` depuis `tools/osm/osm_eura.json` |
 
 ## Formulaire plaquettes → CRM
 

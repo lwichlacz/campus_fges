@@ -88,13 +88,51 @@ export const PLACES = {
 	wenov: {
 		icon:"💡", name:"Campus Wenov", kicker:"Euratechnologies · 177 av. Clémentine Deman",
 		links:[{ label:"L'École du Numérique", url:"https://www.fges.fr/cursus-universitaire/licence-sts/ecole-du-numerique/" }, { label:"Le campus Wenov", url:"https://lidd.univ-catholille.fr/campus/le-campus-wenov/" }],
-		text:"Le campus de l'École du Numérique, au cœur d'Euratechnologies, à 2 km de Vauban : informatique, data, cyber et réalité virtuelle. Plusieurs masters FGES en alternance y ont aussi leurs cours.",
+		text:"Le campus de l'École du Numérique, au cœur d'Euratechnologies, à 2 km de Vauban : informatique, data, cyber et réalité virtuelle. Un ensemble de 23 000 m² inauguré en 2022 (architectes Lalou+Lebec), avec le Campus Cyber Hauts-de-France, des start-up et une résidence étudiante. Plusieurs masters FGES en alternance y ont aussi leurs cours.",
 		facts:["École du Numérique","Euratechnologies","Masters en alternance"]
 	}
 };
 
 /* Les lieux de vie du campus (pas de formation, mais tout ce qui fait la vie étudiante). */
 export const LIFE = {
+	/* ----- Quartier Euratechnologies (scène js/eura.js) : zone:"eura", pas d'épingle sur la carte de Vauban ----- */
+	cyber: {
+		zone:"eura", icon:"🛡️", name:"Campus Cyber Hauts-de-France", kicker:"Dans le bâtiment Wenov",
+		links:[{ label:"Euratechnologies", url:"https://euratechnologies.com/" }],
+		text:"Le Campus Cyber Hauts-de-France Lille Métropole est installé dans Wenov, à quelques mètres des salles de l'École du Numérique. Entreprises, experts et formations de la cybersécurité y travaillent côte à côte : c'est avec lui qu'est conçu le DU Renseignement & Investigation Cyber.",
+		facts:["Cybersécurité","Dans Wenov","Master Cyber · DU"]
+	},
+	blan: {
+		zone:"eura", icon:"🏭", name:"Le Blan-Lafont", kicker:"Siège d'Euratechnologies · Bois-Blancs",
+		links:[{ label:"Euratechnologies", url:"https://euratechnologies.com/" }],
+		text:"Une filature de coton construite en 1896, qui a employé jusqu'à 2 500 ouvriers. Réhabilitée sur 20 000 m², elle accueille depuis 2009 Euratechnologies, l'un des plus grands pôles d'innovation numérique d'Europe : incubateur, accélérateur, start-up et grands groupes, à deux pas de tes cours.",
+		facts:["Filature de 1896","20 000 m² réhabilités","Euratechnologies depuis 2009"]
+	},
+	factory: {
+		zone:"eura", icon:"🛏️", name:"Student Factory", kicker:"Résidence étudiante · îlot Wenov",
+		text:"Une résidence étudiante de 206 logements, livrée en 2021 au cœur de l'îlot Wenov : on y descend en chaussons pour aller en cours, ou presque.",
+		facts:["206 logements","Livrée en 2021","Au pied de Wenov"]
+	},
+	metro: {
+		zone:"eura", icon:"🚇", name:"Métro Canteleu – Euratechnologies", kicker:"Ligne 2 du métro de Lille",
+		text:"La station de la ligne 2 est à quelques minutes à pied de Wenov. Trois stations plus loin, Cormontaigne te dépose à quelques minutes du campus Vauban : les deux campus sont sur la même ligne.",
+		facts:["Ligne 2","3 stations jusqu'à Cormontaigne","Vauban ⇄ Wenov"], action:{ label:"🚇 Reprendre la ligne 2 vers Vauban", go:"vauban" }
+	},
+	frenchtech: {
+		zone:"eura", icon:"🚀", name:"La French Tech Lille", kicker:"Pôle Euratechnologies",
+		text:"Autour de Wenov, les immeubles de bureaux du pôle accueillent start-up, scale-up et équipes numériques de grands groupes : autant d'entreprises où décrocher un stage ou une alternance sans changer de quartier.",
+		facts:["Start-up et scale-up","Stages et alternances","À 2 minutes de Wenov"]
+	},
+	pionnieres: {
+		zone:"eura", icon:"👩‍💻", name:"Les squares des pionnières", kicker:"Square Ada Lovelace, square Katherine Johnson, jardin Hedy Lamarr",
+		text:"Les jardins du quartier portent les noms de pionnières du numérique : Ada Lovelace, autrice du premier programme informatique (1843) ; Katherine Johnson, qui calculait les trajectoires des missions de la NASA ; Hedy Lamarr, dont l'invention a inspiré le Wi-Fi et le Bluetooth.",
+		facts:["Ada Lovelace","Katherine Johnson","Hedy Lamarr"]
+	},
+	berges: {
+		zone:"eura", icon:"🌊", name:"Les berges de la Deûle", kicker:"Jardin Le Blan-Lafont",
+		text:"Le quartier est bordé par la Deûle : quais piétons, jardin Le Blan-Lafont et pistes cyclables le long de l'eau. Le bon endroit pour une pause entre deux cours, ou pour rejoindre Vauban à vélo en longeant la rivière.",
+		facts:["Bord de Deûle","Jardin Le Blan-Lafont","Pistes cyclables"]
+	},
 	chapelle: {
 		icon:"⛪", name:"Chapelle universitaire", kicker:"Hôtel Académique · aile sud",
 		text:"Construite dans les années 1920 dans un style néogothique d'influence anglo-saxonne, unique en France. Restaurée en 2020 : voûtes blanches et dorées, vitraux remis en lumière. Concerts, conférences et célébrations s'y tiennent toute l'année.",

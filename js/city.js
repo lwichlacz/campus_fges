@@ -35,6 +35,13 @@ function facade(wall, style){
 	} else if(style === "sport"){
 		glass(0, 12, 128, 30);
 		x.fillStyle = "#8a2b4e"; x.fillRect(0,48,128,10);
+	} else if(style === "office"){
+		// mur-rideau : grands vitrages pleine hauteur, montants fins réguliers (bureaux d'Euratechnologies)
+		const dark = wall === "#2f3b4a" || wall === "#3b4656";
+		const g = x.createLinearGradient(0, 0, 128, 128);
+		g.addColorStop(0, dark ? "#7891ab" : "#a9bfcc"); g.addColorStop(1, dark ? "#4a5d74" : "#7a93a4");
+		x.fillStyle = g; x.fillRect(6, 8, 116, 104);
+		x.fillStyle = wall; x.fillRect(0, 112, 128, 16); x.fillRect(60, 0, 8, 128);
 	} else if(style === "glass"){
 		x.fillStyle = "#cfe3e6"; x.fillRect(0,0,128,128);
 		x.fillStyle = "#f2efe8"; x.fillRect(0,0,128,10); x.fillRect(0,0,10,128); x.fillRect(64,0,8,128); x.fillRect(0,62,128,8);
@@ -124,6 +131,8 @@ function site(MAP){
 	const rect = o => { const c = Math.cos(o.ang), s = Math.sin(o.ang), L = o.L/2 + 1, D = o.D/2 + 1; return [[-L,-D],[L,-D],[L,D],[-L,D]].map(([a,b]) => [o.x + a*c - b*s, o.z + a*s + b*c]); };
 	const hand = [MAP.ha && rect(MAP.ha), MAP.falise && rect(MAP.falise)].filter(Boolean);
 	if(MAP.blan){ const f = MAP.blan.pts, p = []; for(let k=0;k<f.length;k+=2) p.push([f[k], f[k+1]]); hand.push(p); }
+	for(const f of MAP.hand || []) hand.push(ring(f));          // emprises faites main d'un autre quartier (Wenov…)
+	const waterPolys = (MAP.water || []).map(ring);
 	// grille de 10 × 10 : on ne teste que les bâtiments proches
 	const G = 10, grid = new Map(), key = (a, b) => a*100003 + b;
 	polys.forEach((o, k) => { for(let a = Math.floor(o.bb[0]/G); a <= Math.floor(o.bb[2]/G); a++) for(let b = Math.floor(o.bb[1]/G); b <= Math.floor(o.bb[3]/G); b++){ const kk = key(a, b); if(!grid.has(kk)) grid.set(kk, []); grid.get(kk).push(k); } });
@@ -150,7 +159,8 @@ function site(MAP){
 	};
 	// marge entre le point et le bord de la chaussée la plus proche (négatif = sur la chaussée)
 	const roadGap = (x, z) => { let g = 1e9, best = null; MAP.roads.forEach(([w, , p]) => { for(let i=0;i+3<p.length;i+=2){ const d = segDist(x, z, p[i], p[i+1], p[i+2], p[i+3]) - w/2; if(d < g){ g = d; best = [w, p[i], p[i+1], p[i+2], p[i+3]]; } } }); return { g, best }; };
-	const inWater = (x, z) => (MAP.canals || []).some(p => { for(let i=0;i+3<p.length;i+=2) if(segDist(x, z, p[i], p[i+1], p[i+2], p[i+3]) < 5.6) return true; return false; });
+	const inWater = (x, z) => (MAP.canals || []).some(p => { for(let i=0;i+3<p.length;i+=2) if(segDist(x, z, p[i], p[i+1], p[i+2], p[i+3]) < 5.6) return true; return false; })
+		|| waterPolys.some(p => pointInPoly(x, z, p) || polyDist(x, z, p) < 1);
 	const inHand = (x, z) => hand.some(p => pointInPoly(x, z, p));
 	return SITE = { MAP, inBuilding, roadGap, inWater, inHand, roofFit };
 }
@@ -211,7 +221,7 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 	let p = ring(flat);
 	if(signedArea(p) < 0) p = p.reverse();
 	// léger décalage par bâtiment : deux toits voisins ne sont jamais au même niveau (pas de clignotement)
-	const H = (kind === 3 ? lv*3.2 : kind === 6 ? 2.2 : kind === 4 ? lv*FH*1.35 : lv*FH) + (i % 7)*.035;
+	const H = (kind === 3 ? lv*3.2 : kind === 6 ? 2.2 : kind === 4 ? lv*FH*1.35 : kind === 7 ? lv*FH*1.25 : lv*FH) + (i % 7)*.035;
 	const flatRoof = !roof && kind !== 5;
 	let per = (rec[2]*3.7) % 5;
 	for(let i=0;i<p.length;i++){
@@ -273,7 +283,7 @@ export function buildCity(scene, MAP, opts={}){
 	/* matériaux */
 	const litHouse = litMap("house", 7), litCampus = litMap("campus", 11);
 	const wallMat = (hex, style) => {
-		const m = new THREE.MeshStandardMaterial({ map:facade(hex, style), roughness:.92, emissive:"#ffffff", emissiveIntensity:0, emissiveMap: style === "house" ? litHouse : litCampus });
+		const m = new THREE.MeshStandardMaterial({ map:facade(hex, style), roughness: style === "office" ? .38 : .92, metalness: style === "office" ? .25 : 0, emissive:"#ffffff", emissiveIntensity:0, emissiveMap: style === "house" ? litHouse : litCampus });
 		softenFar(m);
 		out.walls.push(m); return m;
 	};
@@ -281,6 +291,7 @@ export function buildCity(scene, MAP, opts={}){
 	const campusMats = CAMPUS_WALLS.map(c => wallMat(c, "campus"));
 	const sportMat = wallMat("#d8d2c6", "sport");
 	const glassMat = wallMat("#cfe3e6", "glass");
+	const officeMats = opts.offices ? ["#2f3b4a", "#d6d9dc", "#3b4656", "#c4c9ce"].map(c => wallMat(c, "office")) : [];
 	const roofMats = ROOFS.map(c => { const m = std(c, { roughness:.8 }); m.userData.base = c; out.roofs.push(m); return m; });
 	const roofTex = (() => {
 		const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
@@ -307,6 +318,7 @@ export function buildCity(scene, MAP, opts={}){
 		if(kind === 0 || kind === 2 || kind === 6) wm = houseMats[col % houseMats.length];
 		else if(kind === 1) wm = campusMats[col % campusMats.length];
 		else if(kind === 3) wm = sportMat;
+		else if(kind === 7) wm = officeMats[col % officeMats.length] || campusMats[1];
 		else if(kind === 4) wm = houseMats[0];
 		else wm = glassMat;
 		const rm = roofMats[(col + i) % (kind === 0 ? 4 : 2)];
@@ -424,6 +436,7 @@ export function buildCity(scene, MAP, opts={}){
 	out.ground.water = waterM;
 	const BQ = bucket(), BWa = bucket();
 	for(const pts of MAP.canals){ ribbon(BQ, pts, 10.5, .025); ribbon(BWa, pts, 8, .045); }
+	for(const f of MAP.water || []) capTris(BWa, ring(f), .045, () => [0,0]);      // rivière en surfaces (la Deûle large)
 	for(const [B, m] of [[BQ, quayM], [BWa, waterM]]){ if(!B.pos.length) continue; const me = new THREE.Mesh(toGeo(B), m); me.receiveShadow = true; scene.add(me); }
 
 	/* arbres d'alignement */
