@@ -10,7 +10,7 @@ textures dessinées sur canvas, musique lofi générée en direct).
 ## Lancer en local
 
 ```bash
-python tools/serve.py
+python3 tools/serve.py
 ```
 
 Puis ouvrir http://localhost:8765. Le serveur désactive le cache pour toujours tester la dernière version.
@@ -35,6 +35,10 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/main.js` | Le quartier, les bâtiments faits main, la caméra, la navigation, la visite guidée |
 | `js/city.js` | Construction du quartier à partir des données OpenStreetMap |
 | `js/vauban.js` | Données de la carte, **générées** par `tools/build_map.py` (ne pas modifier à la main) |
+| `js/vauban_far.js` | Le lointain (bâtiments en miniature, bois), **généré** par `tools/build_map.py`, chargé après le campus |
+| `js/render.js` | Rendu : regroupement des objets, ciel, post-traitement, vent, eau, fenêtres, météo |
+| `js/landmarks.js` | Plaques de rue, panneaux « M » vers les stations, lieux réels |
+| `js/monuments.js` | Églises, cathédrale, beffroi et tours sur l'horizon |
 | `js/data.js` | Formations, lieux, liens, ambiances |
 | `js/details.js` | Fiches détaillées des formations (programme, débouchés, admission) |
 | `js/atrium.js` · `js/chapelle.js` | Les intérieurs visitables |
@@ -92,3 +96,5 @@ python tools/build_map.py
 
 Données cartographiques © les contributeurs d'[OpenStreetMap](https://www.openstreetmap.org/copyright), licence ODbL.
 La mention doit rester affichée dans l'interface.
+
+Suivi du chantier en cours et prochaines étapes : [docs/suivi-rendu-3d.md](docs/suivi-rendu-3d.md).
