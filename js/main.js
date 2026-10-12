@@ -299,14 +299,7 @@ function buildHA(){
 	for(const s of [-1, 1]){ cone(tr, .45, 2.6, M.stone, 0, 10.4 + 5.4*.0, s*7.55, 4, Math.PI/4); }
 	cyl(root, .5, .7, 2.2, M.stone, cs*14.6, 10.4, 15.6);
 	wing(root, { x:-cs*19, z:5, ry:cs*Math.PI/2, L:22, D:10, floors:3, roof:"gable", rh:5.6, dormers:5, dstyle:"brick", m:M, faces:"fbs", gableEnds:true });
-	const T = new THREE.Group(); T.position.set(-cs*13.4, 0, -2.4); root.add(T);
-	box(T, 5.2, 17, 5.2, M.brick, 0, 0, 0);
-	box(T, 5.5, 1.1, 5.5, M.base, 0, 0, 0);
-	for(let f=1; f<5; f++) box(T, 5.36, .24, 5.36, M.stone, 0, f*3.4-.12, 0);
-	box(T, 5.8, .45, 5.8, M.stone, 0, 17, 0);
-	cone(T, 4.1, 7.2, M.slate, 0, 17.45, 0, 4, Math.PI/4);
-	mesh(ball(), M.dark, T, 0, 24.7, 0);
-	for(let f=0; f<5; f++){ win(T, 0, f*3.4+1.7, 2.6, 1.2, 1.6, 0, { arch:f>2 }); win(T, cs*2.6, f*3.4+1.7, 0, 1.2, 1.6, cs*Math.PI/2, { arch:f>2 }); }
+	// (pas de tour d'angle : la BD TOPO ne relève aucun volume à plus de 4,8 m au-dessus des gouttières)
 	register(root, "ha");
 	register(chapel, "chapelle");
 	LIFE.chapelle.anchor = chapel;
