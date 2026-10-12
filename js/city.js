@@ -407,7 +407,7 @@ export function buildCity(scene, MAP, opts={}){
 	const groups = new Map();   // clé matériau -> { w, r, f }
 	const get = (key) => { if(!groups.has(key)) groups.set(key, { w:bucket(), r:bucket(), f:bucket() }); return groups.get(key); };
 	const spires = [];
-	const S = site(MAP); let flattened = 0; out.stats = { get flattened(){ return flattened; } };
+	const S = site(MAP); let flattened = 0; out.inBuilding = S.inBuilding; out.roadGap = S.roadGap; out.stats = { get flattened(){ return flattened; } };
 	MAP.buildings.forEach((rec, i) => {
 		// un toit à deux pentes ne doit ni mordre sur le voisin, ni laisser l'emprise à découvert
 		// (sans place pour deux pentes, un toit de hauteur connue devient un toit à pans brisés)

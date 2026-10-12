@@ -5,6 +5,7 @@ import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mans
 import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate } from "./render.js";
 import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js";
 import { MAP } from "./vauban.js";
+import { buildLandmarks } from "./landmarks.js";
 import { buildCity, pointInPoly, polyDist } from "./city.js";
 import { buildStation } from "./station.js";
 import { createRame } from "./rame.js";
@@ -451,7 +452,7 @@ function buildMetroVauban(){
 			flat(e, 4, 6.4, pave, 0, 0, .11);
 			box(e, 1.6, .2, 3.4, dark, 0, 0, 0);
 			for(const sx of [-.95, .95]) box(e, .1, .9, 3.4, metal, sx, .2, 0);
-			if(i === 0){ cyl(e, .1, .1, 4.6, metal, 1.4, 0, -2, 6); const sg = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, .16), signM); sg.position.set(1.4, 4.9, -2); e.add(sg); }
+			{ cyl(e, .1, .1, 4.6, metal, 1.4, 0, -2, 6); const sg = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, .16), signM); sg.position.set(1.4, 4.9, -2); e.add(sg); }
 		});
 		register(grp, st.id);
 		const d = Math.hypot(cx, cz + 4) || 1, ux = -cx/d, uz = -(cz + 4)/d;
@@ -668,6 +669,7 @@ function buildRameau(){
 }
 
 buildHA(); buildFalise(); buildWenov(); buildCitadelle(); buildKiosque(); buildRameau();
+const landmarks = buildLandmarks(scene, MAP, { inBuilding:city.inBuilding, roadGap:city.roadGap, home:[0, 14] });
 let horizon = null, farWood = null;          // le lointain arrive après le campus (js/vauban_far.js), voir loadFar
 WB.build(scene, glassLit, glassDark, frameMat);
 scene.updateMatrixWorld(true);
@@ -1122,7 +1124,7 @@ function showLight(){
 	atriumRoof.emissiveIntensity = .55*k;
 	atriumGlow.emissiveIntensity = .4 + 1.6*k;
 	wenovGlass.emissiveIntensity = .28*k;
-	city.setNight(k);
+	city.setNight(k); landmarks.setNight(k);
 	blobMaterial().opacity = .34 - .18*k;
 	if(post) post.setNight(k);
 }

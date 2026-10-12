@@ -497,6 +497,7 @@ for b, q, A, bb, c in far_bd:
 print("lointain :", len(far_out), "bâtiments réels")
 
 # --- rues ---
+STREETS = []
 WID = { "primary":12, "secondary":10, "tertiary":9, "residential":7.5, "living_street":6, "unclassified":7, "pedestrian":6, "service":4.5 }
 roads = []
 walk_nodes, walk_edges, idx = [], {}, {}
@@ -528,7 +529,9 @@ for e in core:
     for run in runs:
         # on ne garde que les sommets utiles (tous les ~6 m, plus les extrémités)
         pts = [run[0]] + [v for k, v in enumerate(run[1:-1], 1) if k % 6 == 0] + [run[-1]]
-        roads.append([round(w*S, 2), code, flat(G(q) for q in pts)])
+        nm = t.get("name")
+        if nm and nm not in STREETS: STREETS.append(nm)
+        roads.append([round(w*S, 2), code, flat(G(q) for q in pts), STREETS.index(nm) if nm else -1])
     if hw != "service":
         ks = [q for q in p if in_zone(q, -8)]
         for a_, b_ in zip(ks, ks[1:]):
@@ -642,6 +645,26 @@ cit = G((-135, -947))
 metro = G(mp({ "lat":50.62623, "lon":3.04029 }))
 
 # --- les deux stations de la ligne 2 côté Vauban : leurs bouches (le quartier autour est dans la zone réelle) ---
+# --- lieux réels du quartier (commerces, cafés, églises…) : petites étiquettes visibles de près ---
+PLACE_CAT = { "bakery":"🥖", "pastry":"🥐", "cafe":"☕", "restaurant":"🍽️", "fast_food":"🍔", "bar":"🍺", "pub":"🍺", "pharmacy":"💊",
+              "convenience":"🛒", "supermarket":"🛒", "library":"📚", "post_office":"✉️", "place_of_worship":"⛪", "theatre":"🎭",
+              "park":"🌳", "garden":"🌳", "bicycle_rental":"🚲", "cinema":"🎬", "bank":"🏦", "books":"📚", "greengrocer":"🍎", "cheese":"🧀",
+              "butcher":"🥩", "hotel":"🏨", "museum":"🏛️", "copyshop":"🖨️" }
+places = []
+_seen = set()
+for e in json.load(open(OSM / "osm_poi.json", encoding="utf-8"))["elements"]:
+    t = e.get("tags", {}); c = e.get("center") or (e if "lat" in e else None)
+    if not c or not t.get("name"): continue
+    cat = next((t[k] for k in ("shop", "amenity", "tourism", "historic", "leisure") if t.get(k) in PLACE_CAT), None)
+    if not cat: continue
+    q = mp(c)
+    if not in_zone(q, -6) or (t["name"], cat) in _seen: continue
+    _seen.add((t["name"], cat))
+    name = t["name"]
+    if cat == "bicycle_rental" and not name.lower().startswith("v'lille"): name = "V'Lille " + name
+    places.append([*G(q), PLACE_CAT[cat], name])
+print("lieux réels :", len(places))
+
 metro_raw = load("osm_metro.json")
 stations = []
 for sid, sname, la, lo in STATIONS_SRC:
@@ -718,7 +741,7 @@ for b in buildings: b[4] = enc(b[4])
 for r in roads: r[2] = enc(r[2])
 out = {
     "S":S, "ha":HA, "falise":FAL, "court":[round(c,2) for c in court], "buildings":buildings, "roads":roads, "greens":greens,
-    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro, "stations":stations, "zone":zone, "sol":sol, "fh":FH_MAP
+    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro, "stations":stations, "zone":zone, "sol":sol, "fh":FH_MAP, "streets":STREETS, "places":places
 }
 HEAD = ("/* Généré par tools/build_map.py — ne pas modifier à la main.\n"
         "   Données © les contributeurs d'OpenStreetMap (ODbL) ; © IGN BD TOPO et BD ORTHO (Licence Ouverte). */\n")

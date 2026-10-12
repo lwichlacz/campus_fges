@@ -1,0 +1,7203 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-10-12T20:36:56Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 527186674,
+  "lat": 50.6346408,
+  "lon": 3.0402339,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:facebook": "Lescalerestaurantlille",
+    "cuisine": "regional;french",
+    "name": "L'escale",
+    "ref:FR:SIRET": "82521353100015",
+    "source": "survey",
+    "website": "https://lescale59.eatbu.com"
+  }
+},
+{
+  "type": "node",
+  "id": 895580539,
+  "lat": 50.6325770,
+  "lon": 3.0469960,
+  "tags": {
+    "amenity": "car_sharing",
+    "capacity": "1",
+    "name": "Lilas",
+    "operator": "lilas",
+    "operator:type": "private"
+  }
+},
+{
+  "type": "node",
+  "id": 895580549,
+  "lat": 50.6266045,
+  "lon": 3.0401914,
+  "tags": {
+    "amenity": "car_sharing",
+    "capacity": "3",
+    "name": "Leclerc",
+    "network": "Citiz Lille Arras",
+    "note": "Transfert des places de stationnement réservées à l’autopartage place cormontaigen",
+    "operator": "Citiz",
+    "operator:type": "private",
+    "operator:wikidata": "Q3080530",
+    "website": "https://lille.citiz.coop/"
+  }
+},
+{
+  "type": "node",
+  "id": 1102402322,
+  "lat": 50.6267654,
+  "lon": 3.0510132,
+  "tags": {
+    "amenity": "fountain",
+    "name": "Fontaine mauresque",
+    "tourism": "attraction"
+  }
+},
+{
+  "type": "node",
+  "id": 1102402489,
+  "lat": 50.6267544,
+  "lon": 3.0496373,
+  "tags": {
+    "contact:city": "Lille",
+    "contact:phone": "+33 3 20 51 21 46",
+    "contact:postcode": "59000",
+    "contact:street": "Place de la Nouvelle Aventure",
+    "contact:website": "http://lille.epicerie-equitable.com/",
+    "fair_trade": "yes",
+    "name": "L'Épicerie Équitable",
+    "opening_hours": "Tu-Sa 08:45-20:00; Su 08:45-14:00",
+    "organic": "yes",
+    "ref:FR:SIRET": "47965571400034",
+    "service:bicycle:pump": "yes",
+    "service:bicycle:tools": "yes",
+    "shop": "convenience",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1377616871,
+  "lat": 50.6262169,
+  "lon": 3.0399526,
+  "tags": {
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "brand:wikipedia": "fr:V'Lille",
+    "capacity": "28",
+    "fee": "yes",
+    "name": "Cormontaigne",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "network:wikipedia": "fr:V'Lille",
+    "opening_hours": "24/7",
+    "operator": "Ilévia",
+    "operator:type": "private",
+    "operator:wikidata": "Q117215",
+    "operator:wikipedia": "fr:Ilévia",
+    "phone": "+33 3 20 40 40 40",
+    "ref": "036",
+    "vending": "yes",
+    "website": "https://www.ilevia.fr/cms/vlille/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 1377616890,
+  "lat": 50.6301617,
+  "lon": 3.0357213,
+  "tags": {
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "capacity": "26",
+    "fee": "yes",
+    "name": "Port de Lille",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "opening_hours": "24/7",
+    "operator": "Cykleo",
+    "operator:type": "private",
+    "operator:wikidata": "Q109250587",
+    "ref": "033",
+    "vending": "no",
+    "website": "https://www.ilevia.fr/cms/vlille/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 1435780311,
+  "lat": 50.6255089,
+  "lon": 3.0501772,
+  "tags": {
+    "addr:housenumber": "22",
+    "addr:street": "Rue des Sarrazins",
+    "amenity": "pharmacy",
+    "dispensing": "yes",
+    "healthcare": "pharmacy",
+    "name": "Pharmacie de la Nouvelle Aventure",
+    "opening_hours": "Mo-Fr 08:30-19:30; Sa 09:00-18:00; Su 09:30-13:00",
+    "phone": "+33 3 20 57 21 36",
+    "ref:FR:FINESS": "590022083",
+    "ref:FR:SIRET": "85199092900016",
+    "source": "Celtipharm - 10/2014"
+  }
+},
+{
+  "type": "node",
+  "id": 1438319201,
+  "lat": 50.6276328,
+  "lon": 3.0501655,
+  "tags": {
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "brand:wikipedia": "fr:V'Lille",
+    "capacity": "27",
+    "contact:city": "Lille",
+    "contact:housenumber": "298",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "description": "Station 39 : Marché de Wazemmes",
+    "fee": "yes",
+    "name": "Marché de Wazemmes",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "network:wikipedia": "fr:V'Lille",
+    "not:brand:wikidata": "Q3146580",
+    "opening_hours": "24/7",
+    "operator": "Cykleo",
+    "operator:type": "private",
+    "operator:wikidata": "Q109250587",
+    "operator:wikipedia": "fr:Ilévia",
+    "phone": "+33 3 20 40 40 40",
+    "ref": "039",
+    "vending": "yes",
+    "website": "https://www.ilevia.fr/cms/vlille/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 1439100622,
+  "lat": 50.6340418,
+  "lon": 3.0413234,
+  "tags": {
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "capacity": "20",
+    "name": "Place Catinat",
+    "network": "V'Lille",
+    "operator": "CYKLEO",
+    "ref": "034",
+    "vending": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1439100623,
+  "lat": 50.6308572,
+  "lon": 3.0478392,
+  "tags": {
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "brand:wikipedia": "fr:V'Lille",
+    "capacity": "24",
+    "fee": "yes",
+    "name": "Nationale Rue du Port",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "network:wikipedia": "fr:V'Lille",
+    "opening_hours": "24/7",
+    "operator": "Ilévia",
+    "operator:type": "private",
+    "operator:wikidata": "Q117215",
+    "operator:wikipedia": "fr:Ilévia",
+    "phone": "+33 3 20 40 40 40",
+    "ref": "068",
+    "vending": "no",
+    "website": "https://www.ilevia.fr/cms/vlille/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 1439100624,
+  "lat": 50.6340262,
+  "lon": 3.0451156,
+  "tags": {
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "brand:wikipedia": "fr:V'Lille",
+    "capacity": "36",
+    "contact:city": "Lille",
+    "contact:street": "Rue de Toul",
+    "fee": "yes",
+    "name": "Rue de Toul",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "network:wikipedia": "fr:V'Lille",
+    "opening_hours": "24/7",
+    "operator": "Ilévia",
+    "operator:type": "private",
+    "operator:wikidata": "Q117215",
+    "operator:wikipedia": "fr:Ilévia",
+    "phone": "+33 3 20 40 40 40",
+    "ref": "009",
+    "vending": "no",
+    "website": "https://www.ilevia.fr/cms/vlille/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 1439100625,
+  "lat": 50.6321657,
+  "lon": 3.0461154,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "64",
+    "addr:postcode": "59000",
+    "addr:street": "Boulevard Vauban",
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "brand:wikipedia": "fr:V'Lille",
+    "capacity": "31",
+    "fee": "yes",
+    "name": "Université Catholique",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "network:wikipedia": "fr:V'Lille",
+    "opening_hours": "24/7",
+    "operator": "Ilévia",
+    "operator:type": "private",
+    "operator:wikidata": "Q117215",
+    "operator:wikipedia": "fr:Ilévia",
+    "payment:credit_cards": "yes",
+    "phone": "+33 3 20 40 40 40",
+    "ref": "2",
+    "vending": "yes",
+    "website": "https://www.ilevia.fr/v-lille",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 1440222073,
+  "lat": 50.6360719,
+  "lon": 3.0504819,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "19",
+    "addr:postcode": "59000",
+    "addr:street": "Boulevard Vauban",
+    "amenity": "bicycle_rental",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "brand:wikipedia": "fr:V'Lille",
+    "capacity": "18",
+    "contact:city": "Lille",
+    "contact:postcode": "59000",
+    "contact:street": "Boulevard Vauban",
+    "fee": "yes",
+    "name": "Jardin Vauban",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "network:wikipedia": "fr:V'Lille",
+    "opening_hours": "24/7",
+    "operator": "Ilévia",
+    "operator:type": "private",
+    "operator:wikidata": "Q117215",
+    "operator:wikipedia": "fr:Ilévia",
+    "payment:credit_cards": "yes",
+    "phone": "+33 3 20 40 40 40",
+    "ref": "3",
+    "vending": "no",
+    "website": "https://www.ilevia.fr/v-lille",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 1440222076,
+  "lat": 50.6292054,
+  "lon": 3.0439522,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "328",
+    "addr:postcode": "59000",
+    "addr:street": "Rue Nationale",
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "brand:wikipedia": "fr:V'Lille",
+    "capacity": "28",
+    "fee": "yes",
+    "name": "Leclerc",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "network:wikipedia": "fr:V'Lille",
+    "opening_hours": "24/7",
+    "operator": "Ilévia",
+    "operator:type": "private",
+    "operator:wikidata": "Q117215",
+    "operator:wikipedia": "fr:Ilévia",
+    "payment:credit_cards": "yes",
+    "phone": "+33 3 20 40 40 40",
+    "ref": "035",
+    "vending": "yes",
+    "website": "https://www.ilevia.fr/v-lille",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 1440222082,
+  "lat": 50.6343076,
+  "lon": 3.0488695,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "60",
+    "addr:postcode": "59000",
+    "addr:street": "Rue de Solférino",
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "brand:wikipedia": "fr:V'Lille",
+    "capacity": "40",
+    "fee": "yes",
+    "name": "Palais Rameau",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "network:wikipedia": "fr:V'Lille",
+    "not:brand:wikidata": "Q3146580",
+    "opening_hours": "24/7",
+    "operator": "Cykleo",
+    "operator:type": "private",
+    "operator:wikidata": "Q109250587",
+    "operator:wikipedia": "fr:Ilévia",
+    "payment:credit_cards": "yes",
+    "phone": "+33 3 20 40 40 40",
+    "ref": "028",
+    "vending": "yes",
+    "website": "https://www.ilevia.fr/v-lille",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 1457327184,
+  "lat": 50.6322941,
+  "lon": 3.0454384,
+  "tags": {
+    "amenity": "library",
+    "capacity": "360",
+    "contact:phone": "+33 3 59 56 69 79",
+    "contact:website": "http://lol.univ-catholille.fr/fr/content/biblioth%C3%A8que-universitaire-vauban",
+    "internet_access": "wlan",
+    "name": "Bibliothèque universitaire Vauban"
+  }
+},
+{
+  "type": "node",
+  "id": 1462139492,
+  "lat": 50.6332418,
+  "lon": 3.0453289,
+  "tags": {
+    "amenity": "theatre",
+    "name": "Amphithéatre Teillard de Chardin",
+    "theatre:type": "amphi"
+  }
+},
+{
+  "type": "node",
+  "id": 1491228305,
+  "lat": 50.6273982,
+  "lon": 3.0499094,
+  "tags": {
+    "amenity": "atm",
+    "brand": "SG",
+    "brand:wikidata": "Q270363",
+    "brand:wikipedia": "en:Crédit du Nord",
+    "currency:EUR": "yes",
+    "name": "SG",
+    "operator": "SG",
+    "operator:wikidata": "Q270363",
+    "operator:wikipedia": "en:Crédit du Nord"
+  }
+},
+{
+  "type": "node",
+  "id": 1505149543,
+  "lat": 50.6255379,
+  "lon": 3.0503189,
+  "tags": {
+    "name": "GSM Concept",
+    "ref:FR:SIRET": "82376911200017",
+    "shop": "mobile_phone"
+  }
+},
+{
+  "type": "node",
+  "id": 1505154068,
+  "lat": 50.6256997,
+  "lon": 3.0508907,
+  "tags": {
+    "name": "Yatou-Flandres",
+    "opening_hours": "Tu-Sa 09:00-19:00; Su 08:30-14:30",
+    "ref:FR:SIRET": "40357804000012",
+    "shop": "variety_store"
+  }
+},
+{
+  "type": "node",
+  "id": 1505154069,
+  "lat": 50.6256835,
+  "lon": 3.0507834,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:facebook": "AspendosKebab",
+    "contact:phone": "+33 3 20 13 72 65",
+    "contact:website": "https://www.aspendos.fr/",
+    "cuisine": "kebab",
+    "name": "Aspendos",
+    "opening_hours": "Mo-Su 09:00-00:00",
+    "ref:FR:SIRET": "47874325500018"
+  }
+},
+{
+  "type": "node",
+  "id": 1505154841,
+  "lat": 50.6255032,
+  "lon": 3.0493538,
+  "tags": {
+    "amenity": "bar",
+    "contact:phone": "+33 3 20 54 67 34",
+    "name": "Le Relax",
+    "outdoor_seating": "yes",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 1505160553,
+  "lat": 50.6268656,
+  "lon": 3.0495521,
+  "tags": {
+    "brand": "Biocoop",
+    "brand:wikidata": "Q2904039",
+    "brand:wikipedia": "fr:Biocoop",
+    "check_date:opening_hours": "2022-07-02",
+    "contact:city": "Lille",
+    "contact:phone": "+33 9 79 71 89 90",
+    "contact:postcode": "59000",
+    "contact:street": "Halles de Wazemmes",
+    "drinking_water:refill": "yes",
+    "drinking_water:refill:network": "Gourde Friendly",
+    "name": "Biocoop",
+    "official_name": "Biocoop Vert'tige Wazemmes",
+    "opening_hours": "Tu-Sa 08:30-19:30; Su 08:30-14:00",
+    "operator": "Biocoop",
+    "organic": "only",
+    "ref:FR:SIRET": "38389796400037",
+    "shop": "supermarket",
+    "website": "https://www.biocoop-verttige-wazemmes.fr",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 1505182426,
+  "lat": 50.6268373,
+  "lon": 3.0492937,
+  "tags": {
+    "contact:email": "boucheriejc.lille@gmail.com",
+    "contact:facebook": "https://www.facebook.com/Boucherie-Jean-Claude-1688688361411836/",
+    "contact:phone": "+33320307112",
+    "contact:website": "http://boucherie-jeanclaude.fr/",
+    "description": "Mode de paiements acceptés : Chèque déjeuner, carte bleue, liquide, tickets restaurants, chèque de table et chèque restaurant",
+    "name": "Boucherie Jean-Claude",
+    "opening_hours": "Mo off; Tu-Sa 08:00-19:00; Su 08:00-14:00",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "payment:meal_voucher": "yes",
+    "shop": "butcher"
+  }
+},
+{
+  "type": "node",
+  "id": 1525126185,
+  "lat": 50.6260738,
+  "lon": 3.0497445,
+  "tags": {
+    "amenity": "marketplace",
+    "days": "Tuesdays, Thursdays and Sundays",
+    "name": "Marché de Wazemmes",
+    "opening_hours": "Su,Tu,Th 07:00-15:00",
+    "wikidata": "Q748981"
+  }
+},
+{
+  "type": "node",
+  "id": 1596710738,
+  "lat": 50.6292735,
+  "lon": 3.0366541,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "1",
+    "addr:postcode": "59000",
+    "addr:street": "Rue de Turenne",
+    "amenity": "cafe",
+    "name": "Le Turenne",
+    "opening_hours": "Mo-Fr 07:15-19:00; We 07:15-13:15",
+    "outdoor_seating": "no",
+    "phone": "+33320936632",
+    "public_transport_network": "Transpole",
+    "ref:FR:SIRET": "90838568500015",
+    "tickets:public_transport": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1770704310,
+  "lat": 50.6257854,
+  "lon": 3.0355011,
+  "tags": {
+    "amenity": "fuel",
+    "brand": "Total",
+    "brand:wikidata": "Q154037",
+    "brand:wikipedia": "fr:Total (entreprise)",
+    "compressed_air": "yes",
+    "fuel:diesel": "yes",
+    "fuel:e10": "yes",
+    "fuel:e85": "yes",
+    "fuel:octane_98": "yes",
+    "name": "Total Relai Esquermes",
+    "opening_hours": "24/7",
+    "ref:FR:SIRET": "49164604800026",
+    "ref:FR:prix-carburants": "59000016",
+    "shop": "convenience;gas",
+    "source": "Ministère de l'Economie, de l'Industrie et du Numérique - 03/2020",
+    "toilets": "yes",
+    "vending": "fuel",
+    "vending_machine": "fuel"
+  }
+},
+{
+  "type": "node",
+  "id": 1808960729,
+  "lat": 50.6353466,
+  "lon": 3.0341013,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "36",
+    "addr:postcode": "59000",
+    "addr:street": "Avenue Marx Dormoy",
+    "amenity": "library",
+    "amenity_1": "bicycle_repair_station",
+    "check_date:opening_hours": "2024-11-17",
+    "contact:website": "http://bm-lille.fr/",
+    "name": "Médiathèque des Bois-Blancs",
+    "opening_hours": "Tu,Th,Fr 14:00-18:00; We,Sa 10:00-13:00,14:00-18:00",
+    "service:bicycle:repair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2036060248,
+  "lat": 50.6321786,
+  "lon": 3.0467420,
+  "tags": {
+    "capacity": "46",
+    "contact:city": "Lille",
+    "contact:housenumber": "69",
+    "contact:postcode": "59000",
+    "contact:street": "Boulevard Vauban",
+    "name": "Cosy's Apart'Hotel Lille Vauban",
+    "stars": "3",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 2061506713,
+  "lat": 50.6328315,
+  "lon": 3.0495276,
+  "tags": {
+    "addr:housenumber": "17",
+    "addr:street": "Rue Colson",
+    "brand": "Adagio",
+    "brand:wikidata": "Q2823880",
+    "brand:wikipedia": "fr:Adagio Aparthotel",
+    "capacity": "69",
+    "name": "Hôtel Adagio Access Lille Vauban",
+    "ref:FR:LILLE": "24",
+    "ref:FR:SIRET": "51363598700656",
+    "source": "Ville de Lille - 2012/12",
+    "stars": "2",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "node",
+  "id": 2063752549,
+  "lat": 50.6358308,
+  "lon": 3.0482308,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:street": "Rue Desmazières",
+    "architect": "Vanderbergh (maître de l'oeuvre)",
+    "description": "Façade et toiture sur rue, y compris les ferronneries ; vestibule d'entrée ; escalier avec sa cage vitrée ; véranda avec son sol en mosaïque et ses parois de verre peint sur cour (cad. NU 33) : inscription par arrêté du 9 juillet 1981",
+    "heritage": "3",
+    "heritage:operator": "mhs",
+    "mhs:inscription_date": "1981-07-09",
+    "name": "Hôtel Castiaux",
+    "ref:mhs": "PA00107597",
+    "source:heritage": "Ministère de la Culture - 06/2019",
+    "start_date:fr": "2e quart 19e siècle",
+    "tourism": "attraction",
+    "wikidata": "Q15950414"
+  }
+},
+{
+  "type": "node",
+  "id": 2242632066,
+  "lat": 50.6284616,
+  "lon": 3.0376423,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "level": "0",
+    "name": "Istanbul Concept",
+    "opening_hours": "Mo-Fr 11:00-14:30, Mo-Sa 18:00-22:30",
+    "ref:FR:SIRET": "94806426600018"
+  }
+},
+{
+  "type": "node",
+  "id": 2294155036,
+  "lat": 50.6273236,
+  "lon": 3.0482390,
+  "tags": {
+    "contact:city": "Lille",
+    "contact:housenumber": "7",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Colbert",
+    "mapillary": "152990550108142",
+    "name": "La Lavandière",
+    "opening_hours": "Mo-Su 07:00-21:00",
+    "ref:FR:SIRET": "40037303100022",
+    "self_service": "yes",
+    "shop": "laundry",
+    "survey:date": "2017-05-24"
+  }
+},
+{
+  "type": "node",
+  "id": 2387702294,
+  "lat": 50.6294967,
+  "lon": 3.0465850,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:facebook": "lacrinierelille",
+    "contact:housenumber": "14",
+    "contact:instagram": "la_criniere",
+    "contact:phone": "+33 3 20 57 06 03",
+    "contact:street": "Place Philippe de Girard",
+    "name": "La Crinière - Bistrot",
+    "opening_hours": "Mo,Tu,Sa 10:00-13:00; We-Fr 10:00-13:00,18:30-00:00; Su off",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "88475778200013",
+    "website": "https://www.restaurant-lacriniere.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 2389863568,
+  "lat": 50.6294027,
+  "lon": 3.0460724,
+  "tags": {
+    "name": "Boulangerie Mosin",
+    "opening_hours": "Mo-Fr 07:15-19:00",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 2389863570,
+  "lat": 50.6299629,
+  "lon": 3.0455814,
+  "tags": {
+    "addr:postcode": "59800",
+    "addr:street": "Rue Nationale",
+    "brand": "Carrefour Express",
+    "brand:wikidata": "Q2940190",
+    "brand:wikipedia": "fr:Carrefour Express",
+    "contact:city": "Lille",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Nationale",
+    "name": "Carrefour Express",
+    "opening_hours": "Mo-Sa 08:00-21:00; Su 09:00-13:00",
+    "operator": "Groupe Carrefour",
+    "operator:wikidata": "Q3117359",
+    "operator:wikipedia": "fr:Groupe Carrefour",
+    "phone": "+33 3 28 82 00 56",
+    "ref:FR:SIRET": "79512756200044",
+    "shop": "convenience",
+    "website": "https://www.carrefour.fr/magasin/express-lille-colbert",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2389863571,
+  "lat": 50.6297539,
+  "lon": 3.0457498,
+  "tags": {
+    "amenity": "cafe",
+    "contact:city": "Lille",
+    "contact:facebook": "https://www.facebook.com/lecolbertcafe",
+    "contact:housenumber": "267",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Nationale",
+    "name": "Le Colbert café",
+    "outdoor_seating": "yes",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2389863572,
+  "lat": 50.6297962,
+  "lon": 3.0452223,
+  "tags": {
+    "contact:housenumber": "302",
+    "contact:street": "Rue Nationale",
+    "name": "Le National",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "41449881600027",
+    "shop": "tobacco",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2389863573,
+  "lat": 50.6296648,
+  "lon": 3.0455348,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "269",
+    "addr:street": "Rue Nationale",
+    "amenity": "pharmacy",
+    "dispensing": "yes",
+    "healthcare": "pharmacy",
+    "name": "Grande Pharmacie Colbert",
+    "opening_hours": "Mo-Fr 08:30-19:30; Sa 09:00-12:30,14:00-19:00; Su off",
+    "phone": "+33 3 20 54 09 00",
+    "ref:FR:FINESS": "590020632",
+    "ref:FR:SIRET": "45237194100017",
+    "source": "Celtipharm - 10/2014",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2389863574,
+  "lat": 50.6298468,
+  "lon": 3.0453082,
+  "tags": {
+    "check_date:opening_hours": "2026-08-17",
+    "contact:housenumber": "300",
+    "contact:street": "Rue Nationale",
+    "contact:website": "https://www.alizes-pressing.fr",
+    "name": "Alizée Naturellement Pressing",
+    "opening_hours": "Mo-Sa 08:30-19:00",
+    "shop": "dry_cleaning",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 2389866441,
+  "lat": 50.6303726,
+  "lon": 3.0472236,
+  "tags": {
+    "amenity": "bar",
+    "check_date:opening_hours": "2026-08-17",
+    "contact:city": "Lille",
+    "contact:facebook": "trollsetcroque",
+    "contact:housenumber": "253",
+    "contact:instagram": "trollsetcroque",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Nationale",
+    "food": "yes",
+    "name": "Trolls & Croque",
+    "old_name": "L'Ilot Bar",
+    "opening_hours:signed": "no",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "91298736900010"
+  }
+},
+{
+  "type": "node",
+  "id": 2389869346,
+  "lat": 50.6321752,
+  "lon": 3.0507634,
+  "tags": {
+    "addr:postcode": "59800",
+    "addr:street": "Rue Nationale",
+    "brand": "Le Petit Casino",
+    "brand:wikidata": "Q89029249",
+    "contact:city": "Lille",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Nationale",
+    "name": "Le Petit Casino",
+    "opening_hours": "Mo-Sa 08:00-21:00; Su 16:00-20:00",
+    "operator": "Casino",
+    "ref:FR:SIRET": "47876118200029",
+    "shop": "convenience",
+    "website": "https://petitcasino.casino.fr/fr/stores/c1550"
+  }
+},
+{
+  "type": "node",
+  "id": 2389886650,
+  "lat": 50.6360563,
+  "lon": 3.0453976,
+  "tags": {
+    "amenity": "bar",
+    "name": "Omega",
+    "tobacco": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2389887183,
+  "lat": 50.6352746,
+  "lon": 3.0474331,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:street": "Rue de Solferino",
+    "amenity": "college",
+    "name": "Centre régional de formation des professionnels de l'enfance",
+    "operator:type": "private",
+    "ref:UAI": "0593206P",
+    "short_name": "CRFPE",
+    "source": "Etablissements d'enseignement supérieur - 09/2017",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2389892952,
+  "lat": 50.6358042,
+  "lon": 3.0424392,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "15",
+    "addr:postcode": "59800",
+    "addr:street": "Avenue Léon Jouhaux",
+    "amenity": "school",
+    "contact:email": "ce.0594451T@ac-lille.fr",
+    "contact:phone": "+33 320574681",
+    "name": "École maternelle Léon Jouhaux",
+    "operator:type": "public",
+    "ref:FR:SIRET": "21590350101031",
+    "ref:UAI": "0594451T",
+    "school:FR": "maternelle",
+    "source": "data.gouv.fr:Éducation Nationale - 06/2021",
+    "start_date": "1973-09-01"
+  }
+},
+{
+  "type": "node",
+  "id": 2389892953,
+  "lat": 50.6358230,
+  "lon": 3.0428440,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "15",
+    "addr:postcode": "59800",
+    "addr:street": "Avenue Léon Jouhaux",
+    "amenity": "school",
+    "contact:email": "ce.0594575C@ac-lille.fr",
+    "contact:phone": "+33 320540603",
+    "name": "École élémentaire Léon Jouhaux",
+    "operator:type": "public",
+    "ref:FR:SIRET": "21590350101163",
+    "ref:UAI": "0594575C",
+    "school:FR": "élémentaire",
+    "source": "data.gouv.fr:Éducation Nationale - 06/2021",
+    "start_date": "1974-09-01"
+  }
+},
+{
+  "type": "node",
+  "id": 3135444991,
+  "lat": 50.6347443,
+  "lon": 3.0491916,
+  "tags": {
+    "board_type": "history",
+    "check_date": "2024-05-06",
+    "information": "board",
+    "name": "Palais Rameau",
+    "tourism": "information"
+  }
+},
+{
+  "type": "node",
+  "id": 3157321665,
+  "lat": 50.6262192,
+  "lon": 3.0408179,
+  "tags": {
+    "amenity": "atm",
+    "brand": "Crédit Agricole",
+    "brand:wikidata": "Q590952",
+    "check_date": "2026-09-10",
+    "name": "Crédit Agricole",
+    "operator": "Crédit Agricole",
+    "operator:wikidata": "Q590952"
+  }
+},
+{
+  "type": "node",
+  "id": 3158789886,
+  "lat": 50.6319602,
+  "lon": 3.0464115,
+  "tags": {
+    "amenity": "atm",
+    "brand": "SG",
+    "brand:wikidata": "Q270363",
+    "brand:wikipedia": "en:Société Générale",
+    "cash_in": "no",
+    "check_date": "2026-08-17",
+    "name": "SG",
+    "opening_hours": "Tu 09:00-12:15,13:30-18:00; Sa 09:00-12:45",
+    "operator": "SG",
+    "operator:wikidata": "Q270363",
+    "operator:wikipedia": "en:Société Générale",
+    "website": "https://agences.sg.fr/banque-assurance/distributeur-automate/lille-vauban-id1766806913"
+  }
+},
+{
+  "type": "node",
+  "id": 3161672659,
+  "lat": 50.6274534,
+  "lon": 3.0496851,
+  "tags": {
+    "amenity": "atm",
+    "brand": "Crédit Mutuel",
+    "brand:wikidata": "Q642627",
+    "brand:wikipedia": "en:Crédit Mutuel",
+    "check_date": "2025-10-25",
+    "name": "Crédit Mutuel",
+    "opening_hours": "Tu-We 08:45-12:30,13:30-18:00; Th 08:45-12:30,14:30-18:00; Fr 08:45-12:30,14:00-18:00; Sa 08:45-12:30",
+    "operator": "Crédit Mutuel",
+    "operator:wikidata": "Q642627",
+    "operator:wikipedia": "en:Crédit Mutuel",
+    "phone": "08 20 35 21 31",
+    "website": "https://www.creditmutuel.fr/fr/caisse/hauts-de-france/nord/10278-02715-11"
+  }
+},
+{
+  "type": "node",
+  "id": 3201714834,
+  "lat": 50.6333099,
+  "lon": 3.0416998,
+  "tags": {
+    "amenity": "cafe",
+    "contact:housenumber": "200",
+    "contact:street": "Rue Colbert",
+    "cuisine": "sandwich",
+    "name": "Le Vauban",
+    "ref:FR:SIRET": "83965675800019",
+    "tobacco": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3201732556,
+  "lat": 50.6347388,
+  "lon": 3.0400934,
+  "tags": {
+    "addr:street": "Boulevard de la Lorraine",
+    "brand": "Midas",
+    "brand:wikidata": "Q3312613",
+    "brand:wikipedia": "en:Midas (automotive service)",
+    "check_date": "2025-08-12",
+    "contact:city": "Lille",
+    "contact:facebook": "https://www.facebook.com/MidasFr/",
+    "contact:housenumber": "1",
+    "contact:phone": "+33 3 20 40 20 40",
+    "contact:postcode": "59000",
+    "contact:street": "Boulevard de la Lorraine",
+    "name": "Midas",
+    "opening_hours": "Mo-Fr 08:00-19:00; Sa 08:00-17:00; Su off",
+    "operator": "Midas",
+    "ref:FR:SIRET": "99753681800336",
+    "shop": "car_repair",
+    "website": "https://www.midas.fr/centres-auto-midas/hauts-de-france/nord/lille/lille-lorraine_1235"
+  }
+},
+{
+  "type": "node",
+  "id": 3328754003,
+  "lat": 50.6260654,
+  "lon": 3.0397442,
+  "tags": {
+    "contact:facebook": "boulangerieauptitlouis",
+    "contact:phone": "+33 3 20 49 95 93",
+    "contact:website": "https://boulangerieauptitlouis.fr/",
+    "indoor_seating": "yes",
+    "name": "Boulangerie Patisserie Au P'tit Louis",
+    "opening_hours": "Mo-Fr 07:00-19:30; Sa 07:30-13:00",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "81988779500014",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 3426407892,
+  "lat": 50.6258418,
+  "lon": 3.0374524,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:city": "Lille",
+    "contact:housenumber": "19",
+    "contact:postcode": "59000",
+    "contact:street": "Rue de Canteleu",
+    "contact:website": "http://www.la-trinacria.fr/",
+    "cuisine": "italian",
+    "name": "La Trinacria",
+    "opening_hours": "Mo-Fr 12:00-14:00, Mo-Sa 19:00-22:00",
+    "ref:FR:SIRET": "51263798400018"
+  }
+},
+{
+  "type": "node",
+  "id": 3602058136,
+  "lat": 50.6263977,
+  "lon": 3.0475531,
+  "tags": {
+    "amenity": "fast_food",
+    "check_date": "2025-08-08",
+    "contact:facebook": "https://www.facebook.com/lillegambetta/",
+    "cuisine": "kebab;indian;tacos;burger",
+    "name": "Mangez-Moi",
+    "opening_hours": "Mo-Su 11:00-23:00",
+    "ref:FR:SIRET": "99119306100017"
+  }
+},
+{
+  "type": "node",
+  "id": 3987770069,
+  "lat": 50.6312149,
+  "lon": 3.0485162,
+  "tags": {
+    "check_date:opening_hours": "2023-01-27",
+    "contact:phone": "+33 320579288",
+    "contact:website": "http://www.copydoc.fr",
+    "name": "Copy Doc",
+    "opening_hours": "Mo-Fr 09:30-12:30, 14:00-18:00",
+    "opening_hours:signed": "no",
+    "ref:FR:SIRET": "41234650400019",
+    "shop": "copyshop",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 4085059724,
+  "lat": 50.6277765,
+  "lon": 3.0503893,
+  "tags": {
+    "addr:street": "Rue Léon Gambetta",
+    "branch": "Lille Gambetta",
+    "brand": "Zeeman",
+    "brand:wikidata": "Q184399",
+    "check_date": "2025-07-19",
+    "contact:city": "Lille",
+    "contact:housenumber": "288",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "contact:website": "https://www.zeeman.com/fr-fr/magasins/3124-lille-gambetta",
+    "name": "Zeeman",
+    "opening_hours": "Mo-Sa 09:30-19:00; Su off",
+    "phone": "+33 3 59 81 02 00",
+    "ref:FR:SIRET": "44391877602111",
+    "shop": "clothes",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 4085063646,
+  "lat": 50.6276911,
+  "lon": 3.0502067,
+  "tags": {
+    "amenity": "fast_food",
+    "check_date": "2025-08-08",
+    "contact:housenumber": "294",
+    "contact:phone": "+33 6 17 48 82 22",
+    "contact:street": "Rue Léon Gambetta",
+    "contact:website": "https://www.donutsanddonuts.com/",
+    "cuisine": "donut",
+    "name": "Donuts & Donuts",
+    "ref:FR:SIRET": "88100118400046"
+  }
+},
+{
+  "type": "node",
+  "id": 4405067340,
+  "lat": 50.6326996,
+  "lon": 3.0360068,
+  "tags": {
+    "amenity": "cafe",
+    "contact:facebook": "https://www.facebook.com/Le-melting-port-1442789922414605/",
+    "name": "Melting Port",
+    "outdoor_seating": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4405089247,
+  "lat": 50.6342345,
+  "lon": 3.0425617,
+  "tags": {
+    "brand": "Carrefour City",
+    "brand:wikidata": "Q2940187",
+    "brand:wikipedia": "fr:Carrefour City",
+    "contact:city": "Lille",
+    "contact:housenumber": "41",
+    "contact:phone": "+33 3 20 14 31 48",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue de l'Architecte Louis Cordonnier",
+    "name": "Carrefour City",
+    "opening_hours": "Mo-Sa 08:00-22:00; Su 09:00-13:00",
+    "operator": "Groupe Carrefour",
+    "operator:wikidata": "Q3117359",
+    "operator:wikipedia": "fr:Groupe Carrefour",
+    "ref:FR:SIRET": "52118990200013",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 4405089248,
+  "lat": 50.6353735,
+  "lon": 3.0439979,
+  "tags": {
+    "contact:city": "Lille",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue de l'Architecte Louis Cordonnier",
+    "name": "Fruits et Légumes Frais",
+    "opening_hours": "Mo-Su 08:30-23:30",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 4421806112,
+  "lat": 50.6316344,
+  "lon": 3.0494793,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:city": "Lille",
+    "contact:housenumber": "224 bis",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Nationale",
+    "cuisine": "kebab",
+    "drive_through": "no",
+    "name": "Yamatoz",
+    "opening_hours": "Mo-We 11:00-14:30,18:00-00:00; Th-Sa 18:00-22:30; Su 18:00-23:00",
+    "opening_hours:signed": "no",
+    "phone": "+33320572536",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4421806113,
+  "lat": 50.6324286,
+  "lon": 3.0485289,
+  "tags": {
+    "amenity": "bar",
+    "check_date": "2025-05-06",
+    "contact:street": "Rue Meurein",
+    "level": "0",
+    "name": "Le Point De Repère"
+  }
+},
+{
+  "type": "node",
+  "id": 4421806114,
+  "lat": 50.6323778,
+  "lon": 3.0485812,
+  "tags": {
+    "air_conditioning": "no",
+    "amenity": "restaurant",
+    "capacity": "10",
+    "cuisine": "chinese",
+    "diet:vegan": "yes",
+    "diet:vegetarian": "yes",
+    "indoor_seating": "yes",
+    "level": "0",
+    "name": "Mian Dian",
+    "opening_hours": "Mo-Sa 11:00-14:30, 18:00-22:00",
+    "outdoor_seating": "no",
+    "ref:FR:SIRET": "84460125200019",
+    "takeaway": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4422076557,
+  "lat": 50.6275770,
+  "lon": 3.0420197,
+  "tags": {
+    "amenity": "bar",
+    "contact:housenumber": "1",
+    "contact:instagram": "affames_assoiffes",
+    "contact:street": "Boulevard Bigo-Danel",
+    "food": "yes",
+    "name": "Affamés Assoifés",
+    "opening_hours": "Mo-We 11:00-01:00, Th,Fr 11:00-02:00, Sa 17:00-02:00, Su 15:30-23:00",
+    "ref:FR:SIRET": "98746608300019"
+  }
+},
+{
+  "type": "node",
+  "id": 4422083929,
+  "lat": 50.6313184,
+  "lon": 3.0495197,
+  "tags": {
+    "amenity": "bar",
+    "contact:housenumber": "219",
+    "contact:instagram": "bistrot.minot",
+    "contact:street": "Rue Nationale",
+    "name": "Bistrot Minot",
+    "opening_hours": "Mo-We 12:00-01:00, Th,Fr 12:00-02:00, Sa 17:00-02:00, Su 17:00-01:00",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "92276232300017"
+  }
+},
+{
+  "type": "node",
+  "id": 4425432192,
+  "lat": 50.6307628,
+  "lon": 3.0482134,
+  "tags": {
+    "brand": "Speedy",
+    "brand:wikidata": "Q3492969",
+    "brand:wikipedia": "fr:Speedy (entreprise)",
+    "contact:city": "Lille",
+    "contact:housenumber": "237",
+    "contact:phone": "+33 3 20 57 41 17",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Nationale",
+    "name": "Speedy",
+    "opening_hours": "Mo-Fr 08:00-12:30, Mo-Fr 13:00-18:30, Sa 09:00-12:00",
+    "shop": "car_repair",
+    "website": "https://centres-auto.speedy.fr/garage/lille-59000/611"
+  }
+},
+{
+  "type": "node",
+  "id": 4432645619,
+  "lat": 50.6320107,
+  "lon": 3.0420848,
+  "tags": {
+    "amenity": "bar",
+    "contact:city": "Lille",
+    "contact:facebook": "lagarderielille",
+    "contact:housenumber": "13",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Philippe-Laurent Roland",
+    "food": "yes",
+    "name": "La garderie",
+    "opening_hours": "Mo-Th 14:00-00:00; Fr 14:00-01:00",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "88008199700012"
+  }
+},
+{
+  "type": "node",
+  "id": 4432667906,
+  "lat": 50.6323407,
+  "lon": 3.0427022,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "166",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "amenity": "restaurant",
+    "contact:city": "Lille",
+    "contact:facebook": "lebrouth",
+    "contact:housenumber": "166",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Colbert",
+    "cuisine": "regional;burger",
+    "name": "Le B-Routh",
+    "opening_hours": "Mo-Sa 11:00-00:00; Su 07:00-12:00",
+    "outdoor_seating": "yes",
+    "phone": "+33 320421020",
+    "ref:FR:SIRET": "84244123000013"
+  }
+},
+{
+  "type": "node",
+  "id": 4432698857,
+  "lat": 50.6267192,
+  "lon": 3.0499495,
+  "tags": {
+    "amenity": "bar",
+    "name": "Chez Madeleine",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "93094056400022"
+  }
+},
+{
+  "type": "node",
+  "id": 4432698858,
+  "lat": 50.6268771,
+  "lon": 3.0498483,
+  "tags": {
+    "amenity": "bar",
+    "contact:facebook": "https://fr-fr.facebook.com/absurde.wzm",
+    "contact:housenumber": "11",
+    "name": "L'absurde",
+    "opening_hours": "Mo,We 10:00-00:00; Tu,Th 11:00-00:00; Fr 15:00-01:00; Sa 18:00-02:00; Su 11:00-23:00",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "75324135500019",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 4432698859,
+  "lat": 50.6269144,
+  "lon": 3.0498345,
+  "tags": {
+    "amenity": "bar",
+    "name": "Le First",
+    "opening_hours": "Mo-Sa 16:30-01:00",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "91953449500016",
+    "survey:date": "2023-01"
+  }
+},
+{
+  "type": "node",
+  "id": 4432802847,
+  "lat": 50.6267621,
+  "lon": 3.0505749,
+  "tags": {
+    "amenity": "bar",
+    "contact:housenumber": "32",
+    "contact:phone": "+33 3 20 54 49 67",
+    "contact:street": "Rue Saint-Pierre Saint-Paul",
+    "name": "Les Tilleuls",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "88766250000024"
+  }
+},
+{
+  "type": "node",
+  "id": 4432802848,
+  "lat": 50.6266920,
+  "lon": 3.0503143,
+  "tags": {
+    "amenity": "bar",
+    "check_date": "2026-10-07",
+    "contact:city": "Lille",
+    "contact:housenumber": "21",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Saint-Pierre Saint-Paul",
+    "food": "yes",
+    "name": "L'Oxford",
+    "opening_hours": "Mo-Sa 15:00-01:00; Su 09:00-18:00",
+    "outdoor_seating": "yes",
+    "sport": "Pinball"
+  }
+},
+{
+  "type": "node",
+  "id": 4432802849,
+  "lat": 50.6255731,
+  "lon": 3.0504789,
+  "tags": {
+    "amenity": "bar",
+    "contact:city": "Lille",
+    "contact:housenumber": "16",
+    "contact:postcode": "59000",
+    "contact:street": "Rue des Sarrazins",
+    "name": "Chez Ben",
+    "outdoor_seating": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4432802850,
+  "lat": 50.6254160,
+  "lon": 3.0496377,
+  "tags": {
+    "amenity": "bar",
+    "contact:facebook": "ChougaBarrioClub",
+    "contact:housenumber": "32",
+    "contact:street": "Rue des Sarrazins",
+    "food": "yes",
+    "name": "Chouga Barrio",
+    "opening_hours": "Th-Sa 17:30-02:00; Su 10:30-17:00",
+    "outdoor_seating": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4432802851,
+  "lat": 50.6251385,
+  "lon": 3.0486459,
+  "tags": {
+    "amenity": "bar",
+    "contact:city": "Lille",
+    "contact:housenumber": "56",
+    "contact:postcode": "59000",
+    "contact:street": "Rue des Sarrazins",
+    "name": "Au Cheval Blanc",
+    "opening_hours": "Mo-Sa 09:00-20:00",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "42148727300011",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 4465026118,
+  "lat": 50.6299725,
+  "lon": 3.0387626,
+  "tags": {
+    "amenity": "community_centre",
+    "contact:city": "Lille",
+    "contact:housenumber": "77",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Philippe-Laurent Roland",
+    "name": "Centre social Simone Veil - Maison de Quartier Vauban-Esquermes"
+  }
+},
+{
+  "type": "node",
+  "id": 4496854320,
+  "lat": 50.6266756,
+  "lon": 3.0482462,
+  "tags": {
+    "contact:facebook": "https://www.facebook.com/fromageriebonspaturages/",
+    "contact:phone": "+33320402305",
+    "name": "Les Bons Pâturages",
+    "opening_hours": "Tu-Fr 09:00-13:30,15:00-19:30; Sa 09:00-19:00; Su 09:00-12:45",
+    "shop": "cheese",
+    "website": "http://www.mon-fromage.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 4500229012,
+  "lat": 50.6320330,
+  "lon": 3.0430369,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "154",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "amenity": "restaurant",
+    "contact:housenumber": "154",
+    "contact:phone": "+33362923616",
+    "contact:street": "Rue Colbert",
+    "cuisine": "indian",
+    "diet:vegetarian": "yes",
+    "name": "Tasty",
+    "opening_hours": "Mo-Sa 18:30-22:00, Mo-Fr 11:30-14:30",
+    "ref:FR:SIRET": "80782964300012"
+  }
+},
+{
+  "type": "node",
+  "id": 4500242564,
+  "lat": 50.6321519,
+  "lon": 3.0466247,
+  "tags": {
+    "amenity": "fast_food",
+    "name": "Take & Smile",
+    "opening_hours": "Mo-Fr 09:30-19:00"
+  }
+},
+{
+  "type": "node",
+  "id": 4558295945,
+  "lat": 50.6263045,
+  "lon": 3.0488335,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:phone": "+33 3 20 13 95 70",
+    "cuisine": "kebab",
+    "name": "Efes Kebab",
+    "opening_hours": "Mo-Su 11:00-23:59",
+    "ref:FR:SIRET": "84472905300018"
+  }
+},
+{
+  "type": "node",
+  "id": 4688545391,
+  "lat": 50.6266887,
+  "lon": 3.0477443,
+  "tags": {
+    "bulk_purchase": "only",
+    "contact:city": "Lille",
+    "contact:housenumber": "384",
+    "contact:phone": "+33 3 20 07 62 93",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "contact:website": "https://daybyday-shop.com/magasin/lille",
+    "description": "Mon épicerie en vrac",
+    "name": "day by day Lille",
+    "opening_hours": "Tu-Sa 09:30-13:00,15:00-19:30, Su 09:25-13:30",
+    "operator": "day by day",
+    "organic": "yes",
+    "ref:FR:SIRET": "80859775100011",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 4908787640,
+  "lat": 50.6266231,
+  "lon": 3.0427583,
+  "tags": {
+    "amenity": "arts_centre",
+    "contact:city": "Lille",
+    "contact:email": "info@lille.goethe.org",
+    "contact:housenumber": "98",
+    "contact:postcode": "59000",
+    "contact:street": "Rue des Stations",
+    "contact:website": "http://www.goethe.de/lille",
+    "name": "Goethe Institut"
+  }
+},
+{
+  "type": "node",
+  "id": 4915988521,
+  "lat": 50.6306331,
+  "lon": 3.0444865,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "102",
+    "addr:postcode": "59800",
+    "addr:street": "Boulevard Vauban",
+    "contact:housenumber": "102",
+    "contact:website": "https://www.boulangerie-coeur-depis.fr/",
+    "name": "Cœur d'épis",
+    "opening_hours": "Mo-Fr 07:00-19:30; Sa 08:00-13:00",
+    "phone": "+33320545975",
+    "ref:FR:SIRET": "75383786300012",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 4977484827,
+  "lat": 50.6259434,
+  "lon": 3.0490626,
+  "tags": {
+    "alt_name": "Aziza",
+    "contact:city": "Lille",
+    "contact:facebook": "https://www.facebook.com/boulangerieaziza/",
+    "contact:housenumber": "32",
+    "contact:phone": "+33 3 20 14 07 50",
+    "contact:postcode": "59000",
+    "contact:street": "Place de la Nouvelle Aventure",
+    "contact:website": "https://www.boulangerielaziza.fr",
+    "name": "L'Aziza",
+    "opening_hours": "Mo-Su 07:00-21:00",
+    "shop": "pastry"
+  }
+},
+{
+  "type": "node",
+  "id": 5006338521,
+  "lat": 50.6335256,
+  "lon": 3.0445096,
+  "tags": {
+    "amenity": "bar",
+    "contact:housenumber": "39",
+    "contact:instagram": "lafaluchelille",
+    "contact:phone": "+33 3 20 55 73 25",
+    "contact:street": "Rue du Port",
+    "name": "La Faluche",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "79785100300021"
+  }
+},
+{
+  "type": "node",
+  "id": 5072895821,
+  "lat": 50.6273700,
+  "lon": 3.0494434,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:facebook": "https://www.facebook.com/people/Maison-L/100093612533232/",
+    "contact:housenumber": "324",
+    "contact:instagram": "maison_l.lille",
+    "contact:street": "Rue Léon Gambetta",
+    "cuisine": "lebanese",
+    "name": "Maison L",
+    "old_name": "Patrick Hermand",
+    "opening_hours": "Tu-Fr 12:00-15:00,18:00-22:00; Sa 12:00-15:00,18:00-23:00; Su 11:00-16:00,18:00-22:00",
+    "phone": "+33766161619",
+    "ref:FR:SIRET": "92273002300012",
+    "website": "https://maison-l.eatbu.com"
+  }
+},
+{
+  "type": "node",
+  "id": 5134071722,
+  "lat": 50.6268305,
+  "lon": 3.0481282,
+  "tags": {
+    "contact:housenumber": "370",
+    "contact:instagram": "boulangerie.painbeurre",
+    "name": "Pain Beurre",
+    "old_name": "Maison Doucet",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 5163090884,
+  "lat": 50.6272787,
+  "lon": 3.0496924,
+  "tags": {
+    "amenity": "bar",
+    "check_date": "2025-08-08",
+    "contact:city": "Lille",
+    "contact:housenumber": "331",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "name": "Le Brice",
+    "ref:FR:SIRET": "94313228200014",
+    "source": "survey",
+    "tobacco": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5163090885,
+  "lat": 50.6271815,
+  "lon": 3.0489855,
+  "tags": {
+    "branch": "Lille Wazemmes",
+    "brand": "Naturalia",
+    "brand:wikidata": "Q3337081",
+    "brand:wikipedia": "fr:Naturalia",
+    "bulk_purchase": "yes",
+    "check_date": "2025-08-08",
+    "contact:website": "https://magasins.naturalia.fr/naturalia/fr/store/france/hauts-de-france/nord/lille/lille-wazemmes/4007",
+    "name": "Naturalia",
+    "opening_hours": "Mo-Sa 09:00-20:00; Su 09:00-12:45",
+    "organic": "only",
+    "phone": "+33 3 20 02 63 99",
+    "ref:FR:SIRET": "30247464801795",
+    "shop": "supermarket",
+    "source": "survey",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5163090888,
+  "lat": 50.6272376,
+  "lon": 3.0491330,
+  "tags": {
+    "contact:housenumber": "336",
+    "contact:phone": "+33 3 20 57 25 58",
+    "contact:street": "Rue Léon Gambetta",
+    "contact:website": "https://auxmerveilleux.com/patisseries/lille/aux-merveilleux-de-fred-gambetta",
+    "name": "Aux Merveilleux de Fred",
+    "opening_hours": "Mo-Sa 06:30-19:00; Su 06:30-14:00",
+    "ref:FR:SIRET": "44951553500010",
+    "shop": "pastry"
+  }
+},
+{
+  "type": "node",
+  "id": 5163090889,
+  "lat": 50.6272117,
+  "lon": 3.0490706,
+  "tags": {
+    "branch": "Lille Gambetta",
+    "brand": "Nicolas",
+    "brand:website": "https://www.nicolas.com/",
+    "brand:wikidata": "Q3340012",
+    "brand:wikipedia": "fr:Nicolas (entreprise vinicole)",
+    "check_date": "2025-08-08",
+    "contact:city": "Lille",
+    "contact:housenumber": "338",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "contact:website": "http://www.nicolas.com/fr/magasins/LILLE-GAMBETTA/s/00008996.html",
+    "drink:wine": "retail",
+    "email": "cave.lillegambetta@nicolas.com",
+    "name": "Nicolas",
+    "opening_hours": "Tu-Sa 10:00-13:00,14:00-19:00; Su 10:00-13:00",
+    "operator": "Établissements Nicolas",
+    "operator:ref:FR:SIREN": "542066238",
+    "phone": "+33 3 20 40 28 39",
+    "ref:FR:NAF": "47.25Z",
+    "ref:FR:SIRET": "54206623806203",
+    "ref:vatin": "FR31542066238",
+    "shop": "alcohol",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5163090890,
+  "lat": 50.6273342,
+  "lon": 3.0493670,
+  "tags": {
+    "addr:housenumber": "326",
+    "addr:postcode": "59000",
+    "addr:street": "Rue Léon Gambetta",
+    "brand": "Leonidas",
+    "brand:wikidata": "Q80335",
+    "brand:wikipedia": "en:Leonidas (chocolate maker)",
+    "check_date": "2025-08-08",
+    "contact:city": "Lille",
+    "contact:housenumber": "326",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "email": "Leonidas.lillewazemmes@leonidas.com",
+    "name": "Leonidas",
+    "opening_hours": "Tu-Sa 10:00-19:00",
+    "phone": "+33 3 20 11 25 99",
+    "ref:FR:SIRET": "44314041300248",
+    "shop": "chocolate",
+    "source": "survey",
+    "website": "https://www.leonidas.com/fr_fr/boutiques/lille/leonidas-wazemme"
+  }
+},
+{
+  "type": "node",
+  "id": 5163090893,
+  "lat": 50.6348714,
+  "lon": 3.0476278,
+  "tags": {
+    "amenity": "bar",
+    "name": "Le Point de Départ",
+    "ref:FR:SIRET": "82373223500010",
+    "source": "survey",
+    "survey:date": "2017-10"
+  }
+},
+{
+  "type": "node",
+  "id": 5202232446,
+  "lat": 50.6265378,
+  "lon": 3.0492631,
+  "tags": {
+    "contact:phone": "+33 3 20 74 27 60",
+    "name": "La Finarde",
+    "shop": "cheese",
+    "source": "survey",
+    "survey:date": "2017-10"
+  }
+},
+{
+  "type": "node",
+  "id": 5204529047,
+  "lat": 50.6274000,
+  "lon": 3.0495216,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:city": "Lille",
+    "contact:housenumber": "318",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "cuisine": "chinese;japanese;asian",
+    "name": "Chopsticks&Co",
+    "opening_hours": "Tu-Su 10:00-21:00",
+    "ref:FR:SIRET": "84389991500014"
+  }
+},
+{
+  "type": "node",
+  "id": 5204544329,
+  "lat": 50.6272934,
+  "lon": 3.0492584,
+  "tags": {
+    "brand": "Alain Afflelou",
+    "brand:wikidata": "Q2829511",
+    "brand:wikipedia": "fr:Alain Afflelou (entreprise)",
+    "check_date": "2025-08-08",
+    "contact:city": "Lille",
+    "contact:housenumber": "332",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "email": "mrli@afflelou.net",
+    "name": "Alain Afflelou",
+    "opening_hours": "Tu-Sa 09:30-12:30,14:00-19:00",
+    "phone": "+33 3 20 13 97 07",
+    "ref:FR:SIRET": "49366968300028",
+    "shop": "optician",
+    "website": "https://www.afflelou.com/opticien/lille/afflelou-332-rue-leon-gambetta-59000"
+  }
+},
+{
+  "type": "node",
+  "id": 5204544330,
+  "lat": 50.6265073,
+  "lon": 3.0478193,
+  "tags": {
+    "check_date": "2025-08-08",
+    "contact:city": "Lille",
+    "contact:facebook": "https://www.facebook.com/LesEpicentriques",
+    "contact:housenumber": "357",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "contact:website": "http://www.lesepicentriques.fr",
+    "delivery": "yes",
+    "name": "Les Epicentriques",
+    "opening_hours": "Tu-Fr 09:00-13:00,15:00-19:00; Sa 09:00-19:00; Su 09:00-13:00",
+    "shop": "deli"
+  }
+},
+{
+  "type": "node",
+  "id": 5267690518,
+  "lat": 50.6305054,
+  "lon": 3.0475391,
+  "tags": {
+    "addr:housenumber": "247",
+    "addr:street": "Rue Nationale",
+    "check_date": "2026-09-10",
+    "check_date:opening_hours": "2026-09-10",
+    "contact:housenumber": "247",
+    "contact:street": "Rue Nationale",
+    "contact:website": "https://boite-a-copies.fr/contact/",
+    "name": "La boite à Copie",
+    "opening_hours": "Mo-Fr 08:30-18:45; Sa 09:00-12:45",
+    "opening_hours:signed": "no",
+    "phone": "+33 3 20 54 88 77",
+    "ref:FR:SIRET": "50217621700045",
+    "shop": "copyshop",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5267690519,
+  "lat": 50.6308728,
+  "lon": 3.0484271,
+  "tags": {
+    "check_date:opening_hours": "2022-07-24",
+    "contact:phone": "+33 3 20 47 71 47",
+    "name": "Boulangerie Papillon",
+    "opening_hours": "Mo-Su 07:00-20:00",
+    "shop": "bakery",
+    "survey:date": "2017-11",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5267690520,
+  "lat": 50.6312543,
+  "lon": 3.0486124,
+  "tags": {
+    "amenity": "pub",
+    "check_date:opening_hours": "2023-01-27",
+    "name": "Le Pare Brise",
+    "opening_hours:signed": "no",
+    "ref:FR:SIRET": "32579984900014",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5285852007,
+  "lat": 50.6261947,
+  "lon": 3.0470240,
+  "tags": {
+    "contact:housenumber": "381",
+    "contact:phone": "+33 3 20 40 29 07",
+    "contact:street": "Rue Léon Gambetta",
+    "name": "Carlier Vogliazzo",
+    "opening_hours": "Tu,Th 09:00-13:00,15:00-19:30; We 10:00-13:00,15:00-19:30; Fr 09:00-19:30; Sa 09:00-20:00; Su 09:00-13:30",
+    "ref:FR:SIRET": "45393206300028",
+    "shop": "convenience",
+    "website": "https://www.carliervogliazzo.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 5287366698,
+  "lat": 50.6272712,
+  "lon": 3.0491928,
+  "tags": {
+    "addr:postcode": "59000",
+    "addr:street": "Rue Léon Gambetta",
+    "contact:facebook": "https://www.facebook.com/pg/lmdv.lille",
+    "contact:housenumber": "334",
+    "contact:phone": "+33 3 20 10 67 40",
+    "email": "lillewazemmes@lamaisonduvapoteur.com",
+    "name": "La Maison du Vapoteur",
+    "opening_hours": "Mo-Sa 10:00-19:00; Su 10:00-14:00",
+    "ref:FR:SIRET": "84960042400014",
+    "shop": "e-cigarette",
+    "website": "https://lamaisonduvapoteur.com/magasin-cigarette-electronique/11-lille"
+  }
+},
+{
+  "type": "node",
+  "id": 5311787623,
+  "lat": 50.6265311,
+  "lon": 3.0489897,
+  "tags": {
+    "contact:facebook": "https://www.facebook.com/labonnepeche",
+    "name": "La bonne pêche",
+    "opening_hours": "Tu 08:30-14:00; We-Sa 08:00-19:30; Su 08:00-14:00",
+    "shop": "seafood"
+  }
+},
+{
+  "type": "node",
+  "id": 5316414389,
+  "lat": 50.6295900,
+  "lon": 3.0453699,
+  "tags": {
+    "amenity": "fast_food",
+    "name": "Yumi",
+    "opening_hours": "We-Su 11:45-14:00, We-Su 18:45-22:00"
+  }
+},
+{
+  "type": "node",
+  "id": 5316414390,
+  "lat": 50.6299407,
+  "lon": 3.0452394,
+  "tags": {
+    "amenity": "bar",
+    "contact:city": "Lille",
+    "contact:facebook": "barlespiratesofficiel",
+    "contact:housenumber": "92",
+    "contact:instagram": "barlespirateslille",
+    "contact:phone": "+33 9 54 90 18 53",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Colbert",
+    "contact:website": "https://barlespirateslille.wordpress.com/",
+    "name": "Les pirates",
+    "opening_hours": "Mo-We 17:00-01:00; Th-Sa 17:00-02:00",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5316414391,
+  "lat": 50.6298166,
+  "lon": 3.0458958,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:housenumber": "263",
+    "contact:instagram": "tortillas_lille",
+    "contact:street": "Rue Nationale",
+    "cuisine": "mexican",
+    "name": "Tortillas",
+    "survey:date": "2023-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5316414392,
+  "lat": 50.6298445,
+  "lon": 3.0459596,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:housenumber": "261",
+    "contact:phone": "+33 3 20 86 27 22",
+    "contact:street": "Rue Nationale",
+    "contact:website": "https://celinekebab.com/menu/celine-kebab-lille",
+    "cuisine": "kebab",
+    "name": "Celine Kebab",
+    "survey:date": "2021-10"
+  }
+},
+{
+  "type": "node",
+  "id": 5316414395,
+  "lat": 50.6300246,
+  "lon": 3.0457504,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date": "2026-08-17",
+    "check_date:opening_hours": "2026-08-17",
+    "contact:housenumber": "294",
+    "contact:instagram": "welshalors",
+    "contact:street": "Rue Nationale",
+    "cuisine": "regional",
+    "name": "Welsh Alors",
+    "opening_hours": "Mo-Fr 11:30-14:30",
+    "ref:FR:SIRET": "93480298400021",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5316414396,
+  "lat": 50.6303230,
+  "lon": 3.0451238,
+  "tags": {
+    "amenity": "cafe",
+    "contact:facebook": "lecafediskaire",
+    "contact:instagram": "cafediskaire",
+    "contact:phone": "+33 3 61 50 77 54",
+    "contact:website": "https://www.cafediskaire.fr/",
+    "name": "Le Caf&diskaire",
+    "opening_hours": "Mo-Fr 11:30-14:30, Tu,Th,Fr 17:30-01:00, Sa 18:00-01:00",
+    "ref:FR:SIRET": "49020538200016"
+  }
+},
+{
+  "type": "node",
+  "id": 5316414398,
+  "lat": 50.6304372,
+  "lon": 3.0449930,
+  "tags": {
+    "contact:phone": "+33 3 20 57 06 06",
+    "contact:website": "http://www.lamaisondupiano.fr/",
+    "musical_instrument": "piano",
+    "name": "La maison du piano",
+    "opening_hours": "Tu-Sa 09:00-12:00, Mo-Sa 14:00-19:00",
+    "ref:FR:SIRET": "50767654200016",
+    "shop": "musical_instrument",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5316414404,
+  "lat": 50.6302486,
+  "lon": 3.0473566,
+  "tags": {
+    "amenity": "police",
+    "name": "Commissariat de police de Lille - Bureau de Wazemmes",
+    "opening_hours": "Mo-Th 09:30-12:30, 13:30-17:30; Fr 09:30-12:30, 14:00-17:30",
+    "operator": "Police nationale",
+    "operator:wikidata": "Q121484",
+    "operator:wikipedia": "fr:Police nationale (France)",
+    "police:FR": "police",
+    "source": "Service-Public.fr - 10/2016"
+  }
+},
+{
+  "type": "node",
+  "id": 5316414405,
+  "lat": 50.6302789,
+  "lon": 3.0463392,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "vietnamese;bubble_tea",
+    "name": "Yaya Happy Tea",
+    "opening_hours": "Mo-Fr 10:30-18:00",
+    "survey:date": "2023-10"
+  }
+},
+{
+  "type": "node",
+  "id": 5316414406,
+  "lat": 50.6302515,
+  "lon": 3.0462778,
+  "tags": {
+    "amenity": "fast_food",
+    "check_date:opening_hours": "2026-08-17",
+    "name": "Au Ch'ti Panini",
+    "opening_hours": "Mo-Fr 09:00-12:00,14:00-18:00",
+    "opening_hours:signed": "no",
+    "ref:FR:SIRET": "45224331400013",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5325752888,
+  "lat": 50.6279674,
+  "lon": 3.0505072,
+  "tags": {
+    "name": "Galerie Blé d'Or",
+    "shop": "art",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325752891,
+  "lat": 50.6277291,
+  "lon": 3.0507110,
+  "tags": {
+    "brand": "Save",
+    "brand:wikidata": "Q121289450",
+    "check_date": "2026-05-07",
+    "mobile_phone:repair": "yes",
+    "name": "Save",
+    "opening_hours": "Tu-Sa 10:00-14:00,15:00-19:00",
+    "phone": "+33 3 74 47 25 65",
+    "second_hand": "only",
+    "shop": "mobile_phone",
+    "source": "survey",
+    "website": "https://magasin.save.co"
+  }
+},
+{
+  "type": "node",
+  "id": 5325752892,
+  "lat": 50.6274925,
+  "lon": 3.0501799,
+  "tags": {
+    "amenity": "fast_food",
+    "name": "Pouletos braisé"
+  }
+},
+{
+  "type": "node",
+  "id": 5325752899,
+  "lat": 50.6275185,
+  "lon": 3.0498046,
+  "tags": {
+    "brand": "Atol",
+    "brand:wikidata": "Q2869542",
+    "brand:wikipedia": "fr:Atol (opticien)",
+    "check_date": "2025-08-08",
+    "contact:city": "Lille",
+    "contact:housenumber": "308",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "name": "Atol",
+    "opening_hours": "Tu-Sa 10:00-12:15,14:00-19:00",
+    "phone": "+33 3 20 40 45 15",
+    "shop": "optician",
+    "source": "survey",
+    "website": "https://magasins.atol.fr/france/cible-lille-642"
+  }
+},
+{
+  "type": "node",
+  "id": 5325752901,
+  "lat": 50.6274356,
+  "lon": 3.0496142,
+  "tags": {
+    "check_date": "2025-08-08",
+    "contact:city": "Lille",
+    "contact:housenumber": "316",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "contact:website": "http://felixshoes.fr",
+    "name": "Felix Shoes",
+    "opening_hours": "Tu-Sa 09:30-12:30,14:00-19:00; Su 09:30-13:30",
+    "shop": "shoes",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5325752916,
+  "lat": 50.6268027,
+  "lon": 3.0505400,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "Pizza du Marché",
+    "ref:FR:SIRET": "82176310900021",
+    "survey:date": "2019-05"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754223,
+  "lat": 50.6266325,
+  "lon": 3.0500076,
+  "tags": {
+    "amenity": "bar",
+    "contact:housenumber": "19",
+    "contact:instagram": "bisousbecots",
+    "name": "Bisous Bécots",
+    "survey:date": "2024-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754225,
+  "lat": 50.6266866,
+  "lon": 3.0499714,
+  "tags": {
+    "amenity": "bar",
+    "name": "Café Aux Halles",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "79015309200016",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754227,
+  "lat": 50.6267882,
+  "lon": 3.0499110,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "name": "Snack de Waz",
+    "survey:date": "2021-05"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754228,
+  "lat": 50.6268337,
+  "lon": 3.0498755,
+  "tags": {
+    "contact:facebook": "seventieslille",
+    "contact:phone": "+33 3 20 51 44 91",
+    "contact:website": "http://seventies-lille.fr",
+    "female": "yes",
+    "male": "yes",
+    "name": "Seventies Coiffure",
+    "opening_hours": "Tu-Fr 09:30-19:00; Sa 09:00-18:00",
+    "ref:FR:SIRET": "79823599000016",
+    "shop": "hairdresser",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754249,
+  "lat": 50.6254525,
+  "lon": 3.0497695,
+  "tags": {
+    "name": "Lille et un voyage",
+    "opening_hours": "Mo-Sa 09:30-12:15,14:00-17:45",
+    "shop": "travel_agency",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754250,
+  "lat": 50.6254406,
+  "lon": 3.0497126,
+  "tags": {
+    "contact:website": "http://www.gsm-express.fr",
+    "name": "GSM Express",
+    "shop": "mobile_phone",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754258,
+  "lat": 50.6258681,
+  "lon": 3.0491158,
+  "tags": {
+    "diet:halal": "yes",
+    "name": "Boucherie Ennasr",
+    "shop": "butcher",
+    "survey:date": "2021-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754259,
+  "lat": 50.6257921,
+  "lon": 3.0491714,
+  "tags": {
+    "contact:facebook": "https://www.facebook.com/Boucheriemarketplacewzm/",
+    "contact:phone": "+33 3 59 51 31 40",
+    "diet:halal": "yes",
+    "diet:vegan": "no",
+    "diet:vegetarian": "no",
+    "name": "Boucherie Market Place",
+    "opening_hours": "Mo-Sa 09:30-12:30,15:00-18:30; Su 09:30-14:00",
+    "shop": "butcher"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754261,
+  "lat": 50.6260952,
+  "lon": 3.0489673,
+  "tags": {
+    "check_date": "2025-10-12",
+    "contact:phone": "+33 3 62 10 29 33",
+    "contact:website": "https://www.mobilehouse.fr/",
+    "name": "Mobile House",
+    "opening_hours": "Mo-Su 10:00-20:00",
+    "ref:FR:SIRET": "79452994100013",
+    "shop": "mobile_phone",
+    "survey:date": "2022-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754268,
+  "lat": 50.6262455,
+  "lon": 3.0488644,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:phone": "+33 3 20 57 26 10",
+    "contact:website": "http://www.auxbretons.com/",
+    "cuisine": "french;regional",
+    "name": "Aux Bretons",
+    "ref:FR:SIRET": "38776334500031"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754274,
+  "lat": 50.6263315,
+  "lon": 3.0488316,
+  "tags": {
+    "amenity": "atm",
+    "brand": "CIC",
+    "brand:wikidata": "Q746525",
+    "brand:wikipedia": "en:Crédit Industriel et Commercial",
+    "check_date": "2025-10-12",
+    "name": "CIC",
+    "operator": "CIC",
+    "operator:wikidata": "Q746525",
+    "operator:wikipedia": "en:Crédit Industriel et Commercial"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754275,
+  "lat": 50.6264318,
+  "lon": 3.0487396,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:city": "Lille",
+    "contact:housenumber": "12",
+    "contact:phone": "+33 9 73 26 08 34",
+    "contact:postcode": "59000",
+    "contact:street": "Place de la Nouvelle Aventure",
+    "contact:website": "https://del-vera.business.site",
+    "cuisine": "pizza",
+    "diet:vegan": "yes",
+    "diet:vegetarian": "yes",
+    "internet_access": "wlan",
+    "name": "Pizzeria Del Vera",
+    "opening_hours": "Tu-Su 11:45-14:30,18:45-22:30",
+    "outdoor_seating": "yes",
+    "payment:cash": "yes",
+    "payment:mastercard": "yes",
+    "payment:meal_voucher": "yes",
+    "payment:visa": "yes",
+    "ref:FR:SIRET": "81921935300011",
+    "source": "survey",
+    "survey:date": "2018-01",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754278,
+  "lat": 50.6265296,
+  "lon": 3.0486658,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:phone": "+33 3 20 74 94 64",
+    "contact:website": "http://www.tiparothai.fr/",
+    "cuisine": "thai",
+    "name": "Tiparo Thai",
+    "opening_hours": "Tu-Th 12:00-14:00,19:00-22:00; Fr-Sa 12:00-14:00,19:00-22:30",
+    "ref:FR:SIRET": "44819491000015",
+    "survey:date": "2024-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754279,
+  "lat": 50.6265781,
+  "lon": 3.0486343,
+  "tags": {
+    "amenity": "cafe",
+    "contact:phone": "+33 3 20 54 74 53",
+    "name": "Osmoz Café",
+    "ref:FR:SIRET": "41790942100030",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754284,
+  "lat": 50.6266338,
+  "lon": 3.0486001,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:phone": "+33 9 81 68 59 64",
+    "contact:website": "http://la-ptite-fourchette.zenchef.com/",
+    "name": "La petite fourchette",
+    "ref:FR:SIRET": "81179088000017",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754286,
+  "lat": 50.6266853,
+  "lon": 3.0485599,
+  "tags": {
+    "contact:housenumber": "2",
+    "contact:street": "Place de la Nouvelle Aventure",
+    "name": "Maison dahrène",
+    "ref:FR:SIRET": "90355437600033",
+    "shop": "butcher",
+    "survey:date": "2024-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754287,
+  "lat": 50.6267763,
+  "lon": 3.0484928,
+  "tags": {
+    "brand": "Optic 2000",
+    "brand:wikidata": "Q3354445",
+    "brand:wikipedia": "fr:Optic 2000",
+    "check_date:opening_hours": "2022-06-06",
+    "name": "Optic 2000",
+    "opening_hours": "Tu-Sa 09:30-12:30,14:00-19:00",
+    "phone": "+33 3 20 57 01 08",
+    "ref:FR:SIRET": "30365664900025",
+    "shop": "optician",
+    "website": "https://opticien.optic2000.com/hauts-de-france/nord/lille/c00021-opticien-lille-optic-2000-550"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754290,
+  "lat": 50.6267304,
+  "lon": 3.0483768,
+  "tags": {
+    "contact:housenumber": "339",
+    "name": "Merveille d'Asie",
+    "shop": "deli",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754291,
+  "lat": 50.6267057,
+  "lon": 3.0483165,
+  "tags": {
+    "clothes": "women",
+    "contact:facebook": "https://www.facebook.com/lepetitMondedesRondes/",
+    "contact:housenumber": "341",
+    "contact:phone": "+33 3 20 38 00 29",
+    "name": "Le petit monde des rondes",
+    "opening_hours": "Tu-Sa 10:00-12:30,14:00-19:00; Su,Mo off",
+    "ref:FR:SIRET": "53422788900019",
+    "shop": "clothes",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754292,
+  "lat": 50.6268871,
+  "lon": 3.0482670,
+  "tags": {
+    "contact:facebook": "https://www.facebook.com/pg/lacaveleongambetta",
+    "contact:housenumber": "360",
+    "contact:phone": "+33 3 74 09 88 58",
+    "drink:wine": "yes",
+    "name": "La Cave Léon Gambetta",
+    "ref:FR:SIRET": "89741067600018",
+    "shop": "alcohol",
+    "survey:date": "2022-08"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754296,
+  "lat": 50.6268559,
+  "lon": 3.0481944,
+  "tags": {
+    "name": "Douceurs d'orient",
+    "ref:FR:SIRET": "98818918900018",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754299,
+  "lat": 50.6267847,
+  "lon": 3.0480182,
+  "tags": {
+    "check_date": "2025-10-22",
+    "contact:phone": "+33 3 28 38 07 00",
+    "contact:website": "https://www.maisonevrard.com/",
+    "name": "François Evrard - Viandes de collection",
+    "opening_hours": "Tu-Fr 08:30-13:00,15:00-20:00, Sa 08:30-20:00, Su 09:00-13:30",
+    "ref:FR:SIRET": "48198774100016",
+    "shop": "butcher",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754300,
+  "lat": 50.6267421,
+  "lon": 3.0479081,
+  "tags": {
+    "check_date": "2025-10-22",
+    "contact:facebook": "https://www.facebook.com/ParentPrimeurs",
+    "contact:phone": "+33 3 20 30 79 73",
+    "contact:website": "https://www.parent-primeurs.com/",
+    "name": "Parent Primeur",
+    "opening_hours": "Tu-Fr 09:00-13:00, 15:00-19:30; Sa 09:00-13:00,14:30-19:30; Su 09:00-13:30",
+    "ref:FR:SIRET": "98085506800014",
+    "shop": "greengrocer",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754303,
+  "lat": 50.6266525,
+  "lon": 3.0476558,
+  "tags": {
+    "contact:facebook": "https://www.facebook.com/PierreThorezPatissierTraiteurBoulangerLille/",
+    "contact:housenumber": "390",
+    "contact:phone": "+33 3 20 57 13 27",
+    "contact:street": "Rue Léon Gambetta",
+    "name": "Au Pavé des Flandres",
+    "opening_hours": "Tu-Sa 07:30-19:30; Su 07:30-14:00",
+    "opening_hours:url": "https://www.pierre-thorez.com/page/1-les-magasins/1-lille-gambettas",
+    "ref:FR:SIRET": "41929346900021",
+    "shop": "bakery",
+    "source": "survey",
+    "survey:date": "2018-01",
+    "website": "https://www.pierre-thorez.com/page/1-les-magasins/1-lille-gambetta"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754306,
+  "lat": 50.6263258,
+  "lon": 3.0473569,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date": "2025-08-08",
+    "contact:city": "Lille",
+    "contact:housenumber": "377",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "cuisine": "moroccan",
+    "name": "Al Fassia",
+    "phone": "+33359086682",
+    "ref:FR:SIRET": "89494499000015"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754307,
+  "lat": 50.6265687,
+  "lon": 3.0474628,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "392",
+    "addr:postcode": "59000",
+    "addr:street": "Rue Léon Gambetta",
+    "check_date": "2025-08-08",
+    "contact:phone": "+33366800109",
+    "contact:website": "https://magasins.otera.fr/wazemmes",
+    "name": "Otera",
+    "opening_hours": "Mo-Sa 09:00-20:00; Su 09:00-13:30",
+    "shop": "farm"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754308,
+  "lat": 50.6264802,
+  "lon": 3.0472268,
+  "tags": {
+    "check_date": "2025-08-08",
+    "contact:phone": "+33 320545506",
+    "contact:website": "http://www.au-petit-mousse.fr/",
+    "name": "Au Petit Mousse",
+    "opening_hours": "Tu-Th 09:00-13:00,15:00-19:30; Fr 09:00-19:45; Sa 08:30-19:30; Su 09:00-13:30",
+    "shop": "seafood",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754312,
+  "lat": 50.6252520,
+  "lon": 3.0482678,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:city": "Lille",
+    "contact:housenumber": "34",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Durnerin",
+    "name": "Le Syrah Luna"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754313,
+  "lat": 50.6253449,
+  "lon": 3.0488959,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:facebook": "https://www.facebook.com/profile.php?id=100053120033920",
+    "contact:phone": "+33 3 20 35 35 35",
+    "name": "La Popote",
+    "opening_hours": "Tu-Su 12:00-17:00",
+    "ref:FR:SIRET": "83283108500010",
+    "source": "survey",
+    "survey:date": "2026-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5325754314,
+  "lat": 50.6253295,
+  "lon": 3.0492988,
+  "tags": {
+    "name": "Aux 4 Saisons",
+    "ref:FR:SIRET": "32927018500021",
+    "shop": "convenience",
+    "source": "survey",
+    "survey:date": "2018-01"
+  }
+},
+{
+  "type": "node",
+  "id": 5345783634,
+  "lat": 50.6313480,
+  "lon": 3.0488268,
+  "tags": {
+    "alt_name": "Maison Verstraete",
+    "books": "religion",
+    "name": "Art & Liturgie",
+    "opening_hours": "Mo-Fr 14:00-19:00, Tu-Fr 10:00-13:00, Sa 10:00-18:00",
+    "ref:FR:SIRET": "46050169500015",
+    "shop": "books",
+    "source": "survey",
+    "website": "https://maison-verstraete.eklablog.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 5376506084,
+  "lat": 50.6291009,
+  "lon": 3.0435998,
+  "tags": {
+    "amenity": "atm",
+    "brand": "BNP Paribas",
+    "brand:wikidata": "Q499707",
+    "cash_in": "no",
+    "check_date": "2026-08-17",
+    "currency:EUR": "yes",
+    "indoor": "no",
+    "name": "BNP Paribas",
+    "operator": "BNP Paribas",
+    "operator:wikidata": "Q499707",
+    "phone": "+33 3 28 36 84 22"
+  }
+},
+{
+  "type": "node",
+  "id": 5434105085,
+  "lat": 50.6318500,
+  "lon": 3.0507950,
+  "tags": {
+    "amenity": "veterinary",
+    "contact:city": "Lille",
+    "contact:housenumber": "195",
+    "contact:phone": "+33 3 20 57 90 03",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Nationale",
+    "name": "Clinique vétérinaire Bourbouze-Beloeil",
+    "opening_hours": "Mo-Sa 08:30-19:00",
+    "ref:FR:SIRET": "39833008400011",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 5435321844,
+  "lat": 50.6272050,
+  "lon": 3.0502879,
+  "tags": {
+    "contact:city": "Lille",
+    "contact:housenumber": "8",
+    "contact:phone": "+33 3 28 07 32 81",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Saint-Pierre Saint-Paul",
+    "contact:website": "https://www.lerelais.org/aussi.php?page=ding_fring",
+    "description": "Friperie solidaire proposant vêtements et accessoires tendance ou vintage à prix réduits pour tous les âges.",
+    "name": "Ding Fring",
+    "opening_hours": "Mo-Sa 10:00-12:30, 14:00-19:00",
+    "second_hand": "only",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 5468770162,
+  "lat": 50.6251927,
+  "lon": 3.0488814,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "52",
+    "addr:postcode": "59000",
+    "addr:street": "Rue des Sarrazins",
+    "amenity": "cafe",
+    "amenity_1": "coworking_space",
+    "contact:email": "contact@les-sarrazins.org",
+    "contact:facebook": "CafeLesSarrazins",
+    "contact:phone": "+33 9 62 67 37 34",
+    "name": "Café Les Sarrazins",
+    "opening_hours": "Tu-Su 11:00-01:00, Mo 17:00-01:00",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "83533151300019",
+    "website": "https://les-sarrazins.org/"
+  }
+},
+{
+  "type": "node",
+  "id": 5491760921,
+  "lat": 50.6278199,
+  "lon": 3.0476974,
+  "tags": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "healthcare:speciality": "general",
+    "name": "Marc Catteau",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5555156964,
+  "lat": 50.6270462,
+  "lon": 3.0497452,
+  "tags": {
+    "name": "France Montres",
+    "ref:FR:SIRET": "43181229600025",
+    "shop": "watches",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 5555156965,
+  "lat": 50.6267369,
+  "lon": 3.0491290,
+  "tags": {
+    "contact:phone": "+33 3 20 12 74 21",
+    "name": "Aux Campagnes Lilloises",
+    "opening_hours": "Mo off; Tu-Sa 07:00-19:00; Su 07:00-14:30",
+    "shop": "greengrocer"
+  }
+},
+{
+  "type": "node",
+  "id": 5555156966,
+  "lat": 50.6267860,
+  "lon": 3.0493240,
+  "tags": {
+    "contact:phone": "+33 3 20 40 70 61",
+    "email": "contact@fournildessaveurs.fr",
+    "name": "Saveurs et Saisons - Le fournil Bio",
+    "opening_hours": "Tu-Sa 08:00-19:00; Su 08:00-13:00",
+    "organic": "yes",
+    "shop": "bakery",
+    "source": "survey",
+    "website": "https://www.fournilbio.fr/pain-bio-lille-wazemmes/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5613234021,
+  "lat": 50.6341820,
+  "lon": 3.0424730,
+  "tags": {
+    "amenity": "restaurant",
+    "mapillary": "1084439312121573",
+    "name": "J'Thai"
+  }
+},
+{
+  "type": "node",
+  "id": 5613984871,
+  "lat": 50.6279179,
+  "lon": 3.0505355,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "caribbean",
+    "diet:vegetarian": "yes",
+    "name": "LOA",
+    "opening_hours": "Tu 12:00-14:30; We-Sa 12:00-14:30,19:00-22:30; Su 12:00-15:00",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5803644988,
+  "lat": 50.6302954,
+  "lon": 3.0473055,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:facebook": "https://www.facebook.com/BURGERONOMY59",
+    "contact:website": "https://www.burgeronomy.fr/",
+    "cuisine": "burger",
+    "name": "BurgerOnomy",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5803644992,
+  "lat": 50.6314065,
+  "lon": 3.0459257,
+  "tags": {
+    "amenity": "university",
+    "education": "university",
+    "name": "ISTC Management et communication",
+    "source": "Etablissements d'enseignement supérieur - 09/2017"
+  }
+},
+{
+  "type": "node",
+  "id": 5803644993,
+  "lat": 50.6314989,
+  "lon": 3.0453318,
+  "tags": {
+    "amenity": "driving_school",
+    "name": "Feu Vert Auto Ecole",
+    "ref:FR:SIRET": "48962627500023"
+  }
+},
+{
+  "type": "node",
+  "id": 5803644996,
+  "lat": 50.6311167,
+  "lon": 3.0442813,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "101",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "amenity": "driving_school",
+    "name": "Auto-Ecole Colbert",
+    "opening_hours": "Mo-Th 10:00-12:00,14:00-19:00; Fr 10:00-13:00; Sa 12:00-13:00",
+    "phone": "+33 641943473",
+    "ref:FR:SIRET": "43269240800011",
+    "website": "https://www.autoecolecolbert.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 5803644998,
+  "lat": 50.6316262,
+  "lon": 3.0434277,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "138",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "contact:city": "Lille",
+    "contact:housenumber": "138",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Colbert",
+    "female": "yes",
+    "male": "yes",
+    "name": "Imagine hair",
+    "phone": "+33 320577124",
+    "shop": "hairdresser"
+  }
+},
+{
+  "type": "node",
+  "id": 5827441495,
+  "lat": 50.6288403,
+  "lon": 3.0466793,
+  "tags": {
+    "contact:housenumber": "33",
+    "contact:street": "Rue Colbert",
+    "name": "La Briochée",
+    "opening_hours": "Mo-Fr 07:00-19:00",
+    "ref:FR:SIRET": "87951405700014",
+    "shop": "bakery",
+    "survey:date": "2020-02"
+  }
+},
+{
+  "type": "node",
+  "id": 5942418305,
+  "lat": 50.6279112,
+  "lon": 3.0506603,
+  "tags": {
+    "amenity": "dentist",
+    "check_date": "2025-08-08",
+    "contact:website": "http://www.centres-dentaires-dentasmile.fr/centre-dentaire-wazemmes/",
+    "healthcare": "dentist",
+    "name": "Clinique dentaire Dentasmile Wazemmes",
+    "opening_hours": "Mo-Fr 09:00-18:00",
+    "ref:FR:FINESS": "590060380",
+    "source": "Le ministère des solidarités et de la santé - 03/2019"
+  }
+},
+{
+  "type": "node",
+  "id": 5973310633,
+  "lat": 50.6302132,
+  "lon": 3.0461606,
+  "tags": {
+    "contact:phone": "+33 3 20 57 20 38",
+    "contact:website": "https://www.pompes-funebres-martin-ponthieux-lille.fr",
+    "name": "Pompes Funèbres Martin",
+    "opening_hours": "Mo-Fr 09:00-12:00,14:00-18:00",
+    "ref:FR:SIRET": "40273741500065",
+    "shop": "funeral_directors"
+  }
+},
+{
+  "type": "node",
+  "id": 6025331813,
+  "lat": 50.6328232,
+  "lon": 3.0473418,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "55",
+    "addr:postcode": "59000",
+    "addr:street": "Boulevard Vauban",
+    "contact:city": "Lille",
+    "contact:email": "lille.vauban@corep.fr",
+    "contact:housenumber": "55",
+    "contact:phone": "+33 3 20 57 34 19",
+    "contact:postcode": "59800",
+    "contact:street": "Boulevard Vauban",
+    "contact:website": "https://www.corep.fr/agence/corep-lille-vauban/",
+    "name": "Corep",
+    "opening_hours": "Mo-Fr 09:00-18:00",
+    "payment:credit_cards": "yes",
+    "ref:FR:SIRET": "32873036100107",
+    "shop": "copyshop",
+    "wikidata": "Q73111125"
+  }
+},
+{
+  "type": "node",
+  "id": 6046070214,
+  "lat": 50.6284077,
+  "lon": 3.0377231,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "27",
+    "addr:postcode": "59000",
+    "addr:street": "Rue de Turenne",
+    "amenity": "vehicle_inspection",
+    "brand": "Autovision",
+    "brand:wikidata": "Q64224842",
+    "contact:city": "Lille",
+    "contact:housenumber": "27",
+    "contact:phone": "+33 3 20 93 50 00",
+    "contact:postcode": "59000",
+    "contact:street": "Rue de Turenne",
+    "man_made": "monitoring_station",
+    "name": "Autovision",
+    "opening_hours": "Mo-Fr 08:30-12:30,14:00-17:30",
+    "website": "https://www.autovision.fr/centre/590029-c-c-a-l-lille/"
+  }
+},
+{
+  "type": "node",
+  "id": 6091025780,
+  "lat": 50.6295623,
+  "lon": 3.0453048,
+  "tags": {
+    "name": "Maison Thève",
+    "opening_hours": "Tu-Sa 10:00-18:00",
+    "ref:FR:SIRET": "91057926700014",
+    "shop": "jewelry",
+    "website": "https://www.maisontheve.com"
+  }
+},
+{
+  "type": "node",
+  "id": 6109590756,
+  "lat": 50.6280011,
+  "lon": 3.0508674,
+  "tags": {
+    "contact:housenumber": "276",
+    "contact:phone": "+33 3 59 51 62 34",
+    "contact:street": "Rue Léon Gambetta",
+    "contact:website": "https://reparer-iphone-lille.com",
+    "mobile_phone:repair": "yes",
+    "name": "MC Phone",
+    "ref:FR:SIRET": "98778659700011",
+    "shop": "mobile_phone"
+  }
+},
+{
+  "type": "node",
+  "id": 6130506839,
+  "lat": 50.6254231,
+  "lon": 3.0392848,
+  "tags": {
+    "name": "The Beauty Store",
+    "shop": "beauty"
+  }
+},
+{
+  "type": "node",
+  "id": 6159414371,
+  "lat": 50.6309081,
+  "lon": 3.0445125,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "93",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "amenity": "fast_food",
+    "check_date": "2026-08-25",
+    "check_date:opening_hours": "2026-08-25",
+    "contact:facebook": "https://fr-fr.facebook.com/Fooday-1951725324934440/",
+    "cuisine": "burger;bagel;fries",
+    "drive_through": "no",
+    "name": "Foodays",
+    "opening_hours:signed": "no",
+    "phone": "+33 766033260",
+    "ref:FR:SIRET": "87850460400017",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6188198707,
+  "lat": 50.6270117,
+  "lon": 3.0485826,
+  "tags": {
+    "amenity": "cafe",
+    "contact:city": "Lille",
+    "contact:facebook": "100075573741685",
+    "contact:housenumber": "356",
+    "contact:instagram": "lanouvelleaventure",
+    "contact:phone": "+33 3 74 46 03 61",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "description": "Café - Brasserie - Bar à vin",
+    "drinking_water:refill": "yes",
+    "drinking_water:refill:network": "Gourde Friendly",
+    "email": "contact@lanouvelleaventure.fr",
+    "name": "La Nouvelle Aventure",
+    "opening_hours": "Mo 08:30-16:00; Tu 06:00-16:00; Th 06:00-23:00; Fr-Sa 08:30-23:00; Su 06:00-18:00",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "84242100000014",
+    "website": "https://lanouvelleaventure.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 6239905971,
+  "lat": 50.6321515,
+  "lon": 3.0429192,
+  "tags": {
+    "brand": "Vival",
+    "brand:wikidata": "Q7937525",
+    "contact:website": "https://vival.casino.fr/stores/e5797/lille-158-rue-colbert",
+    "name": "Vival",
+    "opening_hours": "Mo-Su 08:30-22:00",
+    "phone": "+33 3 20 44 27 57",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 6239906988,
+  "lat": 50.6299989,
+  "lon": 3.0456953,
+  "tags": {
+    "check_date:opening_hours": "2026-08-17",
+    "contact:housenumber": "296",
+    "contact:phone": "+33 3 61 50 47 73",
+    "contact:street": "Rue Nationale",
+    "contact:website": "https://www.reparation-tv-hifi-lille.fr/",
+    "name": "Technico",
+    "opening_hours": "Tu-Sa 09:00-12:00,14:00-19:00",
+    "ref:FR:SIRET": "33114757900022",
+    "repair": "yes",
+    "shop": "hifi"
+  }
+},
+{
+  "type": "node",
+  "id": 6268416579,
+  "lat": 50.6342603,
+  "lon": 3.0456998,
+  "tags": {
+    "amenity": "social_facility",
+    "name": "Résidence Rachel Meresse",
+    "ref:FR:FINESS": "590013959",
+    "social_facility": "group_home",
+    "social_facility:for": "senior",
+    "wikidata": "Q112988128"
+  }
+},
+{
+  "type": "node",
+  "id": 6276579993,
+  "lat": 50.6275696,
+  "lon": 3.0442205,
+  "tags": {
+    "brand": "Proxi",
+    "brand:wikidata": "Q3408522",
+    "brand:wikipedia": "fr:Proxi",
+    "check_date": "2025-08-07",
+    "check_date:opening_hours": "2022-07-29",
+    "name": "Proxi",
+    "opening_hours": "Mo-Su 08:00-22:00",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 6331894393,
+  "lat": 50.6263710,
+  "lon": 3.0474884,
+  "tags": {
+    "amenity": "cafe",
+    "contact:facebook": "https://www.facebook.com/people/Limparfait-Microcosme-culturel-et-caram%C3%A9lis%C3%A9/61557344252499/",
+    "contact:instagram": "limparfait.lille",
+    "cuisine": "cake",
+    "name": "L'imparfait",
+    "opening_hours": "We-Fr 11:30-18:00; Sa 10:00-19:00; Su 10:00-14:00",
+    "ref:FR:SIRET": "93068206700010",
+    "survey:date": "2024-10"
+  }
+},
+{
+  "type": "node",
+  "id": 6331894395,
+  "lat": 50.6260818,
+  "lon": 3.0467181,
+  "tags": {
+    "brand": "Renault",
+    "brand:wikidata": "Q6686",
+    "brand:wikipedia": "fr:Renault",
+    "check_date": "2025-08-08",
+    "contact:phone": "+33 320572967",
+    "name": "Garage Gambetta SECO",
+    "opening_hours": "Mo,Tu 08:00-12:00,14:00-19:00; We 08:00-12:00,14:00-18:00; Th,Fr 08:00-12:00,14:00-19:00",
+    "ref:FR:SIRET": "44056366600013",
+    "shop": "car_repair",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 6331894412,
+  "lat": 50.6255562,
+  "lon": 3.0503992,
+  "tags": {
+    "amenity": "cafe",
+    "contact:phone": "+33 3 20 57 86 90",
+    "name": "Le Béni Saf",
+    "ref:FR:SIRET": "40050261300021"
+  }
+},
+{
+  "type": "node",
+  "id": 6376768817,
+  "lat": 50.6257378,
+  "lon": 3.0492162,
+  "tags": {
+    "name": "Fa Yang - Alimentation Exotique",
+    "shop": "vacant",
+    "survey:date": "2022-01"
+  }
+},
+{
+  "type": "node",
+  "id": 6406780309,
+  "lat": 50.6295000,
+  "lon": 3.0459785,
+  "tags": {
+    "contact:facebook": "BoumBoutiqueLille",
+    "contact:instagram": "boum_boutique_lille",
+    "name": "Boum!",
+    "opening_hours": "Tu,We,Fr,Sa 12:00-19:00; Su 10:30-14:30",
+    "shop": "gift"
+  }
+},
+{
+  "type": "node",
+  "id": 6406780310,
+  "lat": 50.6295480,
+  "lon": 3.0459220,
+  "tags": {
+    "clothes": "women",
+    "contact:facebook": "Boutique.plumrose",
+    "contact:website": "https://plumrose.fr/",
+    "name": "Plumrose",
+    "ref:FR:SIRET": "91024841800022",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 6411306184,
+  "lat": 50.6311350,
+  "lon": 3.0458361,
+  "tags": {
+    "amenity": "college",
+    "check_date": "2026-08-17",
+    "contact:city": "Lille",
+    "contact:housenumber": "83",
+    "contact:postcode": "59000",
+    "contact:street": "Boulevard Vauban",
+    "contact:website": "http://ecole-espas.fr/",
+    "name": "ESPAS - Business & Biosciences",
+    "operator": "Université Catholique de Lille",
+    "operator:type": "private",
+    "ref:UAI": "0595996X",
+    "short_name": "ESPAS",
+    "source": "Etablissements d'enseignement supérieur - 09/2017"
+  }
+},
+{
+  "type": "node",
+  "id": 6427720560,
+  "lat": 50.6312703,
+  "lon": 3.0405676,
+  "tags": {
+    "amenity": "bar",
+    "food": "yes",
+    "name": "L'Estaminet",
+    "ref:FR:SIRET": "84192646200018",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6427720561,
+  "lat": 50.6314126,
+  "lon": 3.0403991,
+  "tags": {
+    "amenity": "bar",
+    "contact:phone": "+33 3 20 93 58 09",
+    "food": "yes",
+    "name": "Le Pearl",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "43943829200021",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6427720566,
+  "lat": 50.6326285,
+  "lon": 3.0427018,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "153",
+    "addr:postcode": "59000",
+    "addr:street": "Rue Colbert",
+    "amenity": "fast_food",
+    "contact:facebook": "https://www.facebook.com/Switch-1375115632817904/",
+    "contact:phone": "+33 621511181",
+    "cuisine": "pizza;sandwich;chicken;salad",
+    "diet:halal": "yes",
+    "drive_through": "no",
+    "name": "Switch",
+    "ref:FR:SIRET": "75170483400017"
+  }
+},
+{
+  "type": "node",
+  "id": 6427720571,
+  "lat": 50.6334244,
+  "lon": 3.0411033,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "thai",
+    "name": "Pad Thai & Co"
+  }
+},
+{
+  "type": "node",
+  "id": 6427720572,
+  "lat": 50.6334390,
+  "lon": 3.0411286,
+  "tags": {
+    "name": "So Coif'",
+    "shop": "hairdresser"
+  }
+},
+{
+  "type": "node",
+  "id": 6447191881,
+  "lat": 50.6266330,
+  "lon": 3.0506652,
+  "tags": {
+    "contact:city": "Lille",
+    "contact:postcode": "59000",
+    "contact:street": "Parvis de Croix",
+    "name": "Air du temps",
+    "opening_hours": "Su 09:30-14:00",
+    "operator": "Jean-Marie Duchemin",
+    "second_hand": "only",
+    "shop": "music",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6469966883,
+  "lat": 50.6305908,
+  "lon": 3.0470527,
+  "tags": {
+    "contact:facebook": "YourideSurfshop",
+    "contact:phone": "+33 3 59 05 30 99",
+    "contact:website": "https://www.youride.fr/",
+    "name": "YouRide",
+    "opening_hours": "Tu-Sa 10:00-12:30,14:30-19:00",
+    "shop": "sports",
+    "sport": "surfing",
+    "survey:date": "2019-04"
+  }
+},
+{
+  "type": "node",
+  "id": 6469966884,
+  "lat": 50.6305593,
+  "lon": 3.0469649,
+  "tags": {
+    "check_date": "2026-08-17",
+    "check_date:opening_hours": "2026-08-17",
+    "contact:facebook": "https://www.facebook.com/lilotvents.fr",
+    "contact:phone": "+33366730978",
+    "contact:website": "https://www.lilot-vents.fr/",
+    "email": "lilotvents@gmail.com",
+    "musical_instrument": "wind",
+    "name": "L'ilôt Vents",
+    "opening_hours": "Tu-Sa 10:00-12:00,14:00-19:00",
+    "ref:FR:SIRET": "80893970600012",
+    "shop": "musical_instrument"
+  }
+},
+{
+  "type": "node",
+  "id": 6469968189,
+  "lat": 50.6273267,
+  "lon": 3.0502034,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "friture",
+    "name": "Friterie du marché",
+    "ref:FR:SIRET": "83952380000010",
+    "survey:date": "2019-05"
+  }
+},
+{
+  "type": "node",
+  "id": 6536701933,
+  "lat": 50.6266884,
+  "lon": 3.0488853,
+  "tags": {
+    "name": "La Bottega Mercato",
+    "ref:FR:SIRET": "95362471500025",
+    "shop": "deli",
+    "website": "https://www.la-bottega.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 6536701936,
+  "lat": 50.6268264,
+  "lon": 3.0494822,
+  "tags": {
+    "contact:phone": "+33320559025",
+    "contact:website": "https://www.boutiquefermedubeaupays.com/",
+    "delivery": "yes",
+    "name": "Ferme du Beau Pays",
+    "opening_hours": "We,Th 08:00-14:00; Fr,Sa 08:00-18:00; Su 08:00-12:30; Tu 08:00-12:00",
+    "organic": "only",
+    "shop": "butcher"
+  }
+},
+{
+  "type": "node",
+  "id": 6536701938,
+  "lat": 50.6267761,
+  "lon": 3.0495145,
+  "tags": {
+    "contact:facebook": "https://www.facebook.com/fromagerie.coeurdelille",
+    "contact:phone": "+33 3 20 40 01 21",
+    "name": "Fromagerie Au cœur de Lille",
+    "opening_hours": "Mo off; Tu-Sa 07:00-19:45; Su 08:00-15:00",
+    "shop": "cheese"
+  }
+},
+{
+  "type": "node",
+  "id": 6536701939,
+  "lat": 50.6265884,
+  "lon": 3.0494574,
+  "tags": {
+    "contact:phone": "+33320429750",
+    "name": "Au petit poissonnier",
+    "shop": "seafood"
+  }
+},
+{
+  "type": "node",
+  "id": 6536701940,
+  "lat": 50.6267882,
+  "lon": 3.0490924,
+  "tags": {
+    "name": "Sébastien Deblock",
+    "ref:FR:SIRET": "39345461600011",
+    "shop": "butcher"
+  }
+},
+{
+  "type": "node",
+  "id": 6536701942,
+  "lat": 50.6267255,
+  "lon": 3.0495466,
+  "tags": {
+    "contact:website": "https://www.bieresdeshalles.com",
+    "drink:beer": "retail",
+    "name": "Bières des Halles",
+    "opening_hours": "Tu-Sa 10:00-20:00; Su 10:00-15:00",
+    "shop": "alcohol"
+  }
+},
+{
+  "type": "node",
+  "id": 6536701945,
+  "lat": 50.6267064,
+  "lon": 3.0489921,
+  "tags": {
+    "contact:website": "https://donabica.com/",
+    "name": "Dona Bica",
+    "opening_hours": "Su 08:00-14:00",
+    "ref:FR:SIRET": "91759370900020",
+    "shop": "pastry"
+  }
+},
+{
+  "type": "node",
+  "id": 6536701946,
+  "lat": 50.6266872,
+  "lon": 3.0493964,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:email": "moltowaz@gmail.com",
+    "contact:instagram": "https://www.instagram.com/moltomonpere/",
+    "contact:phone": "+33 7 83 90 80 60",
+    "contact:website": "https://www.moltomonpere.fr/molto/",
+    "cuisine": "pizza",
+    "name": "Molto Pizze",
+    "opening_hours": "Tu-Fr 11:30-20:00; Sa 10:00-20:00; Su 10:00-16:00"
+  }
+},
+{
+  "type": "node",
+  "id": 6536701947,
+  "lat": 50.6266345,
+  "lon": 3.0494385,
+  "tags": {
+    "contact:facebook": "lesecureuilsdewazemmes",
+    "contact:instagram": "lesecureuilsdewazemmes",
+    "contact:phone": "+33 3 20 40 07 41",
+    "name": "Les Écureuils",
+    "ref:FR:SIRET": "90242005800023",
+    "shop": "pastry"
+  }
+},
+{
+  "type": "node",
+  "id": 6536701953,
+  "lat": 50.6319868,
+  "lon": 3.0433760,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "133",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "amenity": "restaurant",
+    "contact:facebook": "https://www.facebook.com/TOKYO-EXPRESS-207596782594916/",
+    "cuisine": "asian;sushi;noodle",
+    "name": "Tokyo Express",
+    "opening_hours": "Tu-Sa 11:30-22:00; Su 19:00-22:00",
+    "phone": "+33 666092724",
+    "takeaway": "yes",
+    "terrace": "yes",
+    "website": "https://tokyoexpress.fr/fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 6537384391,
+  "lat": 50.6272958,
+  "lon": 3.0391322,
+  "tags": {
+    "check_date": "2025-04-06",
+    "contact:housenumber": "71",
+    "contact:street": "Rue de Turenne",
+    "name": "PVR Marché Alimentation Générale",
+    "opening_hours": "Mo-Fr 10:00-24:00",
+    "phone": "+33950522060",
+    "ref:FR:SIRET": "93974804200016",
+    "shop": "convenience",
+    "website": "https://iyan-alimentation-generale.business.site"
+  }
+},
+{
+  "type": "node",
+  "id": 6651598741,
+  "lat": 50.6324424,
+  "lon": 3.0429015,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "151",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "amenity": "bar",
+    "contact:facebook": "La.Confrerie.Bar.Etudiant",
+    "contact:housenumber": "151",
+    "contact:instagram": "la.confrerie.lille",
+    "contact:street": "Rue Colbert",
+    "name": "La Confrérie",
+    "opening_hours": "Mo-We 15:00-00:45; Th-Sa 15:00-01:45",
+    "phone": "+33 643664266",
+    "ref:FR:SIRET": "88832563600015"
+  }
+},
+{
+  "type": "node",
+  "id": 6784658980,
+  "lat": 50.6271190,
+  "lon": 3.0484433,
+  "tags": {
+    "check_date": "2025-10-22",
+    "contact:city": "Lille",
+    "contact:housenumber": "1",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Colbert",
+    "female": "yes",
+    "male": "yes",
+    "name": "Coiffure Mario",
+    "opening_hours": "Tu-Sa 08:00-12:00,14:00-18:45",
+    "shop": "hairdresser"
+  }
+},
+{
+  "type": "node",
+  "id": 6806465022,
+  "lat": 50.6335846,
+  "lon": 3.0481332,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "43",
+    "addr:postcode": "59800",
+    "addr:street": "Boulevard Vauban",
+    "air_conditioning": "no",
+    "amenity": "fast_food",
+    "contact:facebook": "https://www.facebook.com/dogsandwichs/",
+    "cuisine": "sandwich",
+    "diet:gluten_free": "no",
+    "diet:kosher": "no",
+    "diet:vegetarian": "yes",
+    "drive_through": "no",
+    "name": "Dog Sandwich",
+    "opening_hours": "Mo-Fr 07:00-15:00",
+    "ref:FR:SIRET": "50454024600015",
+    "website": "https://dog-sandwich-lille.eatbu.com/?lang=fr"
+  }
+},
+{
+  "type": "node",
+  "id": 6817504714,
+  "lat": 50.6324786,
+  "lon": 3.0442289,
+  "tags": {
+    "amenity": "college",
+    "name": "Faculté de Médecine & de Maïeutique",
+    "operator:type": "private",
+    "ref:UAI": "0590352M",
+    "short_name": "FMM"
+  }
+},
+{
+  "type": "node",
+  "id": 6892270503,
+  "lat": 50.6269507,
+  "lon": 3.0483995,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:housenumber": "358",
+    "contact:instagram": "bouillant.wzm",
+    "contact:street": "Rue Léon Gambetta",
+    "name": "Bouillant",
+    "ref:FR:SIRET": "92916911800015",
+    "website": "https://www.restaurant-bouillant-lille.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 6905063154,
+  "lat": 50.6265820,
+  "lon": 3.0492228,
+  "tags": {
+    "name": "La Maison du Fruit",
+    "ref:FR:SIRET": "50926311700012",
+    "shop": "greengrocer"
+  }
+},
+{
+  "type": "node",
+  "id": 6905063156,
+  "lat": 50.6266328,
+  "lon": 3.0492000,
+  "tags": {
+    "butcher": "poultry",
+    "name": "Le coq hardi",
+    "opening_hours": "Tu-Th 08:00-13:00; Fr-Sa 08:00-17:00",
+    "ref:FR:SIRET": "47766821400018",
+    "shop": "butcher"
+  }
+},
+{
+  "type": "node",
+  "id": 6905063157,
+  "lat": 50.6266667,
+  "lon": 3.0490200,
+  "tags": {
+    "name": "La tapasta",
+    "shop": "deli"
+  }
+},
+{
+  "type": "node",
+  "id": 6905063158,
+  "lat": 50.6266654,
+  "lon": 3.0496874,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:facebook": "https://www.facebook.com/ptitesdouceursphuket/",
+    "contact:phone": "+33320120155",
+    "contact:website": "http://www.les-petites-douceurs-de-phuket.com/",
+    "cuisine": "thai",
+    "name": "Douceurs de Phuket",
+    "opening_hours": "Tu-Sa 08:30-20:00; Su 08:30-15:00",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6905063159,
+  "lat": 50.6265992,
+  "lon": 3.0490677,
+  "tags": {
+    "contact:facebook": "https://www.facebook.com/GreenJuicery59/",
+    "drink:juice": "yes",
+    "drink:smoothie": "yes",
+    "name": "Green Juicery",
+    "ref:FR:SIRET": "85207894800019",
+    "shop": "beverages"
+  }
+},
+{
+  "type": "node",
+  "id": 6954037071,
+  "lat": 50.6274647,
+  "lon": 3.0501220,
+  "tags": {
+    "amenity": "bar",
+    "check_date": "2025-08-08",
+    "contact:city": "Lille",
+    "contact:housenumber": "321",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "food": "yes",
+    "name": "Le Stout",
+    "opening_hours": "Su-Th 08:00-00:00; Fr 08:00-01:00; Sa 08:00-02:00",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "50435984500014"
+  }
+},
+{
+  "type": "node",
+  "id": 7008595414,
+  "lat": 50.6307835,
+  "lon": 3.0448214,
+  "tags": {
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "brand:wikipedia": "fr:V'Lille",
+    "capacity": "16",
+    "contact:city": "Lille",
+    "contact:housenumber": "100",
+    "contact:postcode": "59000",
+    "contact:street": "Boulevard Vauban",
+    "contact:website": "https://www.ilevia.fr/cms/vlille/",
+    "fee": "yes",
+    "name": "Campus St Rafaël",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "network:wikipedia": "fr:V'Lille",
+    "opening_hours": "24/7",
+    "operator": "Ilévia",
+    "operator:type": "private",
+    "operator:wikidata": "Q117215",
+    "operator:wikipedia": "fr:Ilévia",
+    "payment:credit_cards": "yes",
+    "phone": "+33 3 20 40 40 40",
+    "ref": "166",
+    "vending": "yes",
+    "website": "https://www.ilevia.fr/cms/vlille/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 7060354785,
+  "lat": 50.6269578,
+  "lon": 3.0498028,
+  "tags": {
+    "clothes": "women",
+    "name": "Coquine",
+    "ref:FR:SIRET": "41986203200010",
+    "shop": "clothes",
+    "survey:date": "2019-12"
+  }
+},
+{
+  "type": "node",
+  "id": 7363009469,
+  "lat": 50.6276096,
+  "lon": 3.0345097,
+  "tags": {
+    "access": "destination",
+    "amenity": "recycling",
+    "description": "Composteurs accessibles aux foyers du quartier inscrits. Permanences le mardi et le vendredi de 18h à 19h30",
+    "name": "Square de la Houblonnière",
+    "operator": "des Jardins et des Hommes",
+    "owner": "Ville de Lille",
+    "recycling:compost": "yes",
+    "recycling:organic": "yes",
+    "recycling_type": "container"
+  }
+},
+{
+  "type": "node",
+  "id": 7387324347,
+  "lat": 50.6311792,
+  "lon": 3.0439144,
+  "tags": {
+    "contact:facebook": "https://www.facebook.com/allwaysport",
+    "contact:phone": "+33 9 83 20 33 51",
+    "contact:website": "https://www.allwaysport.com/",
+    "name": "Allway Sport",
+    "opening_hours": "Tu,Th,Fr 10:00-12:30,14:00-19:00; We 10:00-18:00; Sa 10:00-19:00",
+    "ref:FR:SIRET": "75311357000026",
+    "shop": "sports",
+    "sport": "hockey;handball;volleyball"
+  }
+},
+{
+  "type": "node",
+  "id": 7387324348,
+  "lat": 50.6277950,
+  "lon": 3.0508684,
+  "tags": {
+    "contact:phone": "+33 3 74 45 21 62",
+    "contact:website": "https://www.cash-web.fr/localisation_cash-web_7_lille%202.html",
+    "name": "Cash Web",
+    "old_name": "Camaïeu Outlet",
+    "opening_hours": "Mo-Sa 10:00-19:00; Su 10:00-13:30",
+    "ref:FR:SIRET": "79874548500036",
+    "second_hand": "only",
+    "shop": "second_hand"
+  }
+},
+{
+  "type": "node",
+  "id": 7418871195,
+  "lat": 50.6287387,
+  "lon": 3.0464631,
+  "tags": {
+    "amenity": "childcare",
+    "check_date": "2025-10-12",
+    "contact:housenumber": "62",
+    "contact:street": "Rue Colbert",
+    "email": "lille@lacompagniedesfamilles.com",
+    "name": "La compagnie des familles",
+    "phone": "+33 3 20 63 73 10",
+    "website": "https://lille.lacompagniedesfamilles.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 7885073430,
+  "lat": 50.6253753,
+  "lon": 3.0494594,
+  "tags": {
+    "name": "Corner Mobile",
+    "shop": "mobile_phone",
+    "website": "https://cornermobile.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 7992649686,
+  "lat": 50.6335312,
+  "lon": 3.0417450,
+  "tags": {
+    "addr:housenumber": "187",
+    "addr:street": "Rue Colbert",
+    "name": "La Gourmandise",
+    "phone": "+33 9 50 68 85 47",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 8006507259,
+  "lat": 50.6257867,
+  "lon": 3.0412072,
+  "tags": {
+    "addr:postcode": "59000",
+    "amenity": "post_office",
+    "atm": "yes",
+    "copy_facility": "yes",
+    "name": "Lille Place Cormontaigne",
+    "opening_hours": "Mo 09:00-12:30,13:30-18:00; Tu 09:00-12:00,15:00-18:00; We-Fr 09:00-12:30,13:30-18:00; Sa 09:00-12:30; Su off",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "operator:wikipedia": "fr:La Poste (entreprise française)",
+    "phone": "3631",
+    "ref:FR:LaPoste": "14455D",
+    "source": "LaPoste - 03/2019",
+    "stamping_machine": "yes",
+    "survey:date": "2020-10",
+    "website": "https://localiser.laposte.fr/nord/lille/lille-place-cormontaigne-591890",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 8007833524,
+  "lat": 50.6267061,
+  "lon": 3.0403385,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:phone": "+33 3 20 92 20 20",
+    "contact:website": "https://www.ciao-ragazzi-restaurant-lille.fr/",
+    "cuisine": "italian_pizza",
+    "name": "Ciao Ragazzi",
+    "opening_hours": "Su,Mo 18:00-22:30; Tu-Sa 11:30-14:30,18:00-22:30",
+    "survey:date": "2022-12",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 8007833549,
+  "lat": 50.6293100,
+  "lon": 3.0427117,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date:opening_hours": "2026-09-07",
+    "contact:instagram": "gueuleton_lille",
+    "cuisine": "steak_house",
+    "name": "Gueuleton Lille",
+    "opening_hours:signed": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 8007833562,
+  "lat": 50.6256412,
+  "lon": 3.0455511,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:phone": "+33 3 20 31 31 95",
+    "contact:website": "https://www.pizzarella59.fr/",
+    "cuisine": "pizza",
+    "name": "Pizza Rella",
+    "ref:FR:SIRET": "85390706100016",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 8009215115,
+  "lat": 50.6287197,
+  "lon": 3.0394060,
+  "tags": {
+    "amenity": "school",
+    "check_date": "2026-06-13",
+    "contact:city": "Lille",
+    "contact:email": "ce.0595396v@ac-lille.fr",
+    "contact:housenumber": "18",
+    "contact:phone": "+33 3 20 93 62 15",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Saint-Jean-Baptiste de la Salle",
+    "contact:website": "https://www.lasallelille.com/",
+    "name": "Collège privé La Salle",
+    "operator:type": "private",
+    "ref:FR:SIRET": "77562426500069",
+    "ref:UAI": "0595396V",
+    "school:FR": "collège",
+    "source": "Ministère de l'Éducation nationale et de la Jeunesse - 09/2020"
+  }
+},
+{
+  "type": "node",
+  "id": 8009215116,
+  "lat": 50.6283425,
+  "lon": 3.0395884,
+  "tags": {
+    "amenity": "college",
+    "check_date": "2026-09-07",
+    "name": "Institut de Kinésithérapie Podologie Orthopédie",
+    "operator:type": "private",
+    "ref:UAI": "0593210U",
+    "short_name": "IKPO",
+    "source": "Etablissements d'enseignement supérieur - 09/2017",
+    "website": "https://www.ikpo.fr/Page"
+  }
+},
+{
+  "type": "node",
+  "id": 8009215117,
+  "lat": 50.6334306,
+  "lon": 3.0415701,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "206",
+    "addr:postcode": "59000",
+    "addr:street": "Rue Colbert",
+    "amenity": "driving_school",
+    "name": "City'Zen",
+    "phone": "+33 685424674",
+    "website": "https://www.city-zen-nord.fr/agences/cityzen-lille/"
+  }
+},
+{
+  "type": "node",
+  "id": 8009215118,
+  "lat": 50.6333775,
+  "lon": 3.0419154,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "181",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "amenity": "fast_food",
+    "contact:facebook": "lilleruecolbert",
+    "contact:housenumber": "181",
+    "contact:street": "Rue Colbert",
+    "cuisine": "pizza;sandwich",
+    "diet:vegetarian": "yes",
+    "drive_through": "no",
+    "name": "Resto Alpha",
+    "phone": "+33 9 81 16 68 43",
+    "ref:FR:SIRET": "83030889600018",
+    "survey:date": "2020-10"
+  }
+},
+{
+  "type": "node",
+  "id": 8012501122,
+  "lat": 50.6252390,
+  "lon": 3.0394156,
+  "tags": {
+    "amenity": "atm",
+    "brand": "Crédit Mutuel",
+    "brand:wikidata": "Q642627",
+    "name": "Crédit Mutuel",
+    "operator": "Crédit Mutuel",
+    "operator:wikidata": "Q642627"
+  }
+},
+{
+  "type": "node",
+  "id": 8280757936,
+  "lat": 50.6300114,
+  "lon": 3.0455368,
+  "tags": {
+    "addr:postcode": "59800",
+    "amenity": "post_office",
+    "brand": "La Poste",
+    "check_date": "2026-08-17",
+    "name": "Relais La Poste",
+    "opening_hours": "Mo-Sa 08:00-18:00; Su 09:00-13:00; PH off; 2024 May 19 09:00-13:00; 2024 May 20 off",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "post_office": "post_partner",
+    "ref:FR:LaPoste": "15054D",
+    "source": "LaPoste - 03/2019",
+    "website": "https://localiser.laposte.fr/nord/lille/lille-nationale-carrefour-expres-590148",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 8280757937,
+  "lat": 50.6263872,
+  "lon": 3.0487469,
+  "tags": {
+    "addr:postcode": "59000",
+    "amenity": "post_office",
+    "brand": "La Poste",
+    "name": "Relais La Poste",
+    "opening_hours": "Mo-Sa 08:00-21:00; PH off; 2024 May 20 off",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "operator:wikipedia": "fr:La Poste (entreprise française)",
+    "post_office": "post_partner",
+    "ref:FR:LaPoste": "14301D",
+    "source": "LaPoste - 03/2019",
+    "website": "https://localiser.laposte.fr/nord/lille/lille-nouvelle-aventure-my-auchan-590124",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 8421059279,
+  "lat": 50.6270856,
+  "lon": 3.0487154,
+  "tags": {
+    "addr:housenumber": "344",
+    "addr:street": "Rue Léon Gambetta",
+    "amenity": "pharmacy",
+    "contact:phone": "+33 3 20 57 39 95",
+    "contact:website": "https://grandepharmaciedewazemmes.pharmabest.com/",
+    "dispensing": "yes",
+    "healthcare": "pharmacy",
+    "name": "Grande Pharmacie de Wazemmes",
+    "opening_hours": "Mo-Fr 08:30-19:30; Sa 09:00-20:00; Su 09:00-13:30; Su off",
+    "ref:FR:FINESS": "590021853",
+    "ref:FR:SIRET": "83262874700020",
+    "source": "Le ministère des solidarités et de la santé - 2021-07",
+    "type:FR:FINESS": "620"
+  }
+},
+{
+  "type": "node",
+  "id": 8425684273,
+  "lat": 50.6309596,
+  "lon": 3.0444618,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "DMC Family",
+    "opening_hours": "Mo-Fr 07:30-15:30"
+  }
+},
+{
+  "type": "node",
+  "id": 8476093977,
+  "lat": 50.6278399,
+  "lon": 3.0509766,
+  "tags": {
+    "check_date": "2026-05-07",
+    "contact:housenumber": "297",
+    "name": "Abisha Exotique",
+    "ref:FR:SIRET": "10295829500010",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 8476093981,
+  "lat": 50.6303077,
+  "lon": 3.0464025,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "pizza",
+    "name": "Pizzeria Reggio",
+    "opening_hours": "Mo-Sa 11:15-14:00,18:00-21:00; PH,Su 18:15-22:00",
+    "ref:FR:SIRET": "75160958700033"
+  }
+},
+{
+  "type": "node",
+  "id": 8640070596,
+  "lat": 50.6281332,
+  "lon": 3.0474300,
+  "tags": {
+    "contact:phone": "+33 9 81 34 83 75",
+    "name": "La Maison des saveurs",
+    "opening_hours": "Mo-Sa 08:00-19:00; Su 08:00-16:00",
+    "shop": "bakery",
+    "survey:date": "2021-12"
+  }
+},
+{
+  "type": "node",
+  "id": 8909434242,
+  "lat": 50.6322968,
+  "lon": 3.0509181,
+  "tags": {
+    "cannabis:cbd": "only",
+    "check_date:opening_hours": "2026-08-17",
+    "contact:website": "https://foxseedslille.fr/",
+    "name": "Fox Seeds",
+    "opening_hours": "Mo-Sa 10:00-19:00",
+    "ref:FR:SIRET": "82268648100018",
+    "shop": "cannabis"
+  }
+},
+{
+  "type": "node",
+  "id": 8942439083,
+  "lat": 50.6275593,
+  "lon": 3.0507669,
+  "tags": {
+    "contact:instagram": "the.en.beaute/",
+    "description": "Salon de thé et institut de beauté",
+    "name": "Thé en beauté",
+    "opening_hours": "We-Sa 13:00-18:00; Su 11:00-16:00",
+    "shop": "beauty"
+  }
+},
+{
+  "type": "node",
+  "id": 8967657099,
+  "lat": 50.6284684,
+  "lon": 3.0402514,
+  "tags": {
+    "amenity": "college",
+    "check_date": "2026-06-13",
+    "name": "Institut de formation en pédicurie-podologie",
+    "operator:type": "private",
+    "ref:UAI": "0595653Z",
+    "short_name": "IFPP"
+  }
+},
+{
+  "type": "node",
+  "id": 8971566466,
+  "lat": 50.6312031,
+  "lon": 3.0467109,
+  "tags": {
+    "amenity": "college",
+    "name": "ESTICE - International Management",
+    "operator:type": "private",
+    "ref:UAI": "0592608P",
+    "short_name": "ESTICE",
+    "website": "https://estice.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 8971685751,
+  "lat": 50.6251922,
+  "lon": 3.0370128,
+  "tags": {
+    "amenity": "college",
+    "contact:city": "Lille",
+    "contact:housenumber": "22",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Halévy",
+    "contact:website": "https://www.ecole-ests.fr/eests/nos-sites/eests-lille-metropole/",
+    "name": "École européenne supérieure en travail social",
+    "operator:type": "private",
+    "ref:UAI": "0592757B",
+    "short_name": "ESTS"
+  }
+},
+{
+  "type": "node",
+  "id": 8971710127,
+  "lat": 50.6255162,
+  "lon": 3.0393986,
+  "tags": {
+    "brand": "U Express",
+    "brand:wikidata": "Q2529029",
+    "check_date": "2025-04-06",
+    "name": "U Express Lille Cormontaigne",
+    "opening_hours": "Mo-Sa 07:00-22:00; Su 09:00-13:00",
+    "shop": "convenience",
+    "website": "https://www.magasins-u.com/magasin/uexpress-lillecormontaigne"
+  }
+},
+{
+  "type": "node",
+  "id": 8971710128,
+  "lat": 50.6257286,
+  "lon": 3.0396088,
+  "tags": {
+    "amenity": "school",
+    "contact:email": "lille@ecoleterrade.com",
+    "contact:phone": "+33 320428724",
+    "name": "École du second degré privée hors contrat Terrad",
+    "operator:type": "private",
+    "ref:FR:SIRET": "43879833200195",
+    "ref:UAI": "0596406T",
+    "school:FR": "lycée",
+    "source": "Ministère de l'Éducation nationale, de l'Enseignement supérieur et de la Recherche - 2025-08",
+    "start_date": "2010-09-01"
+  }
+},
+{
+  "type": "node",
+  "id": 8975299238,
+  "lat": 50.6309944,
+  "lon": 3.0466073,
+  "tags": {
+    "amenity": "college",
+    "name": "École européenne de sciences politiques et sociales",
+    "operator:type": "private",
+    "ref:FR:SIRET": "77562424000013",
+    "ref:UAI": "0596953M",
+    "short_name": "ESPOL",
+    "website": "https://espol-lille.eu/"
+  }
+},
+{
+  "type": "node",
+  "id": 8984048737,
+  "lat": 50.6344635,
+  "lon": 3.0501689,
+  "tags": {
+    "heritage": "2",
+    "heritage:operator": "mhs",
+    "mhs:inscription_date": "1910-12-12",
+    "name": "Ancien fort Saint-Sauveur",
+    "ref:mhs": "PA00107585",
+    "source:heritage": "Ministère de la Culture - 2020-12",
+    "tourism": "attraction"
+  }
+},
+{
+  "type": "node",
+  "id": 8995826554,
+  "lat": 50.6289503,
+  "lon": 3.0438454,
+  "tags": {
+    "amenity": "dentist",
+    "check_date:opening_hours": "2026-09-10",
+    "healthcare": "dentist",
+    "name": "Antoine Bonnel",
+    "opening_hours:signed": "no",
+    "ref:FR:SIRET": "38827376500015",
+    "source": "INSEE - 2021-08"
+  }
+},
+{
+  "type": "node",
+  "id": 8995826555,
+  "lat": 50.6294518,
+  "lon": 3.0450377,
+  "tags": {
+    "amenity": "social_facility",
+    "contact:city": "Lille",
+    "contact:housenumber": "279",
+    "contact:phone": "+33 3 20 54 51 80",
+    "contact:postcode": "59800",
+    "contact:street": "Rue Nationale",
+    "name": "Foyer Réalité",
+    "ref:FR:FINESS": "590007415",
+    "ref:FR:SIRET": "77562518900078",
+    "social_facility": "group_home",
+    "social_facility:for": "underprivileged",
+    "source": "INSEE - 2021-08",
+    "type:FR:FINESS": "223"
+  }
+},
+{
+  "type": "node",
+  "id": 8995839603,
+  "lat": 50.6310504,
+  "lon": 3.0477815,
+  "tags": {
+    "amenity": "place_of_worship",
+    "denomination": "catholic",
+    "name": "Lycée européen Thérèse d'Avila",
+    "religion": "christian",
+    "source": "IGN - 2021-06"
+  }
+},
+{
+  "type": "node",
+  "id": 8995839604,
+  "lat": 50.6310014,
+  "lon": 3.0486809,
+  "tags": {
+    "amenity": "dentist",
+    "check_date:opening_hours": "2026-09-10",
+    "healthcare": "dentist",
+    "name": "Docteur Florence Vuylsteker - Chirurgien-dentiste",
+    "opening_hours:signed": "no",
+    "ref:FR:SIRET": "40205515600010",
+    "source": "INSEE - 2021-08"
+  }
+},
+{
+  "type": "node",
+  "id": 8995839606,
+  "lat": 50.6309865,
+  "lon": 3.0486887,
+  "tags": {
+    "amenity": "dentist",
+    "healthcare": "dentist",
+    "name": "Docteur Franck Catry - Chirurgiens-dentiste",
+    "opening_hours": "Mo-We,Fr 09:00-12:00, Mo-We,Fr 14:00-19:00",
+    "ref:FR:SIRET": "79405485800012",
+    "source": "INSEE - 2021-08"
+  }
+},
+{
+  "type": "node",
+  "id": 8995890683,
+  "lat": 50.6272679,
+  "lon": 3.0480900,
+  "tags": {
+    "amenity": "dentist",
+    "healthcare": "dentist",
+    "name": "Nathalie Saulais",
+    "opening_hours": "\"Sur rendez-vous\"",
+    "ref:FR:SIRET": "38908544000060",
+    "source": "INSEE - 2021-08"
+  }
+},
+{
+  "type": "node",
+  "id": 8995890684,
+  "lat": 50.6273463,
+  "lon": 3.0480160,
+  "tags": {
+    "amenity": "social_facility",
+    "check_date": "2026-04-25",
+    "fax": "+33320746439",
+    "name": "ESAT Renaissance",
+    "phone": "+33320746430",
+    "ref:FR:FINESS": "590794244",
+    "ref:FR:SIRET": "77566441000518",
+    "social_facility": "workshop",
+    "social_facility:for": "disabled",
+    "source": "Le ministère des solidarités et de la santé - 2021-06",
+    "type:FR:FINESS": "246"
+  }
+},
+{
+  "type": "node",
+  "id": 9004568448,
+  "lat": 50.6313296,
+  "lon": 3.0458616,
+  "tags": {
+    "amenity": "university",
+    "education": "university",
+    "name": "Campus Saint-Raphael"
+  }
+},
+{
+  "type": "node",
+  "id": 9015398238,
+  "lat": 50.6322395,
+  "lon": 3.0449227,
+  "tags": {
+    "amenity": "university",
+    "name": "Faculté de droit - Institut catholique de Lille",
+    "operator:type": "private",
+    "ref:UAI": "0596162C",
+    "short_name": "FD",
+    "source": "Etablissements d'enseignement supérieur - 09/2017"
+  }
+},
+{
+  "type": "node",
+  "id": 9015398239,
+  "lat": 50.6320166,
+  "lon": 3.0448771,
+  "tags": {
+    "amenity": "college",
+    "name": "Faculté de gestion, économie et sciences",
+    "operator:type": "private",
+    "ref:UAI": "0592806E",
+    "short_name": "FGES",
+    "source": "Etablissements d'enseignement supérieur - 09/2017"
+  }
+},
+{
+  "type": "node",
+  "id": 9015398240,
+  "lat": 50.6329965,
+  "lon": 3.0458481,
+  "tags": {
+    "amenity": "university",
+    "check_date": "2024-05-07",
+    "name": "Faculté de théologie",
+    "operator:type": "private",
+    "ref:UAI": "0592805D",
+    "short_name": "FT",
+    "source": "Etablissements d'enseignement supérieur - 09/2017"
+  }
+},
+{
+  "type": "node",
+  "id": 9015398241,
+  "lat": 50.6332858,
+  "lon": 3.0461512,
+  "tags": {
+    "amenity": "university",
+    "check_date": "2024-05-07",
+    "name": "Faculté des lettres et sciences humaines",
+    "operator:type": "private",
+    "ref:UAI": "0592808G",
+    "short_name": "FLSH",
+    "source": "Etablissements d'enseignement supérieur - 09/2017"
+  }
+},
+{
+  "type": "node",
+  "id": 9022254684,
+  "lat": 50.6293820,
+  "lon": 3.0442476,
+  "tags": {
+    "contact:city": "Lille",
+    "contact:housenumber": "320",
+    "contact:phone": "+33 3 20 13 17 46",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Nationale",
+    "contact:website": "https://www.difprint-lille.com/",
+    "name": "Dif'Print",
+    "opening_hours": "Mo-Fr 08:00-19:00",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "ref:FR:SIRET": "44987738000021",
+    "shop": "copyshop"
+  }
+},
+{
+  "type": "node",
+  "id": 9029283480,
+  "lat": 50.6347292,
+  "lon": 3.0407177,
+  "tags": {
+    "amenity": "social_facility",
+    "fax": "+33328361651",
+    "name": "SISAA",
+    "phone": "+33328361650",
+    "ref:FR:FINESS": "590027108",
+    "ref:FR:SIRET": "77562467900517",
+    "social_facility": "group_home",
+    "social_facility:for": "child",
+    "source": "Le ministère des solidarités et de la santé - 2021-07",
+    "type:FR:FINESS": "177"
+  }
+},
+{
+  "type": "node",
+  "id": 9038206461,
+  "lat": 50.6360209,
+  "lon": 3.0453182,
+  "tags": {
+    "amenity": "fast_food",
+    "check_date": "2023-11-04",
+    "contact:facebook": "https://www.facebook.com/LaSandwicherieLibanaise/",
+    "contact:instagram": "https://www.instagram.com/lasandwicherielibanaise/",
+    "contact:phone": "+33 9 50 98 35 84",
+    "cuisine": "lebanese",
+    "diet:vegetarian": "yes",
+    "name": "La Sandwicherie Libanaise",
+    "opening_hours": "Mo-Fr 11:30-14:30,18:30-22:30",
+    "ref:FR:SIRET": "89100768400014",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9044998161,
+  "lat": 50.6302035,
+  "lon": 3.0511487,
+  "tags": {
+    "amenity": "social_facility",
+    "contact:city": "Lille",
+    "contact:fax": "+33 3 20 04 60 42",
+    "contact:housenumber": "41",
+    "contact:phone": "+33 3 20 47 92 24",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Meurein",
+    "name": "Résidence Service Lille-Station",
+    "operator": "Les papillons blancs de Lille",
+    "operator:type": "private_non_profit",
+    "ref:FR:FINESS": "590006441",
+    "social_facility": "group_home",
+    "social_facility:for": "disabled",
+    "source": "Le ministère des solidarités et de la santé - 2021-07",
+    "type:FR:FINESS": "252"
+  }
+},
+{
+  "type": "node",
+  "id": 9053001330,
+  "lat": 50.6295954,
+  "lon": 3.0458687,
+  "tags": {
+    "contact:city": "Lille",
+    "contact:housenumber": "65",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Colbert",
+    "name": "Mondialshirt",
+    "opening_hours": "closed",
+    "ref:FR:SIRET": "53862150900024",
+    "shop": "clothes",
+    "source": "INSEE - 2021-08"
+  }
+},
+{
+  "type": "node",
+  "id": 9055526181,
+  "lat": 50.6310835,
+  "lon": 3.0440125,
+  "tags": {
+    "amenity": "dentist",
+    "contact:city": "Lille",
+    "contact:housenumber": "118",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Colbert",
+    "healthcare": "dentist",
+    "healthcare:speciality": "dental_oral_maxillo_facial_surgery",
+    "name": "Dentistes Piette et Coste",
+    "ref:FR:SIRET": "82162528200032;34300139200020",
+    "source": "INSEE - 2021-08"
+  }
+},
+{
+  "type": "node",
+  "id": 9055976670,
+  "lat": 50.6268688,
+  "lon": 3.0354232,
+  "tags": {
+    "amenity": "social_facility",
+    "check_date": "2025-07-27",
+    "contact:city": "Lille",
+    "contact:housenumber": "9",
+    "contact:phone": "+33 3 20 09 51 83",
+    "contact:postcode": "59000",
+    "contact:street": "Impasse Saint-Joseph",
+    "name": "Résidence Sainte-Claire",
+    "ref:FR:FINESS": "590815072",
+    "ref:FR:SIRET": "78566823700155",
+    "social_facility": "group_home",
+    "social_facility:for": "senior",
+    "source": "Le ministère des solidarités et de la santé - 2021-07",
+    "type:FR:FINESS": "502",
+    "wikidata": "Q112923327"
+  }
+},
+{
+  "type": "node",
+  "id": 9057061667,
+  "lat": 50.6255585,
+  "lon": 3.0397903,
+  "tags": {
+    "amenity": "social_facility",
+    "contact:city": "Lille",
+    "contact:housenumber": "5",
+    "contact:postcode": "59000",
+    "contact:street": "Rue d'Isly",
+    "name": "Résidence Isly",
+    "operator": "Areli",
+    "operator:type": "private_non_profit",
+    "ref:FR:SIRET": "77562466100143",
+    "social_facility": "group_home",
+    "social_facility:for": "underprivileged",
+    "source": "INSEE - 2021-08"
+  }
+},
+{
+  "type": "node",
+  "id": 9057067343,
+  "lat": 50.6257198,
+  "lon": 3.0405722,
+  "tags": {
+    "amenity": "social_facility",
+    "check_date": "2024-08-06",
+    "name": "Résidence jeunes Nazareth",
+    "ref:FR:SIRET": "39434217400353",
+    "social_facility": "group_home",
+    "social_facility:for": "underprivileged",
+    "source": "INSEE - 2021-08"
+  }
+},
+{
+  "type": "node",
+  "id": 9142758198,
+  "lat": 50.6299138,
+  "lon": 3.0436984,
+  "tags": {
+    "amenity": "school",
+    "contact:email": "ce.0593964n@ac-lille.fr",
+    "contact:phone": "+33 328365757",
+    "name": "École primaire privée Thérèse d'Avila",
+    "operator:type": "private",
+    "ref:FR:SIRET": "77562427300048",
+    "ref:UAI": "0593964N",
+    "school:FR": "primaire",
+    "source": "Ministère de l'Éducation nationale et de la Jeunesse - 2021-09",
+    "start_date": "1971-03-24"
+  }
+},
+{
+  "type": "node",
+  "id": 9151302817,
+  "lat": 50.6306600,
+  "lon": 3.0389140,
+  "tags": {
+    "amenity": "social_facility",
+    "fax": "+33328361651",
+    "name": "ARIA - Foyer Roland",
+    "phone": "+33320930898",
+    "ref:FR:FINESS": "590788139",
+    "ref:FR:SIRET": "77562467900178",
+    "social_facility": "group_home",
+    "social_facility:for": "child",
+    "source": "Le ministère des solidarités et de la santé - 2021-09",
+    "type:FR:FINESS": "177",
+    "website": "https://www.lasauvegardedunord.fr/etablissements/aria-foyer-roland-et-concert/"
+  }
+},
+{
+  "type": "node",
+  "id": 9155912006,
+  "lat": 50.6258827,
+  "lon": 3.0461861,
+  "tags": {
+    "amenity": "childcare",
+    "name": "Grandir"
+  }
+},
+{
+  "type": "node",
+  "id": 9278736195,
+  "lat": 50.6340718,
+  "lon": 3.0489180,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "addr:street": "Boulevard Vauban",
+    "amenity": "college",
+    "contact:city": "Lille",
+    "contact:housenumber": "18",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Saint-Jean-Baptiste de la Salle",
+    "contact:website": "https://www.adimaker.fr/",
+    "internet_access": "yes",
+    "name": "Adimaker",
+    "operator": "Junia",
+    "operator:type": "private",
+    "website": "https://www.junia.com/fr/formations-admissions/prepa-classes-preparatoires-ingenieur/prepa-adimaker/"
+  }
+},
+{
+  "type": "node",
+  "id": 9336960218,
+  "lat": 50.6292322,
+  "lon": 3.0363190,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "18",
+    "addr:postcode": "59000",
+    "addr:street": "Rue de Turenne",
+    "amenity": "restaurant",
+    "contact:facebook": "https://www.facebook.com/jacky.djak",
+    "cuisine": "burger",
+    "delivery": "yes",
+    "name": "La Patate qui Fume",
+    "opening_hours": "Mo-Fr 11:30-14:00",
+    "phone": "+33320028349"
+  }
+},
+{
+  "type": "node",
+  "id": 9371157338,
+  "lat": 50.6272397,
+  "lon": 3.0496435,
+  "tags": {
+    "amenity": "dentist",
+    "check_date": "2025-08-08",
+    "contact:phone": "+33 3 28 04 55 55",
+    "contact:website": "https://centre-dentaire-lille-59.fr/",
+    "healthcare": "dentist",
+    "name": "Centre dentaire Lille - Wazemmes",
+    "opening_hours": "Mo-Fr 09:00-19:00"
+  }
+},
+{
+  "type": "node",
+  "id": 9412387702,
+  "lat": 50.6256115,
+  "lon": 3.0492958,
+  "tags": {
+    "name": "Alitou",
+    "ref:FR:SIRET": "84006074300019",
+    "shop": "variety_store"
+  }
+},
+{
+  "type": "node",
+  "id": 9412387703,
+  "lat": 50.6259992,
+  "lon": 3.0490272,
+  "tags": {
+    "name": "Syma",
+    "shop": "mobile_phone",
+    "survey:date": "2022-01"
+  }
+},
+{
+  "type": "node",
+  "id": 9412387704,
+  "lat": 50.6260480,
+  "lon": 3.0489931,
+  "tags": {
+    "contact:website": "https://kinggsm-lille.com/",
+    "name": "King GSM",
+    "ref:FR:SIRET": "53919602200013",
+    "shop": "mobile_phone",
+    "survey:date": "2022-01"
+  }
+},
+{
+  "type": "node",
+  "id": 9412387705,
+  "lat": 50.6261736,
+  "lon": 3.0489112,
+  "tags": {
+    "amenity": "bar",
+    "name": "Le Jockey Club",
+    "ref:FR:SIRET": "84008758900015",
+    "survey:date": "2021-12"
+  }
+},
+{
+  "type": "node",
+  "id": 9507450380,
+  "lat": 50.6266735,
+  "lon": 3.0495791,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:facebook": "https://www.facebook.com/saj.libanais.lille",
+    "contact:instagram": "https://www.instagram.com/saj.libanais.lille",
+    "cuisine": "lebanese",
+    "diet:vegetarian": "yes",
+    "name": "Le Saj",
+    "opening_hours": "Tu-Sa 11:00-19:00; Su 11:00-15:00",
+    "ref:FR:SIRET": "90336649000022",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9624842603,
+  "lat": 50.6265443,
+  "lon": 3.0396794,
+  "tags": {
+    "contact:facebook": "https://www.facebook.com/lesdelicesdelest/",
+    "name": "Les Delices de l’Est",
+    "opening_hours": "Mo-Su 11:00-20:00",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 9683425650,
+  "lat": 50.6277196,
+  "lon": 3.0403596,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "18",
+    "addr:street": "Rue de la Bassée",
+    "contact:facebook": "https://www.facebook.com/BOULANGERIEMYRTILLES/",
+    "contact:phone": "+33 3 20 06 04 03",
+    "indoor_seating": "no",
+    "name": "Myrtilles",
+    "opening_hours": "Mo-Fr 07:00-19:20; Su 08:00-12:20",
+    "outdoor_seating": "no",
+    "payment:contactless": "yes",
+    "ref:FR:SIRET": "88818875200016",
+    "shop": "bakery",
+    "takeaway": "only"
+  }
+},
+{
+  "type": "node",
+  "id": 9683425651,
+  "lat": 50.6293127,
+  "lon": 3.0437353,
+  "tags": {
+    "air_conditioning": "no",
+    "amenity": "fast_food",
+    "cuisine": "pizza",
+    "delivery": "no",
+    "diet:vegetarian": "yes",
+    "drive_through": "no",
+    "internet_access": "no",
+    "name": "Kook'n Pizza",
+    "opening_hours": "Mo-Fr 11:00-14:00,18:30-22:00; Su 18:30-22:30; Sa off",
+    "phone": "+33 3 20 51 18 80",
+    "smoking": "outside",
+    "takeaway": "only"
+  }
+},
+{
+  "type": "node",
+  "id": 9683425652,
+  "lat": 50.6313430,
+  "lon": 3.0440553,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "sandwich",
+    "name": "D'wich Home",
+    "opening_hours": "Tu-Sa 11:30-14:30",
+    "ref:FR:SIRET": "90345637400011"
+  }
+},
+{
+  "type": "node",
+  "id": 9683425653,
+  "lat": 50.6316521,
+  "lon": 3.0437168,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:facebook": "https://www.facebook.com/121-FOOD-Street-100402335758029/",
+    "cuisine": "burger;sandwich;tacos;pizza",
+    "drive_through": "no",
+    "name": "Chez Veli - Grillades et Kebab",
+    "opening_hours": "Mo-Sa 11:00-14:30,18:30-23:30; Su 11:30-17:00",
+    "phone": "+33 9 51 53 64 51",
+    "ref:FR:SIRET": "91204467400014",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9871050028,
+  "lat": 50.6292013,
+  "lon": 3.0462979,
+  "tags": {
+    "amenity": "music_school",
+    "contact:facebook": "https://www.facebook.com/ritmicol/",
+    "name": "Ritmi'col"
+  }
+},
+{
+  "type": "node",
+  "id": 9929145929,
+  "lat": 50.6261336,
+  "lon": 3.0464679,
+  "tags": {
+    "addr:housenumber": "404/406",
+    "addr:street": "Rue Léon Gambetta",
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "brand:wikipedia": "fr:V'Lille",
+    "capacity": "20",
+    "fee": "yes",
+    "name": "Tranquilité",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "network:wikipedia": "fr:V'Lille",
+    "opening_hours": "24/7",
+    "operator": "Ilévia",
+    "operator:type": "private",
+    "operator:wikidata": "Q117215",
+    "operator:wikipedia": "fr:Ilévia",
+    "payment:credit_cards": "yes",
+    "phone": "+33 3 20 40 40 40",
+    "ref": "167",
+    "website": "https://www.ilevia.fr/cms/vlille/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 9971948439,
+  "lat": 50.6269142,
+  "lon": 3.0483373,
+  "tags": {
+    "check_date": "2025-10-21",
+    "contact:facebook": "UnbrindAventures",
+    "contact:instagram": "unbrin_daventure",
+    "contact:phone": "+33 3 59 54 52 36",
+    "email": "unbrindaventure@gmail.com",
+    "name": "Un Brin d'Aventure",
+    "opening_hours": "We,Th 10:00-13:00,15:00-19:00; Fr 10:00-13:00,15:00-19:30; Sa 10:00-19:30; Su 09:00-13:00",
+    "ref:FR:SIRET": "91123172800013",
+    "shop": "florist",
+    "website": "https://www.unbrin-daventure.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 9987944263,
+  "lat": 50.6255082,
+  "lon": 3.0397167,
+  "tags": {
+    "contact:facebook": "AlloFleurs",
+    "contact:phone": "+33 3 20 09 78 26",
+    "name": "Allo Fleurs",
+    "opening_hours": "Tu-Sa 08:30-19:30; Su 09:30-13:30",
+    "ref:FR:SIRET": "32090027700015",
+    "shop": "florist"
+  }
+},
+{
+  "type": "node",
+  "id": 10028391262,
+  "lat": 50.6277074,
+  "lon": 3.0506560,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:facebook": "friterie.mestre",
+    "contact:housenumber": "305",
+    "contact:phone": "+33 9 50 83 95 93",
+    "contact:street": "Rue Léon Gambetta",
+    "cuisine": "friture",
+    "name": "Friterie Mestré",
+    "opening_hours": "Tu-Sa 12:00-14:00,19:00-22:00; Su 12:00-14:30",
+    "ref:FR:SIRET": "90905324100016"
+  }
+},
+{
+  "type": "node",
+  "id": 10033307407,
+  "lat": 50.6286542,
+  "lon": 3.0377568,
+  "tags": {
+    "brand": "Rexel",
+    "brand:wikidata": "Q962489",
+    "name": "Rexel",
+    "opening_hours": "Mo-Fr 07:30-12:00,13:30-17:30",
+    "phone": "+33 3 20 93 09 89",
+    "ref:FR:SIRET": "30930461603740",
+    "shop": "electrical",
+    "website": "https://www.rexel.fr/frx"
+  }
+},
+{
+  "type": "node",
+  "id": 10304880186,
+  "lat": 50.6252053,
+  "lon": 3.0451615,
+  "tags": {
+    "addr:housenumber": "441",
+    "addr:postcode": "59260",
+    "addr:street": "Rue Léon Gambetta",
+    "amenity": "fast_food",
+    "check_date": "2026-03-28",
+    "check_date:opening_hours": "2026-03-28",
+    "name": "Bip Biip",
+    "opening_hours": "Mo-Su 19:00-03:00",
+    "phone": "+33 3 20 44 96 97",
+    "ref:FR:SIRET": "88807095000017"
+  }
+},
+{
+  "type": "node",
+  "id": 10565004725,
+  "lat": 50.6273905,
+  "lon": 3.0498923,
+  "tags": {
+    "amenity": "atm",
+    "brand": "SG",
+    "brand:wikidata": "Q270363",
+    "brand:wikipedia": "en:Crédit du Nord",
+    "currency:EUR": "yes",
+    "name": "SG",
+    "operator": "SG",
+    "operator:wikidata": "Q270363",
+    "operator:wikipedia": "en:Crédit du Nord"
+  }
+},
+{
+  "type": "node",
+  "id": 10620348700,
+  "lat": 50.6339247,
+  "lon": 3.0509101,
+  "tags": {
+    "name": "Laverie du Square",
+    "opening_hours": "Mo-Su 07:00-21:00",
+    "self_service": "yes",
+    "shop": "laundry"
+  }
+},
+{
+  "type": "node",
+  "id": 10669390944,
+  "lat": 50.6296758,
+  "lon": 3.0455121,
+  "tags": {
+    "amenity": "vending_machine",
+    "brand": "Durex",
+    "brand:wikidata": "Q1267311",
+    "check_date": "2025-10-12",
+    "name": "Durex",
+    "vending": "condoms"
+  }
+},
+{
+  "type": "node",
+  "id": 10669390945,
+  "lat": 50.6253148,
+  "lon": 3.0394896,
+  "tags": {
+    "amenity": "vending_machine",
+    "brand": "Durex",
+    "brand:wikidata": "Q1267311",
+    "name": "Durex",
+    "vending": "condoms"
+  }
+},
+{
+  "type": "node",
+  "id": 10751030158,
+  "lat": 50.6305829,
+  "lon": 3.0392962,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "64",
+    "addr:postcode": "59000",
+    "addr:street": "Rue Philippe-Laurent Roland",
+    "amenity": "college",
+    "name": "IÉSEG École de management Bâtiment R",
+    "name:en": "IÉSEG School of Management Building R",
+    "name:fr": "IÉSEG École de management Bâtiment R"
+  }
+},
+{
+  "type": "node",
+  "id": 10793066485,
+  "lat": 50.6330126,
+  "lon": 3.0497365,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "14",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colson",
+    "amenity": "college",
+    "name": "Supinfo Lille",
+    "phone": "+33 3 74 09 19 87",
+    "ref:UAI": "0597227K",
+    "website": "https://www.supinfo.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 11158709463,
+  "lat": 50.6268672,
+  "lon": 3.0505113,
+  "tags": {
+    "name": "Briko Tattoo",
+    "ref:FR:SIRET": "47941913700019",
+    "shop": "tattoo"
+  }
+},
+{
+  "type": "node",
+  "id": 11173807802,
+  "lat": 50.6293455,
+  "lon": 3.0447973,
+  "tags": {
+    "amenity": "fast_food",
+    "check_date:opening_hours": "2026-09-10",
+    "contact:instagram": "amalyne_lille",
+    "cuisine": "lebanese",
+    "name": "Amalyne",
+    "opening_hours:signed": "no",
+    "takeaway": "only",
+    "website": "https://amalyne.labnoonfood.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 11233583273,
+  "lat": 50.6332424,
+  "lon": 3.0420457,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "179",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "amenity": "restaurant",
+    "contact:housenumber": "179",
+    "contact:instagram": "nemsbyeli",
+    "contact:street": "Rue Colbert",
+    "cuisine": "vietnamese",
+    "name": "Nems by Eli",
+    "phone": "+33 9 55 35 24 06",
+    "ref:FR:SIRET": "95227826500022",
+    "website:menu": "https://drive.google.com/file/d/1H2ghrNakTzhV0XSBNL8lGn9xvkdjXIOl/preview"
+  }
+},
+{
+  "type": "node",
+  "id": 11233583274,
+  "lat": 50.6327884,
+  "lon": 3.0422471,
+  "tags": {
+    "contact:facebook": "proarmy.fr",
+    "contact:housenumber": "180",
+    "contact:street": "Rue Colbert",
+    "name": "Pro Army",
+    "phone": "+33 9 87 54 10 77",
+    "ref:FR:SIRET": "84143175200010",
+    "shop": "military_surplus",
+    "website": "https://www.pro-army.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 11331222492,
+  "lat": 50.6266953,
+  "lon": 3.0491534,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:instagram": "gambatteonline",
+    "cuisine": "japanese;ramen",
+    "name": "Gambatté",
+    "opening_hours": "Tu-Su 11:00-14:30"
+  }
+},
+{
+  "type": "node",
+  "id": 11365976327,
+  "lat": 50.6264550,
+  "lon": 3.0408386,
+  "tags": {
+    "amenity": "cafe",
+    "contact:facebook": "https://www.facebook.com/people/Le-Rimbaud/61552244960038/",
+    "contact:housenumber": "43",
+    "contact:instagram": "le_rimbaud",
+    "contact:street": "Boulevard Bigo-Danel",
+    "cuisine": "french",
+    "name": "Le Rimbaud",
+    "opening_hours": "Mo-Fr 09:30-24:00",
+    "outdoor_seating": "yes",
+    "phone": "+33 3 20 93 74 76",
+    "ref:FR:SIRET": "97866157700012"
+  }
+},
+{
+  "type": "node",
+  "id": 11550413652,
+  "lat": 50.6262104,
+  "lon": 3.0464993,
+  "tags": {
+    "name": "Au delà du cadre",
+    "ref:FR:SIRET": "81017764200024",
+    "shop": "frame",
+    "website": "https://audeladucadre.com"
+  }
+},
+{
+  "type": "node",
+  "id": 11960966439,
+  "lat": 50.6254478,
+  "lon": 3.0492515,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "grill",
+    "name": "100% Crousti",
+    "ref:FR:SIRET": "89432686700013"
+  }
+},
+{
+  "type": "node",
+  "id": 12028926384,
+  "lat": 50.6346837,
+  "lon": 3.0480922,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "21",
+    "addr:postcode": "59800",
+    "addr:street": "Rue de la Digue",
+    "amenity": "car_sharing",
+    "capacity": "2",
+    "name": "Station Citiz Palais Rameau",
+    "operator": "Citiz",
+    "operator:type": "cooperative",
+    "operator:wikidata": "Q3080530",
+    "payment:app": "yes",
+    "supervised": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12207902302,
+  "lat": 50.6295934,
+  "lon": 3.0354855,
+  "tags": {
+    "amenity": "car_wash",
+    "automated": "yes",
+    "brand": "Wash",
+    "brand:wikidata": "Q124568566",
+    "name": "Wash",
+    "self_service": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12314448406,
+  "lat": 50.6323401,
+  "lon": 3.0458944,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "25",
+    "name": "Parking sécurisé P2",
+    "opening_hours": "24/7",
+    "operator": "Université catholique de Lille",
+    "operator:type": "private",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 12715535016,
+  "lat": 50.6252923,
+  "lon": 3.0494941,
+  "tags": {
+    "male": "yes",
+    "name": "Top Coiffure",
+    "ref:FR:SIRET": "93324571400011",
+    "shop": "hairdresser"
+  }
+},
+{
+  "type": "node",
+  "id": 12715535017,
+  "lat": 50.6252580,
+  "lon": 3.0495125,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "name": "Snack Zagora",
+    "ref:FR:SIRET": "98359287400017"
+  }
+},
+{
+  "type": "node",
+  "id": 12715535018,
+  "lat": 50.6252139,
+  "lon": 3.0495348,
+  "tags": {
+    "name": "O'Bazar",
+    "ref:FR:SIRET": "89982445200010",
+    "shop": "variety_store"
+  }
+},
+{
+  "type": "node",
+  "id": 12715535020,
+  "lat": 50.6251058,
+  "lon": 3.0495888,
+  "tags": {
+    "name": "Bagdad Market",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 12836376324,
+  "lat": 50.6267391,
+  "lon": 3.0493628,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "addr:street": "Halles de Wazemmes",
+    "alt_name": "Og Boulangerie Wazemmes",
+    "check_date:opening_hours": "2025-05-14",
+    "description": "Boulangerie artisanale proposant des produits BIO, sans gluten et sans lactose. (ici point de vente de la Boulangerie de Villeneuve-d'Ascq).",
+    "diet:dairy_free": "only",
+    "diet:gluten_free": "only",
+    "diet:vegan": "limited",
+    "name": "Og Boulangerie",
+    "opening_hours": "Tu-Sa 09:00-19:00; Su 09:00-13:50",
+    "operator": "Og Boulangerie Villeneuve-d'Ascq",
+    "organic": "only",
+    "payment:cash": "yes",
+    "payment:contactless": "yes",
+    "payment:credit_cards": "yes",
+    "payment:ticket_restaurant": "yes",
+    "shop": "bakery",
+    "website": "https://og-boulangerie.fr"
+  }
+},
+{
+  "type": "node",
+  "id": 13057853619,
+  "lat": 50.6264635,
+  "lon": 3.0476621,
+  "tags": {
+    "name": "Rosario",
+    "ref:FR:SIRET": "43126571900010",
+    "shop": "shoes"
+  }
+},
+{
+  "type": "node",
+  "id": 13168372758,
+  "lat": 50.6338324,
+  "lon": 3.0458973,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "3",
+    "addr:postcode": "59000",
+    "addr:street": "Rue Norbert Ségard",
+    "amenity": "college",
+    "name": "HEI Lille - Junia",
+    "ref:UAI": "0590348H",
+    "wikidata": "Q3128626",
+    "wikipedia": "fr:École des hautes études d'ingénieur"
+  }
+},
+{
+  "type": "node",
+  "id": 13175383884,
+  "lat": 50.6296363,
+  "lon": 3.0410144,
+  "tags": {
+    "amenity": "school",
+    "contact:email": "emilie.zietek@icam.fr",
+    "contact:phone": "+33 320226310",
+    "name": "Écoles de production de l'ICAM - site de Lille (Lycée professionnel privé)",
+    "operator:type": "private",
+    "ref:FR:SIRET": "51962344100010",
+    "ref:UAI": "0595721Y",
+    "school:FR": "lycée",
+    "source": "Ministère de l'Éducation nationale, de l'Enseignement supérieur et de la Recherche - 2025-08",
+    "start_date": "1985-09-01"
+  }
+},
+{
+  "type": "node",
+  "id": 13452056779,
+  "lat": 50.6302917,
+  "lon": 3.0396003,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "65",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Philippe-Laurent Roland",
+    "amenity": "college",
+    "education": "college",
+    "name": "Campus Eductive Lille - Vauban (ENGDE, ESGI, Maestris BTS, PPA)",
+    "operator:type": "private",
+    "ref:UAI": "0595728F",
+    "source": "Onisep-Ideo - 08/2025",
+    "website": "https://lille-vauban.eductive.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 13623604917,
+  "lat": 50.6333887,
+  "lon": 3.0416256,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "204",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "clothes": "women;men;workwear",
+    "name": "Kustom Lab",
+    "phone": "+33 615737345",
+    "ref:FR:SIRET": "93016434800011",
+    "shop": "clothes",
+    "website": "https://www.kustomlab.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 13623604919,
+  "lat": 50.6328399,
+  "lon": 3.0424674,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "163 bis",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "beauty": "nails",
+    "name": "Le Lab",
+    "phone": "+33 768591943",
+    "ref:FR:SIRET": "98256741400015",
+    "shop": "beauty"
+  }
+},
+{
+  "type": "node",
+  "id": 13623748426,
+  "lat": 50.6317739,
+  "lon": 3.0436096,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "125",
+    "addr:postcode": "59800",
+    "addr:street": "Rue Colbert",
+    "amenity": "fast_food",
+    "brand": "O'Tacos",
+    "brand:wikidata": "Q28494040",
+    "cuisine": "french_tacos",
+    "drive_through": "no",
+    "name": "O'Tacos",
+    "opening_hours": "Mo-Th 11:00-23:15; Fr 16:30-23:15; Sa-Su 11:00-23:15",
+    "phone": "+33 320002459",
+    "takeaway": "yes",
+    "website": "https://restaurants.o-tacos.com/france/hauts-de-france/nord/lille/lille-vauban"
+  }
+},
+{
+  "type": "node",
+  "id": 13773261546,
+  "lat": 50.6304129,
+  "lon": 3.0354348,
+  "tags": {
+    "bicycle": "yes",
+    "information": "map",
+    "map_type": "street",
+    "name": "Velo plus - Port de Lille - Lille",
+    "network": "Vélo+",
+    "operator": "Métropole Européenne de Lille",
+    "panoramax": "03aec11d-a801-4404-87ae-3e5bd97c33d4",
+    "tourism": "information"
+  }
+},
+{
+  "type": "node",
+  "id": 13787048501,
+  "lat": 50.6274250,
+  "lon": 3.0505919,
+  "tags": {
+    "addr:housenumber": "3",
+    "addr:postcode": "59000",
+    "addr:street": "Rue du Marché",
+    "amenity": "theatre",
+    "check_date": "2026-05-02",
+    "name": "Le Loko",
+    "website": "https://www.leloko.fr"
+  }
+},
+{
+  "type": "node",
+  "id": 13892659242,
+  "lat": 50.6304838,
+  "lon": 3.0508179,
+  "tags": {
+    "addr:housenumber": "56",
+    "addr:street": "Rue des Stations",
+    "amenity": "fast_food",
+    "check_date": "2026-05-28",
+    "level": "0",
+    "name": "Station Food",
+    "ref:FR:SIRET": "93440705700017"
+  }
+},
+{
+  "type": "node",
+  "id": 14256301523,
+  "lat": 50.6346976,
+  "lon": 3.0376393,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "addr:street": "2e Rue",
+    "amenity": "social_facility",
+    "name": "Banque Alimentaire du Nord",
+    "social_facility": "food_bank",
+    "website": "https://ba59.banquealimentaire.org/"
+  }
+},
+{
+  "type": "way",
+  "id": 24204754,
+  "center": {
+    "lat": 50.6367583,
+    "lon": 3.0487692
+  },
+  "tags": {
+    "architect": "Jean-Pierre Barillet-Deschamps",
+    "architect:wikidata": "Q201941",
+    "leisure": "park",
+    "name": "Jardin Vauban",
+    "name:en": "Vauban Garden",
+    "name:etymology:wikidata": "Q192839",
+    "name:fr": "Jardin Vauban",
+    "start_date": "1863",
+    "wikidata": "Q124710394"
+  }
+},
+{
+  "type": "way",
+  "id": 39178021,
+  "center": {
+    "lat": 50.6260302,
+    "lon": 3.0498678
+  },
+  "tags": {
+    "access": "yes",
+    "amenity": "parking",
+    "fee": "no",
+    "name": "Place de la Nouvelle Aventure",
+    "parking": "surface",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2009"
+  }
+},
+{
+  "type": "way",
+  "id": 39946581,
+  "center": {
+    "lat": 50.6258790,
+    "lon": 3.0353904
+  },
+  "tags": {
+    "amenity": "car_wash",
+    "automated": "yes",
+    "brand": "Wash",
+    "brand:wikidata": "Q124568566",
+    "building": "yes",
+    "name": "Wash",
+    "self_service": "no",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 40236856,
+  "center": {
+    "lat": 50.6272602,
+    "lon": 3.0392307
+  },
+  "tags": {
+    "amenity": "bar",
+    "building": "apartments",
+    "building:levels": "3",
+    "contact:phone": "+33 3 61 50 90 13",
+    "contact:website": "https://brasserie-carrefour-lille.com/",
+    "food": "yes",
+    "name": "Au Carrefour",
+    "opening_hours": "Mo-Fr 10:00-21:00; Sa 10:00-16:00",
+    "ref:FR:SIRET": "52407458000019",
+    "roof:levels": "1",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "way",
+  "id": 40236918,
+  "center": {
+    "lat": 50.6289913,
+    "lon": 3.0381200
+  },
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "21 Ter",
+    "addr:street": "Rue de Turenne",
+    "brand": "Bricorama",
+    "brand:wikidata": "Q2925146",
+    "brand:wikipedia": "en:Bricorama",
+    "building": "retail",
+    "building:levels": "1",
+    "check_date": "2025-08-06",
+    "check_date:opening_hours": "2022-10-21",
+    "craft": "key_cutter",
+    "email": "bricorama.pdv09440@mousquetaires.com",
+    "name": "Bricorama",
+    "opening_hours": "Mo-Fr 09:00-12:15,14:00-19:00; Sa 09:00-12:30,14:00-19:00; Su 09:00-12:30",
+    "payment:contactless": "yes",
+    "phone": "+33 3 20 93 60 45",
+    "shop": "doityourself",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "website": "https://www.bricorama.fr/magasin/lille-r-de-turenne/09440",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 40236921,
+  "center": {
+    "lat": 50.6290838,
+    "lon": 3.0374798
+  },
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "21 ter",
+    "addr:postcode": "59000",
+    "addr:street": "Rue de Turenne",
+    "building": "yes",
+    "email": "agence0130@kiloutou.fr",
+    "level": "0",
+    "name": "Kiloutou",
+    "opening_hours": "Mo 07:30-12:00,14:00-17:30; Tu 07:30-12:00,14:00-17:00; We-Th 07:30-12:00,14:00-17:30; Fr 07:30-12:00,14:00-18:00",
+    "phone": "+33374097318",
+    "shop": "rental",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "website": "https://www.kiloutou.fr/agences/hauts-de-france/nord/lille/0130/"
+  }
+},
+{
+  "type": "way",
+  "id": 40237013,
+  "center": {
+    "lat": 50.6289627,
+    "lon": 3.0400553
+  },
+  "tags": {
+    "amenity": "school",
+    "building": "yes",
+    "contact:email": "contact@lasallelille.com",
+    "contact:phone": "+33 3 20 17 10 00",
+    "contact:website": "https://www.lasallelille.com",
+    "name": "Lycée polyvalent privé La Salle",
+    "operator:type": "private",
+    "ref:FR:SIRET": "77562426500077",
+    "ref:UAI": "0593117T",
+    "school:FR": "lycée",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "start_date": "1933-01-01",
+    "website": "https://www.lasallelille.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 40267927,
+  "center": {
+    "lat": 50.6343389,
+    "lon": 3.0405427
+  },
+  "tags": {
+    "amenity": "restaurant",
+    "building": "yes",
+    "cuisine": "thai",
+    "drive_in": "no",
+    "name": "Le Bouddhabar'bu",
+    "ref:FR:SIRET": "50346337400010",
+    "smoking": "no",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "takeaway": "yes",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "way",
+  "id": 40267967,
+  "center": {
+    "lat": 50.6340751,
+    "lon": 3.0405972
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "church",
+    "check_date": "2025-11-08",
+    "denomination": "catholic",
+    "name": "Église Notre-Dame-de-Consolation",
+    "ref:FR:CEF": "59350_03",
+    "religion": "christian",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "wikidata": "Q38386026"
+  }
+},
+{
+  "type": "way",
+  "id": 40306416,
+  "center": {
+    "lat": 50.6286935,
+    "lon": 3.0419981
+  },
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "20",
+    "addr:postcode": "59800",
+    "addr:street": "Place du Maréchal Leclerc",
+    "amenity": "bank",
+    "atm": "yes",
+    "bank": "yes",
+    "bic": "CRLYFRPPLIL",
+    "brand": "LCL",
+    "brand:wikidata": "Q779722",
+    "building": "yes",
+    "drive_through": "no",
+    "name": "LCL",
+    "opening_hours": "Mo off; Tu-We 09:00-12:30, 14:00-18:00; Th 09:00-12:30, 15:00-18:00; Fr 09:00-12:30, 14:00-18:00; Sa 09:00-13:00; Su off",
+    "operator": "LCL",
+    "phone": "+33 3 20 08 15 38",
+    "ref:FR:SIRET": "95450974134366",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "website": "https://www.lcl.fr/agence-banque/06651-LCL-LILLE-MAL-LECLERC"
+  }
+},
+{
+  "type": "way",
+  "id": 41065952,
+  "center": {
+    "lat": 50.6256853,
+    "lon": 3.0399399
+  },
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "bic": "CEPAFRPP627",
+    "branch": "Lille Cormontaigne",
+    "brand": "Caisse d'Épargne",
+    "brand:wikidata": "Q1547738",
+    "brand:wikipedia": "fr:Groupe Caisse d'épargne",
+    "building": "yes",
+    "name": "Caisse d'Épargne",
+    "opening_hours": "Mo off; Tu-We 09:00-12:00, 13:30-18:00; Th 09:00-12:00, 14:30-18:00; Fr 09:00-12:00, 13:30-18:00; Sa 09:00-13:00; Su off",
+    "operator": "Caisse d'Épargne",
+    "ref:FR:SIRET": "38300069205078",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008",
+    "website": "https://www.agences.caisse-epargne.fr/banque-assurance/lille-vauban-id16275059603"
+  }
+},
+{
+  "type": "way",
+  "id": 41065964,
+  "center": {
+    "lat": 50.6252726,
+    "lon": 3.0395682
+  },
+  "tags": {
+    "alt_name": "Pharmacie Desir Proy",
+    "amenity": "pharmacy",
+    "building": "yes",
+    "contact:city": "Lille",
+    "contact:housenumber": "15",
+    "contact:postcode": "59000",
+    "contact:street": "Rue d'Isly",
+    "dispensing": "yes",
+    "healthcare": "pharmacy",
+    "name": "Pharmacie Cormontaigne",
+    "note": "FIXME le tag name correspond à l'enseigne, le tag alt-name correspond au nom officiel dans la base FINESS",
+    "opening_hours": "Mo-Fr 08:30-19:30; Sa 08:30-12:30; Su off",
+    "phone": "+33 3 20 93 57 16",
+    "ref:FR:FINESS": "590020921",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 41065965,
+  "center": {
+    "lat": 50.6251473,
+    "lon": 3.0395702
+  },
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "bic": "CMCIFR21BCM",
+    "brand": "Crédit Mutuel",
+    "brand:wikidata": "Q642627",
+    "brand:wikipedia": "en:Crédit Mutuel",
+    "building": "apartments",
+    "building:levels": "5",
+    "name": "Crédit Mutuel",
+    "opening_hours": "Mo off; Tu-Fr 09:00-12:15, 13:45-18:00; Sa 09:00-12:15; Su off",
+    "ref:FR:SIRET": "31454964300034",
+    "roof:levels": "1",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 41066488,
+  "center": {
+    "lat": 50.6253528,
+    "lon": 3.0390423
+  },
+  "tags": {
+    "addr:housenumber": "20",
+    "addr:street": "Rue d'Isly",
+    "brand": "Euromaster",
+    "brand:wikidata": "Q3060668",
+    "brand:wikipedia": "de:Euromaster",
+    "building": "retail",
+    "name": "Euromaster",
+    "opening_hours": "Mo-Fr 08:00-12:00,14:00-18:00; Sa,Su off",
+    "phone": "+33 3 20 00 17 20",
+    "ref:FR:SIRET": "39252740403128",
+    "shop": "car_repair",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "website": "https://www.euromaster.fr/centres/hauts-de-france/lille/euromaster-lille"
+  }
+},
+{
+  "type": "way",
+  "id": 41066523,
+  "center": {
+    "lat": 50.6260678,
+    "lon": 3.0377386
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "church",
+    "description": "Chapelle Notre-Dame-de-la-Réconciliation : inscription par arrêté du 23 décembre 1926",
+    "heritage": "3",
+    "heritage:operator": "mhs",
+    "mhs:inscription_date": "1926-12-23",
+    "name": "Chapelle Notre-Dame-de-la-Réconciliation",
+    "ref:mhs": "PA00107572",
+    "religion": "christian",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "source:heritage": "Ministère de la Culture - 06/2019",
+    "wikidata": "Q2956597",
+    "wikipedia": "fr:Chapelle Notre-Dame-de-Réconciliation de Lille"
+  }
+},
+{
+  "type": "way",
+  "id": 41290681,
+  "center": {
+    "lat": 50.6252812,
+    "lon": 3.0419917
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "yes",
+    "check_date": "2023-09-07",
+    "name": "Temple antoiniste",
+    "religion": "antoinist",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 41290682,
+  "center": {
+    "lat": 50.6253186,
+    "lon": 3.0418392
+  },
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "19",
+    "addr:postcode": "59000",
+    "addr:street": "Boulevard Montebello",
+    "amenity": "restaurant",
+    "building": "yes",
+    "cuisine": "couscous",
+    "delivery": "yes",
+    "name": "Allo Couscous",
+    "opening_hours": "Tu-Su 11:00-14:00,17:00-21:00",
+    "phone": "+33 3 20 40 27 37",
+    "ref:FR:SIRET": "39533869200043",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008;survey",
+    "takeaway": "only",
+    "website": "https://www.allocouscous.fr/"
+  }
+},
+{
+  "type": "way",
+  "id": 41375581,
+  "center": {
+    "lat": 50.6254017,
+    "lon": 3.0447776
+  },
+  "tags": {
+    "building": "retail",
+    "name": "Positif",
+    "ref:FR:SIRET": "41818910600010",
+    "shop": "hairdresser",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 41375717,
+  "center": {
+    "lat": 50.6260327,
+    "lon": 3.0426205
+  },
+  "tags": {
+    "building": "retail",
+    "building:levels": "4",
+    "contact:city": "Lille",
+    "contact:housenumber": "175",
+    "contact:postcode": "59000",
+    "contact:street": "Rue des Stations",
+    "laundry_service": "no",
+    "name": "Laverie des stations",
+    "opening_hours": "Mo-Su 07:00-21:00",
+    "roof:levels": "0",
+    "self_service": "yes",
+    "shop": "laundry",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 41435625,
+  "center": {
+    "lat": 50.6329857,
+    "lon": 3.0424426
+  },
+  "tags": {
+    "addr:housenumber": "167",
+    "addr:street": "Rue Colbert",
+    "amenity": "pharmacy",
+    "building": "yes",
+    "building:levels": "3",
+    "contact:city": "Lille",
+    "contact:housenumber": "167",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Colbert",
+    "dispensing": "yes",
+    "drive_through": "no",
+    "healthcare": "pharmacy",
+    "name": "Pharmacie Vauban",
+    "opening_hours": "Mo-Fr 08:30-12:30,13:30-19:30; Sa 09:00-12:30; Su off",
+    "operator": "Béatrice Benoit",
+    "phone": "+33 3 20 57 28 06",
+    "ref:FR:FINESS": "590021135",
+    "ref:FR:SIRET": "49129912900016",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2013;Celtipharm - 10/2014"
+  }
+},
+{
+  "type": "way",
+  "id": 41502455,
+  "center": {
+    "lat": 50.6313582,
+    "lon": 3.0459695
+  },
+  "tags": {
+    "amenity": "college",
+    "building": "university",
+    "name": "Institut des stratégies et techniques de communication",
+    "operator:type": "private",
+    "ref:FR:SIRET": "38174464800027",
+    "ref:UAI": "0596011N",
+    "short_name": "ISTC",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "website": "https://www.istc.fr/"
+  }
+},
+{
+  "type": "way",
+  "id": 41503514,
+  "center": {
+    "lat": 50.6342953,
+    "lon": 3.0499596
+  },
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "39",
+    "addr:postcode": "59000",
+    "addr:street": "Boulevard Vauban",
+    "amenity": "community_centre",
+    "architect": "Mourcou (architecte);Contamine (architecte);Cordonnier (sculpteur);Arc Albert d'(sculpteur)",
+    "building": "yes",
+    "description": "La maison du concierge ; le jardin avec sa clôture (cad. NW 265, 266) : inscription par arrêté du 17 avril 1984 - Le bâtiment du Palais Rameau en totalité, avec sa serre (à l'exclusion de la maison du concierge et du jardin avec sa clôture) (cad. NW 266)",
+    "heritage": "2",
+    "heritage:operator": "mhs",
+    "historic": "building",
+    "mhs:inscription_date": "1984-04-17",
+    "name": "Palais Rameau",
+    "operator": "JUNIA",
+    "operator:type": "private",
+    "ref:mhs": "PA00107720",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "start_date:fr": "2e moitié 19e siècle",
+    "tourism": "gallery",
+    "wikidata": "Q3360909",
+    "wikipedia": "fr:Palais Rameau"
+  }
+},
+{
+  "type": "way",
+  "id": 41504432,
+  "center": {
+    "lat": 50.6330773,
+    "lon": 3.0480021
+  },
+  "tags": {
+    "amenity": "restaurant",
+    "building": "yes",
+    "check_date": "2026-08-17",
+    "check_date:opening_hours": "2026-08-17",
+    "cuisine": "cantine_scolaire",
+    "name": "Restaurant universitaire Vauban - All Resto",
+    "opening_hours:signed": "no",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 41504437,
+  "center": {
+    "lat": 50.6329405,
+    "lon": 3.0488505
+  },
+  "tags": {
+    "building": "yes",
+    "name": "Cité-Vauban",
+    "operator": "Citéa",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008",
+    "stars": "2",
+    "tourism": "hotel"
+  }
+},
+{
+  "type": "way",
+  "id": 42726950,
+  "center": {
+    "lat": 50.6311775,
+    "lon": 3.0512863
+  },
+  "tags": {
+    "amenity": "theatre",
+    "building": "yes",
+    "name": "La Verrière",
+    "opening_hours": "We,Fr 20:00+; Th,Sa 19:00+; Su 16:00+",
+    "ref:FR:SIRET": "31569790400045",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "website": "https://www.verriere.org/",
+    "wikidata": "Q113577347"
+  }
+},
+{
+  "type": "way",
+  "id": 42736726,
+  "center": {
+    "lat": 50.6285362,
+    "lon": 3.0471744
+  },
+  "tags": {
+    "amenity": "college",
+    "building": "yes",
+    "check_date": "2025-10-12",
+    "internet_access": "wlan",
+    "name": "Classes préparatoires HEI",
+    "not:name": "Prépa HEI",
+    "ref:UAI": "0590348H",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 42736785,
+  "center": {
+    "lat": 50.6295578,
+    "lon": 3.0501953
+  },
+  "tags": {
+    "amenity": "social_facility",
+    "building": "yes",
+    "building:levels": "5",
+    "building:material": "brick",
+    "capacity": "80",
+    "check_date": "2026-08-25",
+    "name": "Maison Saint-Jean",
+    "ref:FR:FINESS": "590814380",
+    "social_facility": "group_home",
+    "social_facility:for": "senior",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "type:FR:FINESS": "500",
+    "wikidata": "Q112989039"
+  }
+},
+{
+  "type": "way",
+  "id": 42819668,
+  "center": {
+    "lat": 50.6275660,
+    "lon": 3.0496219
+  },
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "bic": "CMCIFR21BCM",
+    "branch": "Lille Gambetta",
+    "brand": "Crédit Mutuel",
+    "brand:wikidata": "Q642627",
+    "brand:wikipedia": "fr:Crédit mutuel",
+    "building": "yes",
+    "name": "Crédit Mutuel",
+    "opening_hours": "Tu-We 08:45-12:30,13:30-18:00; Th 08:45-12:30,14:30-18:00; Fr 08:45-12:30,14:00-18:00; Sa 08:45-12:30",
+    "operator": "Crédit Mutuel",
+    "phone": "08 20 35 21 31",
+    "ref:FR:SIRET": "30550778200103",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "website": "https://www.creditmutuel.fr/fr/caisse/hauts-de-france/nord/10278-02715-11"
+  }
+},
+{
+  "type": "way",
+  "id": 59468748,
+  "center": {
+    "lat": 50.6265308,
+    "lon": 3.0482058
+  },
+  "tags": {
+    "brand": "Picard",
+    "brand:wikidata": "Q3382454",
+    "brand:wikipedia": "en:Picard Surgelés",
+    "building": "retail",
+    "name": "Picard",
+    "opening_hours": "Mo-Sa 09:00-20:00; Su 09:00-12:45",
+    "phone": "+33 3 20 42 99 15",
+    "ref:FR:SIRET": "78493968805378",
+    "shop": "frozen_food",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010",
+    "website": "https://magasins.picard.fr/1022-picard-wazemmes"
+  }
+},
+{
+  "type": "way",
+  "id": 59468837,
+  "center": {
+    "lat": 50.6261596,
+    "lon": 3.0508687
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "church",
+    "check_date": "2026-08-11",
+    "denomination": "catholic",
+    "name": "Église Saint-Pierre Saint-Paul",
+    "religion": "christian",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010",
+    "start_date": "1857",
+    "wikidata": "Q3583703"
+  }
+},
+{
+  "type": "way",
+  "id": 59468866,
+  "center": {
+    "lat": 50.6266863,
+    "lon": 3.0492757
+  },
+  "tags": {
+    "amenity": "marketplace",
+    "building": "retail",
+    "name": "Les Halles",
+    "opening_hours": "Tu-Sa 08:00-20:00; Su 08:00-15:00",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010",
+    "website": "http://www.halles-wazemmes.com/",
+    "wikidata": "Q3126149"
+  }
+},
+{
+  "type": "way",
+  "id": 59468875,
+  "center": {
+    "lat": 50.6262934,
+    "lon": 3.0486042
+  },
+  "tags": {
+    "addr:street": "Place de la Nouvelle Aventure",
+    "brand": "My Auchan",
+    "brand:wikidata": "Q115800307",
+    "brand:wikipedia": "en:Auchan",
+    "building": "retail",
+    "building:levels": "3",
+    "check_date": "2025-07-17",
+    "contact:website": "https://www.auchan.fr/magasins/my-auchan-wazemmes/sl-4536",
+    "name": "My Auchan",
+    "opening_hours": "Mo-Sa 08:00-22:00; Su 09:00-12:45",
+    "phone": "+33 3 20 38 83 80",
+    "ref:FR:SIRET": "44441077300139",
+    "roof:levels": "1",
+    "roof:shape": "gabled",
+    "shop": "convenience",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010"
+  }
+},
+{
+  "type": "way",
+  "id": 59468906,
+  "center": {
+    "lat": 50.6262823,
+    "lon": 3.0512877
+  },
+  "tags": {
+    "building": "retail",
+    "name": "Boucherie Kamel",
+    "ref:FR:SIRET": "49196933300013",
+    "shop": "butcher",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010"
+  }
+},
+{
+  "type": "way",
+  "id": 59914688,
+  "center": {
+    "lat": 50.6252228,
+    "lon": 3.0497447
+  },
+  "tags": {
+    "building": "retail",
+    "name": "L'Arrivage",
+    "shop": "hardware",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010"
+  }
+},
+{
+  "type": "way",
+  "id": 59914691,
+  "center": {
+    "lat": 50.6252955,
+    "lon": 3.0497265
+  },
+  "tags": {
+    "building": "retail",
+    "name": "Beverly Bussiness",
+    "ref:FR:SIRET": "48183825800020",
+    "shop": "hairdresser_supply",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010"
+  }
+},
+{
+  "type": "way",
+  "id": 95069542,
+  "center": {
+    "lat": 50.6328045,
+    "lon": 3.0446310
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Jardin botanique Nicolas Boulay"
+  }
+},
+{
+  "type": "way",
+  "id": 95069550,
+  "center": {
+    "lat": 50.6299377,
+    "lon": 3.0469133
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Square du Maréchal Birdwood"
+  }
+},
+{
+  "type": "way",
+  "id": 95097920,
+  "center": {
+    "lat": 50.6368592,
+    "lon": 3.0341810
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Parc Marx Dormoy",
+    "opening_date": "2025-07-15"
+  }
+},
+{
+  "type": "way",
+  "id": 132909342,
+  "center": {
+    "lat": 50.6327154,
+    "lon": 3.0461991
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "chapel",
+    "building:material": "brick",
+    "denomination": "catholic",
+    "name": "Chapelle de l'université catholique de Lille",
+    "religion": "christian",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "source:name": "clochers.org",
+    "wikidata": "Q66090484"
+  }
+},
+{
+  "type": "way",
+  "id": 150511385,
+  "center": {
+    "lat": 50.6273128,
+    "lon": 3.0499308
+  },
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "bic": "NORDFRPP",
+    "brand": "Crédit du Nord",
+    "brand:wikidata": "Q3006209",
+    "brand:wikipedia": "en:Crédit du Nord",
+    "building": "yes",
+    "check_date": "2025-08-08",
+    "name": "Crédit du Nord",
+    "opening_hours": "Mo off; Tu-Fr 08:45-12:15, 13:45-18:00; Sa 08:30-12:00; Su off"
+  }
+},
+{
+  "type": "way",
+  "id": 170516931,
+  "center": {
+    "lat": 50.6308561,
+    "lon": 3.0371634
+  },
+  "tags": {
+    "amenity": "school",
+    "contact:email": "ce.0593179k@ac-lille.fr",
+    "contact:phone": "+33 3 20 00 05 00",
+    "contact:website": "https://college-claude-levi-strauss-lille.59.ac-lille.fr",
+    "education": "school",
+    "name": "Collège Claude Lévi-Strauss",
+    "operator:type": "public",
+    "ref:FR:SIRET": "19593179500023",
+    "ref:UAI": "0593179K",
+    "school:FR": "collège",
+    "source": "data.gouv.fr:Ministère de l'Éducation nationale, de la Jeunesse et de la Vie associative - 05/2012",
+    "start_date": "1968-09-01"
+  }
+},
+{
+  "type": "way",
+  "id": 170623880,
+  "center": {
+    "lat": 50.6357282,
+    "lon": 3.0423326
+  },
+  "tags": {
+    "addr:housenumber": "15",
+    "amenity": "school",
+    "education": "school",
+    "name": "École primaire Léon Jouhaux",
+    "name:etymology:wikidata": "Q155415",
+    "operator:type": "public",
+    "school:FR": "primaire",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2012  !!  data.gouv.fr:Ministère de l'Éducation nationale, de la Jeunesse et de la Vie associative - 05/2012"
+  }
+},
+{
+  "type": "way",
+  "id": 186746101,
+  "center": {
+    "lat": 50.6370700,
+    "lon": 3.0392963
+  },
+  "tags": {
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "addr:street": "Avenue Léon Jouhaux",
+    "leisure": "park",
+    "name": "Parc des Pyramides"
+  }
+},
+{
+  "type": "way",
+  "id": 294854769,
+  "center": {
+    "lat": 50.6338380,
+    "lon": 3.0466572
+  },
+  "tags": {
+    "amenity": "college",
+    "building": "university",
+    "internet_access": "yes",
+    "name": "ISA Lille - Junia",
+    "operator:type": "private",
+    "ref:UAI": "0590343C",
+    "short_name": "Junia ISA Lille",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2018",
+    "website": "https://www.junia.com/fr/junia/programme-grande-ecole-isa/",
+    "wikidata": "Q3117452",
+    "wikipedia": "fr:ISA Lille - Junia"
+  }
+},
+{
+  "type": "way",
+  "id": 296628344,
+  "center": {
+    "lat": 50.6276840,
+    "lon": 3.0340481
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Square de la Houblonnière",
+    "source": "Ville de Lille - 2018"
+  }
+},
+{
+  "type": "way",
+  "id": 310314178,
+  "center": {
+    "lat": 50.6260011,
+    "lon": 3.0409897
+  },
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "bic": "NORDFRPP",
+    "brand": "Crédit du Nord",
+    "brand:wikidata": "Q3006209",
+    "brand:wikipedia": "en:Crédit du Nord",
+    "building": "apartments",
+    "building:levels": "9",
+    "name": "Crédit du Nord",
+    "opening_hours": "Mo off; Tu 09:00-12:30, 13:45-18:00; We 09:00-11:30, 13:45-18:00; Th-Fr 09:00-12:30, 13:45-18:00; Sa 08:30-12:30; Su off",
+    "roof:levels": "0",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 310456296,
+  "center": {
+    "lat": 50.6319769,
+    "lon": 3.0465510
+  },
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "bic": "SOGEFRPPLLM",
+    "branch": "Lille Vauban",
+    "brand": "SG",
+    "brand:wikidata": "Q270363",
+    "brand:wikipedia": "fr:Société générale",
+    "building": "apartments",
+    "name": "Société Générale",
+    "opening_hours": "Mo off; Tu-We 08:45-12:15, 13:30-18:00; Th 08:45-12:15, 14:00-18:00; Fr 08:45-12:15, 13:30-18:00; Sa 08:45-12:45; Su off",
+    "operator": "Société Générale",
+    "phone": "+33 3 20 54 27 71",
+    "ref:FR:SIRET": "55212022203686",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "website": "https://agences.sg.fr/banque-assurance/particulier/agence-lille-vauban-id3000301106"
+  }
+},
+{
+  "type": "way",
+  "id": 339558857,
+  "center": {
+    "lat": 50.6360937,
+    "lon": 3.0464033
+  },
+  "tags": {
+    "access": "yes",
+    "fee": "no",
+    "garden:type": "botanical",
+    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/Lille_vauban_jardin_arboriculture.JPG/960px-Lille_vauban_jardin_arboriculture.JPG",
+    "irrigated": "no",
+    "leisure": "garden",
+    "name": "Jardin d'arboriculture fruitière",
+    "opening_hours": "Mo-Fr 07:30-15:45",
+    "operator": "Ville de Lille",
+    "operator:type": "public",
+    "start_date": "1868",
+    "website": "https://www.lille.fr/Nos-equipements/Le-jardin-d-arboriculture-fruitiere"
+  }
+},
+{
+  "type": "way",
+  "id": 339558858,
+  "center": {
+    "lat": 50.6361559,
+    "lon": 3.0445677
+  },
+  "tags": {
+    "check_date": "2022-08-11",
+    "leisure": "park",
+    "name": "Square d'Armentières"
+  }
+},
+{
+  "type": "way",
+  "id": 359865789,
+  "center": {
+    "lat": 50.6341426,
+    "lon": 3.0341609
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Berges des Bois-Blancs"
+  }
+},
+{
+  "type": "way",
+  "id": 372049246,
+  "center": {
+    "lat": 50.6296033,
+    "lon": 3.0356289
+  },
+  "tags": {
+    "address": "2, rue de Turenne",
+    "amenity": "fuel",
+    "brand": "Total Access",
+    "brand:wikidata": "Q154037",
+    "brand:wikipedia": "fr:Total (entreprise)",
+    "check_date": "2025-04-06",
+    "compressed_air": "yes",
+    "fuel:diesel": "yes",
+    "fuel:e10": "yes",
+    "fuel:e85": "yes",
+    "fuel:lpg": "yes",
+    "fuel:octane_98": "yes",
+    "name": "TotalEnergies",
+    "opening_hours": "24/7",
+    "operator": "Total",
+    "ref:FR:prix-carburants": "59000019",
+    "shop": "convenience;gas",
+    "source": "stations.gpl.online.fr",
+    "toilets": "yes",
+    "vending": "fuel",
+    "vending_machine": "fuel"
+  }
+},
+{
+  "type": "way",
+  "id": 411383312,
+  "center": {
+    "lat": 50.6295655,
+    "lon": 3.0476247
+  },
+  "tags": {
+    "amenity": "school",
+    "check_date": "2026-08-25",
+    "contact:city": "Lille",
+    "contact:email": "ce.0591635G@ac-lille.fr",
+    "contact:housenumber": "72",
+    "contact:phone": "+33 320541311",
+    "contact:postcode": "59800",
+    "contact:street": "Rue des Stations",
+    "name": "École maternelle Gounod",
+    "operator:type": "public",
+    "ref:FR:SIRET": "21590350100538",
+    "ref:UAI": "0591635G",
+    "school:FR": "maternelle",
+    "source": "data.gouv.fr:Éducation Nationale - 06/2021"
+  }
+},
+{
+  "type": "way",
+  "id": 411383313,
+  "center": {
+    "lat": 50.6294265,
+    "lon": 3.0475969
+  },
+  "tags": {
+    "amenity": "school",
+    "contact:city": "Lille",
+    "contact:email": "ce.0591635G@ac-lille.fr",
+    "contact:housenumber": "72",
+    "contact:phone": "+33 320541311",
+    "contact:postcode": "59800",
+    "contact:street": "Rue des Stations",
+    "name": "École élémentaire Lavoisier",
+    "operator:type": "public",
+    "ref:FR:SIRET": "21590350100538",
+    "ref:UAI": "0591635G",
+    "school:FR": "primaire",
+    "source": "data.gouv.fr:Éducation Nationale - 06/2021",
+    "start_date": "1965-09-01"
+  }
+},
+{
+  "type": "way",
+  "id": 411393739,
+  "center": {
+    "lat": 50.6335445,
+    "lon": 3.0437290
+  },
+  "tags": {
+    "amenity": "school",
+    "check_date": "2025-11-08",
+    "contact:email": "ce.0591563D@ac-lille.fr",
+    "contact:phone": "+33 320541541",
+    "education": "school",
+    "name": "École primaire Madame de Maintenon",
+    "operator:type": "public",
+    "ref:FR:SIRET": "21590350100421",
+    "ref:UAI": "0591563D",
+    "school:FR": "primaire",
+    "source": "data.gouv.fr:Éducation Nationale - 03/2018",
+    "start_date": "1965-09-01"
+  }
+},
+{
+  "type": "way",
+  "id": 411393740,
+  "center": {
+    "lat": 50.6333385,
+    "lon": 3.0439352
+  },
+  "tags": {
+    "amenity": "school",
+    "contact:email": "ce.0591563D@ac-lille.fr",
+    "contact:phone": "+33 320541541",
+    "education": "school",
+    "name": "École Maternelle Chateaubriand",
+    "note": "rattachée à l'école Maintenon",
+    "operator:type": "public",
+    "ref:FR:SIRET": "21590350100421",
+    "ref:UAI": "0591563D",
+    "school:FR": "primaire",
+    "source": "Ministère de l'Éducation nationale, de l'Enseignement supérieur et de la Recherche - 2026-01",
+    "start_date": "1965-09-01"
+  }
+},
+{
+  "type": "way",
+  "id": 524482745,
+  "center": {
+    "lat": 50.6333030,
+    "lon": 3.0498099
+  },
+  "tags": {
+    "amenity": "school",
+    "contact:email": "ce.0595286a@ac-lille.fr",
+    "contact:phone": "+33 3 20 57 40 76",
+    "contact:website": "https://saintpaul-lille.fr/college/",
+    "education": "school",
+    "name": "Collège privé Saint-Paul",
+    "operator:type": "private",
+    "ref:FR:SIRET": "77562425700025",
+    "ref:UAI": "0595286A",
+    "school:FR": "collège",
+    "source": "data.gouv.fr:Éducation Nationale - 05/2016",
+    "start_date": "1978-09-15"
+  }
+},
+{
+  "type": "way",
+  "id": 531968281,
+  "center": {
+    "lat": 50.6284202,
+    "lon": 3.0509630
+  },
+  "tags": {
+    "amenity": "school",
+    "contact:email": "ce.0593954c@ac-lille.fr",
+    "contact:phone": "+33 328361480",
+    "education": "school",
+    "name": "École primaire privée Sainte-Thérèse",
+    "operator:type": "private",
+    "ref:FR:SIRET": "78370728400023",
+    "ref:UAI": "0593954C",
+    "school:FR": "primaire",
+    "source": "data.gouv.fr:Éducation Nationale - 05/2016",
+    "start_date": "1971-03-24"
+  }
+},
+{
+  "type": "way",
+  "id": 667937283,
+  "center": {
+    "lat": 50.6313807,
+    "lon": 3.0474810
+  },
+  "tags": {
+    "amenity": "school",
+    "contact:email": "ce.0592922f@ac-lille.fr",
+    "contact:phone": "+33 3 28 36 56 56",
+    "contact:website": "http://www.theresedavila.eu",
+    "education": "school",
+    "name": "Lycée Général Privé Catholique Sainte-Thérèse d'Avila",
+    "operator:type": "private",
+    "ref:FR:SIRET": "77562427300022",
+    "ref:UAI": "0592922F",
+    "school:FR": "lycée",
+    "source": "Ministère de l'Éducation nationale, de l'Enseignement supérieur et de la Recherche - 2025-12",
+    "start_date": "1919-09-01"
+  }
+},
+{
+  "type": "way",
+  "id": 688371277,
+  "center": {
+    "lat": 50.6288605,
+    "lon": 3.0421584
+  },
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "bic": "CCBPFRPPLIL",
+    "branch": "Lille Leclerc",
+    "brand": "Banque Populaire",
+    "brand:wikidata": "Q846647",
+    "brand:wikipedia": "fr:Banque populaire",
+    "building": "yes",
+    "name": "Banque Populaire",
+    "opening_hours": "Tu 09:00-12:45,13:30-18:00; We 09:00-12:15,13:30-18:00; Th 09:00-12:15,14:30-18:00; Fr 09:00-12:15,13:30-18:00; Sa 09:00-12:30",
+    "operator": "Banque Populaire",
+    "phone": "+33 3 66 33 22 00",
+    "ref:FR:SIRET": "45750656600431",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008",
+    "website": "https://agences.banquepopulaire.fr/banque-assurance/agence-lille-leclerc-id1350700114"
+  }
+},
+{
+  "type": "way",
+  "id": 730158246,
+  "center": {
+    "lat": 50.6284306,
+    "lon": 3.0488837
+  },
+  "tags": {
+    "amenity": "school",
+    "contact:email": "secretariat-royale@saintpaul-lille.fr",
+    "contact:phone": "+33 3 20 55 10 20",
+    "contact:website": "http://www.prepasaintpaul-lille.fr",
+    "education": "school",
+    "name": "Lycée Saint-Paul",
+    "operator:type": "private",
+    "ref:FR:SIRET": "77562425700017",
+    "ref:UAI": "0593114P",
+    "school:FR": "lycée",
+    "source": "Ministère de l'Éducation nationale, de l'Enseignement supérieur et de la Recherche - 2026-01",
+    "start_date": "1968-09-15"
+  }
+},
+{
+  "type": "way",
+  "id": 824786080,
+  "center": {
+    "lat": 50.6288462,
+    "lon": 3.0450861
+  },
+  "tags": {
+    "amenity": "school",
+    "contact:email": "ce.0595397w@ac-lille.fr",
+    "contact:phone": "+33 3 28 36 56 66",
+    "contact:website": "http://www.theresedavila.eu",
+    "education": "school",
+    "name": "Collège privé Thérèse d'Avila",
+    "operator:type": "private",
+    "ref:FR:SIRET": "77562427300030",
+    "ref:UAI": "0595397W",
+    "school:FR": "collège",
+    "source": "Ministère de l'Éducation nationale, de l'Enseignement supérieur et de la Recherche - 2025-12",
+    "start_date": "1980-03-28"
+  }
+},
+{
+  "type": "way",
+  "id": 832977409,
+  "center": {
+    "lat": 50.6291731,
+    "lon": 3.0424563
+  },
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "bic": "CMCIFR21BCM",
+    "branch": "Lille Leclerc",
+    "brand": "CIC",
+    "brand:wikidata": "Q746525",
+    "brand:wikipedia": "en:Crédit Industriel et Commercial",
+    "building": "yes",
+    "name": "CIC",
+    "opening_hours": "Th 14:30-18:00, Fr 14:00-18:00, Tu,We 08:45-12:30, Tu,We 13:30-18:00, Th,Fr 08:45-12:30; Mo off; Su off",
+    "operator": "CIC",
+    "ref:FR:SIRET": "45550209602417",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 832978247,
+  "center": {
+    "lat": 50.6291731,
+    "lon": 3.0436329
+  },
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "bic": "BNPAFRPPLIL",
+    "branch": "Lille Vauban",
+    "brand": "BNP Paribas",
+    "brand:wikidata": "Q499707",
+    "brand:wikipedia": "en:BNP Paribas",
+    "building": "yes",
+    "building:levels": "3",
+    "name": "BNP Paribas",
+    "opening_hours": "Mo off; Tu-Fr 09:00-12:30,14:00-18:00; Sa 09:00-13:00; Su off",
+    "operator": "BNP Paribas",
+    "phone": "+33 3 28 36 84 22",
+    "ref:FR:SIRET": "66204244904966",
+    "roof:levels": "1",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "website": "https://nos-agences.mabanque.bnpparibas/hauts-de-france/nord/lille/agence-lille-vauban-1002"
+  }
+},
+{
+  "type": "way",
+  "id": 832984652,
+  "center": {
+    "lat": 50.6267487,
+    "lon": 3.0405068
+  },
+  "tags": {
+    "building": "retail",
+    "check_date:opening_hours": "2023-05-01",
+    "name": "Le 5e Élément",
+    "opening_hours": "Tu-Fr 09:00-19:00; Sa 08:30-18:00",
+    "ref:FR:SIRET": "43957929300010",
+    "shop": "hairdresser",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 832984659,
+  "center": {
+    "lat": 50.6261437,
+    "lon": 3.0409300
+  },
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "bic": "AGRIFRPP867",
+    "brand": "Crédit Agricole",
+    "brand:wikidata": "Q590952",
+    "brand:wikipedia": "fr:Crédit agricole",
+    "building": "apartments",
+    "building:levels": "9",
+    "email": "lille-cormontaigne@ca-norddefrance.fr",
+    "name": "Crédit Agricole",
+    "opening_hours": "Mo off; Tu-We 09:00-12:30, 14:00-18:25; Th 09:00-12:30, 14:30-18:25; Fr 09:00-12:30, 14:00-18:25; Sa 09:00-12:30; Su off",
+    "phone": "+33 3 20 18 31 76",
+    "ref:FR:SIRET": "44067655900097",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "website": "https://www.credit-agricole.fr/particulier/agence/nord-de-france/lille-cormontaigne-3333.html"
+  }
+},
+{
+  "type": "way",
+  "id": 859600431,
+  "center": {
+    "lat": 50.6247637,
+    "lon": 3.0404874
+  },
+  "tags": {
+    "amenity": "school",
+    "contact:city": "Lille",
+    "contact:email": "ce.0596419g@ac-lille.fr",
+    "contact:housenumber": "195",
+    "contact:phone": "+33 320930908",
+    "contact:postcode": "59000",
+    "contact:street": "Rue des Stations",
+    "contact:website": "http://lasallelille.com/section.php?id=2",
+    "education": "school",
+    "name": "École primaire privée La Salle",
+    "operator:type": "private",
+    "ref:FR:SIRET": "77562426500051",
+    "ref:UAI": "0596419G",
+    "school:FR": "primaire",
+    "source": "data.gouv.fr:Éducation Nationale - 06/2021",
+    "start_date": "1999-09-01"
+  }
+},
+{
+  "type": "way",
+  "id": 908079824,
+  "center": {
+    "lat": 50.6352945,
+    "lon": 3.0450093
+  },
+  "tags": {
+    "amenity": "college",
+    "education": "college",
+    "name": "IÉSEG School of Management - Université catholique de Lille",
+    "operator:type": "private",
+    "phone": "+33 3 20 54 58 92",
+    "ref:UAI": "0593202K",
+    "short_name": "IESEG",
+    "website": "https://www.ieseg.fr/services-etudiants/campus-lille/"
+  }
+},
+{
+  "type": "way",
+  "id": 959708001,
+  "center": {
+    "lat": 50.6326555,
+    "lon": 3.0463900
+  },
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "60",
+    "addr:postcode": "59000",
+    "addr:street": "Boulevard Vauban",
+    "amenity": "university",
+    "education": "university",
+    "internet_access": "yes",
+    "internet_access:fee": "no",
+    "name": "Université catholique de Lille",
+    "operator": "Fédération universitaire et pluridisciplinaire de Lille",
+    "operator:type": "private",
+    "ref:UAI": "0590344D",
+    "short_name": "ICL",
+    "source": "Onisep - Idéo-Structures d'enseignement supérieur - 07/2025",
+    "website": "https://www.univ-catholille.fr/",
+    "wikidata": "Q1477551",
+    "wikipedia": "fr:Université catholique de Lille"
+  }
+},
+{
+  "type": "way",
+  "id": 978512249,
+  "center": {
+    "lat": 50.6292841,
+    "lon": 3.0392843
+  },
+  "tags": {
+    "amenity": "school",
+    "education": "school",
+    "name": "Ensemble scolaire La Salle",
+    "school:FR": "secondaire",
+    "website": "https://www.lasallelille.com/"
+  }
+},
+{
+  "type": "way",
+  "id": 1289584742,
+  "center": {
+    "lat": 50.6357370,
+    "lon": 3.0505799
+  },
+  "tags": {
+    "amenity": "college",
+    "education": "college",
+    "name": "IÉSEG School of Management - Université catholique de Lille",
+    "operator:type": "private",
+    "phone": "+33 3 20 54 58 92",
+    "ref:UAI": "0593202K",
+    "short_name": "IESEG",
+    "website": "https://www.ieseg.fr/services-etudiants/campus-lille/"
+  }
+},
+{
+  "type": "way",
+  "id": 1354924706,
+  "center": {
+    "lat": 50.6289289,
+    "lon": 3.0488812
+  },
+  "tags": {
+    "access": "yes",
+    "fee": "no",
+    "garden:type": "community",
+    "leisure": "garden",
+    "name": "Jardin Jeanne Barret",
+    "operator": "Ville de Lille",
+    "start_date": "2025-04-01"
+  }
+},
+{
+  "type": "way",
+  "id": 1417030113,
+  "center": {
+    "lat": 50.6263656,
+    "lon": 3.0352651
+  },
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "7",
+    "addr:postcode": "59000",
+    "addr:street": "Impasse Saint-Joseph",
+    "dog": "no",
+    "fee": "no",
+    "leisure": "park",
+    "name": "Parc de la Charité",
+    "opening_hours": "07:45-21:00",
+    "operator": "Ville de Lille",
+    "operator:type": "public",
+    "smoking": "no"
+  }
+},
+{
+  "type": "way",
+  "id": 1435048808,
+  "center": {
+    "lat": 50.6284907,
+    "lon": 3.0425874
+  },
+  "tags": {
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "addr:street": "Place du Maréchal Leclerc",
+    "leisure": "park",
+    "name": "Parc du Maréchal Leclerc",
+    "opening_date": "2026-07-08",
+    "opening_hours": "07:45-22:00",
+    "operator": "Ville de Lille"
+  }
+},
+{
+  "type": "relation",
+  "id": 230031,
+  "center": {
+    "lat": 50.6300769,
+    "lon": 3.0406103
+  },
+  "tags": {
+    "amenity": "college",
+    "building": "yes",
+    "name": "Institut Catholique d'Arts et Métiers",
+    "name:en": "IÉSEG School of Management Building R",
+    "operator:type": "private",
+    "ref:UAI": "0590345E",
+    "short_name": "ICAM Lille",
+    "source": "Etablissements d'enseignement supérieur - 09/2017",
+    "type": "multipolygon",
+    "website": "https://www.icam.fr/nos-campus/icam-lille/"
+  }
+},
+{
+  "type": "relation",
+  "id": 273299,
+  "center": {
+    "lat": 50.6339536,
+    "lon": 3.0487616
+  },
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "41",
+    "addr:street": "Boulevard Vauban",
+    "alt_name": "Îlot Colson 2",
+    "amenity": "college",
+    "building": "college",
+    "contact:city": "Lille",
+    "contact:housenumber": "41",
+    "contact:postcode": "59800",
+    "contact:street": "Boulevard Vauban",
+    "description": "L’ISEN Lille, Institut Supérieur de l’Electronique et du Numérique, est une Grande École d'Ingénieurs reconnue par le Ministère de l’Enseignement Supérieur et habilitée par la Commission des Titres d’Ingénieur (CTI).",
+    "internet_access": "yes",
+    "name": "ISEN Lille - Junia",
+    "operator": "Junia",
+    "operator:type": "private",
+    "phone": "+33 3 20 30 40 50",
+    "ref:UAI": "0590347G",
+    "short_name": "ISEN Lille",
+    "source": "Etablissements d'enseignement supérieur - 09/2017",
+    "type": "multipolygon",
+    "website": "https://www.junia.com/fr/junia/programme-grande-ecole-isen/",
+    "wikidata": "Q3152574"
+  }
+},
+{
+  "type": "relation",
+  "id": 931737,
+  "center": {
+    "lat": 50.6256551,
+    "lon": 3.0512358
+  },
+  "tags": {
+    "amenity": "arts_centre",
+    "building": "yes",
+    "name": "Centre d'Arts Plastiques et Visuels",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "relation",
+  "id": 10837473,
+  "center": {
+    "lat": 50.6343166,
+    "lon": 3.0499581
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Square du Palais Rameau",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "relation",
+  "id": 11371800,
+  "center": {
+    "lat": 50.6335401,
+    "lon": 3.0413920
+  },
+  "tags": {
+    "amenity": "fast_food",
+    "building": "yes",
+    "building:levels": "3",
+    "cuisine": "falafel;kebab",
+    "name": "Ô Delice",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "takeaway": "yes",
+    "type": "multipolygon"
+  }
+},
+{
+  "type": "relation",
+  "id": 11371801,
+  "center": {
+    "lat": 50.6338530,
+    "lon": 3.0407182
+  },
+  "tags": {
+    "amenity": "townhall",
+    "building": "civic",
+    "building:levels": "2",
+    "contact:city": "Lille",
+    "contact:housenumber": "212A",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Colbert",
+    "name": "Mairie du Quartier Vauban-Esquermes",
+    "roof:levels": "1",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008",
+    "type": "multipolygon"
+  }
+}
+
+  ]
+}
