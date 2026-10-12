@@ -6,6 +6,7 @@ import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, 
 import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js";
 import { MAP } from "./vauban.js";
 import { buildLandmarks } from "./landmarks.js";
+import { buildMonuments } from "./monuments.js";
 import { buildCity, pointInPoly, polyDist } from "./city.js";
 import { buildStation } from "./station.js";
 import { createRame } from "./rame.js";
@@ -526,7 +527,7 @@ function buildHorizon(F){
 	};
 	// valeurs entières du fichier : positions et tailles au dixième, angle au centième, hauteur du toit au dixième
 	const spots = F.map(([x, z, a, w, dp, lv, rh, col, rm]) => [x/10, z/10, a/100, w/10, dp/10, lv, rh/10, col, rm])
-		.filter(([x, z]) => !blockedFar(x, z) && !(ZONE && pointInPoly(x, z, ZONE)));
+		.filter(([x, z]) => !blockedFar(x, z) && !monuments.covers(x, z) && !(ZONE && pointInPoly(x, z, ZONE)));
 	const body = new THREE.InstancedMesh(BOX, std("#ffffff"), spots.length);
 	const roof = new THREE.InstancedMesh(gable(1, 1, 1), std("#ffffff"), spots.length);
 	const d = new THREE.Object3D(), c = new THREE.Color(), ZERO = new THREE.Matrix4().makeScale(0, 0, 0), base = [];
@@ -679,6 +680,7 @@ function buildRameau(){
 }
 
 buildHA(); buildFalise(); buildWenov(); buildCitadelle(); buildKiosque(); buildRameau();
+const monuments = buildMonuments(scene, MAP);
 const landmarks = buildLandmarks(scene, MAP, { inBuilding:city.inBuilding, roadGap:city.roadGap, home:[0, 14] });
 let horizon = null, farWood = null;          // le lointain arrive après le campus (js/vauban_far.js), voir loadFar
 WB.build(scene, glassLit, glassDark, frameMat);
@@ -1225,7 +1227,7 @@ function showLight(){
 	atriumRoof.emissiveIntensity = .55*k;
 	atriumGlow.emissiveIntensity = .4 + 1.6*k;
 	wenovGlass.emissiveIntensity = .28*k;
-	city.setNight(k); landmarks.setNight(k);
+	city.setNight(k); landmarks.setNight(k); monuments.setNight(k);
 	// paillettes sur l'eau : la lune la nuit (argentée), le soleil le jour, orangé à l'heure dorée
 	GLINT.dir.value.copy(st.sunPos).normalize();
 	GLINT.color.value.copy(st.sun).multiplyScalar(k > .5 ? 2.6 : golden ? 2.2 : .9);

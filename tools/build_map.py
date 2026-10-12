@@ -520,6 +520,37 @@ if (OSM / "bdtopo_far.json").exists():
         far_out.append([g[0], g[1], round(Gdir(a), 2), round(L*S*f, 1), round(D*S*f, 1), bd_levels(b), rh, bd_col(b, h(b["id"])), bd_rmat(b)])
 print("lointain :", len(far_out), "bâtiments réels")
 
+# --- monuments faits main (js/monuments.js) : églises du quartier et grands repères de la silhouette de Lille ---
+# Hauteurs réelles approximatives (m) ; position et emprise d'OpenStreetMap quand on l'a, sinon coordonnées connues.
+# tour : le clocher est à l'ouest (orientation liturgique). Les bâtiments lointains à leur place sont retirés côté jeu.
+MONS_SRC = [
+    ("stmartin", "Église Saint-Martin d'Esquermes", "eglise", 40931315, None, 15, 55),
+    ("consolation", "Église Notre-Dame-de-Consolation", "eglise", 40267967, None, 11, 42),
+    ("victoires", "Église Notre-Dame des Victoires", "eglise_carree", 98884677, None, 13, 36),
+    ("stmaurice", "Église Saint-Maurice", "eglise", None, (50.6364, 3.0665, 62, 30, 0.0), 19, 62),
+    ("treille", "Cathédrale Notre-Dame-de-la-Treille", "cathedrale", None, (50.6403, 3.0621, 96, 34, -0.35), 26, 40),
+    ("beffroi", "Beffroi de l'Hôtel de Ville", "beffroi", None, (50.6317, 3.0705, 12, 12, 0.0), 0, 104),
+    ("tourlille", "Tour de Lille", "tour_botte", None, (50.6376, 3.0763, 40, 24, 0.5), 0, 120),
+    ("lilleurope", "Tour Lilleurope", "tour", None, (50.6389, 3.0752, 26, 26, 0.0), 0, 110),
+]
+_raw = {e["id"]: e for e in _ext if e["type"] == "way" and "geometry" in e}
+monuments = []
+for mid, name, kind, oid, man, h_, top in MONS_SRC:
+    if oid and oid in _raw:
+        q = [mp(c) for c in _raw[oid]["geometry"]][:-1]
+        a, cx, cz, L, D = obb(q)
+        if D > L: a += math.pi/2; L, D = D, L
+    else:
+        la, lo, L, D, a = man; cx, cz = mp({ "lat":la, "lon":lo })
+    d = dist((cx, cz)); g = G((cx, cz))
+    if math.hypot(g[0], g[1] + 10) > 480: print("monument hors de l'horizon :", name); continue
+    f = math.hypot(g[0], g[1] - OZ)/(S*d) if d > 1 else 1
+    west = 1 if math.cos(a) < 0 else -1          # le bout de l'axe (cos a, sin a) le plus à l'ouest porte le clocher
+    k = S*VX*(.6 + .4*f)                          # hauteur : comme le lointain, un peu réduite avec la distance
+    monuments.append({ "id":mid, "name":name, "kind":kind, "x":g[0], "z":g[1], "ang":round(Gdir(a), 3), "L":round(L*S*f, 2), "W":round(D*S*f, 2),
+                       "h":round(h_*k, 2), "top":round(top*k, 2), "west":west })
+print("monuments :", [(m["id"], m["x"], m["z"], m["top"]) for m in monuments])
+
 # --- rues ---
 STREETS = []
 WID = { "primary":12, "secondary":10, "tertiary":9, "residential":7.5, "living_street":6, "unclassified":7, "pedestrian":6, "service":4.5 }
@@ -765,7 +796,7 @@ for b in buildings: b[4] = enc(b[4])
 for r in roads: r[2] = enc(r[2])
 out = {
     "S":S, "ha":HA, "falise":FAL, "court":[round(c,2) for c in court], "buildings":buildings, "roads":roads, "greens":greens,
-    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro, "stations":stations, "zone":zone, "sol":sol, "fh":FH_MAP, "streets":STREETS, "places":places
+    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro, "stations":stations, "zone":zone, "sol":sol, "fh":FH_MAP, "streets":STREETS, "places":places, "monuments":monuments
 }
 HEAD = ("/* Généré par tools/build_map.py — ne pas modifier à la main.\n"
         "   Données © les contributeurs d'OpenStreetMap (ODbL) ; © IGN BD TOPO et BD ORTHO (Licence Ouverte). */\n")
