@@ -66,14 +66,17 @@ export function createWenovIn({ background }){
 	const white = std("#f2f0eb"), floorM = std("#cfcac1", { flatShading:false }), patioM = std("#d9d4ca", { flatShading:false });
 	const wood = std("#c79a6a"), dark = std("#2b2f36"), yellow = std("#f2c63c"), cyan = std("#21b6ce"), navy = std("#1e305e");
 	const glass = new THREE.MeshStandardMaterial({ color:"#cfe2ea", transparent:true, opacity:.28, roughness:.1, metalness:.1, side:THREE.DoubleSide, depthWrite:false });
+	glass.forceSinglePass = true;
 	const concrete = new THREE.MeshStandardMaterial({ map:gridTex(), roughness:.85, side:THREE.DoubleSide });
 	const lampM = std("#fff6e2", { emissive:"#ffe2a8", emissiveIntensity:1.1, flatShading:false });
 
 	/* sol, patio, socle */
-	box(scene, W + 2, .6, D + 2, std("#8c867e"), 0, -.6, 0, 0, false);
+	// socle sous le sol (son dessus ne doit pas être à la même hauteur que le sol : sinon les deux scintillent)
+	box(scene, W + 2, .6, D + 2, std("#8c867e"), 0, -.66, 0, 0, false);
 	const fl = new THREE.Mesh(new THREE.PlaneGeometry(W, D).rotateX(-Math.PI/2), floorM); fl.receiveShadow = true; scene.add(fl);
-	const pa = new THREE.Mesh(new THREE.PlaneGeometry(PX*2, PZ*2).rotateX(-Math.PI/2), patioM); pa.position.y = .02; pa.receiveShadow = true; scene.add(pa);
-	for(let i=-6; i<=6; i++) box(scene, .08, .03, PZ*2, std("#c4beb3"), i*2.2, .02, 0, 0, false);       // calepinage des dalles
+	floorM.polygonOffset = true; floorM.polygonOffsetFactor = 2; floorM.polygonOffsetUnits = 4;       // le sol passe toujours sous le patio
+	const pa = new THREE.Mesh(new THREE.PlaneGeometry(PX*2, PZ*2).rotateX(-Math.PI/2), patioM); pa.position.y = .05; pa.receiveShadow = true; scene.add(pa);
+	for(let i=-6; i<=6; i++) box(scene, .08, .03, PZ*2, std("#c4beb3"), i*2.2, .06, 0, 0, false);       // calepinage des dalles
 
 	/* murs extérieurs (trame de façade) : celui côté caméra s'efface */
 	const walls = [];
@@ -137,7 +140,7 @@ export function createWenovIn({ background }){
 		const x = -19 + k*3.6, z = zN + .6 + row*2.4;
 		box(scene, 2.8, .1, 1, wood, x, .9, z); box(scene, 2.6, .9, .9, dark, x, 0, z, 0, false);
 		const mon = new THREE.Mesh(new THREE.BoxGeometry(1, .62, .06), dark); mon.position.set(x, 1.38, z - .3); scene.add(mon);
-		const sc = new THREE.Mesh(new THREE.PlaneGeometry(.92, .54), monM[(row*5 + k) % 3]); sc.position.set(x, 1.38, z - .265); scene.add(sc);
+		const sc = new THREE.Mesh(new THREE.PlaneGeometry(.92, .54), monM[(row*5 + k) % 3]); sc.position.set(x, 1.38, z - .235); scene.add(sc);
 		if((row + k) % 3 !== 2){ const s = makeStudent(scene, true); s.g.scale.setScalar(1.05); s.g.position.set(x, -.1, z + .75); s.g.rotation.y = Math.PI; seated.push({ ...s, ph:r()*6 }); }
 	}
 	box(scene, .1, FL, WING, glass, -.6, 0, zN);         // cloison vitrée entre la salle et le Campus Cyber

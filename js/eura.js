@@ -75,6 +75,8 @@ export function createEura({ background }){
 	const ground = new THREE.Mesh(new THREE.CircleGeometry(520, 48).rotateX(-Math.PI/2), std("#a9b05c", { flatShading:false }));
 	ground.position.y = -.02; ground.receiveShadow = true; scene.add(ground);
 
+	// pas de pelouse OpenStreetMap sous Wenov (fait main) : elle affleurerait sous le patio et les pilotis
+	{ const blk = ring(EMAP.wenov.street); EMAP.greens = EMAP.greens.filter(([, f]) => { const p = ring(f), [cx, cz] = cen(p); return !pointInPoly(cx, cz, blk); }); }
 	const city = buildCity(scene, EMAP, { offices:true });
 
 	/* ---------- Wenov ---------- */
@@ -109,7 +111,7 @@ export function createEura({ background }){
 	const glassM = new THREE.MeshStandardMaterial({ color:"#a9c7d6", roughness:.12, metalness:.35, transparent:true, opacity:.88, emissive:"#ffd08a", emissiveIntensity:0 });
 	const gb = box(wen, 7.4, NF*FH + .6, 7.4, glassM, gx, 0, gz, -Math.atan2(W[1][1] - W[0][1], W[1][0] - W[0][0]));
 	// patio : dalle claire, grands arbres, bancs jaunes (comme sur le rendu des architectes)
-	ringSlab(patio, null, .06, std("#d9d4ca", { flatShading:false }), 0, wen);
+	ringSlab(patio, null, .12, std("#d9d4ca", { flatShading:false }), 0, wen);
 	const patioTrees = [];
 	{ const r = mulberry32(9); for(let k=0;k<7;k++){ const t = .25 + r()*.5, s = .25 + r()*.5; const p0 = patio[0], p1 = patio[1], p3 = patio[3];
 		patioTrees.push({ x:p0[0] + (p1[0]-p0[0])*t + (p3[0]-p0[0])*s, z:p0[1] + (p1[1]-p0[1])*t + (p3[1]-p0[1])*s, s:.85 + r()*.35 }); } }
