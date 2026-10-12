@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate } from "./render.js";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT } from "./render.js";
 import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js";
 import { MAP } from "./vauban.js";
 import { buildLandmarks } from "./landmarks.js";
@@ -752,11 +752,20 @@ const conifIM = new THREE.InstancedMesh(new THREE.ConeGeometry(1, 1, 7).translat
 }
 /* Le lointain : les vrais bâtiments en miniature et les bois (Bois de Boulogne…) plantés d'après la photo aérienne.
    Chargé une fois le campus affiché ; ses arbres, sans tronc, ne projettent pas d'ombre. */
+function nearCanal(x, z, r){
+	for(const c of MAP.canals) for(let i=0;i+3<c.length;i+=2){
+		const ax = c[i], az = c[i+1], dx = c[i+2] - ax, dz = c[i+3] - az, l2 = dx*dx + dz*dz || 1;
+		const k = Math.max(0, Math.min(1, ((x - ax)*dx + (z - az)*dz)/l2));
+		if(Math.hypot(x - ax - k*dx, z - az - k*dz) < r) return true;
+	}
+	return false;
+}
 function buildFarWood(f){
 	const [cx, cz] = MAP.citadelle, fr = mulberry(11), list = [];
 	for(let i=0;i<f.length;i+=2){
 		const x = f[i]/10, z = f[i+1]/10;
 		if(Math.hypot(x - cx, z - cz) < 56 || (LIFE.euratech && Math.hypot(x - LIFE.euratech.x, z - LIFE.euratech.z) < 60)) continue;
+		if(nearCanal(x, z, 6.5)) continue;          // pas d'arbre dans la Deûle ni sur son quai
 		list.push({ x, z, k: fr() < .22 ? "c" : "d", s:.95 + fr()*.4, c:fr() });
 	}
 	const dl = list.filter(t => t.k === "d"), cl = list.filter(t => t.k === "c");
@@ -918,15 +927,64 @@ function updateStudents(dt, t){
    Petites vies : canards, nuages, oiseaux, pigeons, particules, fumée
    ===================================================================== */
 const ducks = [];
+// la Deûle : les plus longs tronçons (Port de Lille, bras de la Citadelle), parcourus par les péniches et les canards
+const canalLen = c => { let L = 0; for(let i=0;i+3<c.length;i+=2) L += Math.hypot(c[i+2]-c[i], c[i+3]-c[i+1]); return L; };
+const deule = MAP.canals.filter(c => canalLen(c) > 60).sort((a, b) => Math.hypot(a[0], a[1]) - Math.hypot(b[0], b[1]));
 {
-	const c = MAP.canals.slice().sort((a,b) => (Math.hypot(a[0],a[1]) - Math.hypot(b[0],b[1])))[0] || [0,0,1,1];
-	for(let i=0;i<3;i++){
+	for(let i=0;i<8;i++){
+		const c = deule[i % Math.min(3, deule.length)] || [0,0,1,1];
 		const g = new THREE.Group();
 		const b = new THREE.Mesh(new THREE.SphereGeometry(.45, 10, 8), std(i ? "#8a6a4a" : "#f4f1ea", { flatShading:false })); b.scale.set(1,.65,1.4);
 		const h = new THREE.Mesh(new THREE.SphereGeometry(.26, 10, 8), std(i ? "#2f6b4a" : "#f4f1ea", { flatShading:false })); h.position.set(0,.38,.5);
 		const k = new THREE.Mesh(BOXC, std("#e8963a")); k.scale.set(.14,.07,.22); k.position.set(0,.34,.78);
 		g.add(b,h,k); scene.add(g);
 		ducks.push({ g, ph:R(0,6), line:c, k0:R(0,1) });
+	}
+}
+/* Péniches et bateau de promenade : ils suivent le canal à petite vitesse, aller et retour. */
+const boats = [];
+function along(c, s){
+	// point et direction à la distance s le long de la polyligne c
+	for(let i=0;i+3<c.length;i+=2){
+		const l = Math.hypot(c[i+2]-c[i], c[i+3]-c[i+1]);
+		if(s <= l || i + 4 >= c.length){ const f = l ? Math.min(1, s/l) : 0; return [c[i] + (c[i+2]-c[i])*f, c[i+1] + (c[i+3]-c[i+1])*f, Math.atan2(c[i+2]-c[i], c[i+3]-c[i+1])]; }
+		s -= l;
+	}
+	return [c[0], c[1], 0];
+}
+{
+	const hullM = std("#2b2f36"), deckM = std("#7c3a2c"), cabM = std("#eef0ec"), winM = std("#3a4a5f", { roughness:.3 }), tarpM = std("#2f5d4a");
+	const make = (L, W, kind) => {
+		const g = new THREE.Group();
+		box(g, W, .7, L, hullM, 0, -.2, 0);
+		box(g, W*.98, .12, L*.98, deckM, 0, .5, 0);
+		if(kind === "peniche"){
+			box(g, W*.8, .55, L*.62, tarpM, 0, .55, L*.08);               // cale bâchée
+			box(g, W*.8, 1.3, L*.16, cabM, 0, .55, -L*.4);                // timonerie à l'arrière
+			box(g, W*.82, .35, L*.1, winM, 0, 1.45, -L*.36);
+		} else {
+			box(g, W*.7, .9, L*.45, cabM, 0, .55, -L*.05);
+			box(g, W*.72, .3, L*.4, winM, 0, 1.05, -L*.05);
+		}
+		g.traverse(o => { if(o.isMesh) o.castShadow = true; });
+		g.userData.dynamic = true;          // pas de fusion avec le décor fixe (bakeStatic)
+		scene.add(g); return g;
+	};
+	const plan = [[0, "peniche", 9, 1.6, .5], [0, "peniche", 8, 1.5, .4], [1, "promenade", 3.6, 1.1, .8]];
+	for(const [ci, kind, L, W, v] of plan){
+		const c = deule[ci]; if(!c) continue;
+		const len = canalLen(c);
+		boats.push({ g:make(L, W, kind), c, len, v, s:R(.1, .9)*len, dir:rng() < .5 ? 1 : -1, L });
+	}
+}
+function updateBoats(dt, t){
+	for(const b of boats){
+		b.s += b.v*b.dir*dt;
+		if(b.s > b.len - b.L/2){ b.s = b.len - b.L/2; b.dir = -1; }
+		if(b.s < b.L/2){ b.s = b.L/2; b.dir = 1; }
+		const [x, z, a] = along(b.c, b.s);
+		b.g.position.set(x, .12 + Math.sin(t*1.1 + b.L)*.03, z);
+		b.g.rotation.set(Math.sin(t*.9 + b.L)*.01, a + (b.dir < 0 ? Math.PI : 0), 0);
 	}
 }
 const cloudMat = new THREE.MeshLambertMaterial({ color:"#ffffff", flatShading:true });
@@ -1127,6 +1185,9 @@ function showLight(){
 	atriumGlow.emissiveIntensity = .4 + 1.6*k;
 	wenovGlass.emissiveIntensity = .28*k;
 	city.setNight(k); landmarks.setNight(k);
+	// paillettes sur l'eau : la lune la nuit (argentée), le soleil le jour, orangé à l'heure dorée
+	GLINT.dir.value.copy(st.sunPos).normalize();
+	GLINT.color.value.copy(st.sun).multiplyScalar(k > .5 ? 2.6 : golden ? 2.2 : .9);
 	blobMaterial().opacity = .34 - .18*k;
 	if(post) post.setNight(k);
 }
@@ -2526,6 +2587,7 @@ function frame(){
 		updatePigeons(dt, t);
 		if(partIM.count) updateParts(dt, t);
 		updateSmoke(dt);
+		updateBoats(dt, t);
 		for(const d of ducks){
 			const c = d.line, n = c.length/2 - 1; if(n < 1) continue;
 			const k = ((Math.sin(t*.02 + d.ph)*.5 + .5)*.8 + .1)*n, i = Math.floor(k), f = k - i;

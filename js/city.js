@@ -488,7 +488,7 @@ export function buildCity(scene, MAP, opts={}){
 	/* ---------- rues & trottoirs ---------- */
 	/* Les couches du sol se recouvrent (pelouses, terrains, trottoirs, rues, eau) à quelques centimètres d'écart :
 	   de loin, la carte graphique ne sait plus laquelle est devant et elles « scintillent ». On leur donne un ordre
-	   explicite par décalage de profondeur, du dessous vers le dessus : eau, quai, trottoir, pelouse, terrain, rue, piéton. */
+	   explicite par décalage de profondeur, du dessous vers le dessus : quai, eau, trottoir, pelouse, terrain, rue, piéton (le sol est encore dessous). */
 	const layer = (m, k) => { m.polygonOffset = true; m.polygonOffsetFactor = k; m.polygonOffsetUnits = k*2; return m; };
 	const roadM = layer(std("#57525c", { flatShading:false, side:THREE.DoubleSide }), -1);
 	const pedM = layer(std("#c9b9a1", { flatShading:false, side:THREE.DoubleSide }), -2);
@@ -553,8 +553,8 @@ export function buildCity(scene, MAP, opts={}){
 	for(const [B, m] of [[BL, lawnM], [BPi, pitchM]]){ if(!B.pos.length) continue; const me = new THREE.Mesh(toGeo(B), m); me.receiveShadow = true; scene.add(me); }
 
 	/* ---------- la Deûle ---------- */
-	const waterM = layer(std("#6e9aa4", { roughness:.14, metalness:.1, flatShading:false, side:THREE.DoubleSide }), 4);
-	const quayM = layer(std("#cbbfae", { flatShading:false, side:THREE.DoubleSide }), 3);
+	const waterM = layer(std("#6e9aa4", { roughness:.07, metalness:.18, envMapIntensity:1.45, flatShading:false, side:THREE.DoubleSide }), 4);          // très lisse : le ciel, le soleil et la lune s'y reflètent
+	const quayM = layer(std("#cbbfae", { flatShading:false, side:THREE.DoubleSide }), 5);          // sous l'eau (le quai est plus large que le plan d'eau)
 	out.ground.water = waterM;
 	const BQ = bucket(), BWa = bucket();
 	for(const pts of MAP.canals){ ribbon(BQ, pts, 10.5, .025); ribbon(BWa, pts, 8, .045); }

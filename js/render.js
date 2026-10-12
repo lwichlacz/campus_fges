@@ -236,20 +236,28 @@ export function windSway(mat, amp = .06){
 	});
 }
 
-/* Eau : de petites vagues font bouger les reflets du ciel et du soleil. */
+/* Eau : de petites vagues font bouger les reflets du ciel et du soleil ; un chemin de paillettes
+   (soleil, ou lune la nuit) scintille sur les vaguelettes. GLINT.dir : direction de l'astre (monde), GLINT.color : sa force. */
+export const GLINT = { dir:{ value:new THREE.Vector3(0, 1, 0) }, color:{ value:new THREE.Color(0, 0, 0) } };
 export function waterRipples(mat){
 	chain(mat, "water", sh => {
-		sh.uniforms.uTime = TIME;
+		sh.uniforms.uTime = TIME; sh.uniforms.uGlintDir = GLINT.dir; sh.uniforms.uGlintC = GLINT.color;
 		sh.vertexShader = sh.vertexShader
 			.replace("#include <common>", "#include <common>\nvarying vec2 vWXZ;")
 			.replace("#include <project_vertex>", `#include <project_vertex>\n	{ ${WORLD_VS}\n	vWXZ = fxW.xz; }`);
 		sh.fragmentShader = sh.fragmentShader
-			.replace("#include <common>", "#include <common>\nuniform float uTime; varying vec2 vWXZ;")
+			.replace("#include <common>", "#include <common>\nuniform float uTime; uniform vec3 uGlintDir; uniform vec3 uGlintC; varying vec2 vWXZ;")
 			.replace("#include <normal_fragment_maps>", `#include <normal_fragment_maps>
 	{ vec2 p = vWXZ; float t = uTime;
 	  vec2 g = vec2( cos( p.x*.9 + t*1.1 )*.5 + cos( ( p.x + p.y )*.55 - t*.8 )*.45 + cos( p.x*2.3 - p.y*1.7 + t*1.9 )*.2,
 	                 sin( p.y*1.05 - t*1.3 )*.5 + cos( ( p.x - p.y )*.7 + t*.9 )*.45 + sin( p.y*2.1 + p.x*1.3 - t*1.7 )*.2 )*.11;
-	  normal = normalize( ( viewMatrix * vec4( normalize( vec3( -g.x, 1.0, -g.y ) ), 0.0 ) ).xyz ); }`);
+	  normal = normalize( ( viewMatrix * vec4( normalize( vec3( -g.x, 1.0, -g.y ) ), 0.0 ) ).xyz ); }`)
+			.replace("#include <opaque_fragment>", `{ vec3 L = normalize( ( viewMatrix*vec4( uGlintDir, 0.0 ) ).xyz );
+	  vec3 R = reflect( -normalize( vViewPosition ), normal );
+	  float sp = pow( max( dot( R, L ), 0.0 ), 180.0 );
+	  float tw = 0.55 + 0.45*sin( uTime*6.0 + vWXZ.x*3.1 + vWXZ.y*2.3 );          // ça scintille
+	  outgoingLight += uGlintC*sp*tw; }
+#include <opaque_fragment>`);
 	});
 }
 
