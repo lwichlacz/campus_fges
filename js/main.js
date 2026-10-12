@@ -419,7 +419,7 @@ function buildMetroVauban(){
 			// trémie d'escalier, garde-corps, et le totem « M » sur la première bouche
 			const a = Math.atan2(-z, -x);
 			const e = new THREE.Group(); e.position.set(x, 0, z); e.rotation.y = -a; grp.add(e);
-			flat(e, 4, 6.4, pave, 0, 0, .05);
+			flat(e, 4, 6.4, pave, 0, 0, .11);
 			box(e, 1.6, .2, 3.4, dark, 0, 0, 0);
 			for(const sx of [-.95, .95]) box(e, .1, .9, 3.4, metal, sx, .2, 0);
 			if(i === 0){ cyl(e, .1, .1, 4.6, metal, 1.4, 0, -2, 6); const sg = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, .16), signM); sg.position.set(1.4, 4.9, -2); e.add(sg); }
@@ -1275,6 +1275,12 @@ function afterArrival(){
 }
 $("btnProfile").addEventListener("click", () => { closePanel(); $("welcome").classList.remove("gone"); });
 $("btnTheme").addEventListener("click", e => { e.stopPropagation(); $("ambiance").hidden = !$("ambiance").hidden; });
+$("btnMetro").addEventListener("click", () => {
+	Audio.play("pop"); store.set("metroSeen", true); $("btnMetro").classList.remove("pulse");
+	if(tour) stopTour();
+	if(current === "nav:metro") closePanel(); else openPanel("nav:metro");
+});
+if(!store.get("metroSeen", false)) $("btnMetro").classList.add("pulse");      // il clignote doucement tant qu'on ne l'a pas essayé
 $("btnMore").addEventListener("click", e => { e.stopPropagation(); Audio.play("pop"); $("ambiance").hidden = !$("ambiance").hidden; });
 $("moreProfile").addEventListener("click", () => { $("ambiance").hidden = true; $("btnProfile").click(); });
 $("moreMusic").addEventListener("click", () => $("btnMusic").click());
@@ -1684,6 +1690,21 @@ function jeuxView(){
 	justWon = null;
 	return [head, body];
 }
+/* Le métro : raccourci toujours visible (bouton M de la barre du haut) vers les stations de la ligne 2 */
+function metroView(){
+	const strip = `<div class="mstrip">${LINE2.map(n => `<span>${n.replace(" – ", "<br>")}</span>`).join("")}</div>`;
+	if(mode === "eura" || mode === "wenovin"){
+		const head = `<div class="kick">Ligne 2 · métro VAL</div><h2>Retour au campus Vauban</h2><p>La station Canteleu – Euratechnologies est à quelques minutes de Wenov. Choisis ta station d'arrivée :</p>`;
+		const body = strip + [["portdelille", 2], ["cormontaigne", 3]].map(([id, n]) => `<div class="mline"><i>M</i><span><b>${LIFE[id].name.replace("Métro ", "")}</b><small>${n} stations · ${LIFE[id].kicker.replace("Ligne 2 · ", "")}</small>
+			<div class="acts2"><button class="btn main" data-go="vauban:${id}">🚇 Y aller</button></div></span></div>`).join("") +
+			(mode === "eura" ? `<button class="btn alt" data-place="metro">📍 Voir la station Canteleu – Euratechnologies</button>` : "");
+		return [head, body];
+	}
+	const head = `<div class="kick">Ligne 2 · métro VAL</div><h2>Le métro vers Wenov</h2><p>Le campus de l'École du Numérique, au cœur d'Euratechnologies, n'est qu'à quelques stations. Choisis ta station de départ :</p>`;
+	const body = strip + [["cormontaigne", 3], ["portdelille", 2]].map(([id, n]) => `<div class="mline"><i>M</i><span><b>${LIFE[id].name.replace("Métro ", "")}</b><small>${n} stations jusqu'à Wenov · ${LIFE[id].kicker.replace("Ligne 2 · ", "")}</small>
+		<div class="acts2"><button class="btn main" data-go="eura:${id}">🚇 Partir vers Wenov</button><button class="btn alt" data-place="${id}">📍 Voir la station</button></div></span></div>`).join("");
+	return [head, body];
+}
 function lieuxView(){
 	const row = (id, p, sub, done) => `<button class="lieu" data-place="${id}"><span class="ic">${p.icon}</span><span><b>${p.name}</b><small>${sub}</small></span>${done ? '<span class="ok">✓</span>' : ""}</button>`;
 	const head = `<div class="kick">Explorer</div><h2>Les lieux du campus</h2><p>Touche un lieu : la caméra t'y emmène.</p>`;
@@ -1714,6 +1735,8 @@ function openPanel(id){
 		[head, body] = lieuxView();
 	} else if(id === "nav:jeux"){
 		[head, body] = jeuxView();
+	} else if(id === "nav:metro"){
+		[head, body] = metroView();
 	} else if(String(id).startsWith("f:")){
 		const f = F.find(x => x.id === id.slice(2));
 		[head, body] = detailView(f);
@@ -1746,6 +1769,7 @@ function openPanel(id){
 	if(isPhone() && !$("panel").classList.contains("on")){ sheet.h = sheetSnaps()[1]; $("panel").style.height = sheet.h + "px"; }
 	$("panel").classList.add("on");
 	panelShift = true;
+	$("toast").classList.toggle("side", innerWidth > 720);          // un message déjà affiché se range à côté de la fiche
 	if(id === "nav:formations"){
 		const inp = $("fsearch");
 		inp.addEventListener("input", () => { fq = inp.value; renderFList(); });
@@ -1772,7 +1796,8 @@ $("panel").addEventListener("click", e => {
 	if(e.target.closest("[data-openbadge]")){ openBadge(); return; }
 	const go = e.target.closest("[data-go]"); if(go){
 		const [k, arg] = go.dataset.go.split(":");
-		if(k === "vauban") exitInterior(false, null, arg); else if(k === "eura") goEura(null, arg); else enterInterior(go.dataset.go);
+		if(k === "vauban") mode === "wenovin" ? exitInterior(false, () => exitInterior(false, null, arg)) : exitInterior(false, null, arg);
+		else if(k === "eura") goEura(null, arg); else enterInterior(go.dataset.go);
 		return; }
 	const pl = e.target.closest("[data-place]"); if(pl){ selectPlace(pl.dataset.place); return; }
 	if(e.target.closest("[data-carnet]")) openPanel("carnet");

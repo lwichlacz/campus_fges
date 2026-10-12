@@ -368,9 +368,13 @@ export function buildCity(scene, MAP, opts={}){
 	}
 
 	/* ---------- rues & trottoirs ---------- */
-	const roadM = std("#57525c", { flatShading:false, side:THREE.DoubleSide });
-	const pedM = std("#c9b9a1", { flatShading:false, side:THREE.DoubleSide });
-	const walkM = std("#cbc1b2", { flatShading:false, side:THREE.DoubleSide });
+	/* Les couches du sol se recouvrent (pelouses, terrains, trottoirs, rues, eau) à quelques centimètres d'écart :
+	   de loin, la carte graphique ne sait plus laquelle est devant et elles « scintillent ». On leur donne un ordre
+	   explicite par décalage de profondeur, du dessous vers le dessus : eau, quai, trottoir, pelouse, terrain, rue, piéton. */
+	const layer = (m, k) => { m.polygonOffset = true; m.polygonOffsetFactor = k; m.polygonOffsetUnits = k*2; return m; };
+	const roadM = layer(std("#57525c", { flatShading:false, side:THREE.DoubleSide }), -1);
+	const pedM = layer(std("#c9b9a1", { flatShading:false, side:THREE.DoubleSide }), -2);
+	const walkM = layer(std("#cbc1b2", { flatShading:false, side:THREE.DoubleSide }), 2);
 	const curbM = std("#bdb2a3", { flatShading:false, side:THREE.DoubleSide });
 	out.ground.walk = walkM;
 	const BR = bucket(), BP = bucket(), BW = bucket();
@@ -399,13 +403,13 @@ export function buildCity(scene, MAP, opts={}){
 	for(const [B, m, y] of [[BW, walkM], [BR, roadM], [BP, pedM]]){ if(!B.pos.length) continue; const me = new THREE.Mesh(toGeo(B), m); me.receiveShadow = true; scene.add(me); }
 
 	/* ---------- espaces verts ---------- */
-	const lawnM = std("#9cb257", { flatShading:false, side:THREE.DoubleSide }); out.ground.lawn = lawnM;
-	const pitchM = std("#6fa35a", { flatShading:false, side:THREE.DoubleSide });
+	const lawnM = layer(std("#9cb257", { flatShading:false, side:THREE.DoubleSide }), 1); out.ground.lawn = lawnM;
+	const pitchM = layer(std("#6fa35a", { flatShading:false, side:THREE.DoubleSide }), 0);
 	const BL = bucket(), BPi = bucket();
 	const rnd = mulberry32(42);
 	for(const [code, flat] of MAP.greens){
 		let p = ring(flat); if(p.length < 3) continue;
-		capTris(code === 1 ? BPi : BL, p, .05, () => [0,0]);
+		capTris(code === 1 ? BPi : BL, p, code === 1 ? .062 : .05, () => [0,0]);
 		const A = Math.abs(signedArea(p));
 		const xs = p.map(q => q[0]), zs = p.map(q => q[1]);
 		const n = code === 2 ? Math.round(A/14) : Math.round(A/40);
@@ -431,12 +435,12 @@ export function buildCity(scene, MAP, opts={}){
 	for(const [B, m] of [[BL, lawnM], [BPi, pitchM]]){ if(!B.pos.length) continue; const me = new THREE.Mesh(toGeo(B), m); me.receiveShadow = true; scene.add(me); }
 
 	/* ---------- la Deûle ---------- */
-	const waterM = std("#6e9aa4", { roughness:.25, metalness:.1, flatShading:false, side:THREE.DoubleSide });
-	const quayM = std("#cbbfae", { flatShading:false, side:THREE.DoubleSide });
+	const waterM = layer(std("#6e9aa4", { roughness:.25, metalness:.1, flatShading:false, side:THREE.DoubleSide }), 4);
+	const quayM = layer(std("#cbbfae", { flatShading:false, side:THREE.DoubleSide }), 3);
 	out.ground.water = waterM;
 	const BQ = bucket(), BWa = bucket();
 	for(const pts of MAP.canals){ ribbon(BQ, pts, 10.5, .025); ribbon(BWa, pts, 8, .045); }
-	for(const f of MAP.water || []) capTris(BWa, ring(f), .045, () => [0,0]);      // rivière en surfaces (la Deûle large)
+	for(const f of MAP.water || []) capTris(BWa, ring(f), .02, () => [0,0]);      // rivière en surfaces (la Deûle large)
 	for(const [B, m] of [[BQ, quayM], [BWa, waterM]]){ if(!B.pos.length) continue; const me = new THREE.Mesh(toGeo(B), m); me.receiveShadow = true; scene.add(me); }
 
 	/* arbres d'alignement */

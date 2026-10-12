@@ -349,6 +349,21 @@ button{font:inherit;color:inherit;cursor:pointer}
 .coach-ctl .go-s{background:var(--brand);color:var(--on-brand)}
 
 #btnMore,.more-row,.carousel,.grab,.stickycta{display:none}
+.chip.metro b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:6px;background:#d6213a;color:#fff;font:900 15px Arial,sans-serif}
+.chip.metro.pulse{animation:metroPulse 1.6s ease-in-out 4}
+@keyframes metroPulse{50%{box-shadow:0 0 0 7px rgba(214,33,58,.25),var(--shadow)}}
+@media (max-width:720px){ .chip.metro{width:46px;min-height:46px;justify-content:center;padding:0} }
+.mline{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px;margin:0 0 10px}
+.mline>i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#d6213a;color:#fff;font:900 20px Arial,sans-serif;font-style:normal}
+.mline>span{flex:1;min-width:0}
+.mline b{display:block;font:700 16px Fraunces,Georgia,serif}
+.mline small{display:block;font-size:12.5px;color:var(--ink2);font-weight:700}
+.mline .acts2{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.mline .acts2 .btn{margin:0;width:auto;padding:9px 12px;font-size:13.5px}
+.mstrip{display:flex;justify-content:space-between;position:relative;margin:6px 4px 16px;font-size:11.5px;font-weight:800;color:var(--ink2);text-align:center}
+.mstrip:before{content:"";position:absolute;left:12px;right:12px;top:7px;height:4px;border-radius:2px;background:#d6213a}
+.mstrip span{position:relative;flex:1}
+.mstrip span:before{content:"";display:block;width:12px;height:12px;margin:0 auto 4px;border-radius:50%;background:#fff;border:3px solid #d6213a}
 #metro{position:fixed;inset:0;z-index:48;background:#0f1420;color:#fff;display:grid;grid-template-rows:auto 1fr auto auto;align-items:center;justify-items:center;padding:max(22px,env(safe-area-inset-top)) 20px max(26px,env(safe-area-inset-bottom));opacity:0;pointer-events:none;transition:opacity .45s ease;overflow:hidden}
 #metro.on{opacity:1;pointer-events:auto}
 /* à bord : la rame en 3D derrière, seul le bandeau de la ligne reste par-dessus */
@@ -459,6 +474,7 @@ body.riding #pins,body.riding .dock,body.riding .hud,body.riding .toast,body.rid
 <header class="hud" id="hud">
 	<div class="brand"><img src="img/logo-fges.png" alt="FGES · Faculté de Gestion, Économie et Sciences · Université Catholique de Lille" width="652" height="195"></div>
 	<div class="actions">
+		<button class="chip metro" id="btnMetro" title="Métro ligne 2 : Vauban ⇄ Wenov" aria-label="Métro ligne 2"><b>M</b><span class="lbl">Métro</span></button>
 		<button class="chip" id="btnProfile" title="Changer de profil"></button>
 		<button class="chip" id="btnTheme" title="Ambiance" aria-haspopup="true"></button>
 		<button class="chip icon" id="btnMusic" title="Musique et sons" aria-label="Musique et sons">🔇</button>

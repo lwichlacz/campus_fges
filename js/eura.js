@@ -5,7 +5,7 @@
    Chargé à la demande, comme l'atrium : une seule scène de quartier à la fois (léger sur téléphone). */
 import * as THREE from "three";
 import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js";
-import { buildCity, pointInPoly } from "./city.js";
+import { buildCity, pointInPoly, softenFar } from "./city.js";
 import { buildStation } from "./station.js";
 import { EMAP } from "./euramap.js";
 
@@ -83,7 +83,7 @@ export function createEura({ background }){
 	const white = std("#efede8"), slabM = std("#f6f4ef");
 	const gridTex = concreteGrid(), FH = 1.45, NF = 5;                       // R+4, ~3,6 m par niveau
 	gridTex.repeat.set(1/1.6, 1/FH);
-	const facadeM = new THREE.MeshStandardMaterial({ map:gridTex, roughness:.85, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:litGrid() });
+	const facadeM = new THREE.MeshStandardMaterial({ map:gridTex, roughness:.85, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:litGrid() }); softenFar(facadeM);
 	const patio = inset(W, .5);
 	const shopM = std("#6f8497", { roughness:.3, metalness:.2, emissive:"#ffd08a", emissiveIntensity:0 });
 	// rez-de-chaussée en retrait sur pilotis : commerces vitrés (cafés, coworking)
@@ -122,7 +122,7 @@ export function createEura({ background }){
 	/* ---------- le Blan-Lafont et sa tour ---------- */
 	const BL = ring(EMAP.blan.pts);
 	const brickTex = brickArches(); brickTex.repeat.set(1/2.4, 1/2);
-	const brickM = new THREE.MeshStandardMaterial({ map:brickTex, roughness:.9, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:litGrid() });
+	const brickM = new THREE.MeshStandardMaterial({ map:brickTex, roughness:.9, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:litGrid() }); softenFar(brickM);
 	const BH = 8;                                                             // ~20 m
 	ringSlab(BL, null, BH, brickM, 0, scene);
 	ringSlab(offset(BL, -.25), null, .35, std("#8f4632"), BH, scene);
@@ -156,7 +156,7 @@ export function createEura({ background }){
 	const M = EMAP.spots.metro;
 	if(M){
 		for(const [x, z] of (M.exits.length ? M.exits : [[M.x, M.z]])){
-			box(scene, 2.2, .1, 3.2, std("#55525a"), x, .05, z);
+			box(scene, 2.2, .1, 3.2, std("#55525a"), x, .1, z);
 			const pole = cyl(scene, .07, .07, 3.4, std("#3b3a40"), x + 1.3, 0, z, 6);
 			const sign = new THREE.Mesh(new THREE.BoxGeometry(.9, .9, .12), new THREE.MeshStandardMaterial({ map:metroSign(), emissive:"#ffffff", emissiveMap:metroSign(), emissiveIntensity:.15 }));
 			sign.position.set(x + 1.3, 3.6, z); scene.add(sign);
