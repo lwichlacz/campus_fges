@@ -3,7 +3,7 @@
    l'espace du Campus Cyber Hauts-de-France, le coworking et son café, le hall et la passerelle de l'étage.
    Les murs côté caméra s'effacent tout seuls. */
 import * as THREE from "three";
-import { std, box, cyl, mesh, beam, makeStudent, mulberry32 } from "./kit.js";
+import { std, box, cyl, mesh, beam, makeStudent, makePerson, mulberry32 } from "./kit.js";
 
 const W = 44, D = 34, FL = 4.2, WING = 8;
 const HX = W/2, HZ = D/2, PX = HX - WING, PZ = HZ - WING;      // patio : 28 × 18
@@ -121,10 +121,10 @@ export function createWenovIn({ background }){
 	const people = [], seated = [];
 	for(const [x, z, ry] of [[-6, 6, 0], [3, -6.5, Math.PI], [8, 6.5, 0]]){
 		box(scene, 2.2, .45, .7, yellow, x, 0, z, 0);
-		const s = makeStudent(scene, true); s.g.position.set(x - .5, -.15, z + (ry ? -.35 : .35)); s.g.rotation.y = ry; seated.push({ ...s, ph:r()*6 });
+		const s = makePerson(scene, true); s.g.position.set(x - .5, -.15, z + (ry ? -.35 : .35)); s.g.rotation.y = ry; seated.push({ ...s, ph:r()*6 });
 	}
 	for(const [x, z] of [[-1, -1], [4, 1.5], [-6, -5]]){
-		for(const a of [0, Math.PI*.9]){ const s = makeStudent(scene); s.g.position.set(x + Math.sin(a)*.8, 0, z + Math.cos(a)*.8); s.g.rotation.y = a + Math.PI; people.push({ ...s, ph:r()*6 }); }
+		for(const a of [0, Math.PI*.9]){ const s = makePerson(scene); s.g.position.set(x + Math.sin(a)*.8, 0, z + Math.cos(a)*.8); s.g.rotation.y = a + Math.PI; people.push({ ...s, ph:r()*6 }); }
 	}
 
 	/* aile nord, à gauche : une salle de l'École du Numérique */
@@ -151,7 +151,7 @@ export function createWenovIn({ background }){
 		const a = -.5 + k*.2, x = 11 + Math.sin(a)*7.4, z = zN + 3 - Math.cos(a)*2.2;
 		box(scene, 2.2, .1, .9, std("#3b4656"), x, .9, z, -a); box(scene, 2, .9, .8, dark, x, 0, z, -a, false);
 		for(const o of [-.55, .55]){ const sc = new THREE.Mesh(new THREE.PlaneGeometry(.9, .55), k % 2 ? redM : monM[k % 3]); sc.position.set(x + Math.cos(a)*o, 1.4, z - .25); sc.rotation.y = -a; scene.add(sc); }
-		if(k % 3 !== 1){ const s = makeStudent(scene, true); s.g.position.set(x, -.1, z + .8); s.g.rotation.y = Math.PI - a; seated.push({ ...s, ph:r()*6 }); }
+		if(k % 3 !== 1){ const s = makePerson(scene, true, "pro"); s.g.position.set(x, -.1, z + .8); s.g.rotation.y = Math.PI - a; seated.push({ ...s, ph:r()*6 }); }
 	}
 	box(scene, 3.2, 2.2, .3, cyan, 19.5, 0, zN + 3.2, -Math.PI/2);     // panneau d'accueil cyan
 
@@ -163,7 +163,7 @@ export function createWenovIn({ background }){
 	menu.position.set(-HX + .12, 2.6, 2); menu.rotation.y = Math.PI/2; scene.add(menu);
 	for(const [x, z] of [[-16.5, -5], [-16.5, 8], [-18.8, 12.5]]){
 		cyl(scene, .8, .8, .08, wood, x, .78, z, 14); cyl(scene, .07, .07, .78, dark, x, 0, z, 6);
-		for(const a of [0, Math.PI]){ const s = makeStudent(scene, true); s.g.position.set(x + Math.sin(a)*1.1, -.15, z + Math.cos(a)*1.1); s.g.rotation.y = a + Math.PI; seated.push({ ...s, ph:r()*6 }); }
+		for(const a of [0, Math.PI]){ const s = makePerson(scene, true); s.g.position.set(x + Math.sin(a)*1.1, -.15, z + Math.cos(a)*1.1); s.g.rotation.y = a + Math.PI; seated.push({ ...s, ph:r()*6 }); }
 		box(scene, .6, 1.1, .6, std("#5f8f4a"), x + 1.5, 0, z + 1.5);
 	}
 	box(scene, WING, .1, .1, glass, -HX + WING/2, 0, -PZ);
@@ -173,7 +173,7 @@ export function createWenovIn({ background }){
 	box(scene, 3.8, .1, 1.4, cyan, HX - 4, 1.1, 6);
 	const sign = new THREE.Mesh(new THREE.PlaneGeometry(5, 1.2), new THREE.MeshStandardMaterial({ map:canvasTex(320, 80, (x) => { x.fillStyle = "#1e305e"; x.fillRect(0, 0, 320, 80); x.fillStyle = "#21b6ce"; x.font = "bold 46px Arial"; x.textAlign = "center"; x.fillText("WENOV", 160, 58); }) }));
 	sign.position.set(HX - .12, 3, 3); sign.rotation.y = -Math.PI/2; scene.add(sign);
-	{ const s = makeStudent(scene); s.g.position.set(HX - 4, 0, 7.6); people.push({ ...s, ph:r()*6 }); }
+	{ const s = makePerson(scene, false, "pro"); s.g.position.set(HX - 4, 0, 7.6); people.push({ ...s, ph:r()*6 }); }
 
 	/* plafonniers */
 	for(const [x, z] of [[-14, zN], [-7, zN], [8, zN], [15, zN], [-HX + 4, -4], [-HX + 4, 8], [HX - 4, 0]]) box(scene, 2.4, .08, .4, lampM, x, FL - .1, z, 0, false);

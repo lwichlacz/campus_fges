@@ -6,6 +6,7 @@ import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIG
 import { MAP } from "./vauban.js";
 import { buildCity, pointInPoly } from "./city.js";
 import { buildStation } from "./station.js";
+import { createRame } from "./rame.js";
 import { Audio } from "./audio.js";
 import { DETAILS } from "./details.js";
 
@@ -1129,6 +1130,18 @@ function exitInterior(replay, then, dest){
    La rame roule pendant que la scène suivante se charge derrière ; on peut passer.
    ===================================================================== */
 const LINE2 = ["Cormontaigne", "Port de Lille", "Bois Blancs", "Canteleu – Euratechnologies"];
+// annonces en station, avec la synthèse vocale du navigateur (seulement si le son est activé)
+function announce(text){
+	if(!Audio.on || !("speechSynthesis" in window)) return;
+	try {
+		const u = new SpeechSynthesisUtterance(text);
+		u.lang = "fr-FR"; u.rate = .98; u.pitch = 1.05; u.volume = .9;
+		const v = speechSynthesis.getVoices().find(v => /^fr(-|_)FR/i.test(v.lang)) || speechSynthesis.getVoices().find(v => /^fr/i.test(v.lang));
+		if(v) u.voice = v;
+		speechSynthesis.cancel(); speechSynthesis.speak(u);
+	} catch(e){}
+}
+let rame = null;      // l'intérieur de la rame, créé au premier trajet
 const STATION_NAME = { cormontaigne:"Cormontaigne", portdelille:"Port de Lille" };
 // stations parcourues entre une station de Vauban et Canteleu – Euratechnologies (dans le sens du trajet)
 const lineFrom = (vs, toEura) => { const l = LINE2.slice(LINE2.indexOf(STATION_NAME[vs] || "Cormontaigne")); return toEura ? l : l.reverse(); };
@@ -1141,9 +1154,18 @@ function rideMetro(toEura, swap, then, vs = "cormontaigne", arrive3D = true){
 	$("mtStations").innerHTML = st.map((n, i) => `<li class="${i === 0 ? "on here" : ""}">${n}</li>`).join("");
 	$("mtNext").textContent = st[1];
 	M.classList.add("on"); Audio.play("metro"); buzz(20);
-	// quand l'arrivée se joue en 3D, l'écran du trajet s'arrête juste avant le terminus
+	// quand l'arrivée se joue en 3D, le trajet s'arrête juste avant le terminus
 	const last = arrive3D && !reduceMotion ? st.length - 2 : st.length - 1;
-	const dur = reduceMotion ? 1400 : arrive3D ? 1100 + 850*last : 3800, step = dur/(last + .4), lis = [...$("mtStations").children], timers = [];
+	const inside = !reduceMotion;
+	const dur = reduceMotion ? 1400 : inside ? 2200*(last + .4) : 3800, step = dur/(last + .4), lis = [...$("mtStations").children], timers = [];
+	// à bord : l'intérieur de la rame en 3D, la rame marque l'arrêt à chaque station
+	M.classList.toggle("in3d", inside);
+	document.body.classList.add("riding");
+	if(inside){
+		rame = rame || createRame();
+		rame.start({ names:st, step, onStation:i => { if(i > 0 && i < st.length - 1) announce(`${st[i]}. Prochain arrêt : ${st[i + 1]}`); } });
+		setTimeout(() => announce(`Prochain arrêt : ${st[1]}`), 700);
+	}
 	for(let i=1; i<=last; i++) timers.push(setTimeout(() => {
 		lis.forEach((li, k) => { li.classList.toggle("on", k <= i); li.classList.toggle("here", k === i); });
 		$("mtNext").textContent = i < st.length - 1 ? st[i + 1] : st[i];
@@ -1154,10 +1176,11 @@ function rideMetro(toEura, swap, then, vs = "cormontaigne", arrive3D = true){
 	const work = Promise.resolve().then(swap);
 	Promise.all([work, Promise.race([new Promise(r => setTimeout(r, dur)), skipped])]).then(() => {
 		timers.forEach(clearTimeout);
-		M.classList.remove("on"); riding = false;
+		M.classList.remove("on"); riding = false; document.body.classList.remove("riding");
+		if(rame) rame.stop();
 		setTimeout(() => { M.querySelector(".mt-next small").textContent = "Prochain arrêt"; }, 500);
 		if(then) setTimeout(then, 150);
-	}).catch(() => { M.classList.remove("on"); riding = false; toast("Impossible de rejoindre Wenov : vérifie ta connexion et réessaie.", 3500); });
+	}).catch(() => { M.classList.remove("on"); riding = false; document.body.classList.remove("riding"); if(rame) rame.stop(); toast("Impossible de rejoindre Wenov : vérifie ta connexion et réessaie.", 3500); });
 }
 
 /* =====================================================================
@@ -1435,10 +1458,11 @@ function playCine(A, kind, a, b, done){
 	cine = { A, kind, done, end:[a.clone(), b.clone()], fov:camera.fov };
 	$("cineSkip").hidden = false;
 	cine.chime = setTimeout(() => Audio.play("good"), kind === "arrive" ? 4500 : 3400);     // portes qui s'ouvrent / se ferment
+	cine.voice = setTimeout(() => announce(kind === "arrive" ? (A.name || "") : "Attention à la fermeture des portes."), kind === "arrive" ? 3800 : 2700);
 }
 function endArrival(skipped){
 	if(!cine) return;
-	const cine0 = cine, { A, kind, done, end } = cine; clearTimeout(cine.chime); cine = null;
+	const cine0 = cine, { A, kind, done, end } = cine; clearTimeout(cine.chime); clearTimeout(cine.voice); cine = null;
 	A.stop(); controls.enabled = true; $("pins").classList.add("on"); $("cineSkip").hidden = true; $("fade").classList.remove("on");
 	$("dock").classList.add("on");
 	if(camera.fov !== cine0.fov){ camera.fov = cine0.fov; camera.updateProjectionMatrix(); }
@@ -2258,7 +2282,10 @@ function frame(){
 	if(Math.abs(offX) > .5 || Math.abs(offY) > .5) camera.setViewOffset(innerWidth, innerHeight, offX, offY, innerWidth, innerHeight);
 	else if(camera.view && camera.view.enabled) camera.clearViewOffset();
 
-	if(mode !== "ext"){
+	if(rame && rame.on){
+		rame.update(dt, t);
+		renderer.render(rame.scene, rame.camera);
+	} else if(mode !== "ext"){
 		interiors[mode].update(dt, t, camera);
 		renderer.render(interiors[mode].scene, camera);
 	} else {

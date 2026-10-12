@@ -4,7 +4,7 @@
    - « arrive » : la rame entre en station, les portes s'ouvrent, on descend, fondu, on ressort dans la rue ;
    - « depart » : on descend depuis la rue (fondu), on monte à bord, les portes se ferment, la rame part. */
 import * as THREE from "three";
-import { std, box, beam, makeStudent } from "./kit.js";
+import { std, box, beam, makePerson } from "./kit.js";
 
 function stationWall(name){
 	const c = document.createElement("canvas"); c.width = 512; c.height = 128; const x = c.getContext("2d");
@@ -70,7 +70,7 @@ export function buildStation(scene, { exit, face, name }){
 	for(const sx of [-1, 1]){ const nose = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.9, 3), white); nose.position.set(sx*13, .55, -4.1); nose.rotation.z = sx*.18; train.add(nose); box(train, .1, 1, 2.2, band, sx*13.5, .9, -4.1); }
 	const riders = [];
 	for(const [k, d] of [[0, -9.4], [1, -3.4], [2, 3.4], [3, 9.4], [4, 3.4]]){
-		const st = makeStudent(g); st.g.visible = false;
+		const st = makePerson(g); st.g.visible = false;
 		riders.push({ s:st, d:d + (k === 4 ? .7 : 0), ph:k*.25 });
 	}
 	g.traverse(o => { if(o.isMesh){ o.castShadow = false; o.receiveShadow = false; } });
@@ -146,5 +146,5 @@ export function buildStation(scene, { exit, face, name }){
 		T.copy(L([t < 4.3 ? 0 : Math.min(30, train.position.x*.6), 1.6, -3.4]));
 		return { pos:P, target:T, done:t >= st.dur, fade:t < 1.05 || t > st.dur - .35, under:true };
 	}
-	return { start, stop, tick, cam, get on(){ return st.on; } };
+	return { start, stop, tick, cam, name, get on(){ return st.on; } };
 }

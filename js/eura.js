@@ -4,7 +4,7 @@
    le Blan-Lafont (filature de coton de 1896, siège d'Euratechnologies depuis 2009) et sa tour.
    Chargé à la demande, comme l'atrium : une seule scène de quartier à la fois (léger sur téléphone). */
 import * as THREE from "three";
-import { std, box, cyl, cone, mesh, beam, makeStudent, mulberry32 } from "./kit.js";
+import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js";
 import { buildCity, pointInPoly } from "./city.js";
 import { buildStation } from "./station.js";
 import { EMAP } from "./euramap.js";
@@ -225,12 +225,12 @@ export function createEura({ background }){
 	const starts = WN.map((_, i) => i).filter(i => ADJ[i].length && Math.hypot(WN[i][0], WN[i][1]) < 70);
 	const walkers = [];
 	for(let i=0; i<28 && starts.length; i++){
-		const s = makeStudent(scene), from = pick(starts), nb = pick(ADJ[from]);
+		const s = makePerson(scene), from = pick(starts), nb = pick(ADJ[from]);
 		Object.assign(s, { from, to:nb[0], w:nb[1], t:rr(), speed:1.5 + rr()*.7, wait:0, side:rr() < .5 ? -1 : 1, ph:rr()*6 });
 		walkers.push(s);
 	}
 	// sur le parvis de Wenov, des groupes qui discutent
-	for(let k=0;k<4;k++){ const q = patioTrees[k]; for(const a of [0, Math.PI]){ const s = makeStudent(scene); s.g.position.set(q.x + Math.sin(a)*.8 - 1, 0, q.z + Math.cos(a)*.8); s.g.rotation.y = a + Math.PI; Object.assign(s, { chat:true, ph:rr()*6 }); walkers.push(s); } }
+	for(let k=0;k<4;k++){ const q = patioTrees[k]; for(const a of [0, Math.PI]){ const s = makePerson(scene); s.g.position.set(q.x + Math.sin(a)*.8 - 1, 0, q.z + Math.cos(a)*.8); s.g.rotation.y = a + Math.PI; Object.assign(s, { chat:true, ph:rr()*6 }); walkers.push(s); } }
 
 	function update(dt, t){
 		for(const s of walkers){

@@ -120,3 +120,41 @@ export function makeStudent(parent, seated=false){
 	parent.add(g);
 	return { g, body, hat, tassel };
 }
+
+/* Passants variés (quartier Euratechnologies, métro) : étudiants sans toque, actifs, seniors, casques audio…
+   Même forme que makeStudent ({ g, body, hat, tassel }) pour réutiliser les mêmes animations. */
+const HAIR = ["#2b1d14","#4a3020","#6b4423","#c9a15a","#a8502a","#1b1b1f"].map(c => std(c, { flatShading:false }));
+const GREY = std("#cfcfd2", { flatShading:false });
+const PALETTE = {
+	student:["#2f6f8f","#3d7a55","#e07a5f","#6b5b95","#d9a441","#c9675a","#21b6ce","#8a8f99"],
+	pro:["#2b3442","#3b3f47","#1e305e","#5b6470","#7a5c48"],
+	senior:["#b9a88f","#8c7a63","#6f7d6a","#a3605a"],
+	casual:["#d64550","#f2c63c","#4e8f6a","#3a6ea5","#e8e2d6","#2f2f35"]
+};
+const KIND_W = [["student",.42],["pro",.28],["casual",.2],["senior",.1]];
+const matsBy = {}; for(const k in PALETTE) matsBy[k] = PALETTE[k].map(c => std(c, { flatShading:false }));
+const HAIRCAP = new THREE.SphereGeometry(.315, 12, 8, 0, Math.PI*2, 0, Math.PI*.55);
+export function makePerson(parent, seated=false, kind=null){
+	if(!kind){ let r = rng(); kind = KIND_W.find(([, w]) => (r -= w) < 0)?.[0] || "student"; }
+	const g = new THREE.Group();
+	const body = new THREE.Mesh(BODY, pick(matsBy[kind])); body.position.y = .65; body.castShadow = true;
+	const head = new THREE.Mesh(HEAD, pick(skinMats)); head.position.y = 1.42; head.castShadow = true;
+	const hat = new THREE.Group(); hat.position.y = 1.62;
+	const hairM = kind === "senior" ? GREY : pick(HAIR);
+	const cap = new THREE.Mesh(HAIRCAP, hairM); cap.position.y = -.17; cap.rotation.x = -.15; hat.add(cap);
+	if(kind !== "pro" && rng() < .35){ const tail = new THREE.Mesh(BOXC, hairM); tail.scale.set(.42,.42,.16); tail.position.set(0,-.32,-.24); hat.add(tail); }   // cheveux longs
+	if(kind === "casual" && rng() < .5){ const beanie = new THREE.Mesh(CAPC, pick(matsBy.casual)); beanie.scale.set(1.15,1.1,1.15); beanie.position.y = .02; hat.add(beanie); }
+	if(kind === "casual" || (kind === "student" && rng() < .3)){                                                  // casque audio
+		const band = new THREE.Mesh(new THREE.TorusGeometry(.32, .035, 6, 14, Math.PI), std("#26262b")); band.position.y = -.12; band.rotation.y = Math.PI/2; hat.add(band);
+	}
+	const tassel = new THREE.Object3D(); hat.add(tassel);
+	g.add(body, head, hat);
+	if(!seated){
+		if(kind === "student" && rng() < .7){ const bag = new THREE.Mesh(BOXC, pick(bodyMats)); bag.scale.set(.5,.55,.25); bag.position.set(0,.85,-.38); bag.castShadow = true; g.add(bag); }
+		if(kind === "pro" && rng() < .7){ const brief = new THREE.Mesh(BOXC, std("#3a2a20")); brief.scale.set(.42,.32,.1); brief.position.set(.48,.42,0); g.add(brief); }
+	}
+	if(seated){ body.scale.y = .75; body.position.y = .95; head.position.y = 1.62; hat.position.y = 1.82; }
+	g.scale.setScalar(1.25*(kind === "senior" ? .95 : .92 + rng()*.14));
+	parent.add(g);
+	return { g, body, hat, tassel, kind };
+}

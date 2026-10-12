@@ -351,6 +351,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 #btnMore,.more-row,.carousel,.grab,.stickycta{display:none}
 #metro{position:fixed;inset:0;z-index:48;background:#0f1420;color:#fff;display:grid;grid-template-rows:auto 1fr auto auto;align-items:center;justify-items:center;padding:max(22px,env(safe-area-inset-top)) 20px max(26px,env(safe-area-inset-bottom));opacity:0;pointer-events:none;transition:opacity .45s ease;overflow:hidden}
 #metro.on{opacity:1;pointer-events:auto}
+/* à bord : la rame en 3D derrière, seul le bandeau de la ligne reste par-dessus */
+#metro.in3d{background:linear-gradient(rgba(10,14,22,.55),rgba(10,14,22,0) 18%,rgba(10,14,22,0) 62%,rgba(10,14,22,.85))}
+#metro.in3d .mt-tunnel,#metro.in3d .mt-train{display:none}
+body.riding #pins,body.riding .dock,body.riding .hud,body.riding .toast,body.riding .carousel{opacity:0!important;pointer-events:none!important}
 .mt-tunnel{position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,214,150,0) 0 120px,rgba(255,214,150,.55) 120px 128px,rgba(255,214,150,0) 128px 340px),linear-gradient(#0f1420 0 30%,#1b2333 30% 70%,#0f1420 70%);background-size:340px 100%,100% 100%;animation:mtRun .32s linear infinite;opacity:.5}
 @keyframes mtRun{to{background-position:-340px 0,0 0}}
 .mt-top{position:relative;display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px;letter-spacing:.02em}
