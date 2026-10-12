@@ -106,7 +106,7 @@ function wing(parent, o){
 	const { L, D, m:M } = o, fh = o.fh || 3.4, Fl = o.floors, H = Fl*fh;
 	const faces = o.faces || "fb";
 	box(g, L, H, D, M.brick, 0, 0, 0);
-	box(g, L+.3, .7, D+.3, M.stone, 0, 0, 0);
+	box(g, L+.3, M.base ? 1.1 : .7, D+.3, M.base || M.stone, 0, 0, 0);          // soubassement (pierre bleue à l'Hôtel Académique)
 	if(o.bands !== false) for(let f=1; f<Fl; f++) box(g, L+.16, .24, D+.16, M.stone, 0, f*fh-.12, 0);
 	box(g, L+.5, .4, D+.5, M.stone, 0, H, 0);
 	const top = H + .4;
@@ -236,13 +236,22 @@ function buildHA(){
 	const cs = MAP.ha.chapelSide;
 	const root = new THREE.Group(); root.position.set(0,0,-6); HAG.add(root);
 	const M = mats("#a9533c"); PLACES.ha.mats = M;
+	M.base = std("#56606b");          // de bas en haut : pierre bleue, brique, pierre blanche, ardoise (Louis Dutouquet, 1879-1881)
 	wing(root, { x:0, z:-9, L:46, D:11, floors:3, roof:"gable", rh:6.5, dormers:8, dstyle:"slate", m:M, faces:"fbs", sp:3.3 });
 	for(const x of [-16,-5.3,10.5,16]) box(root, 1, 3.2, 1.3, M.brick, x, 12.5, -12.4);
+	// pinacles de pierre aux angles de la grande aile
+	for(const x of [-23.2, 23.2]) for(const z of [-3.6, -14.4]){ box(root, .7, 1.6, .7, M.stone, x, 10.6, z); cone(root, .5, 2.4, M.stone, x, 12.2, z, 4, Math.PI/4); }
+	// l'observatoire astronomique (1888-1889) posé sur le toit, sa coupole de zinc
+	const obs = new THREE.Group(); obs.position.set(-cs*8, 15.2, -9); root.add(obs);
+	cyl(obs, 1.7, 1.7, 2.2, M.stone, 0, 0, 0, 12);
+	const dome = new THREE.Mesh(new THREE.SphereGeometry(1.85, 14, 8, 0, Math.PI*2, 0, Math.PI/2), std("#9aa5b1", { metalness:.4, roughness:.45 }));
+	dome.position.y = 2.2; obs.add(dome);
+	box(obs, .5, 1.6, 3.5, M.dark, 0, 2.3, 0);          // la fente de la coupole
 
 	const P = new THREE.Group(); P.position.set(0,0,-2.5); root.add(P);
 	const ph = 13.6, pd = 7, pl = 14;
 	box(P, pl, ph, pd, M.brick, 0, 0, 0);
-	box(P, pl+.3, .7, pd+.3, M.stone, 0, 0, 0);
+	box(P, pl+.3, 1.1, pd+.3, M.base, 0, 0, 0);
 	box(P, 7, ph, .3, M.stone, 0, 0, pd/2);
 	for(let f=1; f<4; f++) box(P, pl+.16, .24, pd+.16, M.stone, 0, f*3.4-.12, 0);
 	box(P, pl+.5, .4, pd+.5, M.stone, 0, ph, 0);
@@ -284,12 +293,15 @@ function buildHA(){
 	P.traverse(o => { o.userData.chime = true; });
 
 	// la chapelle (aile à galeries et pinacles) et l'aile aux pignons de brique
-	const chapel = wing(root, { x:cs*19, z:5, ry:-cs*Math.PI/2, L:22, D:10, floors:2, fh:5, roof:"parapet", rh:3.2, m:M, faces:"fbs", arch:true, ww:1.7, wh:2.3, sp:3.6, bands:false });
+	// chapelle Saint-Joseph (1911-1924) : croix latine, deux rangs de baies superposées, grand toit d'ardoise au-dessus du parapet
+	const chapel = wing(root, { x:cs*19, z:5, ry:-cs*Math.PI/2, L:22, D:10, floors:2, fh:5, roof:"parapet", rh:6.6, m:M, faces:"fbs", arch:true, ww:1.7, wh:2.3, sp:3.6, bands:false });
+	const tr = wing(chapel, { x:1.5, z:0, ry:Math.PI/2, L:15, D:6.5, floors:2, fh:5, roof:"gable", rh:5.4, m:M, faces:"fb", arch:true, ww:1.6, wh:2.3, sp:3.4, bands:false });
+	for(const s of [-1, 1]){ cone(tr, .45, 2.6, M.stone, 0, 10.4 + 5.4*.0, s*7.55, 4, Math.PI/4); }
 	cyl(root, .5, .7, 2.2, M.stone, cs*14.6, 10.4, 15.6);
 	wing(root, { x:-cs*19, z:5, ry:cs*Math.PI/2, L:22, D:10, floors:3, roof:"gable", rh:5.6, dormers:5, dstyle:"brick", m:M, faces:"fbs", gableEnds:true });
 	const T = new THREE.Group(); T.position.set(-cs*13.4, 0, -2.4); root.add(T);
 	box(T, 5.2, 17, 5.2, M.brick, 0, 0, 0);
-	box(T, 5.5, .7, 5.5, M.stone, 0, 0, 0);
+	box(T, 5.5, 1.1, 5.5, M.base, 0, 0, 0);
 	for(let f=1; f<5; f++) box(T, 5.36, .24, 5.36, M.stone, 0, f*3.4-.12, 0);
 	box(T, 5.8, .45, 5.8, M.stone, 0, 17, 0);
 	cone(T, 4.1, 7.2, M.slate, 0, 17.45, 0, 4, Math.PI/4);
@@ -353,7 +365,8 @@ function buildFalise(){
 	const M = mats("#c45a3b", "#ead9c2"); PLACES.falise.mats = M;
 	// côtés mitoyens (Rizomm, maisons de la rue) : 40 cm de retrait pour que le débord du toit ne morde pas sur les voisins
 	const L = Fm.L, D = Fm.D - .8, wd = 6.4, H = 3*3.4;
-	const common = { floors:3, fh:3.4, roof:"mansard", rh:4, m:M, arch:true, ww:1.15, wh:1.5, sp:2.9, bands:false, dstyle:"brickTall" };
+	// 18,5 m à la gouttière (BD TOPO) : cinq niveaux sous le comble à lucarnes
+	const common = { floors:5, fh:3*3.4/5, roof:"mansard", rh:4, m:M, arch:true, ww:1.15, wh:1.25, sp:2.9, bands:false, dstyle:"brickTall" };
 	wing(root, { ...common, x:0, z:D/2 - wd/2, L, D:wd, faces:"fb", dormers:5 });
 	wing(root, { ...common, x:0, z:-(D/2 - wd/2), ry:Math.PI, L, D:wd, faces:"fb", dormers:5 });
 	wing(root, { ...common, rh:3.85, x:L/2 - wd/2, z:0, ry:Math.PI/2, L:D - 2*wd, D:wd, faces:"fb", dormers:1 });
