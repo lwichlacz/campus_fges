@@ -4,6 +4,7 @@
    restent séparés pour être cliquables. */
 import * as THREE from "three";
 import { std, mulberry32 } from "./kit.js";
+import { TIME } from "./render.js";
 
 const FH = 2.3, BAY = 1.4;
 let FHc = FH;          // hauteur d'un étage pour la carte en cours (MAP.fh : à l'échelle de l'Hôtel Académique)
@@ -71,9 +72,9 @@ function litMap(style, seed){
 	const c = document.createElement("canvas"); c.width = 128; c.height = 64;
 	const x = c.getContext("2d");
 	x.fillStyle = "#000"; x.fillRect(0,0,128,64);
+	// la forme de toutes les fenêtres ; laquelle s'allume, et dans quelle teinte, se décide dans le shader (softenFar)
 	for(let i=0;i<8;i++) for(let j=0;j<4;j++){
-		if(r() > .45) continue;
-		x.fillStyle = r() < .7 ? "#ffc979" : "#ffe3b0";
+		x.fillStyle = "#ffffff";
 		if(style === "house") x.fillRect(i*16 + 5.5, j*16 + 2.8, 5, 8.5);
 		else x.fillRect(i*16 + 1.5, j*16 + 3.5, 13, 8);
 	}
@@ -88,7 +89,7 @@ function litMap(style, seed){
 const MIP_BIAS = .8, BIAS_NEAR = 40, BIAS_FAR = 140;
 export function softenFar(mat, nightU){
 	mat.onBeforeCompile = sh => {
-		if(nightU){ sh.uniforms.uNight = nightU; sh.fragmentShader = "uniform float uNight;\n" + sh.fragmentShader; }
+		if(nightU){ sh.uniforms.uNight = nightU; sh.uniforms.uTime = TIME; sh.fragmentShader = "uniform float uNight; uniform float uTime;\n" + sh.fragmentShader; }
 		sh.fragmentShader = sh.fragmentShader
 			.replace("#include <map_fragment>", `float farBias = ${MIP_BIAS.toFixed(2)} * smoothstep( ${BIAS_NEAR.toFixed(1)}, ${BIAS_FAR.toFixed(1)}, length( vViewPosition ) );
 #ifdef USE_MAP
@@ -98,11 +99,22 @@ export function softenFar(mat, nightU){
 			.replace("#include <emissivemap_fragment>", `#ifdef USE_EMISSIVEMAP
 	vec4 emissiveColor = texture2D( emissiveMap, vEmissiveMapUv, farBias );
 	totalEmissiveRadiance *= emissiveColor.rgb;
-	${nightU ? `{ vec2 cell = floor( vEmissiveMapUv*vec2( 8.0, 4.0 ) ); float hh = fract( sin( dot( cell, vec2( 12.9898, 78.233 ) ) )*43758.5453 );
-	  totalEmissiveRadiance *= step( hh*0.92 + 0.04, uNight ); }` : ""}
+	${nightU ? `#if defined( USE_MAP ) && defined( USE_COLOR )
+	{ // chaque fenêtre de chaque bâtiment (la teinte du bâtiment sert de graine) : allumée ou non, et sa couleur
+	  vec2 cell = floor( vMapUv + 0.001 );
+	  float bh = dot( vColor, vec3( 91.7, 37.3, 13.1 ) );
+	  float h1 = fract( sin( dot( cell, vec2( 12.9898, 78.233 ) ) + bh )*43758.5453 );
+	  float h2 = fract( h1*7.31 + 0.17 ), h3 = fract( h1*13.7 + 0.53 );
+	  float on = step( h1*0.92 + 0.04, uNight*0.56 );
+	  // une fenêtre sur dix change d'état de temps en temps (quelqu'un rentre, quelqu'un se couche)
+	  if( h2 < 0.1 ){ float per = 25.0 + h3*55.0; on = step( 0.45, fract( sin( floor( ( uTime + h1*300.0 )/per ) + h1*91.0 )*43758.5453 ) )*step( 0.05, uNight ); }
+	  vec3 col = h3 < 0.55 ? vec3( 1.0, 0.7, 0.36 ) : ( h3 < 0.8 ? vec3( 1.0, 0.85, 0.6 ) : ( h3 < 0.93 ? vec3( 0.8, 0.88, 1.0 )
+	           : vec3( 0.42, 0.58, 1.0 )*( 0.7 + 0.3*sin( uTime*9.0 + h1*40.0 )*sin( uTime*3.7 + h1*5.0 ) ) ) );          // écran de télévision
+	  totalEmissiveRadiance *= col*on; }
+	#endif` : ""}
 #endif`);
 	};
-	mat.customProgramCacheKey = () => nightU ? "softenFar|night" : "softenFar";
+	mat.customProgramCacheKey = () => nightU ? "softenFar|night2" : "softenFar";
 }
 
 /* ---------- accumulateurs de géométrie ---------- */
