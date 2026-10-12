@@ -5,6 +5,7 @@ import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mans
 import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js";
 import { MAP } from "./vauban.js";
 import { buildCity, pointInPoly } from "./city.js";
+import { buildStation } from "./station.js";
 import { Audio } from "./audio.js";
 import { DETAILS } from "./details.js";
 
@@ -402,23 +403,33 @@ function buildWenov(){
 	LIFE.euratech = { x:cx, z:cz };
 }
 /* Station Cormontaigne (ligne 2), rue de Turenne : la porte d'entrée vers Wenov */
+/* Les stations de la ligne 2 côté Vauban (Cormontaigne, Port de Lille) : bouches réelles, îlot de bâtiments réels
+   autour (js/vauban.js), et une station souterraine pour les cinématiques d'arrivée. */
+const vStations = {};
 function buildMetroVauban(){
-	if(!MAP.metro) return;
-	const [mx, mz] = MAP.metro;
-	const g = new THREE.Group(); g.position.set(mx, 0, mz); scene.add(g);
-	flat(g, 16, 12, std("#c9c0b2", { flatShading:false }), 0, 0, .06);
-	box(g, 4.4, .25, 7.2, std("#3c3a40"), 0, 0, 0);                                   // trémie de l'escalier
-	for(const sx of [-2.3, 2.3]) box(g, .18, 1.1, 7.2, std("#2f3a4a", { metalness:.4, roughness:.4 }), sx, .25, 0);
-	const canopy = new THREE.MeshStandardMaterial({ color:"#cfe2ea", transparent:true, opacity:.55, roughness:.1, metalness:.3 });
-	box(g, 5.2, .2, 7.8, canopy, 0, 3.1, .2);
-	for(const [x, z] of [[-2.4, -3.6], [2.4, -3.6], [-2.4, 3.8], [2.4, 3.8]]) cyl(g, .09, .09, 3.1, std("#2f3a4a"), x, 0, z, 6);
+	const metal = std("#2f3a4a", { metalness:.4, roughness:.4 }), dark = std("#3c3a40"), pave = std("#c9c0b2", { flatShading:false });
 	const tex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"); x.fillStyle = "#d6213a"; x.fillRect(0,0,64,64); x.fillStyle = "#fff"; x.font = "bold 48px Arial"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("M", 32, 35); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
-	cyl(g, .1, .1, 5.2, std("#2f3a4a"), 3.6, 0, -4.4, 6);
-	const sign = new THREE.Mesh(new THREE.BoxGeometry(1.3, 1.3, .16), new THREE.MeshStandardMaterial({ map:tex, emissive:"#ffffff", emissiveMap:tex, emissiveIntensity:.25 }));
-	sign.position.set(3.6, 5.5, -4.4); g.add(sign);
-	register(g, "cormontaigne");
-	Object.assign(LIFE.cormontaigne, { pin:[mx, 9, mz], target:[mx, 1, mz], cam:[mx + 26, 30, mz + 40] });
-	Object.assign(PLACES.wenov, { target:[mx, 1, mz], cam:[mx + 26, 30, mz + 40] });
+	const signM = new THREE.MeshStandardMaterial({ map:tex, emissive:"#ffffff", emissiveMap:tex, emissiveIntensity:.25 });
+	for(const st of MAP.stations || []){
+		const exits = st.exits.length ? st.exits : [[st.x, st.z]];
+		const grp = new THREE.Group(); scene.add(grp);
+		const cx = exits.reduce((a, e) => a + e[0], 0)/exits.length, cz = exits.reduce((a, e) => a + e[1], 0)/exits.length;
+		exits.forEach(([x, z], i) => {
+			// trémie d'escalier, garde-corps, et le totem « M » sur la première bouche
+			const a = Math.atan2(-z, -x);
+			const e = new THREE.Group(); e.position.set(x, 0, z); e.rotation.y = -a; grp.add(e);
+			flat(e, 4, 6.4, pave, 0, 0, .05);
+			box(e, 1.6, .2, 3.4, dark, 0, 0, 0);
+			for(const sx of [-.95, .95]) box(e, .1, .9, 3.4, metal, sx, .2, 0);
+			if(i === 0){ cyl(e, .1, .1, 4.6, metal, 1.4, 0, -2, 6); const sg = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, .16), signM); sg.position.set(1.4, 4.9, -2); e.add(sg); }
+		});
+		register(grp, st.id);
+		const d = Math.hypot(cx, cz + 4) || 1, ux = -cx/d, uz = -(cz + 4)/d;
+		Object.assign(LIFE[st.id], { pin:[cx, 8, cz], target:[cx, 1, cz], cam:[cx - ux*38 + uz*10, 30, cz - uz*38 - ux*10] });
+		vStations[st.id] = buildStation(scene, { exit:exits[0], face:[0, -4], name:st.name });
+	}
+	const c = LIFE.cormontaigne;
+	if(c && c.target) Object.assign(PLACES.wenov, { target:c.target, cam:c.cam });
 }
 function extrudeShed(){
 	return cached("shed", () => new THREE.ExtrudeGeometry(new THREE.Shape([new THREE.Vector2(-1.6,0), new THREE.Vector2(1.6,0), new THREE.Vector2(1.6,2.2)]), { depth:20, bevelEnabled:false }).rotateY(Math.PI/2).translate(-10,0,0));
@@ -471,7 +482,7 @@ function buildHorizon(){
 		const [cx, cz] = MAP.citadelle; if(Math.hypot(x-cx, z-cz) < 62) return true;
 		for(const c of MAP.canals) for(let i=0;i<c.length;i+=2) if(Math.hypot(x-c[i], z-c[i+1]) < 10) return true;
 		if(LIFE.euratech && Math.hypot(x-LIFE.euratech.x, z-LIFE.euratech.z) < 60) return true;
-		if(MAP.metro && Math.hypot(x-MAP.metro[0], z-MAP.metro[1]) < 16) return true;
+		for(const st of MAP.stations || []) if(Math.hypot(x - st.x, z - st.z) < st.r + 6) return true;     // îlots réels autour des stations
 		return false;
 	};
 	for(let gx=-300; gx<=300; gx+=7) for(let gz=-340; gz<=260; gz+=7){
@@ -1101,11 +1112,11 @@ function enterInterior(id, then, quiet){
 		if(then) setTimeout(then, quiet ? 120 : 900);
 	}).catch(() => { f.classList.remove("on"); toast("Impossible d'ouvrir ce lieu : vérifie ta connexion et réessaie.", 3500); });
 }
-function exitInterior(replay, then){
+function exitInterior(replay, then, dest){
 	const back = RETURN[mode];
 	closePanel(); Audio.play("pop");
 	if(mode === "wenovin"){ enterInterior("eura", () => { focusEura("wenov", false); if(then) then(); }, true); return; }
-	if(mode === "eura"){ rideMetro(false, () => placeExt(back), () => { if(then) then(); else flyToPlace(back); }); return; }
+	if(mode === "eura"){ rideBack(dest || store.get("lastStation", "cormontaigne"), then); return; }
 	fade(() => {
 		placeExt(back);
 		if(replay) playIntro();
@@ -1118,17 +1129,21 @@ function exitInterior(replay, then){
    La rame roule pendant que la scène suivante se charge derrière ; on peut passer.
    ===================================================================== */
 const LINE2 = ["Cormontaigne", "Port de Lille", "Bois Blancs", "Canteleu – Euratechnologies"];
+const STATION_NAME = { cormontaigne:"Cormontaigne", portdelille:"Port de Lille" };
+// stations parcourues entre une station de Vauban et Canteleu – Euratechnologies (dans le sens du trajet)
+const lineFrom = (vs, toEura) => { const l = LINE2.slice(LINE2.indexOf(STATION_NAME[vs] || "Cormontaigne")); return toEura ? l : l.reverse(); };
 let riding = false;
-function rideMetro(toEura, swap, then){
+function rideMetro(toEura, swap, then, vs = "cormontaigne", arrive3D = true){
 	if(riding) return; riding = true;
 	closePanel(); setHover(null); if(tour) stopTour();
-	const st = toEura ? LINE2 : [...LINE2].reverse(), M = $("metro");
+	const st = lineFrom(vs, toEura), M = $("metro");
 	$("mtDir").textContent = toEura ? "Direction Saint-Philibert" : "Direction C.H. Dron";
 	$("mtStations").innerHTML = st.map((n, i) => `<li class="${i === 0 ? "on here" : ""}">${n}</li>`).join("");
 	$("mtNext").textContent = st[1];
 	M.classList.add("on"); Audio.play("metro"); buzz(20);
-	const last = toEura && !reduceMotion ? st.length - 2 : st.length - 1;
-	const dur = reduceMotion ? 1400 : toEura ? 2800 : 3800, step = dur/(last + .4), lis = [...$("mtStations").children], timers = [];
+	// quand l'arrivée se joue en 3D, l'écran du trajet s'arrête juste avant le terminus
+	const last = arrive3D && !reduceMotion ? st.length - 2 : st.length - 1;
+	const dur = reduceMotion ? 1400 : arrive3D ? 1100 + 850*last : 3800, step = dur/(last + .4), lis = [...$("mtStations").children], timers = [];
 	for(let i=1; i<=last; i++) timers.push(setTimeout(() => {
 		lis.forEach((li, k) => { li.classList.toggle("on", k <= i); li.classList.toggle("here", k === i); });
 		$("mtNext").textContent = i < st.length - 1 ? st[i + 1] : st[i];
@@ -1340,40 +1355,94 @@ function euraStamp(id){
 	setTimeout(() => {
 		Audio.play("stamp"); buzz([20, 60, 30]);
 		toast(n === EURA_STAMPS.length ? "🏅 Quartier Euratechnologies complété : tous les tampons sont dans ton carnet !" : `Tampon Euratechnologies : ${p.name} (${n}/${EURA_STAMPS.length})`, 3200);
+		if(n === EURA_STAMPS.length){ Audio.play("win"); setTimeout(() => { if(tour) pauseTour(true); openBadge(); }, 2600); }
 	}, 900);
 }
-function goEura(id){
+/* ---------- Badge « Explorateur Euratechnologies » : une image carrée à partager (stories, réseaux) ---------- */
+let badgeBlob = null;
+function drawBadge(){
+	const S = 1080, c = document.createElement("canvas"); c.width = c.height = S; const x = c.getContext("2d");
+	const g = x.createLinearGradient(0, 0, S, S); g.addColorStop(0, "#1e305e"); g.addColorStop(1, "#0b4f6c"); x.fillStyle = g; x.fillRect(0, 0, S, S);
+	x.fillStyle = "rgba(33,182,206,.08)"; for(let i=0;i<14;i++){ x.beginPath(); x.arc(S/2, 470, 120 + i*42, 0, 7); x.lineWidth = 2; x.strokeStyle = "rgba(33,182,206,.12)"; x.stroke(); }
+	// médaille
+	x.beginPath(); x.arc(S/2, 440, 250, 0, 7); x.fillStyle = "#21b6ce"; x.fill();
+	x.beginPath(); x.arc(S/2, 440, 226, 0, 7); x.fillStyle = "#fff8ec"; x.fill();
+	x.textAlign = "center"; x.fillStyle = "#0b7a8e"; x.font = "800 34px Nunito, Arial"; x.fillText("BADGE", S/2, 300);
+	x.fillStyle = "#1e305e"; x.font = "700 64px Fraunces, Georgia, serif"; x.fillText("Explorateur", S/2, 380);
+	x.font = "700 46px Fraunces, Georgia, serif"; x.fillText("Euratechnologies", S/2, 440);
+	const icons = EURA_STAMPS.map(id => (PLACES[id] || LIFE[id]).icon);
+	x.font = "64px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
+	icons.forEach((ic, i) => x.fillText(ic, S/2 - 165 + i*110, 545));
+	// ruban
+	x.fillStyle = "#f2c63c"; x.beginPath(); x.moveTo(S/2 - 300, 690); x.lineTo(S/2 + 300, 690); x.lineTo(S/2 + 270, 760); x.lineTo(S/2 + 300, 830); x.lineTo(S/2 - 300, 830); x.lineTo(S/2 - 270, 760); x.closePath(); x.fill();
+	x.fillStyle = "#1e305e"; x.font = "800 34px Nunito, Arial"; x.fillText("4 / 4 tampons · quartier Wenov", S/2, 772);
+	x.fillStyle = "#fff8ec"; x.font = "700 30px Nunito, Arial"; x.fillText("Wenov · Campus Cyber · Blan-Lafont · squares des pionnières", S/2, 900);
+	x.fillStyle = "rgba(255,248,236,.75)"; x.font = "700 26px Nunito, Arial";
+	x.fillText(`Campus FGES en 3D · École du Numérique · ${new Date().toLocaleDateString("fr-FR", { month:"long", year:"numeric" })}`, S/2, 960);
+	return new Promise(res => { const logo = new Image(); logo.onload = () => { x.fillStyle = "#fff8ec"; const w = 300, h = w*logo.height/logo.width; x.beginPath(); x.roundRect(S/2 - w/2 - 18, 40, w + 36, h + 28, 18); x.fill(); x.drawImage(logo, S/2 - w/2, 54, w, h); res(c); }; logo.onerror = () => res(c); logo.src = "img/logo-fges.png"; });
+}
+function openBadge(){
+	$("badge").hidden = false; Audio.play("pop");
+	drawBadge().then(c => { $("badgeImg").src = c.toDataURL("image/png"); c.toBlob(b => badgeBlob = b, "image/png"); });
+}
+$("badge").addEventListener("click", async e => {
+	const b = e.target.closest("[data-badge]");
+	if(e.target === $("badge") || (b && b.dataset.badge === "close")){ $("badge").hidden = true; return; }
+	if(!b || !badgeBlob) return;
+	const file = new File([badgeBlob], "badge-explorateur-euratechnologies.png", { type:"image/png" });
+	const url = location.origin + location.pathname;
+	if(b.dataset.badge === "share" && navigator.canShare && navigator.canShare({ files:[file] })){
+		try { await navigator.share({ files:[file], title:"Explorateur Euratechnologies", text:`J'ai exploré le quartier de l'École du Numérique en 3D avec la FGES 🏅 ${url}` }); } catch(x){}
+		return;
+	}
+	if(b.dataset.badge === "share" && navigator.share){ try { await navigator.share({ title:"Explorateur Euratechnologies", text:"J'ai exploré le quartier de l'École du Numérique en 3D avec la FGES 🏅", url }); } catch(x){} return; }
+	const a = document.createElement("a"); a.href = URL.createObjectURL(badgeBlob); a.download = file.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+});
+// vs : la station de Vauban d'où l'on part (Cormontaigne ou Port de Lille)
+function goEura(id, vs){
 	if(mode === "eura"){ if(id) focusEura(id); return; }
 	if(mode === "wenovin"){ enterInterior("eura", () => id && focusEura(id), true); return; }
+	vs = vs || store.get("lastStation", "cormontaigne");
+	store.set("lastStation", vs);
 	rideMetro(true, () => loadInterior("eura").then(() => placeIn("eura")), () => {
 		// première venue : visite guidée du quartier ; ensuite, droit au lieu demandé
 		const first = !store.get("euraToured", false);
-		playArrival(id || "wenov", () => {
+		const p = interiors.eura.places[id || "wenov"];
+		playCine(interiors.eura.arrival, "arrive", V(...p.cam), V(...p.target), () => {
 			if(first){ store.set("euraToured", true); startTour(); }
 			else if(id) focusEura(id);
 			else toast(WELCOME.eura, 4200);
 		});
+	}, vs);
+}
+// retour vers Vauban : la rame quitte Canteleu en 3D, trajet, puis elle entre en station à Cormontaigne ou Port de Lille
+function rideBack(vs, then){
+	if(!vStations[vs]) vs = "cormontaigne";
+	store.set("lastStation", vs);
+	const p = LIFE[vs];
+	playCine(interiors.eura.arrival, "depart", camera.position.clone(), controls.target.clone(), () => {
+		rideMetro(false, () => placeExt(vs), () => {
+			playCine(vStations[vs], "arrive", V(...p.cam), V(...p.target), () => { if(then) then(); else toast(`Retour au campus Vauban par ${p.name.replace("Métro ", "la station ")} 👋`, 3200); });
+		}, vs);
 	});
 }
-/* Arrivée en 3D : la rame entre en station souterraine, les portes s'ouvrent, on remonte à la rue */
+/* Cinématiques de métro en 3D (arrivée ou départ de la rame dans une station souterraine) */
 let cine = null;
-function playArrival(id, done){
-	const I = interiors.eura, A = I && I.arrival, p = I && I.places[id];
-	if(!A || !p || reduceMotion){ done(); return; }
-	controls.enabled = false; $("pins").classList.remove("on");
-	A.start(V(...p.cam), V(...p.target));
-	cine = { A, done, end:[V(...p.cam), V(...p.target)], fov:camera.fov };
-	$("dock").classList.remove("on");
+function playCine(A, kind, a, b, done){
+	if(!A || reduceMotion){ if(kind === "arrive"){ camera.position.copy(a); controls.target.copy(b); } done(); return; }
+	controls.enabled = false; $("pins").classList.remove("on"); $("dock").classList.remove("on");
+	A.start(kind, a, b);
+	cine = { A, kind, done, end:[a.clone(), b.clone()], fov:camera.fov };
 	$("cineSkip").hidden = false;
-	cine.chime = setTimeout(() => Audio.play("good"), 4500);          // ouverture des portes
+	cine.chime = setTimeout(() => Audio.play("good"), kind === "arrive" ? 4500 : 3400);     // portes qui s'ouvrent / se ferment
 }
 function endArrival(skipped){
 	if(!cine) return;
-	const cine0 = cine, { A, done, end } = cine; clearTimeout(cine.chime); cine = null;
+	const cine0 = cine, { A, kind, done, end } = cine; clearTimeout(cine.chime); cine = null;
 	A.stop(); controls.enabled = true; $("pins").classList.add("on"); $("cineSkip").hidden = true; $("fade").classList.remove("on");
 	$("dock").classList.add("on");
 	if(camera.fov !== cine0.fov){ camera.fov = cine0.fov; camera.updateProjectionMatrix(); }
-	if(skipped){ camera.position.copy(end[0]); controls.target.copy(end[1]); }
+	if(skipped && kind === "arrive"){ camera.position.copy(end[0]); controls.target.copy(end[1]); }
 	done();
 }
 $("cineSkip").addEventListener("click", () => { Audio.play("pop"); endArrival(true); });
@@ -1509,6 +1578,7 @@ function carnetBody(){
 	const md = gk.map(k => `<button class="medal ${medals[k] ? "got" : ""}" data-game="${GAME_INFO[k].fid}" title="${GAME_INFO[k].title}"><i>${medals[k] ? "🏅" : GAME_INFO[k].icon}</i><b>${GAME_INFO[k].title}</b><small>${medals[k] ? "Mention " + medals[k] : "À jouer"}${GAME_INFO[k].parcours ? ` · ${Object.keys(medalsSub[k] || {}).length}/${GAME_INFO[k].parcours.length} parcours` : ""}</small></button>`).join("");
 	return `<h3>Mes médailles (${won.length}/${gk.length})</h3><div class="medals">${md}</div>
 		<h3>Tampons de visite</h3><div class="stamps">${st}</div>
+		${euraStamps.size >= EURA_STAMPS.length ? `<button class="badgebtn" data-openbadge><i>🏅</i><span><b>Badge Explorateur Euratechnologies</b><small>Revoir et partager mon badge</small></span></button>` : ""}
 		<h3>Tampons Euratechnologies (${EURA_STAMPS.filter(id => euraStamps.has(id)).length}/${EURA_STAMPS.length})</h3><div class="stamps">${EURA_STAMPS.map(id => { const p = PLACES[id] || LIFE[id]; return `<div class="stamp ${euraStamps.has(id) ? "got" : ""}"><i>${p.icon}</i>${p.name.replace("Campus ", "").replace("Les squares des pionnières", "Pionnières")}</div>`; }).join("")}</div>
 		<h3>Lieux de vie découverts (${lifeIds.filter(id => found.has(id)).length}/${lifeIds.length})</h3><div class="lifes">${lf}</div>
 		<h3>Mes formations (${list.length})</h3>
@@ -1629,7 +1699,9 @@ function openPanel(id){
 	} else if(LIFE[id]){
 		const p = LIFE[id];
 		head = `<div class="kick">${p.zone === "eura" ? "Euratechnologies" : "Vie de campus"} · ${p.kicker}</div><h2>${p.icon} ${p.name}</h2><p>${p.text}</p><div class="facts">${p.facts.map(f => `<span>${f}</span>`).join("")}</div>`;
-		body = (p.action ? `<button class="btn atrium" data-go="${p.action.go}">${p.action.label}</button>` : "") + gameHere(id) +
+		body = (id === "metro" && mode === "eura"
+				? `<button class="btn atrium eura" data-go="vauban:portdelille">🚇 Vers Port de Lille · 2 stations</button><button class="btn atrium eura" data-go="vauban:cormontaigne">🚇 Vers Cormontaigne · 3 stations</button>`
+				: p.action ? `<button class="btn atrium${p.metro ? " eura" : ""}" data-go="${p.action.go}">${p.action.label}</button>` : "") + gameHere(id) +
 			(p.zone === "eura" ? `<h3>Et les formations ?</h3><div class="empty">L'<b>École du Numérique</b> et plusieurs masters FGES ont leurs cours dans <b>Wenov</b>, au cœur du quartier.</div><button class="btn alt" data-place="wenov">💡 Les formations de Wenov</button>`
 			: `<h3>Et les formations ?</h3><div class="empty">Elles t'attendent à l'<b>Hôtel Académique</b>, au <b>bâtiment Michel Falise</b> et à <b>Wenov</b>.</div><button class="btn alt" data-place="falise">🧱 Aller à Michel Falise</button>`);
 	} else {
@@ -1673,7 +1745,11 @@ $("panel").addEventListener("click", e => {
 	const fav = e.target.closest("[data-fav]");
 	if(fav){ toggleFav(fav.dataset.fav); fav.setAttribute("aria-pressed", String(favs.has(fav.dataset.fav))); fav.textContent = favs.has(fav.dataset.fav) ? "♥" : "♡"; if(current === "carnet" && !favs.has(fav.dataset.fav)) openPanel("carnet"); return; }
 	const g = e.target.closest("[data-game]"); if(g){ openGame(g.dataset.game); return; }
-	const go = e.target.closest("[data-go]"); if(go){ if(go.dataset.go === "vauban") exitInterior(); else if(go.dataset.go === "eura") goEura(); else enterInterior(go.dataset.go); return; }
+	if(e.target.closest("[data-openbadge]")){ openBadge(); return; }
+	const go = e.target.closest("[data-go]"); if(go){
+		const [k, arg] = go.dataset.go.split(":");
+		if(k === "vauban") exitInterior(false, null, arg); else if(k === "eura") goEura(null, arg); else enterInterior(go.dataset.go);
+		return; }
 	const pl = e.target.closest("[data-place]"); if(pl){ selectPlace(pl.dataset.place); return; }
 	if(e.target.closest("[data-carnet]")) openPanel("carnet");
 	if(e.target.closest("[data-plaquette]")) openLead([...favs]);
@@ -1837,7 +1913,7 @@ let carouselOn = false, carIdx = 0, carSettle = 0, lastPlace = null;
 function carouselIds(){
 	if(mode === "eura") return [...Object.keys(interiors.eura.places), "_vauban"];
 	const life = Object.keys(LIFE).filter(k => LIFE[k].pin);
-	return ["_hub", "ha", "falise", ...life.filter(k => GAME_AT[k]), "cormontaigne", ...life.filter(k => !GAME_AT[k] && k !== "cormontaigne")];
+	return ["_hub", "ha", "falise", ...life.filter(k => GAME_AT[k]), "cormontaigne", "portdelille", ...life.filter(k => !GAME_AT[k] && !LIFE[k].metro)].filter(k => k.startsWith("_") || PLACES[k] || LIFE[k]);
 }
 let carMode = null;
 function buildCarousel(){
@@ -1845,11 +1921,11 @@ function buildCarousel(){
 	const left = car.scrollLeft;
 	car.innerHTML = carouselIds().map(id => {
 		if(id === "_eura") return `<button class="ccard hub eura" data-id="_eura"><span class="gic">🏙️</span><span><b>Quartier Euratechnologies</b><small>Wenov, le Blan-Lafont, la Deûle, le métro</small></span><span class="go-c">Explorer</span></button>`;
-		if(id === "_vauban") return `<button class="ccard hub" data-id="_vauban"><span class="gic">🚇</span><span><b>Retour au campus Vauban</b><small>Ligne 2 · 3 stations jusqu'à Cormontaigne</small></span><span class="go-c">Y aller</span></button>`;
+		if(id === "_vauban") return `<button class="ccard hub" data-id="_vauban"><span class="gic">🚇</span><span><b>Retour au campus Vauban</b><small>Ligne 2 · par ${STATION_NAME[store.get("lastStation", "cormontaigne")] || "Cormontaigne"}</small></span><span class="go-c">Y aller</span></button>`;
 		if(id === "_hub") return `<button class="ccard hub" data-id="_hub"><span class="gic">🎮</span><span><b>Joue une formation</b><small>${nWon ? `${nWon}/${nGames} médaille${nWon > 1 ? "s" : ""} · ` : ""}${nGames} mini-jeux · 6 à 7 min</small></span><span class="go-c">Jouer</span></button>`;
 		const p = PLACES[id] || LIFE[id], games = (GAME_AT[id] || []).length, done = stamps.has(id) || found.has(id);
 		const n = PLACES[id] && profile ? listFor(id).length : 0;
-		const sub = id === "cormontaigne" ? "Ligne 2 → Wenov · École du Numérique" : PLACES[id] ? (n ? `${n} formation${n > 1 ? "s" : ""} pour toi` : p.kicker) : p.kicker;
+		const sub = LIFE[id] && LIFE[id].metro ? `Ligne 2 → Wenov · ${lineFrom(id, true).length - 1} stations` : PLACES[id] ? (n ? `${n} formation${n > 1 ? "s" : ""} pour toi` : p.kicker) : p.kicker;
 		return `<button class="ccard" data-id="${id}"><span class="gic">${p.icon}</span><span><b>${p.name}${done ? ' <span class="ok">✓</span>' : ""}</b><small>${games ? `🎮 ${games} jeu${games > 1 ? "x" : ""} · ` : ""}${sub}</small></span><span class="go-c">Voir</span></button>`;
 	}).join("");
 	car.children[carIdx]?.classList.add("cur");
@@ -1880,7 +1956,7 @@ car.addEventListener("click", e => {
 	if(c.dataset.id === "_hub"){ Audio.play("pop"); openPanel("nav:jeux"); }
 	else if(c.dataset.id === "_eura") goEura();
 	else if(c.dataset.id === "_vauban") exitInterior();
-	else if(c.dataset.id === "cormontaigne") goEura("wenov");
+	else if(LIFE[c.dataset.id] && LIFE[c.dataset.id].metro) goEura("wenov", c.dataset.id);
 	else if(mode === "eura") focusEura(c.dataset.id);
 	else selectPlace(c.dataset.id);
 });
@@ -2145,6 +2221,7 @@ function frame(){
 	watchPerf(rawDt);
 
 	if(cine){
+		cine.A.tick(dt);
 		const r = cine.A.cam();
 		camera.position.copy(r.pos); controls.target.copy(r.target); camera.lookAt(controls.target);
 		// sur le quai, un champ de vision plus large (surtout en portrait) ; on revient à la normale pendant le fondu
@@ -2234,7 +2311,7 @@ for(const ev of ["pointerdown","keydown","wheel","touchstart"]){
 }
 setInterval(() => {
 	// jamais pendant un mini-jeu, le formulaire, ou (hors borne) quand le visiteur lit un panneau
-	if(!entered || tour || intro || coach || mode !== "ext" || gamePaused || !$("lead").hidden || !$("welcome").classList.contains("gone")) return;
+	if(!entered || tour || intro || coach || cine || riding || !$("badge").hidden || mode !== "ext" || gamePaused || !$("lead").hidden || !$("welcome").classList.contains("gone")) return;
 	if(!BORNE && (current || !$("ambiance").hidden)) return;
 	if(performance.now() - lastInput > IDLE_MS){ idleTour = true; startTour(true); }
 }, 2000);

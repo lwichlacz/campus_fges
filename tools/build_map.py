@@ -264,6 +264,58 @@ cit = G((-135, -947))
 # station Cormontaigne (ligne 2), la plus proche du campus : 50.62623 N, 3.04029 E (OpenStreetMap)
 metro = G(mp({ "lat":50.62623, "lon":3.04029 }))
 
+# --- les deux stations de la ligne 2 côté Vauban, chacune avec son îlot de bâtiments réels ---
+# Elles sont hors du cœur de la carte (≈ 800 m) : leur centre est placé comme le reste du lointain (compressé),
+# mais leurs abords sont dessinés à l'échelle réelle, pour que la station ne paraisse jamais isolée.
+metro_raw = load("osm_metro.json")
+STATIONS_SRC = [("cormontaigne", "Cormontaigne", 50.6262337, 3.0402863), ("portdelille", "Port de Lille", 50.6299287, 3.0357396)]
+R_ISL = 95.0
+stations = []
+for sid, sname, la, lo in STATIONS_SRC:
+    sp = mp({ "lat":la, "lon":lo }); gs = G(sp)
+    def Lm(q, sp=sp, gs=gs):
+        dx, dz = q[0]-sp[0], q[1]-sp[1]
+        return (round(gs[0] + S*(dx*ux + dz*uz), 2), round(gs[1] + S*(dx*vx + dz*vz), 2))
+    nb = 0
+    for e in metro_raw:
+        t = e.get("tags", {})
+        if e["type"] != "way" or "building" not in t or "geometry" not in e: continue
+        p = [mp(q) for q in e["geometry"]]
+        if len(p) < 4 or math.dist(cen(p), sp) > R_ISL: continue
+        q = [p[0]]
+        for v in p[1:]:
+            if math.dist(v, q[-1]) > .8: q.append(v)
+        if len(q) < 4: continue
+        if math.dist(q[0], q[-1]) < .8: q = q[:-1]
+        A = area(q)
+        if A < 12: continue
+        b = t.get("building", "yes"); r = h(e["id"])
+        lv = t.get("building:levels")
+        try: lv = max(1, min(14, int(float(lv))))
+        except: lv = None
+        kind = "shed" if b in ("garage", "garages", "shed", "roof") or A < 30 else "house"
+        if lv is None: lv = [3, 4, 4, 5, 3][r % 5] if kind == "house" else 1
+        if b in ("apartments", "commercial", "office") and lv < 4: lv = 5
+        a, cx, cz, L, D = obb(q)
+        roof = 0
+        if kind == "house" and A/(L*D) > .78 and D < 15 and lv <= 4:
+            roof = [*Lm((cx, cz)), round(Gdir(a), 3), round(L*S, 2), round(D*S, 2)]
+        col = (r // 7) % (BRICK + PAINT)
+        buildings.append([0 if kind == "house" else 6, lv, col, roof, flat(Lm(v) for v in q)]); nb += 1
+    for e in metro_raw:
+        t = e.get("tags", {}); hw = t.get("highway")
+        if e["type"] != "way" or hw not in WID or "geometry" not in e or t.get("tunnel") == "yes": continue
+        p = [mp(q) for q in e["geometry"]]
+        keep = [q for q in p if math.dist(q, sp) < R_ISL + 15]
+        if len(keep) < 2: continue
+        roads.append([round(WID[hw]*S, 2), 1 if hw in ("pedestrian", "living_street") else 0, flat(Lm(q) for q in keep)])
+    tr = [Lm(mp(n)) for n in metro_raw if n["type"] == "node" and n.get("tags", {}).get("natural") == "tree" and math.dist(mp(n), sp) < R_ISL]
+    trees += flat(tr)
+    exits = [list(Lm(mp(n))) for n in metro_raw if n["type"] == "node" and n.get("tags", {}).get("railway") == "subway_entrance" and math.dist(mp(n), sp) < 60]
+    stations.append({ "id":sid, "name":sname, "x":gs[0], "z":gs[1], "r":round(R_ISL*S, 1), "exits":exits })
+    print(f"station {sname} : centre {gs}, {nb} bâtiments, {len(exits)} bouches")
+
+
 def poi(name):
     for k, v in pois_src.items():
         if name.lower() in k.lower():
@@ -281,7 +333,7 @@ if jb: POIS["jardin"] = { "x":round(sum(jb[1][0::2])/(len(jb[1])/2),2), "z":roun
 
 out = {
     "S":S, "ha":HA, "falise":FAL, "court":[round(c,2) for c in court], "buildings":buildings, "roads":roads, "greens":greens,
-    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro
+    "trees":trees, "walk":walk, "canals":canals, "parks":parks, "blan":blan, "citadelle":cit, "pois":POIS, "metro":metro, "stations":stations
 }
 js = ("/* Généré par tools/build_map.py — ne pas modifier à la main.\n"
       "   Données © les contributeurs d'OpenStreetMap (ODbL). */\n"

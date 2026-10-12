@@ -120,8 +120,8 @@ export const LIFE = {
 	},
 	metro: {
 		zone:"eura", icon:"🚇", name:"Métro Canteleu – Euratechnologies", kicker:"Ligne 2 du métro de Lille",
-		text:"La station de la ligne 2 est à quelques minutes à pied de Wenov. Trois stations plus loin, Cormontaigne te dépose à quelques minutes du campus Vauban : les deux campus sont sur la même ligne.",
-		facts:["Ligne 2","3 stations jusqu'à Cormontaigne","Vauban ⇄ Wenov"], action:{ label:"🚇 Reprendre la ligne 2 vers Vauban", go:"vauban" }
+		text:"La station de la ligne 2 est à quelques minutes à pied de Wenov. Deux stations plus loin, Port de Lille ; trois stations plus loin, Cormontaigne : les deux stations du campus Vauban. Les deux campus sont sur la même ligne.",
+		facts:["Ligne 2","Port de Lille · 2 stations","Cormontaigne · 3 stations"], action:{ label:"🚇 Reprendre la ligne 2 vers Vauban", go:"vauban" }
 	},
 	frenchtech: {
 		zone:"eura", icon:"🚀", name:"La French Tech Lille", kicker:"Pôle Euratechnologies",
@@ -139,9 +139,14 @@ export const LIFE = {
 		facts:["Bord de Deûle","Jardin Le Blan-Lafont","Pistes cyclables"]
 	},
 	cormontaigne: {
-		icon:"🚇", name:"Métro Cormontaigne", kicker:"Ligne 2 · rue de Turenne",
-		text:"La station de métro du campus Vauban. Trois stations de ligne 2 plus loin, Canteleu – Euratechnologies te dépose au pied de Wenov, le campus de l'École du Numérique, au cœur d'Euratechnologies.",
-		facts:["Ligne 2","3 stations jusqu'à Wenov","Vauban ⇄ Euratechnologies"], action:{ label:"🚇 Prendre la ligne 2 vers Wenov", go:"eura" }
+		metro:true, icon:"🚇", name:"Métro Cormontaigne", kicker:"Ligne 2 · place Cormontaigne, rue de Turenne",
+		text:"Une des deux stations de métro du campus Vauban, à environ 800 m de l'Hôtel Académique. Trois stations de ligne 2 plus loin, Canteleu – Euratechnologies te dépose au pied de Wenov, le campus de l'École du Numérique.",
+		facts:["Ligne 2","3 stations jusqu'à Wenov","Place Cormontaigne"], action:{ label:"🚇 Prendre la ligne 2 vers Wenov", go:"eura:cormontaigne" }
+	},
+	portdelille: {
+		metro:true, icon:"🚇", name:"Métro Port de Lille", kicker:"Ligne 2 · rue de Turenne",
+		text:"L'autre station de métro du campus Vauban, elle aussi à environ 800 m de l'Hôtel Académique. Deux stations de ligne 2 suffisent pour rejoindre Canteleu – Euratechnologies et Wenov.",
+		facts:["Ligne 2","2 stations jusqu'à Wenov","Rue de Turenne"], action:{ label:"🚇 Prendre la ligne 2 vers Wenov", go:"eura:portdelille" }
 	},
 	chapelle: {
 		icon:"⛪", name:"Chapelle universitaire", kicker:"Hôtel Académique · aile sud",

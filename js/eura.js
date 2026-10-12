@@ -6,6 +6,7 @@
 import * as THREE from "three";
 import { std, box, cyl, cone, mesh, beam, makeStudent, mulberry32 } from "./kit.js";
 import { buildCity, pointInPoly } from "./city.js";
+import { buildStation } from "./station.js";
 import { EMAP } from "./euramap.js";
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -163,7 +164,7 @@ export function createEura({ background }){
 	}
 
 	/* ---------- la station souterraine (ligne 2) et l'arrivée de la rame ---------- */
-	const arrival = M ? buildStation(scene, M, WC) : null;
+	const arrival = M ? buildStation(scene, { exit:(M.exits && M.exits[0]) || [M.x, M.z], face:WC, name:"Canteleu – Euratechnologies" }) : null;
 
 	/* ---------- station V'Lille « Euratechnologies » ---------- */
 	if(EMAP.spots.vlille){
@@ -232,7 +233,6 @@ export function createEura({ background }){
 	for(let k=0;k<4;k++){ const q = patioTrees[k]; for(const a of [0, Math.PI]){ const s = makeStudent(scene); s.g.position.set(q.x + Math.sin(a)*.8 - 1, 0, q.z + Math.cos(a)*.8); s.g.rotation.y = a + Math.PI; Object.assign(s, { chat:true, ph:rr()*6 }); walkers.push(s); } }
 
 	function update(dt, t){
-		if(arrival) arrival.tick(dt);
 		for(const s of walkers){
 			if(s.chat){ s.body.rotation.z = Math.sin(t*1.3 + s.ph)*.04; continue; }
 			if(s.wait > 0){ s.wait -= dt; continue; }
@@ -313,125 +313,4 @@ function metroSign(){
 	x.fillStyle = "#d6213a"; x.fillRect(0, 0, 64, 64);
 	x.fillStyle = "#ffffff"; x.font = "bold 48px Arial, sans-serif"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("M", 32, 35);
 	const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
-}
-
-/* Station Canteleu – Euratechnologies : quai souterrain, portes palières, rame VAL.
-   Elle n'est visible que pendant l'arrivée ; la caméra remonte ensuite par l'escalier jusqu'à la rue. */
-function stationWall(name){
-	const c = document.createElement("canvas"); c.width = 512; c.height = 128; const x = c.getContext("2d");
-	x.fillStyle = "#eef0ee"; x.fillRect(0, 0, 512, 128);
-	x.fillStyle = "rgba(0,0,0,.06)"; for(let i=0;i<512;i+=16) x.fillRect(i, 0, 1, 128); for(let j=0;j<128;j+=16) x.fillRect(0, j, 512, 1);
-	x.fillStyle = "#d6213a"; x.fillRect(0, 84, 512, 10);
-	x.fillStyle = "#2b3442"; x.fillRect(118, 26, 290, 40);
-	x.fillStyle = "#ffffff"; x.font = "bold 17px Arial"; x.textAlign = "center"; x.fillText(name, 263, 52);
-	x.fillStyle = "#d6213a"; x.fillRect(84, 30, 28, 32); x.fillStyle = "#fff"; x.font = "bold 20px Arial"; x.fillText("M", 98, 54);
-	const t = new THREE.CanvasTexture(c); t.wrapS = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
-}
-function buildStation(scene, M, WC){
-	const ex = (M.exits && M.exits[0]) || [M.x, M.z];
-	const g = new THREE.Group(); scene.add(g); g.visible = false;
-	// le quai regarde vers Wenov ; la trémie de l'escalier tombe sous la bouche de métro réelle
-	const dx = WC[0] - ex[0], dz = WC[1] - ex[1], ry = Math.atan2(dx, dz);
-	g.rotation.y = ry;
-	const SH = [22, 5.2], Y0 = -11;
-	const off = new THREE.Vector3(SH[0], 0, SH[1]).applyAxisAngle(new THREE.Vector3(0, 1, 0), ry);
-	g.position.set(ex[0] - off.x, Y0, ex[1] - off.z);
-	const mat = (c, o = {}) => std(c, { flatShading:false, ...o });
-	const wallTex = stationWall("Canteleu – Euratechnologies"); wallTex.repeat.set(4, 1);
-	const wallM = new THREE.MeshStandardMaterial({ map:wallTex, roughness:.6 });
-	box(g, 60, .4, 8.4, mat("#b9b4ac"), 0, -.4, 4.2, 0, false);                          // quai
-	box(g, 60, .3, 8.2, mat("#3a3a3f"), 0, -1.5, -4.1, 0, false);                         // fond de voie
-	for(const z of [-5.4, -2.8]) box(g, 60, .3, .6, mat("#8e8b86"), 0, -1.2, z, 0, false); // pistes de roulement (pneus)
-	box(g, 60, .25, .3, mat("#6b6f76"), 0, -.9, -4.1, 0, false);                          // rail de guidage
-	box(g, 60, .06, .35, mat("#f2c63c"), 0, 0, .3, 0, false);                             // bande d'éveil
-	const back = new THREE.Mesh(new THREE.PlaneGeometry(60, 7.4), wallM); back.position.set(0, 2.3, 8.4); back.rotation.y = Math.PI; g.add(back);
-	const far = new THREE.Mesh(new THREE.PlaneGeometry(60, 8.6), wallM); far.position.set(0, 2.1, -8.2); g.add(far);
-	const ceil = mat("#e6e2da", { emissive:"#a39d92", emissiveIntensity:.45 });
-	box(g, 48, .3, 16.6, ceil, -6, 6, 0, 0, false); box(g, 12, .3, 10.2, ceil, 24, 6, -3.2, 0, false);      // trémie ouverte au-dessus de l'escalier
-	for(let x=-26; x<=26; x+=6.5) box(g, 4, .1, .5, std("#fff6e2", { emissive:"#fff1d0", emissiveIntensity:1.4, flatShading:false }), x, 5.8, 3.2, 0, false);
-	// murs de bout, bouches de tunnel (on voit l'intérieur du tube)
-	for(const sx of [-1, 1]){
-		box(g, .3, 7.6, 8.4, mat("#cfcac2"), sx*30, -1.6, 4.2, 0, false);
-		box(g, .3, 2.6, 8.2, mat("#cfcac2"), sx*30, 3.6, -4.1, 0, false);
-		const tube = new THREE.Mesh(new THREE.BoxGeometry(60, 5.2, 8.2), std("#15171c", { side:THREE.BackSide }));
-		tube.position.set(sx*60, 1, -4.1); g.add(tube);
-	}
-	// portes palières vitrées, alignées sur les portes de la rame
-	const glassM = new THREE.MeshStandardMaterial({ color:"#cfe2ea", transparent:true, opacity:.35, roughness:.1, metalness:.2, depthWrite:false });
-	const DOORS = [-9.4, -3.4, 3.4, 9.4];
-	for(let x=-28; x<28; x+=2){ if(DOORS.some(d => Math.abs(x + 1 - d) < 1.3)) continue; box(g, 1.9, 2.4, .08, glassM, x + 1, 0, .1, 0, false); }
-	box(g, 60, .25, .2, mat("#5d636b"), 0, 2.4, .1, 0, false);
-	for(const x of [-18, 18]){ box(g, 2.4, .5, .7, mat("#c79a6a"), x, 0, 6.2, 0, false); }
-	// escalier mécanique vers la rue
-	beam(g, new THREE.Vector3(17, 0, 5.2), new THREE.Vector3(27, 11.2, 5.2), 2.6, .5, mat("#8d9097"));
-	for(const sz of [3.8, 6.6]) beam(g, new THREE.Vector3(17, 1, sz), new THREE.Vector3(27, 12.2, sz), .25, 1, mat("#2f3a4a"));
-	box(g, 8.4, 11.4, .3, wallM, 22, 0, 2, 0, false);                                      // cage d'escalier carrelée
-	box(g, 8.4, 11.4, .3, wallM, 22, 0, 8.4, 0, false);
-
-	// la rame VAL : deux voitures, portes coulissantes côté quai
-	const train = new THREE.Group(); g.add(train);
-	const white = mat("#eef0f2"), band = mat("#26303d"), red = mat("#d6213a"), skirt = mat("#c3c8ce");
-	const leaves = [];
-	for(const cx of [-6.4, 6.4]){
-		box(train, 12.4, 3.1, 3.2, white, cx, -.7, -4.1); box(train, 12.4, .5, 3.25, skirt, cx, -.9, -4.1);
-		box(train, 12.2, 1.1, 3.26, band, cx, .9, -4.1); box(train, 12.42, .22, 3.27, red, cx, .3, -4.1);
-		for(const d of [-3, 3]) for(const sd of [-1, 1]){
-			const leaf = new THREE.Mesh(new THREE.BoxGeometry(.9, 2.3, .08), mat("#dfe3e7")); leaf.position.set(cx + d + sd*.45, .45, -2.46); train.add(leaf);
-			leaves.push({ m:leaf, x0:cx + d + sd*.45, s:sd });
-		}
-	}
-	for(const sx of [-1, 1]){ const nose = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.9, 3), white); nose.position.set(sx*13, .55, -4.1); nose.rotation.z = sx*.18; train.add(nose); box(train, .1, 1, 2.2, band, sx*13.5, .9, -4.1); }
-	const riders = [];
-	for(const [k, d] of [[0, -9.4], [1, -3.4], [2, 3.4], [3, 9.4], [4, 3.4]]){
-		const st = makeStudent(g); st.g.position.set(d + (k === 4 ? .7 : 0), -.9, -4.1); st.g.visible = false;
-		riders.push({ s:st, d, ph:k*.25 });
-	}
-	g.traverse(o => { if(o.isMesh){ o.castShadow = false; o.receiveShadow = false; } });
-
-	const DUR = 9.5, L = p => g.localToWorld(new THREE.Vector3(...p));
-	const ease = k => 1 - Math.pow(1 - k, 3), smooth = k => k*k*(3 - 2*k);
-	const st = { on:false, t:0 };
-	let rise = null;
-	function start(endPos, endTarget){
-		g.updateMatrixWorld(true);
-		st.on = true; st.t = 0; g.visible = true;
-		// après un court fondu, on repart de la bouche de métro, dans la rue, et la caméra s'élève vers Wenov
-		const street = L([27.5, 12.6, 5.2]);
-		rise = { pos:new THREE.CatmullRomCurve3([street, street.clone().lerp(endPos, .35).setY(street.y + 6), endPos.clone()]),
-		         tgt:new THREE.CatmullRomCurve3([endTarget.clone().setY(street.y + 1.5), endTarget.clone()]) };
-		train.position.x = -75;
-		leaves.forEach(l => l.m.position.x = l.x0);
-		riders.forEach(r => { r.s.g.visible = false; r.s.g.position.set(r.d, -.9, -4.1); });
-	}
-	function stop(){ st.on = false; g.visible = false; }
-	function tick(dt){
-		if(!st.on) return;
-		st.t += dt;
-		const t = st.t;
-		train.position.x = -75*(1 - ease(Math.min(1, t/4.2)));
-		const open = smooth(Math.min(1, Math.max(0, (t - 4.5)/.7)));
-		leaves.forEach(l => l.m.position.x = l.x0 + l.s*open*.85);
-		riders.forEach(r => {
-			const w = Math.max(0, Math.min(1, (t - 5.1 - r.ph)/1.4));
-			r.s.g.visible = t > 4.9;
-			r.s.g.position.set(r.d + Math.sin(r.ph*9)*.6*w, -.9 + Math.min(.9, w*3), -4.1 + w*8.5);
-			r.s.body.position.y = .65 + Math.abs(Math.sin(t*7 + r.ph*4))*.07*(w > 0 && w < 1 ? 1 : 0);
-		});
-	}
-	// position de la caméra pendant l'arrivée ; done = vrai quand on est arrivé dans la rue
-	const P = new THREE.Vector3(), T = new THREE.Vector3();
-	function cam(){
-		const t = st.t;
-		if(t < 6.5){
-			const k = smooth(Math.min(1, t/6.5));
-			P.copy(L([14 - 4*k, 2.7, 6.6 - .6*k]));
-			const fx = Math.min(4, train.position.x + 12);
-			T.copy(L([t < 4.6 ? fx : fx*(1 - smooth((t - 4.6)/1.6)), 1.6, t < 4.6 ? -4.1 : -4.1 + 1.7*smooth((t - 4.6)/1.6)]));
-		} else {
-			const k = smooth(Math.min(1, (t - 6.5)/(DUR - 6.5)));
-			P.copy(rise.pos.getPoint(k)); T.copy(rise.tgt.getPoint(k));
-		}
-		return { pos:P, target:T, done:t >= DUR, fade:t > 6.05 && t < 6.75, under:t < 6.4 };
-	}
-	return { start, stop, tick, cam, get on(){ return st.on; } };
 }

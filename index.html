@@ -280,6 +280,18 @@ button{font:inherit;color:inherit;cursor:pointer}
 .acts .wide{grid-column:1/-1}
 
 /* ---------- Formulaire plaquettes ---------- */
+#badge{position:fixed;inset:0;z-index:43;display:grid;place-items:center;padding:12px;background:rgba(15,20,32,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);overflow:auto}
+#badge[hidden]{display:none}
+.badge-card{position:relative;width:100%;max-width:420px;max-height:100%;overflow:auto;background:var(--cream);border-radius:24px;box-shadow:var(--shadow);padding:22px 20px 18px;animation:rise .35s ease both;text-align:center}
+.badge-card h2{font:700 24px/1.15 Fraunces,Georgia,serif;margin:6px 30px 6px}
+.badge-card p{margin:0 0 12px;color:var(--ink2);font-size:14px}
+.badge-card img{display:block;width:100%;max-width:320px;margin:0 auto 12px;border-radius:18px;box-shadow:0 10px 30px rgba(15,20,32,.3);aspect-ratio:1}
+.badge-acts{display:grid;grid-template-columns:1.2fr 1fr;gap:8px}
+.badge-acts .btn{margin:0}
+.badgebtn{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:16px;padding:10px 12px;margin:4px 0 8px;background:linear-gradient(135deg,#1e305e,#0b7a8e);color:#fff;text-align:left;font:inherit;cursor:pointer}
+.badgebtn b{display:block;font:700 15px Fraunces,serif}
+.badgebtn small{display:block;opacity:.85;font-size:12px;font-weight:700}
+.badgebtn i{font-style:normal;font-size:26px}
 #lead{position:fixed;inset:0;z-index:42;display:grid;place-items:center;padding:12px;background:rgba(43,26,20,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);overflow:auto}
 #lead[hidden]{display:none}
 .lead-card{position:relative;width:100%;max-width:470px;max-height:100%;overflow:auto;background:var(--cream);border-radius:24px;box-shadow:var(--shadow);padding:22px 20px 18px;animation:rise .35s ease both}
@@ -520,6 +532,19 @@ button{font:inherit;color:inherit;cursor:pointer}
 	<div class="coach-ic" id="coachIc"></div>
 	<div class="coach-tx"><div class="coach-k" id="coachK"></div><b id="coachT"></b><p id="coachP"></p></div>
 	<div class="coach-ctl"><button data-coach="skip">Passer</button><button data-coach="next" class="go-s" id="coachNext">Suivant</button></div>
+</div>
+
+<!-- badge « Explorateur Euratechnologies » (les 4 tampons du quartier) -->
+<div id="badge" hidden>
+	<div class="badge-card" role="dialog" aria-modal="true" aria-labelledby="badgeT">
+		<button class="close" data-badge="close" aria-label="Fermer">×</button>
+		<div class="kick">Badge débloqué</div>
+		<h2 id="badgeT">Explorateur Euratechnologies</h2>
+		<p>Tu as trouvé les 4 tampons du quartier de l'École du Numérique. Partage ton badge !</p>
+		<img id="badgeImg" alt="Badge Explorateur Euratechnologies : Wenov, Campus Cyber, Blan-Lafont et squares des pionnières">
+		<div class="badge-acts"><button class="btn main" data-badge="share">📤 Partager mon badge</button><button class="btn alt" data-badge="save">⬇️ Enregistrer l'image</button></div>
+		<a class="btn link-out" href="https://www.fges.fr/cursus-universitaire/licence-sts/ecole-du-numerique/" target="_blank" rel="noopener">Découvrir l'École du Numérique<span aria-hidden="true">↗</span></a>
+	</div>
 </div>
 
 <div id="lead" hidden>
