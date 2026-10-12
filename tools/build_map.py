@@ -494,6 +494,30 @@ for b, q, A, bb, c in far_bd:
     a, cx, cz, L, D = obb(q)
     rt = b["rt"]; rh = round(min(rt, 6)*S*VX*f**.5, 1) if rt and rt >= 1.2 and not (rt > 7 and A > 400) else 0
     far_out.append([g[0], g[1], round(Gdir(a), 2), round(L*S*f, 1), round(D*S*f, 1), bd_levels(b), rh, bd_col(b, h(b["id"])), bd_rmat(b)])
+# au-delà (jusqu'au bord de l'horizon du jeu, centre de Lille compris) : rectangles englobants de bdtopo_far.json ;
+# plus on s'éloigne, plus on ne garde que les grands bâtiments (le jeu reste léger)
+if (OSM / "bdtopo_far.json").exists():
+    for x, z, a, L, D, hh, ee, rt, mw, mr, A in json.load(open(OSM / "bdtopo_far.json", encoding="utf-8"))["buildings"]:
+        d = dist((x, z))
+        if A < (40 if d < 1500 else 120 if d < 2200 else 260): continue
+        g = G((x, z))
+        if math.hypot(g[0], g[1] + 10) > 480: continue
+        f = math.hypot(g[0], g[1] - OZ)/(S*d) if d > 1 else 1
+        b = { "h":hh, "e":ee, "mw":mw, "mr":mr, "y":None, "id":f"{x},{z}" }
+        rh = round(min(rt, 6)*S*VX*f**.5, 1) if rt and rt >= 1.2 and not (rt > 7 and A > 400) else 0
+        far_out.append([g[0], g[1], round(Gdir(a), 2), round(L*S*f, 1), round(D*S*f, 1), bd_levels(b), rh, bd_col(b, h(b["id"])), bd_rmat(b)])
+# au-delà (jusqu'au bord de l'horizon du jeu, centre de Lille compris) : rectangles englobants de bdtopo_far.json ;
+# plus on s'éloigne, plus on ne garde que les grands bâtiments (le jeu reste léger)
+if (OSM / "bdtopo_far.json").exists():
+    for x, z, a, L, D, hh, ee, rt, mw, mr, A in json.load(open(OSM / "bdtopo_far.json", encoding="utf-8"))["buildings"]:
+        d = dist((x, z))
+        if A < (40 if d < 1500 else 120 if d < 2200 else 260): continue
+        g = G((x, z))
+        if math.hypot(g[0], g[1] + 10) > 480: continue
+        f = math.hypot(g[0], g[1] - OZ)/(S*d) if d > 1 else 1
+        b = { "h":hh, "e":ee, "mw":mw, "mr":mr, "y":None, "id":f"{x},{z}" }
+        rh = round(min(rt, 6)*S*VX*f**.5, 1) if rt and rt >= 1.2 and not (rt > 7 and A > 400) else 0
+        far_out.append([g[0], g[1], round(Gdir(a), 2), round(L*S*f, 1), round(D*S*f, 1), bd_levels(b), rh, bd_col(b, h(b["id"])), bd_rmat(b)])
 print("lointain :", len(far_out), "bâtiments réels")
 
 # --- rues ---
