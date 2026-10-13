@@ -121,9 +121,10 @@ export function buildLandmarks(scene, MAP, { inBuilding = () => false, roadGap =
 			x.font = `800 54px ${FONT}`; x.textAlign = "right"; x.fillText(arrow, a + w - 22, b + h/2 + 3);
 		});
 		const B = { p:[], n:[], u:[] }, from = nearest(...home);
-		out.nSigns = 0;
+		out.nSigns = 0; out.routes = {};
 		st.forEach((s, si) => {
 			const p = path(from, nearest(s.x, s.z));
+			out.routes[s.id] = p.map(i => [nx_(i), nz_(i)]);          // l'itinéraire à pied (repris par la promenade en vue piéton)
 			let last = -1e9, run = 0;
 			for(let k=1;k<p.length-1;k++){
 				const a = p[k-1], b = p[k], c = p[k+1];

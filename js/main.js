@@ -1830,6 +1830,53 @@ function rideBack(vs, then){
 		}, vs);
 	});
 }
+/* ---------- À pied jusqu'au métro : promenade en vue piéton le long des panneaux « M » ---------- */
+let walk = null;
+const WALK_EYE = 1.5;          // ≈ 2,7 m : un peu au-dessus des passants, sous les plaques de rue
+function walkTo(id){
+	const R = landmarks.routes && landmarks.routes[id], st = (MAP.stations || []).find(s => s.id === id);
+	if(!R || R.length < 2 || !st || mode !== "ext" || cine || riding) return;
+	closePanel(); setHover(null); stopTour && stopTour();
+	const pts = [];
+	for(const [x, z] of R){ const q = pts[pts.length - 1]; if(!q || Math.hypot(q.x - x, q.z - z) > 1.5) pts.push(V(x, WALK_EYE, z)); }
+	pts.push(V(st.x, WALK_EYE, st.z));
+	const curve = new THREE.CatmullRomCurve3(pts, false, "centripetal"), len = curve.getLength();
+	// tracé au sol : tirets bleus FGES, au-dessus des rues et des trottoirs
+	const B = [], N = Math.floor(len/1.2), hw = .32;
+	for(let i = 0; i < N; i += 2){
+		const a = curve.getPointAt(i/N), b = curve.getPointAt(Math.min(1, (i + 1.3)/N)), dx = b.x - a.x, dz = b.z - a.z, l = Math.hypot(dx, dz) || 1, nx = -dz/l*hw, nz = dx/l*hw;
+		B.push(a.x + nx, .2, a.z + nz, a.x - nx, .2, a.z - nz, b.x - nx, .2, b.z - nz, a.x + nx, .2, a.z + nz, b.x - nx, .2, b.z - nz, b.x + nx, .2, b.z + nz);
+	}
+	const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(B, 3));
+	const line = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color:"#21b6ce", side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:-6, polygonOffsetUnits:-12 }));
+	line.renderOrder = 2; scene.add(line);
+	walk = { id, curve, len, line, k:0, dur:THREE.MathUtils.clamp(len/22, 10, 22), look:curve.getPointAt(.02).clone(), near:camera.near, fov:camera.fov };
+	fly = null; controls.enabled = false;
+	camera.near = .3; camera.fov = innerWidth < innerHeight ? 62 : 50; camera.updateProjectionMatrix();
+	document.body.classList.add("riding", "walking"); $("cineSkip").hidden = false;
+	toast(`🚶 À pied vers le métro ${st.name} · environ ${Math.round(len/MAP.S/10)*10} m en suivant les panneaux « M »`, 4200);
+	Audio.play("pop");
+}
+function updateWalk(dt){
+	const W = walk;
+	W.k = Math.min(1, W.k + dt/W.dur);
+	const u = W.k < .08 ? (W.k/.08)**2*.04 : W.k > .92 ? 1 - ((1 - W.k)/.08)**2*.04 : .04 + (W.k - .08)/.84*.92;      // départ et arrivée en douceur
+	const p = W.curve.getPointAt(u), ahead = W.curve.getPointAt(Math.min(1, u + 14/W.len));
+	ahead.y = WALK_EYE - .15;
+	W.look.lerp(ahead, Math.min(1, dt*3));
+	camera.position.copy(p); camera.position.y += Math.sin(W.k*W.dur*7.5)*.03;        // le pas
+	controls.target.copy(W.look); camera.lookAt(W.look);
+	if(W.k >= 1) endWalk(false);
+}
+function endWalk(skipped){
+	if(!walk) return;
+	const W = walk; walk = null;
+	scene.remove(W.line); W.line.geometry.dispose(); W.line.material.dispose();
+	camera.near = W.near; camera.fov = W.fov; camera.updateProjectionMatrix();
+	document.body.classList.remove("riding", "walking"); $("cineSkip").hidden = true; controls.enabled = true;
+	if(!skipped) Audio.play("good");
+	selectPlace(W.id);          // la fiche de la station s'ouvre : il ne reste qu'à prendre la ligne 2
+}
 /* Cinématiques de métro en 3D (arrivée ou départ de la rame dans une station souterraine) */
 let cine = null;
 function playCine(A, kind, a, b, done){
@@ -1850,7 +1897,7 @@ function endArrival(skipped){
 	if(skipped && kind === "arrive"){ camera.position.copy(end[0]); controls.target.copy(end[1]); }
 	done();
 }
-$("cineSkip").addEventListener("click", () => { Audio.play("pop"); endArrival(true); });
+$("cineSkip").addEventListener("click", () => { Audio.play("pop"); if(walk) endWalk(true); else endArrival(true); });
 function interiorAction(id){
 	if(mode === "eura"){ focusEura(id); return; }
 	if(mode === "wenovin"){
@@ -2124,7 +2171,8 @@ function openPanel(id){
 		head = `<div class="kick">${p.zone === "eura" ? "Euratechnologies" : "Vie de campus"} · ${p.kicker}</div><h2>${p.icon} ${p.name}</h2><p>${p.text}</p><div class="facts">${p.facts.map(f => `<span>${f}</span>`).join("")}</div>`;
 		body = (id === "metro" && mode === "eura"
 				? `<button class="btn atrium eura" data-go="vauban:portdelille">🚇 Vers Port de Lille · 2 stations</button><button class="btn atrium eura" data-go="vauban:cormontaigne">🚇 Vers Cormontaigne · 3 stations</button>`
-				: p.action ? `<button class="btn atrium${p.metro ? " eura" : ""}" data-go="${p.action.go}">${p.action.label}</button>` : "") + gameHere(id) +
+				: p.action ? `<button class="btn atrium${p.metro ? " eura" : ""}" data-go="${p.action.go}">${p.action.label}</button>` : "") +
+			(p.metro && mode === "ext" && landmarks.routes && landmarks.routes[id] ? `<button class="btn alt" data-go="walk:${id}">🚶 Y aller à pied depuis l'Hôtel Académique</button>` : "") + gameHere(id) +
 			(p.zone === "eura" ? `<h3>Et les formations ?</h3><div class="empty">L'<b>École du Numérique</b> et plusieurs masters FGES ont leurs cours dans <b>Wenov</b>, au cœur du quartier.</div><button class="btn alt" data-place="wenov">💡 Les formations de Wenov</button>`
 			: `<h3>Et les formations ?</h3><div class="empty">Elles t'attendent à l'<b>Hôtel Académique</b>, au <b>bâtiment Michel Falise</b> et à <b>Wenov</b>.</div><button class="btn alt" data-place="falise">🧱 Aller à Michel Falise</button>`);
 	} else {
@@ -2173,7 +2221,7 @@ $("panel").addEventListener("click", e => {
 	const go = e.target.closest("[data-go]"); if(go){
 		const [k, arg] = go.dataset.go.split(":");
 		if(k === "vauban") mode === "wenovin" ? exitInterior(false, () => exitInterior(false, null, arg)) : exitInterior(false, null, arg);
-		else if(k === "eura") goEura(null, arg); else enterInterior(go.dataset.go);
+		else if(k === "eura") goEura(null, arg); else if(k === "walk") walkTo(arg); else enterInterior(go.dataset.go);
 		return; }
 	const pl = e.target.closest("[data-place]"); if(pl){ selectPlace(pl.dataset.place); return; }
 	if(e.target.closest("[data-carnet]")) openPanel("carnet");
@@ -2747,6 +2795,8 @@ function frame(){
 		if(camera.fov !== fov){ camera.fov = fov; camera.updateProjectionMatrix(); }
 		$("fade").classList.toggle("on", !!r.fade);          // fondu au pied de l'escalier
 		if(r.done){ $("fade").classList.remove("on"); endArrival(); }
+	} else if(walk){
+		updateWalk(dt);
 	} else if(intro){
 		intro.k = Math.min(1, intro.k + dt/intro.dur);
 		const e = ease(intro.k);
@@ -2851,7 +2901,7 @@ for(const ev of ["pointerdown","keydown","wheel","touchstart"]){
 }
 setInterval(() => {
 	// jamais pendant un mini-jeu, le formulaire, ou (hors borne) quand le visiteur lit un panneau
-	if(!entered || tour || intro || coach || cine || riding || !$("badge").hidden || mode !== "ext" || gamePaused || !$("lead").hidden || !$("welcome").classList.contains("gone")) return;
+	if(!entered || tour || intro || coach || cine || riding || walk || !$("badge").hidden || mode !== "ext" || gamePaused || !$("lead").hidden || !$("welcome").classList.contains("gone")) return;
 	if(!BORNE && (current || !$("ambiance").hidden)) return;
 	if(performance.now() - lastInput > IDLE_MS){ idleTour = true; startTour(true); }
 }, 2000);
