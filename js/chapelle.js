@@ -2,7 +2,7 @@
    aux clés dorées, tribunes bordeaux, vitraux, chœur surélevé. Les murs et la
    voûte ne sont visibles que de l'intérieur : vue « maquette » automatique. */
 import * as THREE from "three";
-import { std, cyl, box, makeStudent, R, rng, mulberry32 } from "./kit.js?v=65afbc6917";
+import { std, cyl, box, makeStudent, R, rng, mulberry32 } from "./kit.js?v=df0c5e53ee";
 
 const NX = 6.5, AX = 10.5, Z0 = -20, Z1 = 18, BAYZ = 4;
 const SPRING = 11.5, RISE = 5.5, AISLE_H = 8;

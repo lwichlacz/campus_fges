@@ -559,6 +559,22 @@ js = ("/* Généré par tools/build_eura.py — ne pas modifier à la main.\n"
       "   Quartier Euratechnologies (Bois-Blancs, Lille). Données © les contributeurs d'OpenStreetMap (ODbL) ; © IGN BD TOPO et BD ORTHO (Licence Ouverte). */\n"
       "export const EMAP = " + json.dumps(out, ensure_ascii=False, separators=(",", ":")) + ";\n")
 (ROOT / "js" / "euramap.js").write_text(js, encoding="utf-8")
+
+# --- horizon : les vrais bâtiments des environs (BD TOPO, jusqu'à 1,3 km ; tools/fetch_eura_far.py), en volumes simples ---
+# js/eura_far.js, chargé après le quartier : [x, z, angle, longueur, largeur, hauteur] ×10 (entiers) et une teinte (0 brique, 1 pierre, 2 béton)
+far_src = ROOT / "tools" / "osm" / "bdtopo_eura_far.json"
+if far_src.exists():
+    FAR = []
+    for cx, cz, a, L, D, hh, mw, A in json.load(open(far_src, encoding="utf-8"))["buildings"]:
+        if dist((cx, cz)) <= CORE: continue                       # le cœur est détaillé dans euramap.js
+        g = G((cx, cz)); H = (hh if hh and hh > 2 else 6)*S*VX
+        m = mat1(mw); c = 0 if m == "4" else 1 if m in ("1", "2") else 2 if m in ("3", "5") else (h(f"{cx},{cz}") % 3)
+        FAR += [round(g[0]*10), round(g[1]*10), round(Gdir(a)*100), round(L*S*10), round(D*S*10), round(H*10), c]
+    fjs = ("/* Généré par tools/build_eura.py — ne pas modifier à la main.\n"
+           "   Horizon d'Euratechnologies : bâtiments © IGN BD TOPO (Licence Ouverte), en rectangles orientés. */\n"
+           "export const EFAR = " + json.dumps(FAR, separators=(",", ":")) + ";\n")
+    (ROOT / "js" / "eura_far.js").write_text(fjs, encoding="utf-8")
+    print(f"horizon : {len(FAR)//7} bâtiments, {round(len(fjs)/1024)} Ko")
 print(f"bâtiments {len(buildings)}  rues {len(roads)}  verts {len(greens)}  eau {len(water)}  arbres {len(trees)//2}  marche {len(walk['n'])//2} nœuds  taille {round(len(js)/1024)} Ko")
 print("Wenov", out["wenov"]["pts"]); print("Blan", blan["pts"][:4], blan["ang"])
 print("POIS", {k:(v and (v['x'], v['z'])) for k, v in POIS.items()}); print("SPOTS", {k:(v and (v['x'], v['z'])) for k, v in SPOTS.items()})

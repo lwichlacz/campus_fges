@@ -5,11 +5,11 @@
    le Blan-Lafont (filature de coton de 1896, siège d'Euratechnologies depuis 2009) et sa tour.
    Chargé à la demande, comme l'atrium : une seule scène de quartier à la fois (léger sur téléphone). */
 import * as THREE from "three";
-import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js?v=65afbc6917";
-import { buildCity, pointInPoly, softenFar } from "./city.js?v=65afbc6917";
-import { buildStation } from "./station.js?v=65afbc6917";
-import { EMAP } from "./euramap.js?v=65afbc6917";
-import { buildLandmarks } from "./landmarks.js?v=65afbc6917";
+import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js?v=df0c5e53ee";
+import { buildCity, pointInPoly, softenFar } from "./city.js?v=df0c5e53ee";
+import { buildStation } from "./station.js?v=df0c5e53ee";
+import { EMAP } from "./euramap.js?v=df0c5e53ee";
+import { buildLandmarks } from "./landmarks.js?v=df0c5e53ee";
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const ring = f => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; };
@@ -99,6 +99,19 @@ export function createEura({ background }){
 	// pas de pelouse OpenStreetMap sous Wenov (fait main) : elle affleurerait sous le patio et les pilotis
 	{ const blk = ring(EMAP.wenov.street); EMAP.greens = EMAP.greens.filter(([, f]) => { const p = ring(f), [cx, cz] = cen(p); return !pointInPoly(cx, cz, blk); }); }
 	const city = buildCity(scene, EMAP, { offices:true });
+	// horizon : les vrais bâtiments des environs (js/eura_far.js), chargés après le quartier, en un seul lot de volumes
+	import("./eura_far.js?v=df0c5e53ee").then(({ EFAR }) => {
+		const n = EFAR.length/7, geo = new THREE.BoxGeometry(1, 1, 1).translate(0, .5, 0);
+		const im = new THREE.InstancedMesh(geo, std("#ffffff"), n), d = new THREE.Object3D(), c = new THREE.Color();
+		const TINT = [["#a9533c", "#9a4a36", "#b8664a", "#8e4a3c"], ["#d8cfc0", "#cbbfa9", "#e2d9c8"], ["#b9b4ab", "#a7a39b", "#c9c4ba", "#8f949b"]];
+		for(let i=0;i<n;i++){
+			const k = i*7, T = TINT[EFAR[k+6]] || TINT[2];
+			d.position.set(EFAR[k]/10, 0, EFAR[k+1]/10); d.rotation.set(0, -EFAR[k+2]/100, 0);
+			d.scale.set(Math.max(.6, EFAR[k+3]/10), Math.max(.6, EFAR[k+5]/10), Math.max(.6, EFAR[k+4]/10)); d.updateMatrix();
+			im.setMatrixAt(i, d.matrix); im.setColorAt(i, c.set(T[(k*7 + EFAR[k]) % T.length]));
+		}
+		im.castShadow = false; im.receiveShadow = true; im.frustumCulled = false; scene.add(im);
+	}).catch(() => {});
 	// plaques de rue, panneaux « M » de Wenov jusqu'à la station, lieux réels du quartier
 	const landmarks = buildLandmarks(scene, EMAP, { inBuilding:city.inBuilding, roadGap:city.roadGap, home:[0, -12] });
 
