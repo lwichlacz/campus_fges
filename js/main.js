@@ -2669,11 +2669,41 @@ function watchPerf(rawDt){
 		toast(`Qualité graphique ajustée (${QUALITY[next].label}) pour plus de fluidité`, 2600);
 	}
 }
+/* ?perf : relevé affiché en haut de l'écran, pour les essais sur de vrais téléphones (toucher le relevé le copie) */
+const perfHud = /[?&]perf/.test(location.search) ? (() => {
+	let gpu = "?";
+	try { const gl = renderer.getContext(), ext = gl.getExtension("WEBGL_debug_renderer_info"); gpu = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : "?"; } catch(e){}
+	const el = document.createElement("pre");
+	el.style.cssText = "position:fixed;top:4px;left:4px;z-index:9999;margin:0;padding:6px 8px;font:11px/1.35 ui-monospace,monospace;color:#fff;background:rgba(0,0,0,.62);border-radius:6px;white-space:pre-wrap;max-width:80vw";
+	el.addEventListener("click", () => { navigator.clipboard?.writeText(el.textContent).then(() => toast("Relevé copié"), () => {}); });
+	document.body.appendChild(el);
+	renderer.info.autoReset = false;          // une image peut compter plusieurs passes (ombres, post-traitement)
+	const S = { acc:0, n:0, worst:0, tris:0, calls:0 };
+	return {
+		begin(){ renderer.info.reset(); },
+		end(rawDt){
+			S.acc += rawDt; S.n++; S.worst = Math.max(S.worst, rawDt);
+			S.tris = Math.max(S.tris, renderer.info.render.triangles); S.calls = Math.max(S.calls, renderer.info.render.calls);
+			if(S.acc < .5) return;
+			const pr = renderer.getPixelRatio();
+			el.textContent = [
+				`${(S.n/S.acc).toFixed(0)} i/s · pire image ${(S.worst*1000).toFixed(0)} ms`,
+				`${(S.tris/1000).toFixed(0)} k triangles · ${S.calls} appels`,
+				`qualité ${quality} (${qualityMode}) · résolution ×${pr.toFixed(2)} (${Math.round(innerWidth*pr)}×${Math.round(innerHeight*pr)})`,
+				`lointain ${horizon ? "chargé" : "en attente"} · ${navigator.hardwareConcurrency || "?"} cœurs · ${navigator.deviceMemory || "?"} Go`,
+				gpu
+			].join("\n");
+			S.acc = S.n = S.worst = S.tris = S.calls = 0;
+		}
+	};
+})() : null;
+
 let gamePaused = false;     // le campus ne se dessine pas pendant un mini-jeu (une seule scène 3D à la fois)
 function frame(){
 	if(gamePaused){ clock.getDelta(); requestAnimationFrame(frame); return; }
 	const rawDt = clock.getDelta(), dt = Math.min(rawDt, .05), t = clock.elapsedTime;
 	watchPerf(rawDt);
+	if(perfHud) perfHud.begin();
 	TIME.value = t;
 	stepLight(dt);
 
@@ -2761,6 +2791,7 @@ function frame(){
 		draw(scene, camera, true);
 	}
 	if(entered){ syncCarousel(); updatePins(); }
+	if(perfHud) perfHud.end(rawDt);
 	if(first){ first = false; performance.mark("campus-ready"); setTimeout(() => $("loader").classList.add("gone"), 150); prefetchLater(); setTimeout(loadFar, 400); }
 	requestAnimationFrame(frame);
 }
@@ -2805,5 +2836,5 @@ if(BORNE){
 }
 if(/[?&]debug/.test(location.search)) window.campus = { THREE, scene, camera, controls, renderer, city, selectPlace, enterInterior, exitInterior, openGame, PLACES, LIFE, MAP, interiors, get mode(){ return mode; },
 	view(px,py,pz,tx,ty,tz){ fly = null; intro = null; camera.position.set(px,py,pz); controls.target.set(tx,ty,tz); controls.update(); if(entered) updatePins(); },
-	set(k,v){ if(k === "season") seasonKey = v; if(k === "time") timeMode = v; applyAmbiance(true); }, setQuality, get post(){ return post; }, crowd, get quality(){ return quality; } };
+	set(k,v){ if(k === "season") seasonKey = v; if(k === "time") timeMode = v; applyAmbiance(true); }, setQuality, get post(){ return post; }, crowd, get quality(){ return quality; }, get far(){ return { horizon, farWood }; } };
 requestAnimationFrame(frame);

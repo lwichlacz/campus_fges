@@ -21,6 +21,7 @@ Puis ouvrir http://localhost:8765. Le serveur désactive le cache pour toujours 
 | `index.html?borne` | Mode stand (JPO, salons) : pas d'écran d'accueil, visite guidée en boucle, retour à la visite après 30 s sans interaction |
 | `liste.html` | Version sans 3D, accessible (clavier, lecteurs d'écran), proposée depuis l'accueil et si le navigateur ne gère pas la 3D |
 | `?debug` | Expose `window.campus` dans la console (caméra, lieux, intérieurs, qualité…) |
+| `?perf` | Affiche un relevé (images/s, triangles, appels de dessin, qualité, résolution, processeur graphique) pour les essais sur téléphone |
 
 La qualité graphique (haute, moyenne, basse) est choisie automatiquement selon l'appareil, puis abaissée si
 l'image descend sous ~30 images/s. Elle se règle aussi à la main dans le menu Ambiance.
@@ -52,6 +53,7 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/audio.js` | Musique lofi, ambiances et effets sonores générés |
 | `js/kit.js` | Outils 3D partagés (formes, fenêtres, étudiants) |
 | `tools/build_map.py` | Régénère `js/vauban.js` depuis les extraits de `tools/osm/` |
+| `tools/mesure_rendu.cjs` | Mesure triangles et appels de dessin par qualité et point de vue (Chrome sans écran), vérifie les shaders |
 | `js/eura.js` | Quartier Euratechnologies en 3D (Wenov, le Blan-Lafont, la Deûle, le métro), chargé à la demande |
 | `js/rame.js` | L'intérieur d'une rame VAL pendant le trajet (sièges, plans de ligne, passagers, tunnel et quais qui défilent) |
 | `js/station.js` | Station souterraine de la ligne 2 (quai, portes palières, rame VAL) : arrivées et départs en 3D |
