@@ -547,6 +547,38 @@ function buildKiosque(){
 /* =====================================================================
    La ville continue à l'horizon (silhouettes instanciées)
    ===================================================================== */
+/* Faces jamais vues d'en haut (dessous des volumes posés au sol) retirées : le lointain compte ses triangles. */
+function withoutFaces(geo, drop){
+	const g = geo.index ? geo.toNonIndexed() : geo.clone(), n = g.attributes.normal.array, keep = [];
+	for(let t=0; t<n.length/9; t++) if(!drop(n[t*9], n[t*9+1], n[t*9+2])) keep.push(t);
+	const out = new THREE.BufferGeometry();
+	for(const [k, a] of Object.entries(g.attributes)){
+		const s = a.itemSize, arr = new Float32Array(keep.length*3*s);
+		keep.forEach((t, j) => arr.set(a.array.subarray(t*3*s, (t+1)*3*s), j*3*s));
+		out.setAttribute(k, new THREE.BufferAttribute(arr, s));
+	}
+	return out;
+}
+/* Le lointain est découpé en carreaux : chaque carreau hors du cadre (derrière la caméra, au-delà de la brume)
+   n'est pas dessiné. Dans chaque carreau, les bâtiments sont rangés du plus visible au moins visible : une qualité
+   plus basse n'en dessine que le début (setFarLevel). */
+const FAR_TILE = 150;
+// rang 0 : grands volumes, gardés même en qualité basse ; rang 1 : ajoutés en moyenne ; rang 2 : tout, en haute
+const farRank = (d, v) => v >= 30 || (d < 200 && v >= 12) ? 0 : d < 260 || v >= 14 ? 1 : 2;
+function farTiles(items, at){
+	const tiles = new Map();
+	for(const it of items){
+		const [x, z] = at(it), k = Math.floor(x/FAR_TILE) + "," + Math.floor(z/FAR_TILE);
+		if(!tiles.has(k)) tiles.set(k, []);
+		tiles.get(k).push(it);
+	}
+	return [...tiles.values()];
+}
+function fitInstances(m, counts){
+	m.computeBoundingSphere();          // sur toutes les instances : la sphère reste juste quand on en dessine moins
+	m.counts = counts; m.frustumCulled = true;
+	return m;
+}
 function buildHorizon(F){
 	// les vrais bâtiments au-delà de la zone à l'échelle réelle (BD TOPO), en miniature puisque le lointain est compressé ;
 	// la Citadelle et Euratechnologies ont leurs propres modèles
@@ -558,22 +590,44 @@ function buildHorizon(F){
 	// valeurs entières du fichier : positions et tailles au dixième, angle au centième, hauteur du toit au dixième
 	const spots = F.map(([x, z, a, w, dp, lv, rh, col, rm]) => [x/10, z/10, a/100, w/10, dp/10, lv, rh/10, col, rm])
 		.filter(([x, z]) => !blockedFar(x, z) && !monuments.covers(x, z) && !(ZONE && pointInPoly(x, z, ZONE)));
-	const body = new THREE.InstancedMesh(BOX, std("#ffffff"), spots.length);
-	const roof = new THREE.InstancedMesh(gable(1, 1, 1), std("#ffffff"), spots.length);
-	const d = new THREE.Object3D(), c = new THREE.Color(), ZERO = new THREE.Matrix4().makeScale(0, 0, 0), base = [];
+	spots.forEach((s, i) => s.push(i));          // la teinte du toit dépend du rang d'origine
+	const H0 = (MAP.fh || 2.3)*.85;
+	for(const s of spots) s.rank = farRank(Math.hypot(s[0], s[1]), Math.max(.8, s[3])*Math.max(.8, s[4])*s[5]);
+	const bodyGeo = withoutFaces(BOX, (nx, ny) => ny < -.5), roofGeo = withoutFaces(gable(1, 1, 1), (nx, ny) => ny < -.5);
+	const wallMat = std("#ffffff"), roofMat = std("#ffffff");
+	const d = new THREE.Object3D(), c = new THREE.Color(), tiles = [];
 	const walls = ["#b5563d","#a84e3a","#c46a4a","#9c4a38","#b9603f","#efe6d6","#e6d9c1","#d9cbb5","#f3eee6","#cdbfa8","#e9d3b4","#c9c2b8"];
 	const roofs = { 0:["#4f5767","#5d6170","#8d4a3a"], 1:["#8d4a3a","#7a4234","#9a5a43"], 2:["#4f5767","#4a505d"], 3:["#7f8791"] };
-	spots.forEach(([x, z, ang, w, dp, lv, rh, col, rm], i) => {
-		const H = lv*(MAP.fh || 2.3)*.85, r = (i*.618) % 1;
-		d.position.set(x, 0, z); d.rotation.set(0, -ang, 0); d.scale.set(Math.max(.8, w), H, Math.max(.8, dp)); d.updateMatrix(); body.setMatrixAt(i, d.matrix);
-		c.set(walls[col % walls.length]); body.setColorAt(i, c);
-		if(rh > 0){ d.position.set(x, H, z); d.scale.set(Math.max(.8, w) + .3, Math.min(rh, dp*.6), Math.max(.8, dp) + .3); d.updateMatrix(); roof.setMatrixAt(i, d.matrix); }
-		else roof.setMatrixAt(i, ZERO);
-		const rc = roofs[rh > 0 ? rm : 0] || roofs[0]; base.push(rh > 0 ? rc[Math.floor(r*rc.length)] : "#8a857f"); c.set(base[i]); roof.setColorAt(i, c);
-	});
-	body.castShadow = roof.castShadow = false; body.receiveShadow = true;
-	scene.add(body, roof);
-	return { body, roof, spots, base };
+	for(const list of farTiles(spots, s => s)){
+		list.sort((a, b) => a.rank - b.rank);
+		const roofed = list.filter(s => s[6] > 0);
+		const upTo = (arr, lv) => arr.filter(s => s.rank <= lv).length;
+		const body = new THREE.InstancedMesh(bodyGeo, wallMat, list.length);
+		const roof = new THREE.InstancedMesh(roofGeo, roofMat, Math.max(1, roofed.length));
+		const base = [];
+		list.forEach(([x, z, ang, w, dp, lv, rh, col], j) => {
+			d.position.set(x, 0, z); d.rotation.set(0, -ang, 0); d.scale.set(Math.max(.8, w), lv*H0, Math.max(.8, dp)); d.updateMatrix(); body.setMatrixAt(j, d.matrix);
+			c.set(walls[col % walls.length]); body.setColorAt(j, c);
+		});
+		roofed.forEach(([x, z, ang, w, dp, lv, rh, col, rm, i], j) => {
+			const r = (i*.618) % 1, rc = roofs[rm] || roofs[0];
+			d.position.set(x, lv*H0, z); d.rotation.set(0, -ang, 0); d.scale.set(Math.max(.8, w) + .3, Math.min(rh, dp*.6), Math.max(.8, dp) + .3); d.updateMatrix(); roof.setMatrixAt(j, d.matrix);
+			base.push(rc[Math.floor(r*rc.length)]); c.set(base[j]); roof.setColorAt(j, c);
+		});
+		roof.count = roofed.length;
+		fitInstances(body, [0, 1, 2].map(lv => upTo(list, lv)));
+		fitInstances(roof, [0, 1, 2].map(lv => upTo(roofed, lv)));
+		body.castShadow = roof.castShadow = false; body.receiveShadow = true;
+		if(roofed.length) scene.add(roof);
+		scene.add(body);
+		tiles.push({ body, roof, base });
+	}
+	return { tiles, spots, meshes: tiles.flatMap(t => t.base.length ? [t.body, t.roof] : [t.body]) };
+}
+/* niveau de détail du lointain : 0 grands volumes, 1 allégé, 2 tout */
+function setFarLevel(level){
+	if(horizon) for(const m of horizon.meshes) m.count = m.counts[level];
+	if(farWood) for(const m of farWood.meshes){ m.count = m.counts[level]; m.visible = m.count > 0; }
 }
 function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 
@@ -772,7 +826,7 @@ const hp0 = HAG.localToWorld(V(0,0,0));
 for(const [x,z] of [[-12,-14],[12,-14],[-20,-10]]) { const p = HAG.localToWorld(V(x,0,z)); trees.push({ x:p.x, z:p.z, k:"d", s:1 }); }
 const decid = trees.filter(t => t.k === "d"), conif = trees.filter(t => t.k === "c");
 trees.forEach(t => { t.c = rng(); });
-const trunkIM = new THREE.InstancedMesh(cached("trunk", () => new THREE.CylinderGeometry(.22,.34,2.4,6).translate(0,1.2,0)), std("#6b4a35"), trees.length);
+const trunkIM = new THREE.InstancedMesh(cached("trunk", () => new THREE.CylinderGeometry(.22,.34,2.4,6,1,true).translate(0,1.2,0)), std("#6b4a35"), trees.length);
 const canopyIM = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), std("#ffffff"), decid.length*2);
 const conifIM = new THREE.InstancedMesh(new THREE.ConeGeometry(1, 1, 7).translate(0,.5,0), std("#ffffff"), Math.max(1, conif.length*2));
 [trunkIM, canopyIM, conifIM].forEach(m => { m.castShadow = true; m.receiveShadow = true; scene.add(m); });
@@ -810,35 +864,47 @@ function buildFarWood(f){
 		if(nearCanal(x, z, 6.5)) continue;          // pas d'arbre dans la Deûle ni sur son quai
 		list.push({ x, z, k: fr() < .22 ? "c" : "d", s:.95 + fr()*.4, c:fr() });
 	}
-	const dl = list.filter(t => t.k === "d"), cl = list.filter(t => t.k === "c");
-	const can = new THREE.InstancedMesh(canopyIM.geometry, canopyIM.material, Math.max(1, dl.length*2));
-	const con = new THREE.InstancedMesh(conifIM.geometry, conifIM.material, Math.max(1, cl.length*2));
 	const d = new THREE.Object3D();
-	dl.forEach((t,i) => {
+	// deux volumes par arbre : le principal (instances 0…n-1), puis la touffe du dessus (n…2n-1), omise en qualité moyenne
+	for(const t of list){
 		const s = t.s;
-		d.position.set(t.x, 3.2*s, t.z); d.rotation.set(fr(), fr()*3, fr()); d.scale.set(2.2*s, 1.9*s, 2.2*s); d.updateMatrix(); can.setMatrixAt(i*2, d.matrix);
-		d.position.set(t.x + (fr() - .5)*2*s, 4.6*s, t.z + (fr() - .5)*2*s); d.scale.set(1.45*s, 1.35*s, 1.45*s); d.updateMatrix(); can.setMatrixAt(i*2+1, d.matrix);
-	});
-	cl.forEach((t,i) => {
-		const s = t.s; d.rotation.set(0, fr()*3, 0);
-		d.position.set(t.x, .6*s, t.z); d.scale.set(2.2*s, 4.6*s, 2.2*s); d.updateMatrix(); con.setMatrixAt(i*2, d.matrix);
-		d.position.set(t.x, 3*s, t.z); d.scale.set(1.5*s, 3.3*s, 1.5*s); d.updateMatrix(); con.setMatrixAt(i*2+1, d.matrix);
-	});
-	can.count = dl.length*2; con.count = cl.length*2;
-	can.receiveShadow = con.receiveShadow = true; can.castShadow = con.castShadow = false;
-	scene.add(can, con);
-	return { can, con, dl, cl };
+		if(t.k === "d"){
+			d.position.set(t.x, 3.2*s, t.z); d.rotation.set(fr(), fr()*3, fr()); d.scale.set(2.2*s, 1.9*s, 2.2*s); d.updateMatrix(); t.m0 = d.matrix.clone();
+			d.position.set(t.x + (fr() - .5)*2*s, 4.6*s, t.z + (fr() - .5)*2*s); d.scale.set(1.45*s, 1.35*s, 1.45*s); d.updateMatrix(); t.m1 = d.matrix.clone();
+		} else {
+			d.rotation.set(0, fr()*3, 0);
+			d.position.set(t.x, .6*s, t.z); d.scale.set(2.2*s, 4.6*s, 2.2*s); d.updateMatrix(); t.m0 = d.matrix.clone();
+			d.position.set(t.x, 3*s, t.z); d.scale.set(1.5*s, 3.3*s, 1.5*s); d.updateMatrix(); t.m1 = d.matrix.clone();
+		}
+	}
+	const groups = [];
+	for(const tile of farTiles(list, t => [t.x, t.z])) for(const [k, src] of [["d", canopyIM], ["c", conifIM]]){
+		const trees = tile.filter(t => t.k === k), n = trees.length; if(!n) continue;
+		const m = new THREE.InstancedMesh(src.geometry, src.material, n*2);
+		trees.forEach((t, i) => { m.setMatrixAt(i, t.m0); m.setMatrixAt(n + i, t.m1); });
+		fitInstances(m, [0, n, n*2]);
+		m.receiveShadow = true; m.castShadow = false;
+		scene.add(m);
+		groups.push({ m, trees, conifer:k === "c" });
+	}
+	return { groups, meshes:groups.map(g => g.m) };
 }
 function paintFar(S){
 	const c = new THREE.Color();
-	if(horizon && horizon.roof.instanceColor){ horizon.base.forEach((b, i) => { c.set(S.snowy ? "#dfe6ee" : b); horizon.roof.setColorAt(i, c); }); horizon.roof.instanceColor.needsUpdate = true; }
+	if(horizon) for(const t of horizon.tiles){
+		if(!t.base.length) continue;
+		t.base.forEach((b, i) => { c.set(S.snowy ? "#dfe6ee" : b); t.roof.setColorAt(i, c); });
+		t.roof.instanceColor.needsUpdate = true;
+	}
 	if(!farWood) return;
-	farWood.dl.forEach((t,i) => {
-		c.set(S.trees[Math.floor(t.c*S.trees.length)]); farWood.can.setColorAt(i*2, c);
-		c.set(S.trees[Math.floor(((t.c*7.3)%1)*S.trees.length)]); farWood.can.setColorAt(i*2+1, c);
-	});
-	farWood.cl.forEach((t,i) => { c.set(S.conifer); farWood.con.setColorAt(i*2, c); c.set(S.snowy ? "#e8eef6" : S.conifer).offsetHSL(0,0,.03); farWood.con.setColorAt(i*2+1, c); });
-	for(const m of [farWood.can, farWood.con]) if(m.instanceColor) m.instanceColor.needsUpdate = true;
+	for(const { m, trees, conifer } of farWood.groups){
+		const n = trees.length;
+		trees.forEach((t, i) => {
+			if(conifer){ c.set(S.conifer); m.setColorAt(i, c); c.set(S.snowy ? "#e8eef6" : S.conifer).offsetHSL(0,0,.03); m.setColorAt(n + i, c); }
+			else { c.set(S.trees[Math.floor(t.c*S.trees.length)]); m.setColorAt(i, c); c.set(S.trees[Math.floor(((t.c*7.3)%1)*S.trees.length)]); m.setColorAt(n + i, c); }
+		});
+		m.instanceColor.needsUpdate = true;
+	}
 }
 let farLoading = false;
 function loadFar(){
@@ -847,8 +913,7 @@ function loadFar(){
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
-		const on = QUALITY[quality].horizon;
-		horizon.body.visible = horizon.roof.visible = farWood.can.visible = farWood.con.visible = on;
+		setFarLevel(QUALITY[quality].horizon);
 		shadowDirty = true;
 	}).catch(() => { farLoading = false; });
 }
@@ -869,7 +934,7 @@ const bushIM = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), std(
 const lampSpots = city.lampSpots;
 const poleIM = new THREE.InstancedMesh(cached("pole", () => new THREE.CylinderGeometry(.08,.12,3.8,6).translate(0,1.9,0)), std("#2c2a30"), lampSpots.length);
 const lampMat = std("#fff3d6", { emissive:"#ffd28a", emissiveIntensity:0, flatShading:false });
-const headIM = new THREE.InstancedMesh(new THREE.SphereGeometry(.28, 10, 8), lampMat, lampSpots.length);
+const headIM = new THREE.InstancedMesh(new THREE.SphereGeometry(.28, 8, 5), lampMat, lampSpots.length);
 const glowTex = (() => {
 	const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
 	const g = x.createRadialGradient(32,32,0,32,32,32); g.addColorStop(0,"rgba(255,215,150,1)"); g.addColorStop(.35,"rgba(255,190,110,.35)"); g.addColorStop(1,"rgba(255,180,90,0)");
@@ -2520,9 +2585,9 @@ let first = true, lastMinute = -1;
    Qualité graphique : devinée au départ, ajustée si l'appareil peine
    ===================================================================== */
 const QUALITY = {
-	haute:   { label:"haute",   ratio: small ? 1.5 : 2, shadows:true,  map:small ? 1024 : 2048, parts:1,  horizon:true,  crowd:1,   far:430, rank:2, post:true,  ao:!small },
-	moyenne: { label:"moyenne", ratio:1.25,             shadows:true,  map:1024,                parts:.5, horizon:true,  crowd:.7,  far:390, rank:1, post:false, ao:false },
-	basse:   { label:"basse",   ratio:1,                shadows:false, map:512,                 parts:0,  horizon:false, crowd:.45, far:320, rank:0, post:false, ao:false }
+	haute:   { label:"haute",   ratio: small ? 1.5 : 2, shadows:true,  map:small ? 1024 : 2048, parts:1,  horizon:2, crowd:1,   far:430, rank:2, post:true,  ao:!small },
+	moyenne: { label:"moyenne", ratio:1.25,             shadows:true,  map:1024,                parts:.5, horizon:1, crowd:.7,  far:390, rank:1, post:false, ao:false },
+	basse:   { label:"basse",   ratio:1,                shadows:false, map:512,                 parts:0,  horizon:0, crowd:.45, far:320, rank:0, post:false, ao:false }
 };
 /* Post-traitement (qualité haute) : chargé à la demande, la première fois qu'on passe en qualité haute */
 let post = null, postOn = false, postLoading = null;
@@ -2565,8 +2630,7 @@ function setQuality(level){
 	if(post) post.setSize(innerWidth, innerHeight, renderer.getPixelRatio());
 	shadowsOn(sun, Q.shadows, Q.map);
 	shadowDirty = true;
-	if(horizon) horizon.body.visible = horizon.roof.visible = Q.horizon;
-	if(farWood) farWood.can.visible = farWood.con.visible = Q.horizon;
+	setFarLevel(Q.horizon);
 	const walkers = students.filter(s => !s.chat); walkers.forEach((s, i) => { s.off = (i + .5)/walkers.length > Q.crowd; s.g.visible = !s.off; });
 	fogFollow(true);
 	for(const k in interiors) if(interiors[k]) qualityInterior(interiors[k]);
@@ -2605,7 +2669,6 @@ function watchPerf(rawDt){
 		toast(`Qualité graphique ajustée (${QUALITY[next].label}) pour plus de fluidité`, 2600);
 	}
 }
-
 let gamePaused = false;     // le campus ne se dessine pas pendant un mini-jeu (une seule scène 3D à la fois)
 function frame(){
 	if(gamePaused){ clock.getDelta(); requestAnimationFrame(frame); return; }

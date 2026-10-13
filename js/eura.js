@@ -182,7 +182,7 @@ export function createEura({ background }){
 	/* ---------- végétation et réverbères ---------- */
 	const trees = [...city.trees, ...city.parkTrees, ...patioTrees.map(t => ({ ...t, k:"d" }))];
 	const R = mulberry32(31); trees.forEach(t => t.c = R());
-	const trunkIM = new THREE.InstancedMesh(new THREE.CylinderGeometry(.22, .34, 2.4, 6).translate(0, 1.2, 0), std("#6b4a35"), trees.length);
+	const trunkIM = new THREE.InstancedMesh(new THREE.CylinderGeometry(.22, .34, 2.4, 6, 1, true).translate(0, 1.2, 0), std("#6b4a35"), trees.length);
 	const canopyIM = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), std("#ffffff"), trees.length*2);
 	{
 		const d = new THREE.Object3D();
