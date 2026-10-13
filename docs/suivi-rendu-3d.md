@@ -1,6 +1,6 @@
 # Suivi du chantier « rendu 3D et quartier fidèle »
 
-Dernière mise à jour : 12 octobre 2026. Tout est sur `main` et en ligne sur https://lwichlacz.github.io/campus_fges/
+Dernière mise à jour : 13 octobre 2026. Tout est sur `main` et en ligne sur https://lwichlacz.github.io/campus_fges/
 
 ## Reprendre sur un autre ordinateur
 
@@ -33,14 +33,21 @@ d'après la photo**. Sur Windows ou Linux, il faudrait remplacer `sips` par Pill
 | Ambiances | Heure dorée, fenêtres variées la nuit, météo réelle (Open-Meteo) ou choisie : pluie, brouillard, ombres de nuages. |
 | Eau | Péniches, canards, reflets du soleil et de la lune ; quai de la Deûle qui cachait l'eau corrigé. |
 | Rendu et vitesse | Regroupement des objets, ombres à la demande, post-traitement en qualité haute (`js/render.js`), carte de départ 2,5 fois plus légère. |
+| Allègement pour téléphones | Lointain découpé en 139 carreaux de 150 m : ceux qui sont hors du cadre ne sont pas dessinés (environ 70 % dans la vue d'accueil). Dans chaque carreau, les bâtiments sont rangés par volume : la qualité moyenne laisse les plus petits au loin et ne garde qu'une touffe par arbre ; la qualité basse, qui n'avait plus de lointain du tout, montre maintenant les grands volumes. Faces jamais vues retirées (dessous, toits plats invisibles), réverbères et troncs simplifiés. Résultat en vue d'accueil sur iPhone : 850 000 triangles en qualité moyenne au lieu de 1,34 million ; 884 000 au lieu de 1,34 million en haute ; basse inchangée (527 000) malgré le lointain ajouté. |
+| Mesure | `?perf` affiche images/s, pire image, triangles, appels, qualité, résolution et processeur graphique (toucher le relevé le copie). `tools/mesure_rendu.cjs` mesure triangles et appels par qualité et point de vue, et vérifie les shaders. |
 
 Sources des données : OpenStreetMap (ODbL), IGN BD TOPO et BD ORTHO (Licence Ouverte), Open-Meteo.
 Mention affichée en bas de l'écran.
 
 ## Points de vigilance
 
-- **Pas encore testé sur un vrai téléphone.** Environ 1 million de triangles par image en qualité moyenne,
-  510 000 en basse ; 60 images/s sur un Mac récent. C'est la priorité maintenant que le site est public.
+- **Pas encore testé sur un vrai téléphone.** Après l'allègement : environ 850 000 triangles par image en qualité
+  moyenne (ombres comprises), 530 000 en basse. Il faut maintenant ouvrir le site avec `?perf` sur un iPhone et un
+  Android milieu de gamme et noter les relevés. C'est la priorité maintenant que le site est public.
+- **Ce qui pèse encore** : le quartier proche (environ 500 000 triangles dans l'image, autant de nouveau dans la carte
+  d'ombres) est dessiné en entier quelle que soit la direction regardée. Le découper en carreaux comme le lointain a
+  été essayé : 50 000 triangles gagnés seulement, pour deux fois plus d'appels de dessin (900 au lieu de 420), ce qui
+  coûte plus cher sur téléphone. Abandonné.
 - **À vérifier sur photo** : les deux tourelles et l'horloge du pavillon central de l'Hôtel Académique, et
   l'observatoire (attesté en 1888-1889, placé au jugé sur la grande aile, existence actuelle non vérifiée).
 - **Approximations** : hauteurs des clochers, du beffroi et des tours ; position des monuments du centre-ville.
@@ -50,7 +57,10 @@ Mention affichée en bas de l'écran.
 
 ## La suite (par ordre conseillé)
 
-1. Tester sur de vrais téléphones (iPhone, Android milieu de gamme) ; alléger le lointain si besoin (regrouper les bâtiments par îlots).
+1. Tester sur de vrais téléphones (iPhone, Android milieu de gamme) avec `?perf`, vue d'accueil puis vue piéton, en
+   qualité auto. Le lointain est déjà allégé. Si c'est encore lent : arbres du quartier sans ombre en qualité
+   moyenne, carte d'ombres limitée à la zone regardée, ou fusion des maisons d'un même îlot en un seul volume au-delà
+   de 150 m.
 2. Script de contrôle : comparer la hauteur de chaque modèle fait main à la hauteur mesurée par l'IGN, pour repérer d'autres éléments inventés.
 3. Vérifier l'Hôtel Académique sur photo de façade (tourelles, horloge, observatoire, travées, lucarnes), puis Michel Falise (rotonde).
 4. Mettre à jour l'image d'aperçu `img/apercu.jpg` pour les partages sur les réseaux sociaux.
