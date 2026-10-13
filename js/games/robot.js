@@ -90,9 +90,14 @@ const CSS = `
 .rb-big{font-size:46px;text-align:center;margin:4px 0}
 .rb-alt{display:block;text-align:center;margin-top:8px;font-weight:800;color:#1e305e;background:none;border:0;cursor:pointer;width:100%;font-size:14px;text-decoration:none}
 @media (max-width:820px){
-	.rb-grid{grid-template-columns:1fr;grid-template-rows:auto}
+	/* téléphone : barre et vue 3D fixes en haut, seules les commandes défilent dessous */
+	.rb{overflow:hidden;--tb:calc(env(safe-area-inset-top) + 54px);--v3:max(36vh,210px)}
+	.rb-grid{position:fixed;left:0;right:0;bottom:0;top:calc(var(--tb) + var(--v3) + 8px);display:flex;flex-direction:column;min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 10px calc(14px + env(safe-area-inset-bottom))}
+	.rb-top{position:fixed;left:0;right:0;top:0;height:var(--tb);box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 7px) 10px 7px;flex-wrap:nowrap;z-index:2}
+	.rb-chip{padding:6px 10px;font-size:12.5px;white-space:nowrap}
+	#rbSys{overflow:hidden;text-overflow:ellipsis;min-width:0}
 	.rb-col{display:contents}
-	.rb-view{height:44vh;min-height:250px;order:1}
+	.rb-view{position:fixed;left:10px;right:10px;top:var(--tb);height:var(--v3);min-height:0}
 	#rbMis{order:2}#rbCtl{order:3}.p-cam{order:4}.p-g{order:5}.p-f{order:6}.p-term{order:7}
 	.rb-cam{max-width:260px;margin:0 auto}
 }

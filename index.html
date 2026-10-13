@@ -397,7 +397,8 @@ body.riding #pins,body.riding .dock,body.riding .hud,body.riding .toast,body.rid
 	.dock button i{font-size:20px}
 	.dock .n{position:absolute;top:2px;right:calc(50% - 22px)}
 	.tour,.coach{bottom:calc(env(safe-area-inset-bottom) + 76px)}
-	.osm{bottom:calc(env(safe-area-inset-bottom) + 160px)}
+	.osm{bottom:calc(env(safe-area-inset-bottom) + 172px);white-space:nowrap}
+	.osm .lg{display:none}
 	.hud{left:12px;right:12px;gap:6px}
 	.brand{padding:5px 8px;border-radius:12px}
 	.brand img{height:30px}
@@ -496,7 +497,7 @@ body.riding #pins,body.riding .dock,body.riding .hud,body.riding .toast,body.rid
 
 <div class="hint" id="hint">Glisse pour tourner · Pince ou molette pour zoomer · Touche un bâtiment</div>
 <div class="toast" id="toast"></div>
-<div class="osm"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">Carte © les contributeurs d'OpenStreetMap</a> · <a href="https://geoservices.ign.fr/bdtopo" target="_blank" rel="noopener">bâtiments et photo aérienne © IGN</a> · <a href="https://www.fges.fr/mentions-legales/" target="_blank" rel="noopener">Mentions légales</a></div>
+<div class="osm"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener"><span class="lg">Carte </span>© <span class="lg">les contributeurs d'</span>OpenStreetMap</a> · <a href="https://geoservices.ign.fr/bdtopo" target="_blank" rel="noopener"><span class="lg">bâtiments et photo aérienne </span>© IGN</a> · <a href="https://www.fges.fr/mentions-legales/" target="_blank" rel="noopener">Mentions légales</a></div>
 <div id="fade"></div>
 
 <div id="welcome">

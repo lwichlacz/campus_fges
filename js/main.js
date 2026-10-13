@@ -2674,7 +2674,7 @@ const perfHud = /[?&]perf/.test(location.search) ? (() => {
 	let gpu = "?";
 	try { const gl = renderer.getContext(), ext = gl.getExtension("WEBGL_debug_renderer_info"); gpu = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : "?"; } catch(e){}
 	const el = document.createElement("pre");
-	el.style.cssText = "position:fixed;top:4px;left:4px;z-index:9999;margin:0;padding:6px 8px;font:11px/1.35 ui-monospace,monospace;color:#fff;background:rgba(0,0,0,.62);border-radius:6px;white-space:pre-wrap;max-width:80vw";
+	el.style.cssText = "position:fixed;top:4px;left:4px;z-index:9999;margin:0;padding:6px 8px;font:11px/1.35 ui-monospace,monospace;color:#fff;background:rgba(0,0,0,.62);border-radius:6px;white-space:pre-wrap;max-width:min(80vw,calc(100vw - 124px))";  // laisse libres les boutons « M » et « ⋯ »
 	el.addEventListener("click", () => { navigator.clipboard?.writeText(el.textContent).then(() => toast("Relevé copié"), () => {}); });
 	document.body.appendChild(el);
 	renderer.info.autoReset = false;          // une image peut compter plusieurs passes (ombres, post-traitement)
