@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Campus FGES · crédits et sources</title>
+<meta name="description" content="Données, logiciels et sources utilisés pour le campus FGES en 3D : OpenStreetMap, IGN, Open-Meteo, three.js.">
+<link rel="icon" href="img/icone.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{ --cream:#fff8ec; --ink:#2b2233; --muted:#6e6270; --brand:#21b6ce; --brand-ink:#0b7a8e; --on-brand:#0b2f67; --navy:#1e305e; --line:#e3cfae; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font:400 16px/1.55 Nunito,system-ui,sans-serif}
+a{color:var(--navy);font-weight:700}
+a:focus-visible{outline:3px solid var(--brand-ink);outline-offset:2px}
+header{background:var(--brand);color:var(--on-brand);padding:28px 16px 24px}
+header .in,main{max-width:760px;margin:0 auto}
+header p{margin:6px 0 0;opacity:.92}
+header a{color:var(--on-brand)}
+h1{font:700 32px/1.1 Fraunces,Georgia,serif;margin:0}
+h2{font:700 22px/1.2 Fraunces,Georgia,serif;margin:30px 0 8px}
+main{padding:8px 16px 60px}
+section{background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px 18px 10px;margin:12px 0}
+dl{margin:0}
+dt{font-weight:800;margin-top:12px}
+dd{margin:2px 0 0;color:var(--ink)}
+.lic{display:inline-block;font-size:13px;font-weight:800;color:var(--brand-ink);background:#e4f6f9;border-radius:999px;padding:1px 9px;margin-left:4px}
+.note{color:var(--muted);font-size:15px}
+footer{max-width:760px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header><div class="in">
+	<h1>Crédits et sources</h1>
+	<p>Ce qui a servi à construire le campus FGES en 3D.<br><a href="index.html">↩ Revenir au campus en 3D</a></p>
+</div></header>
+<main>
+	<h2>Données géographiques</h2>
+	<section><dl>
+		<dt>Rues, bâtiments, parcs, eau, stations de métro <span class="lic">ODbL</span></dt>
+		<dd>© les contributeurs d'<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, sous licence <a href="https://opendatacommons.org/licenses/odbl/">Open Database License</a>. Extraits par l'API Overpass et Nominatim.</dd>
+		<dt>Hauteurs, étages, toits et matériaux des bâtiments <span class="lic">Licence Ouverte 2.0</span></dt>
+		<dd>© <a href="https://geoservices.ign.fr/bdtopo">IGN, BD TOPO®</a>, sous <a href="https://www.etalab.gouv.fr/licence-ouverte-open-licence/">Licence Ouverte Etalab 2.0</a>.</dd>
+		<dt>Couleur des toits, sol et arbres <span class="lic">Licence Ouverte 2.0</span></dt>
+		<dd>Lus sur la photographie aérienne © <a href="https://geoservices.ign.fr/bdortho">IGN, BD ORTHO®</a>, sous <a href="https://www.etalab.gouv.fr/licence-ouverte-open-licence/">Licence Ouverte Etalab 2.0</a>.</dd>
+		<dt>Météo en direct <span class="lic">CC BY 4.0</span></dt>
+		<dd>Données météo par <a href="https://open-meteo.com/">Open-Meteo.com</a>, sous licence <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0</a>.</dd>
+	</dl>
+	<p class="note">Les données ont été transformées pour la 3D : formes simplifiées, hauteurs arrondies à l'étage, couleurs harmonisées.</p>
+	</section>
+
+	<h2>Bâtiments modélisés à la main</h2>
+	<section>
+		<p>L'Hôtel Académique, Michel Falise, la chapelle, Wenov et le Blan-Lafont ont été dessinés d'après des photographies, des plans publiés et les relevés de l'IGN. Wenov (campus de l'École du Numérique) est l'œuvre des architectes Lalou+Lebec, livrée en 2021.</p>
+		<p class="note">Certains éléments sont approximatifs : hauteurs des clochers, du beffroi et des tours du centre-ville, position de quelques monuments lointains, aménagements intérieurs. Le plateau robotique de Wenov et les rames de métro sont des mises en scène.</p>
+	</section>
+
+	<h2>Logiciels et polices</h2>
+	<section><dl>
+		<dt>Moteur 3D <span class="lic">MIT</span></dt>
+		<dd><a href="https://threejs.org/">three.js</a> 0.165, © les auteurs de three.js.</dd>
+		<dt>Polices <span class="lic">SIL OFL 1.1</span></dt>
+		<dd><a href="https://fonts.google.com/specimen/Fraunces">Fraunces</a> (Undercase Type) et <a href="https://fonts.google.com/specimen/Nunito">Nunito</a> (Vernon Adams), servies par Google Fonts.</dd>
+		<dt>Sons et voix</dt>
+		<dd>Effets sonores et musique d'ambiance générés dans le navigateur ; annonces du métro lues par la synthèse vocale de l'appareil.</dd>
+	</dl></section>
+
+	<h2>Marques et contenus</h2>
+	<section>
+		<p>Le nom, le logo et les contenus pédagogiques de la Faculté de Gestion, Économie et Sciences (FGES) appartiennent à l'Université Catholique de Lille. Euratechnologies, Wenov, Ilévia et les autres noms de lieux sont cités pour situer le visiteur, sans partenariat implicite.</p>
+	</section>
+</main>
+<footer>Université Catholique de Lille · FGES. <a href="https://www.fges.fr/mentions-legales/">Mentions légales</a> · <a href="liste.html">Version liste des formations</a></footer>
+</body>
+</html>

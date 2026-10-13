@@ -2605,8 +2605,10 @@ function wantPost(on){
 let qualityMode = store.get("quality", "auto"); if(!["auto","haute","moyenne","basse"].includes(qualityMode)) qualityMode = "auto";
 let quality = "haute";
 function guessQuality(){
+	// une baisse automatique est gardée 3 jours, pas pour toujours : un seul moment de lenteur (chargement,
+	// téléphone chaud, onglet en arrière-plan) ne doit pas condamner l'appareil à la qualité basse
 	const remembered = store.get("qualityAuto", null);
-	if(remembered && QUALITY[remembered]) return remembered;
+	if(remembered && QUALITY[remembered.q] && remembered.until > Date.now()) return remembered.q;
 	let gpu = "";
 	try { const gl = renderer.getContext(), ext = gl.getExtension("WEBGL_debug_renderer_info"); gpu = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : ""; } catch(e){}
 	const weakGpu = /mali|adreno \(?tm\)? ?[1-5]\d\d|powervr|intel.*hd graphics [2-5]|swiftshader|llvmpipe|software/i.test(gpu);
@@ -2619,9 +2621,27 @@ function shadowsOn(light, on, size){
 	light.castShadow = on;
 	if(light.shadow.mapSize.x !== size){ light.shadow.mapSize.set(size, size); if(light.shadow.map){ light.shadow.map.dispose(); light.shadow.map = null; } }
 }
+/* Hors qualité haute, seuls les bâtiments et les feuillages portent une ombre : passants, troncs, réverbères,
+   cheminées et lucarnes (des milliers de petits objets) doublaient presque le coût de chaque mise à jour des ombres
+   pour un effet invisible sur un écran de téléphone. */
+const KEEP_SHADOW = /Icosahedron|Cone|Dodecahedron/;
+function smallCasters(root){
+	const full = QUALITY[quality].rank >= 2, _s = new THREE.Vector3();
+	root.traverse(o => {
+		if(!o.isMesh) return;
+		const u = o.userData;
+		if(u.cs0 === undefined){
+			u.cs0 = o.castShadow;
+			if(o.isInstancedMesh) u.small = !KEEP_SHADOW.test(o.geometry.type);
+			else { const g = o.geometry; if(!g.boundingSphere) g.computeBoundingSphere(); o.updateWorldMatrix(true, false); _s.setFromMatrixScale(o.matrixWorld); u.small = g.boundingSphere.radius*Math.max(_s.x, _s.y, _s.z) < 1.4; }
+		}
+		if(u.cs0) o.castShadow = full || !u.small;
+	});
+}
 function qualityInterior(I){
 	const Q = QUALITY[quality];
 	I.scene.traverse(o => { if(o.isDirectionalLight) shadowsOn(o, Q.shadows, Math.min(Q.map*2, 2048)); });
+	smallCasters(I.scene);
 }
 function setQuality(level){
 	quality = level;
@@ -2631,6 +2651,7 @@ function setQuality(level){
 	wantPost(Q.post);
 	if(post) post.setSize(innerWidth, innerHeight, renderer.getPixelRatio());
 	shadowsOn(sun, Q.shadows, Q.map);
+	smallCasters(scene);
 	shadowDirty = true;
 	setFarLevel(Q.horizon);
 	const walkers = students.filter(s => !s.chat); walkers.forEach((s, i) => { s.off = (i + .5)/walkers.length > Q.crowd; s.g.visible = !s.off; });
@@ -2666,7 +2687,7 @@ function watchPerf(rawDt){
 	perf.slow = fps < 30 ? perf.slow + 1 : 0;
 	if(perf.slow >= 2 && QUALITY[quality].rank > 0){
 		const next = quality === "haute" ? "moyenne" : "basse";
-		setQuality(next); store.set("qualityAuto", next);
+		setQuality(next); store.set("qualityAuto", { q:next, until:Date.now() + 3*864e5 });
 		perf.slow = 0; perf.cool = 6;
 		toast(`Qualité graphique ajustée (${QUALITY[next].label}) pour plus de fluidité`, 2600);
 	}
@@ -2795,7 +2816,7 @@ function frame(){
 	}
 	if(entered){ syncCarousel(); updatePins(); }
 	if(perfHud) perfHud.end(rawDt);
-	if(first){ first = false; performance.mark("campus-ready"); setTimeout(() => $("loader").classList.add("gone"), 150); prefetchLater(); setTimeout(loadFar, 400); }
+	if(first){ first = false; performance.mark("campus-ready"); setTimeout(() => $("loader").classList.add("gone"), 150); prefetchLater(); setTimeout(loadFar, 400); setTimeout(() => { smallCasters(scene); shadowDirty = true; }, 3000); }
 	requestAnimationFrame(frame);
 }
 addEventListener("resize", () => {
