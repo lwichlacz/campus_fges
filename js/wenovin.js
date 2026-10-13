@@ -184,18 +184,20 @@ export function createWenovIn({ background }){
 	{ const s = makePerson(scene, false, "pro"); s.g.position.set(HX - 4, 0, 7.6); people.push({ ...s, ph:r()*6 }); }
 
 	/* aile est : plateau robotique (le mini-jeu de la Licence Sciences pour l'Ingénieur) */
+	let robotArm = null;
 	{
 		const rx = HX - 4, rz = -4, steelM = std("#9aa3ad", { metalness:.5, roughness:.35 }), wM = std("#eef1f4");
 		// estrade : marquage jaune puis plateau gris, en marches nettes (pas de surfaces à quelques millimètres du sol)
 		box(scene, 5.2, .1, 4.4, std("#f2c63c"), rx, 0, rz, 0, false);
 		box(scene, 4.8, .1, 4, std("#dfe4e9"), rx, .1, rz, 0, false);
-		cyl(scene, .35, .42, .8, steelM, rx - 1.2, .2, rz, 18);
-		const arm = new THREE.Group(); arm.position.set(rx - 1.2, 1, rz); arm.rotation.y = .6; scene.add(arm);
+		cyl(scene, .35, .42, .8, steelM, rx - .2, .2, rz, 18);          // hors de l'ombre de la passerelle
+		const arm = new THREE.Group(); arm.position.set(rx - .2, 1, rz); arm.rotation.y = .6; scene.add(arm);
 		const up = new THREE.Mesh(new THREE.BoxGeometry(1.3, .22, .22).translate(.65, 0, 0), wM); up.rotation.z = .9; up.castShadow = true; arm.add(up);
 		const fo = new THREE.Mesh(new THREE.BoxGeometry(1.1, .18, .18).translate(.55, 0, 0), wM); fo.position.set(Math.cos(.9)*1.3, Math.sin(.9)*1.3, 0); fo.rotation.z = -.5; fo.castShadow = true; arm.add(fo);
 		const band = new THREE.Mesh(new THREE.BoxGeometry(.9, .05, .23).translate(.65, .1, 0), cyan); band.rotation.z = .9; arm.add(band);
-		box(scene, .6, .5, 2.6, std("#3c434b"), rx + 1.2, .2, rz, 0, true);                       // petit tapis
-		for(const [dz, c] of [[-.7, "#2f7fd1"], [.2, "#d9782d"], [.9, "#2f7fd1"]]) box(scene, .26, .26, .26, std(c), rx + 1.2, .74, rz + dz, 0, true);
+		robotArm = { arm, up, fo, band };
+		box(scene, .6, .5, 2.6, std("#3c434b"), rx + 1.7, .2, rz, 0, true);                       // petit tapis
+		for(const [dz, c] of [[-.7, "#2f7fd1"], [.2, "#d9782d"], [.9, "#2f7fd1"]]) box(scene, .26, .26, .26, std(c), rx + 1.7, .74, rz + dz, 0, true);
 		const scr = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.2), new THREE.MeshStandardMaterial({ map:codeTex(31, "Cellule robotique · L1-L3"), emissive:"#ffffff", emissiveMap:codeTex(31, "Cellule robotique · L1-L3"), emissiveIntensity:.55 }));
 		scr.position.set(HX - .12, 2.4, rz); scr.rotation.y = -Math.PI/2; scene.add(scr);
 	}
@@ -209,6 +211,13 @@ export function createWenovIn({ background }){
 		for(const s of seated){ s.body.rotation.z = Math.sin(t*1.1 + s.ph)*.03; s.hat.position.y = 1.82 + Math.max(0, Math.sin(t*1.7 + s.ph))*.03; }
 		for(const s of people){ s.body.rotation.z = Math.sin(t*1.3 + s.ph)*.04; }
 		alert.visible = Math.sin(t*4) > -.2;
+		// le bras du plateau travaille : il va chercher une pièce sur le tapis et la ramène (attire l'œil vers le mini-jeu)
+		if(robotArm){
+			const k = t*.8, a = .9 + Math.sin(k*2)*.22, { arm, up, fo, band } = robotArm;
+			arm.rotation.y = .1 + Math.sin(k)*.6;
+			up.rotation.z = band.rotation.z = a;
+			fo.position.set(Math.cos(a)*1.3, Math.sin(a)*1.3, 0); fo.rotation.z = -.5 + Math.sin(k*2 + 1)*.35;
+		}
 	}
 	function setNight(night){
 		hemi.intensity = night ? .8 : 1.2; sun.intensity = night ? .7 : 2.1;
