@@ -104,9 +104,44 @@ const HEAD = new THREE.SphereGeometry(.3, 12, 10);
 const CAPC = new THREE.CylinderGeometry(.26,.3,.18,10);
 const bodyMats = SWEATER.map(c => std(c, { flatShading:false }));
 const skinMats = SKIN.map(c => std(c, { flatShading:false }));
+/* Sweat bleu marine de l'Université : grand blason dans le dos, petit blason FGES sur le cœur, « edn » sur le côté.
+   Une seule texture partagée ; la gélule reçoit des UV verticales régulières pour placer les motifs. */
+const SWEAT_BODY = (() => {
+	const g = BODY.clone(), p = g.attributes.position, uv = g.attributes.uv;
+	g.computeBoundingBox(); const y0 = g.boundingBox.min.y, h = g.boundingBox.max.y - y0;
+	for(let i=0;i<p.count;i++) uv.setY(i, (p.getY(i) - y0)/h);
+	return g;
+})();
+const SWEAT_MAT = (() => {
+	if(typeof document === "undefined") return bodyMats[5];
+	const W = 512, H = 256, c = document.createElement("canvas"); c.width = W; c.height = H;
+	const x = c.getContext("2d"); x.fillStyle = "#1b2538"; x.fillRect(0, 0, W, H);
+	x.fillStyle = "#151d2d"; x.fillRect(0, 196, W, 12);                                    // bord-côte en bas
+	const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+	// u = 0 devant (+z), u croît vers +x (côté cœur) ; v = 1 en haut de la gélule
+	const crest = (img, cx, cy, h) => { const w = h*1.12; x.drawImage(img, 125, 110, 485, 485, cx - w/2, cy - h/2, w, h); };
+	const img = new Image();
+	img.onload = () => {
+		crest(img, 256, 98, 74);                                                              // dos
+		x.fillStyle = "#eef0f4"; x.textAlign = "center";
+		x.font = "600 11px Georgia, serif"; x.fillText("Université Catholique", 256, 148);
+		x.textAlign = "left"; x.font = "italic 9px Georgia, serif"; const yw = x.measureText("1875").width + 3;
+		x.font = "600 11px Georgia, serif"; const lw = x.measureText("de Lille").width, x0 = 256 - (lw + yw)/2;
+		x.fillText("de Lille", x0, 161); x.font = "italic 9px Georgia, serif"; x.fillText("1875", x0 + lw + 3, 161);
+		x.textAlign = "center";
+		crest(img, 48, 76, 26);                                                               // cœur
+		x.font = "800 6px Nunito, sans-serif"; x.fillText("GESTION, ÉCONOMIE,", 48, 98); x.fillText("SCIENCES", 48, 105);
+		x.font = "700 12px Nunito, sans-serif"; x.fillText("edn", 130, 92);                // côté
+		tex.needsUpdate = true;
+	};
+	img.src = new URL("../img/embleme-ucl.svg", import.meta.url).href;
+	return std("#ffffff", { map:tex, flatShading:false });
+})();
+const sweat = body => { body.geometry = SWEAT_BODY; body.material = SWEAT_MAT; };
 export function makeStudent(parent, seated=false){
 	const g = new THREE.Group();
 	const body = new THREE.Mesh(BODY, pick(bodyMats)); body.position.y = .65; body.castShadow = true;
+	const ucl = rng() < .3; if(ucl) sweat(body);
 	const head = new THREE.Mesh(HEAD, pick(skinMats)); head.position.y = 1.42; head.castShadow = true;
 	const hat = new THREE.Group(); hat.position.y = 1.62; hat.rotation.z = R(-.12,.12);
 	const board = new THREE.Mesh(BOXC, capMat); board.scale.set(.82,.06,.82); board.rotation.y = Math.PI/4; board.position.y = .1; board.castShadow = true;
@@ -114,7 +149,7 @@ export function makeStudent(parent, seated=false){
 	const tassel = new THREE.Mesh(BOXC, tasselMat); tassel.scale.set(.05,.32,.05); tassel.position.set(.38,-.05,.1);
 	hat.add(board, cap, tassel);
 	g.add(body, head, hat);
-	if(!seated && rng() < .45){ const bag = new THREE.Mesh(BOXC, pick(bodyMats)); bag.scale.set(.5,.55,.25); bag.position.set(0,.85,-.38); bag.castShadow = true; g.add(bag); }
+	if(!seated && !ucl && rng() < .45){ const bag = new THREE.Mesh(BOXC, pick(bodyMats)); bag.scale.set(.5,.55,.25); bag.position.set(0,.85,-.38); bag.castShadow = true; g.add(bag); }
 	if(seated){ body.scale.y = .75; body.position.y = .95; head.position.y = 1.62; hat.position.y = 1.82; }
 	g.scale.setScalar(1.25);
 	g.userData.dynamic = true;
@@ -139,6 +174,7 @@ export function makePerson(parent, seated=false, kind=null){
 	if(!kind){ let r = rng(); kind = KIND_W.find(([, w]) => (r -= w) < 0)?.[0] || "student"; }
 	const g = new THREE.Group();
 	const body = new THREE.Mesh(BODY, pick(matsBy[kind])); body.position.y = .65; body.castShadow = true;
+	const ucl = kind === "student" && rng() < .3; if(ucl) sweat(body);
 	const head = new THREE.Mesh(HEAD, pick(skinMats)); head.position.y = 1.42; head.castShadow = true;
 	const hat = new THREE.Group(); hat.position.y = 1.62;
 	const hairM = kind === "senior" ? GREY : pick(HAIR);
@@ -151,7 +187,7 @@ export function makePerson(parent, seated=false, kind=null){
 	const tassel = new THREE.Object3D(); hat.add(tassel);
 	g.add(body, head, hat);
 	if(!seated){
-		if(kind === "student" && rng() < .7){ const bag = new THREE.Mesh(BOXC, pick(bodyMats)); bag.scale.set(.5,.55,.25); bag.position.set(0,.85,-.38); bag.castShadow = true; g.add(bag); }
+		if(kind === "student" && !ucl && rng() < .7){ const bag = new THREE.Mesh(BOXC, pick(bodyMats)); bag.scale.set(.5,.55,.25); bag.position.set(0,.85,-.38); bag.castShadow = true; g.add(bag); }
 		if(kind === "pro" && rng() < .7){ const brief = new THREE.Mesh(BOXC, std("#3a2a20")); brief.scale.set(.42,.32,.1); brief.position.set(.48,.42,0); g.add(brief); }
 	}
 	if(seated){ body.scale.y = .75; body.position.y = .95; head.position.y = 1.62; hat.position.y = 1.82; }
