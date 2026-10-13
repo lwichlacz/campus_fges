@@ -131,7 +131,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 
 	/* ---------- scène ---------- */
 	const canvas = $("canvas.rb-3d");
-	const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+	const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, stencil:true });   // 24 bits de profondeur sur iPhone
 	renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping;

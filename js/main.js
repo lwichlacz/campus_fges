@@ -30,7 +30,9 @@ const V = (x,y,z) => new THREE.Vector3(x,y,z);
    Moteur
    ===================================================================== */
 let renderer;
-try { renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:"high-performance" }); }
+// stencil:true : sans lui, Safari sur iPhone peut ne donner que 16 bits de profondeur, et les surfaces proches
+// (sols, façades, fenêtres) se disputent l'écran et scintillent ; avec lui, il alloue 24 bits.
+try { renderer = new THREE.WebGLRenderer({ antialias:true, stencil:true, powerPreference:"high-performance" }); }
 catch(e){
 	$("loader").innerHTML = '<p style="padding:24px;text-align:center">Ton navigateur ne peut pas afficher le campus en 3D.<br><a href="liste.html">Découvre toutes nos formations en version liste</a>.</p>';
 	throw e;
@@ -2671,7 +2673,8 @@ function watchPerf(rawDt){
 }
 /* ?perf : relevé affiché en haut de l'écran, pour les essais sur de vrais téléphones (toucher le relevé le copie) */
 const perfHud = /[?&]perf/.test(location.search) ? (() => {
-	let gpu = "?";
+	let gpu = "?", depthBits = "?";
+	try { const gl = renderer.getContext(); depthBits = gl.getParameter(gl.DEPTH_BITS); } catch(e){}
 	try { const gl = renderer.getContext(), ext = gl.getExtension("WEBGL_debug_renderer_info"); gpu = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : "?"; } catch(e){}
 	const el = document.createElement("pre");
 	el.style.cssText = "position:fixed;top:4px;left:4px;z-index:9999;margin:0;padding:6px 8px;font:11px/1.35 ui-monospace,monospace;color:#fff;background:rgba(0,0,0,.62);border-radius:6px;white-space:pre-wrap;max-width:min(80vw,calc(100vw - 124px))";  // laisse libres les boutons « M » et « ⋯ »
@@ -2690,7 +2693,7 @@ const perfHud = /[?&]perf/.test(location.search) ? (() => {
 				`${(S.n/S.acc).toFixed(0)} i/s · pire image ${(S.worst*1000).toFixed(0)} ms`,
 				`${(S.tris/1000).toFixed(0)} k triangles · ${S.calls} appels`,
 				`qualité ${quality} (${qualityMode}) · résolution ×${pr.toFixed(2)} (${Math.round(innerWidth*pr)}×${Math.round(innerHeight*pr)})`,
-				`lointain ${horizon ? "chargé" : "en attente"} · ${navigator.hardwareConcurrency || "?"} cœurs · ${navigator.deviceMemory || "?"} Go`,
+				`lointain ${horizon ? "chargé" : "en attente"} · ${navigator.hardwareConcurrency || "?"} cœurs · ${navigator.deviceMemory || "?"} Go · profondeur ${depthBits} bits`,
 				gpu
 			].join("\n");
 			S.acc = S.n = S.worst = S.tris = S.calls = 0;
