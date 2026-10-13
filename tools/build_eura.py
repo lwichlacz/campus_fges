@@ -85,6 +85,14 @@ def Gdir(a): c, s = math.cos(a), math.sin(a); return math.atan2(c*vx + s*vz, c*u
 def dist(q): return math.hypot(q[0]-WC[0], q[1]-WC[1])
 def flat(pts): return [v for q in pts for v in q]
 
+# Wenov n'occupe pas tout l'îlot : côté avenue de Bretagne, une rangée de maisons de ville et un petit immeuble
+# (OpenStreetMap et BD TOPO concordent) restent devant. On coupe l'îlot à leur arrière (ZCUT, en unités du jeu).
+ZCUT = -13.4
+def zg(q): return S*((q[0]-WC[0])*vx + (q[1]-WC[1])*vz)
+def cut(a, b):                     # point de l'arête a→b où le jeu passe la ligne ZCUT
+    t = (ZCUT - zg(a))/(zg(b) - zg(a)); return (a[0] + (b[0]-a[0])*t, a[1] + (b[1]-a[1])*t)
+block = list(corners)
+corners = [cut(corners[0], corners[3]), cut(corners[1], corners[2]), corners[2], corners[3]]
 # emprise de Wenov, un peu en retrait des rues (trottoirs)
 wen = [G(c) for c in corners]
 wcx, wcz = cen(wen)
