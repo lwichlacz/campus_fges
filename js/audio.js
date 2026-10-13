@@ -25,17 +25,34 @@ function init(){
 	amb = ctx.createGain(); amb.gain.value = .9; amb.connect(master);
 	vinyl();
 	wind();
+	rainSound();
 }
 
-/* ---------- Ambiance : vent, oiseaux le jour, grillons la nuit ---------- */
-let amb, windGain, ambState = { night:false, snowy:false, outside:true }, ambTimer = null;
+/* ---------- Ambiance : vent, pluie, oiseaux le jour, grillons la nuit ----------
+   rain (0 à 1) et wind (0 à 1) suivent la météo réelle (Open-Meteo) ou celle choisie dans le menu Moment. */
+let amb, windGain, windLp, rainGain, rainLp, ambState = { night:false, snowy:false, outside:true, rain:0, wind:0 }, ambTimer = null;
 function wind(){
 	const src = ctx.createBufferSource(); src.buffer = noise(); src.loop = true;
-	const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 420;
+	const lp = windLp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 420;
 	windGain = ctx.createGain(); windGain.gain.value = .012;
 	const lfo = ctx.createOscillator(), lfoG = ctx.createGain(); lfo.frequency.value = .07; lfoG.gain.value = .008;
 	lfo.connect(lfoG).connect(windGain.gain); lfo.start();
 	src.connect(lp).connect(windGain).connect(amb); src.start();
+}
+// pluie : un souffle aigu (le rideau d'eau) et des gouttes isolées qui claquent sur les toits et les vitres
+function rainSound(){
+	const src = ctx.createBufferSource(); src.buffer = noise(); src.loop = true;
+	const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 900;
+	rainLp = ctx.createBiquadFilter(); rainLp.type = "lowpass"; rainLp.frequency.value = 7000;
+	rainGain = ctx.createGain(); rainGain.gain.value = 0;
+	src.connect(hp).connect(rainLp).connect(rainGain).connect(amb); src.start();
+}
+function drop(t, vol){
+	const o = ctx.createOscillator(), g = ctx.createGain();
+	o.type = "sine"; const f = 1400 + Math.random()*2600;
+	o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f*.55, t + .03);
+	g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .002); g.gain.exponentialRampToValueAtTime(.0002, t + .04);
+	o.connect(g).connect(rainLp); o.start(t); o.stop(t + .05);
 }
 function chirp(t, f, vol){
 	const o = ctx.createOscillator(), g = ctx.createGain();
@@ -55,8 +72,14 @@ function cricket(t){
 function ambTick(){
 	if(!ctx || !enabled) return;
 	const t = ctx.currentTime + .05, S = ambState;
-	windGain.gain.setTargetAtTime(S.outside ? (S.snowy ? .03 : .012) : .002, ctx.currentTime, 1.5);
-	if(!S.outside || S.snowy) return;
+	const w = Math.max(S.wind, S.snowy ? .4 : 0), now = ctx.currentTime;
+	windGain.gain.setTargetAtTime(S.outside ? .012 + w*.05 : .002 + w*.006, now, 1.5);
+	windLp.frequency.setTargetAtTime(420 + w*500, now, 2);
+	// dedans, la pluie s'entend étouffée, sur les vitres
+	rainGain.gain.setTargetAtTime(S.rain*(S.outside ? .045 : .012), now, 1.2);
+	rainLp.frequency.setTargetAtTime(S.outside ? 7000 : 1600, now, .5);
+	if(S.rain > 0) for(let i = 0, n = Math.round(S.rain*(S.outside ? 6 : 3)); i < n; i++) drop(t + Math.random()*.45, (S.outside ? .02 : .008)*(.4 + Math.random()*.6));
+	if(!S.outside || S.snowy || S.rain > .3) return;
 	if(!S.night && Math.random() < .22){
 		const f = 2300 + Math.random()*1900, n = 2 + Math.floor(Math.random()*5);
 		for(let i=0;i<n;i++) chirp(t + i*(.11 + Math.random()*.06), f*(1 + (Math.random()-.5)*.15), .012 + Math.random()*.01);

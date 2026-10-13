@@ -1275,18 +1275,24 @@ let golden = false;
 /* Météo : réelle (Open-Meteo, coordonnées du campus, sans donnée personnelle) ou choisie dans le menu */
 const WEATHERS = [["auto","🛰️ Réelle"],["soleil","☀️ Soleil"],["nuageux","⛅ Nuageux"],["pluie","🌧️ Pluie"],["brouillard","🌫️ Brouillard"]];
 let weatherMode = store.get("weather", "auto"); if(!WEATHERS.some(([k]) => k === weatherMode)) weatherMode = "auto";
-let realWeather = "soleil", weather = "soleil";
+let realWeather = "soleil", weather = "soleil", realWind = 0;          // vent réel en km/h
 const weatherNow = () => weatherMode === "auto" ? realWeather : weatherMode;
 function fetchWeather(){
-	fetch("https://api.open-meteo.com/v1/forecast?latitude=50.6327&longitude=3.0464&current=weather_code,cloud_cover")
+	fetch("https://api.open-meteo.com/v1/forecast?latitude=50.6327&longitude=3.0464&current=weather_code,cloud_cover,wind_speed_10m")
 		.then(r => r.json()).then(d => {
 			const c = d.current.weather_code, cc = d.current.cloud_cover;          // codes météo de l'OMM
+			realWind = +d.current.wind_speed_10m || 0; soundWeather();
 			const w = (c >= 51 && c <= 67) || (c >= 80 && c <= 82) || c >= 95 ? "pluie" : (c === 45 || c === 48) ? "brouillard"
 				: (c >= 71 && c <= 77) || c === 85 || c === 86 || c === 3 || cc > 60 ? "nuageux" : "soleil";
 			if(w !== realWeather){ realWeather = w; if(weatherMode === "auto" && light) applyAmbiance(false, 4); }
 		}).catch(() => {});
 }
 fetchWeather(); setInterval(fetchWeather, 30*60000);
+// le son suit la météo affichée : pluie, et vent réel (brise dès 10 km/h, fort vers 45 km/h ; pluie choisie = vent modéré)
+function soundWeather(){
+	const W = weatherNow(), wind = weatherMode === "auto" ? Math.max(0, Math.min(1, (realWind - 10)/35)) : W === "pluie" ? .35 : 0;
+	Audio.setAmbience({ rain: W === "pluie" ? 1 : 0, wind });
+}
 // la météo change la lumière visée : ciel gris et soleil voilé sous la pluie, laiteux dans le brouillard
 function weatherize(o){
 	const W = weatherNow();
@@ -1382,6 +1388,7 @@ function applyAmbiance(instant, dur = 1.8){
 	partIM.instanceColor.needsUpdate = true;
 	for(const k in interiors) if(interiors[k]) interiors[k].setAmbiance ? interiors[k].setAmbiance(S, L, night) : interiors[k].setNight(night);
 	Audio.setAmbience({ night, snowy:!!S.snowy, outside: mode === "ext" });
+	soundWeather();
 	$("btnTheme").innerHTML = `${S.icon}${night ? "🌙" : golden ? "🌇" : "☀️"} <span class="lbl">${S.label}</span>`;
 	renderAmbiancePop();
 }
