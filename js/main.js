@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=df0c5e53ee";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=df0c5e53ee";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=df0c5e53ee";
-import { MAP } from "./vauban.js?v=df0c5e53ee";
-import { buildLandmarks } from "./landmarks.js?v=df0c5e53ee";
-import { buildMonuments } from "./monuments.js?v=df0c5e53ee";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=df0c5e53ee";
-import { buildStation } from "./station.js?v=df0c5e53ee";
-import { createRame } from "./rame.js?v=df0c5e53ee";
-import { Audio } from "./audio.js?v=df0c5e53ee";
-import { DETAILS } from "./details.js?v=df0c5e53ee";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=b29d511e7c";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=b29d511e7c";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=b29d511e7c";
+import { MAP } from "./vauban.js?v=b29d511e7c";
+import { buildLandmarks } from "./landmarks.js?v=b29d511e7c";
+import { buildMonuments } from "./monuments.js?v=b29d511e7c";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=b29d511e7c";
+import { buildStation } from "./station.js?v=b29d511e7c";
+import { createRame } from "./rame.js?v=b29d511e7c";
+import { Audio } from "./audio.js?v=b29d511e7c";
+import { DETAILS } from "./details.js?v=b29d511e7c";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -947,7 +947,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=df0c5e53ee").then(({ FAR }) => {
+	import("./vauban_far.js?v=b29d511e7c").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1422,7 +1422,7 @@ function applyAmbiance(instant, dur = 1.8){
 	partIM.count = reduceMotion ? 0 : Math.round(S.parts.n*QUALITY[quality].parts);
 	for(let i=0;i<PMAX;i++){ c.set(S.parts.colors[i % S.parts.colors.length]); partIM.setColorAt(i, c); respawn(parts[i], false); }
 	partIM.instanceColor.needsUpdate = true;
-	for(const k in interiors) if(interiors[k]) interiors[k].setAmbiance ? interiors[k].setAmbiance(S, L, night) : interiors[k].setNight(night);
+	for(const k in interiors) if(interiors[k]) interiors[k].setAmbiance ? interiors[k].setAmbiance(S, L, night, { light:target, weather }) : interiors[k].setNight(night);
 	Audio.setAmbience({ night, snowy:!!S.snowy, outside: mode === "ext" });
 	soundWeather();
 	$("btnTheme").innerHTML = `${S.icon}${night ? "🌙" : golden ? "🌇" : "☀️"} <span class="lbl">${S.label}</span>`;
@@ -1451,12 +1451,12 @@ setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night 
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=df0c5e53ee").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=df0c5e53ee").then(m => m.createChapelle), eura:() => import("./eura.js?v=df0c5e53ee").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=df0c5e53ee").then(m => m.createWenovIn) };
+const MAKERS = { atrium:() => import("./atrium.js?v=b29d511e7c").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=b29d511e7c").then(m => m.createChapelle), eura:() => import("./eura.js?v=b29d511e7c").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=b29d511e7c").then(m => m.createWenovIn) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=df0c5e53ee").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=df0c5e53ee").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=df0c5e53ee").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=df0c5e53ee").then(m => m.openRobot)
+	comptoir:() => import("./games/comptoir.js?v=b29d511e7c").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=b29d511e7c").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=b29d511e7c").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=b29d511e7c").then(m => m.openRobot)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){

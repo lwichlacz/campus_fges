@@ -5,11 +5,12 @@
    le Blan-Lafont (filature de coton de 1896, siège d'Euratechnologies depuis 2009) et sa tour.
    Chargé à la demande, comme l'atrium : une seule scène de quartier à la fois (léger sur téléphone). */
 import * as THREE from "three";
-import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js?v=df0c5e53ee";
-import { buildCity, pointInPoly, softenFar } from "./city.js?v=df0c5e53ee";
-import { buildStation } from "./station.js?v=df0c5e53ee";
-import { EMAP } from "./euramap.js?v=df0c5e53ee";
-import { buildLandmarks } from "./landmarks.js?v=df0c5e53ee";
+import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js?v=b29d511e7c";
+import { buildCity, pointInPoly, softenFar } from "./city.js?v=b29d511e7c";
+import { buildStation } from "./station.js?v=b29d511e7c";
+import { EMAP } from "./euramap.js?v=b29d511e7c";
+import { buildLandmarks } from "./landmarks.js?v=b29d511e7c";
+import { waterRipples, cloudShade, createRain, CLOUDS } from "./render.js?v=b29d511e7c";
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const ring = f => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; };
@@ -24,15 +25,48 @@ function concreteGrid(){
 	x.fillStyle = "rgba(233,230,223,.5)"; x.fillRect(30, 16, 4, 96); x.fillRect(94, 16, 4, 96);
 	const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
-function brickArches(){
-	// filature : brique rouge, grandes baies cintrées
-	const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
-	x.fillStyle = "#a9533c"; x.fillRect(0, 0, 128, 128);
-	x.fillStyle = "rgba(0,0,0,.08)"; for(let y=0; y<128; y+=8) x.fillRect(0, y, 128, 2);
-	x.fillStyle = "#d9c9b0"; x.fillRect(30, 18, 68, 92);
-	x.fillStyle = "#4f6276"; x.beginPath(); x.moveTo(36, 106); x.lineTo(36, 46); x.arc(64, 46, 28, Math.PI, 0); x.lineTo(92, 106); x.fill();
-	x.fillStyle = "rgba(217,201,176,.7)"; x.fillRect(62, 22, 4, 84); x.fillRect(36, 70, 56, 3);
-	const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+function canvasTex(draw, w = 128, h = 128, color = true){
+	const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h);
+	const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; if(color) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+}
+// filature (photos) : brique rouge, une grande baie rectangulaire par travée et par niveau, pilastres, menuiseries claires
+function millWindows(tower){
+	return canvasTex(x => {
+		x.fillStyle = "#a65a43"; x.fillRect(0, 0, 128, 128);
+		x.fillStyle = "rgba(0,0,0,.07)"; for(let y=0; y<128; y+=6) x.fillRect(0, y, 128, 1.5);
+		x.fillStyle = "#94503c"; x.fillRect(0, 0, 10, 128); x.fillRect(118, 0, 10, 128);          // pilastres
+		const [a, b] = tower ? [44, 40] : [26, 76];
+		x.fillStyle = "#d8d4cc"; x.fillRect(a - 3, 16, b + 6, 98);
+		const g = x.createLinearGradient(0, 18, 0, 112); g.addColorStop(0, "#5f7d90"); g.addColorStop(1, "#3c5162");
+		x.fillStyle = g; x.fillRect(a, 19, b, 92);
+		x.fillStyle = "#d8d4cc"; x.fillRect(a, 62, b, 3); if(!tower) x.fillRect(a + b/2 - 1.5, 19, 3, 92);
+		x.fillStyle = "#7d4433"; x.fillRect(a - 5, 10, b + 10, 6);                                     // linteau
+	});
+}
+function millLit(tower){
+	const r = mulberry32(tower ? 13 : 8);
+	return canvasTex(x => { x.fillStyle = "#000"; x.fillRect(0, 0, 128, 128); if(r() < .75){ x.fillStyle = "#ffd9a0"; const [a, b] = tower ? [44, 40] : [26, 76]; x.fillRect(a, 19, b, 92); } }, 128, 128, false);
+}
+// Black Diamond : socle de brique rouge en claustra devant le parking
+function latticeBrick(){
+	return canvasTex(x => {
+		x.fillStyle = "#9c4a36"; x.fillRect(0, 0, 128, 128);
+		x.fillStyle = "#2a1c18";
+		for(let j=0;j<8;j++) for(let i=0;i<8;i++) x.fillRect(i*16 + (j % 2 ? 8 : 2), j*16 + 5, 6, 6);
+	});
+}
+// bureaux en métal laqué noir : bandeaux vitrés, châssis noirs
+function darkOffices(){
+	return canvasTex(x => {
+		x.fillStyle = "#24272c"; x.fillRect(0, 0, 128, 128);
+		const g = x.createLinearGradient(0, 20, 0, 108); g.addColorStop(0, "#71879a"); g.addColorStop(1, "#4b5d6d");
+		x.fillStyle = g; x.fillRect(6, 22, 116, 84);
+		x.fillStyle = "#1b1d21"; for(const xx of [6, 44, 82, 120]) x.fillRect(xx - 3, 22, 6, 84); x.fillRect(6, 62, 116, 4);
+	});
+}
+function officeLit(){
+	const r = mulberry32(21);
+	return canvasTex(x => { x.fillStyle = "#000"; x.fillRect(0, 0, 128, 128); for(const xx of [9, 47, 85]) if(r() < .6){ x.fillStyle = "#e8f0ff"; x.fillRect(xx, 22, 32, 84); } }, 128, 128, false);
 }
 function litGrid(){
 	const r = mulberry32(5), c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
@@ -100,7 +134,7 @@ export function createEura({ background }){
 	{ const blk = ring(EMAP.wenov.street); EMAP.greens = EMAP.greens.filter(([, f]) => { const p = ring(f), [cx, cz] = cen(p); return !pointInPoly(cx, cz, blk); }); }
 	const city = buildCity(scene, EMAP, { offices:true });
 	// horizon : les vrais bâtiments des environs (js/eura_far.js), chargés après le quartier, en un seul lot de volumes
-	import("./eura_far.js?v=df0c5e53ee").then(({ EFAR }) => {
+	import("./eura_far.js?v=b29d511e7c").then(({ EFAR }) => {
 		const n = EFAR.length/7, geo = new THREE.BoxGeometry(1, 1, 1).translate(0, .5, 0);
 		const im = new THREE.InstancedMesh(geo, std("#ffffff"), n), d = new THREE.Object3D(), c = new THREE.Color();
 		const TINT = [["#a9533c", "#9a4a36", "#b8664a", "#8e4a3c"], ["#d8cfc0", "#cbbfa9", "#e2d9c8"], ["#b9b4ab", "#a7a39b", "#c9c4ba", "#8f949b"]];
@@ -157,37 +191,119 @@ export function createEura({ background }){
 	const roofY = NF*FH + .08;
 	for(let k=0;k<4;k++){ const p = W[k]; box(wen, 2.4, 1.2, 1.8, std("#c9c6bf"), p[0] + (WC[0]-p[0])*.18, roofY, p[1] + (WC[1]-p[1])*.18, k*.4); }
 
-	/* ---------- le Blan-Lafont et sa tour ---------- */
+	/* ---------- le Blan-Lafont et sa tour (d'après les photos de Wikimedia Commons) ----------
+	   Filatures Lafont (1896) et Le Blan (1900), réunies en 2009 par Brossy & Associés autour d'un atrium vitré de 1 600 m².
+	   Brique rouge, cinq niveaux de grandes baies rectangulaires entre pilastres, frise sous la corniche, attique vitré sombre
+	   en retrait avec un auvent rouge ; la tour de 1896, plus haute d'un tiers, crénelée, aux baies géminées en plein cintre,
+	   coiffée d'un haut pavillon d'ardoise ; une tour d'escalier plus fine à l'autre bout. */
 	const BL = ring(EMAP.blan.pts);
-	const brickTex = brickArches(); brickTex.repeat.set(1/2.4, 1/2);
-	const brickM = new THREE.MeshStandardMaterial({ map:brickTex, roughness:.9, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:litGrid() }); softenFar(brickM);
+	const brickTex = millWindows(); brickTex.repeat.set(1/1.9, 1/1.76);           // une travée de 3,6 m, un niveau de 3,3 m
+	const brickM = new THREE.MeshStandardMaterial({ map:brickTex, roughness:.9, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:millLit() }); softenFar(brickM);
 	const BH = 8.8;                                                           // 16,6 m à la gouttière (BD TOPO), à l'échelle de Vauban
 	ringSlab(BL, null, BH, brickM, 0, scene);
-	ringSlab(offset(BL, -.25), null, .35, std("#8f4632"), BH, scene);
-	// sheds vitrés de la filature
+	ringSlab(BL, null, .25, std("#77746e"), BH, scene);                        // toit-terrasse
+	const friezeM = std("#8f4632"), atticM = std("#2d333c", { roughness:.35, metalness:.25, emissive:"#ffd08a", emissiveIntensity:0 });
+	{
+		const ccw = BL.reduce((s, a, i) => { const b = BL[(i+1)%BL.length]; return s + a[0]*b[1] - b[0]*a[1]; }, 0) > 0 ? 1 : -1;
+		for(let i=0;i<BL.length;i++){
+			const a = BL[i], b = BL[(i+1)%BL.length], dx = b[0]-a[0], dz = b[1]-a[1], l = Math.hypot(dx, dz);
+			if(l < 1.2) continue;
+			const nx = -dz/l*ccw, nz = dx/l*ccw, mx = (a[0]+b[0])/2, mz = (a[1]+b[1])/2, ry = -Math.atan2(dz, dx);
+			box(scene, l + .2, .45, .3, friezeM, mx - nx*.05, BH - .75, mz - nz*.05, ry, false);          // frise de brique sous la corniche
+			if(l > 4) box(scene, l - 2.4, 1.25, .25, atticM, mx + nx*1.3, BH + .25, mz + nz*1.3, ry, false);   // attique vitré en retrait
+		}
+	}
+	// l'atrium : grande verrière entre les deux filatures (la bande claire vue d'avion)
 	{
 		const [bx, bz] = cen(BL), ang = EMAP.blan.ang;
 		const xs = BL.map(([x, z]) => (x - bx)*Math.cos(ang) + (z - bz)*Math.sin(ang)), zs = BL.map(([x, z]) => -(x - bx)*Math.sin(ang) + (z - bz)*Math.cos(ang));
 		const L = Math.max(...xs) - Math.min(...xs), D = Math.max(...zs) - Math.min(...zs);
-		const shed = new THREE.ExtrudeGeometry(new THREE.Shape([new THREE.Vector2(-1.1, 0), new THREE.Vector2(1.1, 0), new THREE.Vector2(1.1, 1.25)]), { depth:D*.62, bevelEnabled:false }).translate(0, 0, -D*.31);
+		const shed = new THREE.ExtrudeGeometry(new THREE.Shape([new THREE.Vector2(-1.1, 0), new THREE.Vector2(1.1, 0), new THREE.Vector2(0, .7)]), { depth:D*.5, bevelEnabled:false }).translate(0, 0, -D*.25);
 		const shedM = std("#cfe2e8", { transparent:true, opacity:.85, roughness:.2, metalness:.2, emissive:"#ffd08a", emissiveIntensity:0 });
-		const grp = new THREE.Group(); grp.position.set(bx, BH + .3, bz); grp.rotation.y = -ang; scene.add(grp);
-		const n = Math.floor(L*.62/2.2);
-		for(let k=0;k<n;k++) mesh(shed, shedM, grp, -L*.31 + k*2.2 + 1.1, 0, 0, 0);
+		const grp = new THREE.Group(); grp.position.set(bx, BH + .25, bz); grp.rotation.y = -ang; scene.add(grp);
+		const n = Math.floor(L*.5/2.2);
+		for(let k=0;k<n;k++) mesh(shed, shedM, grp, -L*.25 + k*2.2 + 1.1, 0, 0, 0);
 		var shedMat = shedM;
 	}
-	const T = EMAP.blan.tower, TH = 15;
+	const T = EMAP.blan.tower, TH = 13.2;                                      // ≈ 25 m au sommet des créneaux, ≈ 32 m au faîte (photos, PSS-archi)
 	const tower = new THREE.Group(); tower.position.set(T.x, 0, T.z); tower.rotation.y = -T.ang; scene.add(tower);
-	const tw = Math.max(3.2, Math.min(T.L, 6)), td = Math.max(3.2, Math.min(T.D, 6));
-	const towerTex = brickArches(); towerTex.repeat.set(1/2, 1/2.2);
-	box(tower, tw, TH, td, new THREE.MeshStandardMaterial({ map:towerTex, roughness:.9 }), 0, 0, 0);
-	box(tower, tw + .5, .5, td + .5, std("#8f4632"), 0, TH - 2.2, 0);
-	box(tower, tw + .7, .6, td + .7, std("#d9c9b0"), 0, TH, 0);
-	const spire = new THREE.Mesh(new THREE.ConeGeometry(Math.max(tw, td)*.72, 6.5, 4).rotateY(Math.PI/4).translate(0, 3.25, 0), std("#4f5767"));
-	spire.position.y = TH + .6; spire.castShadow = true; tower.add(spire);
-	for(const s of [-1, 1]) for(const ax of [0, 1]){
-		const c = mesh(new THREE.CircleGeometry(.9, 18), std("#f4efe4", { emissive:"#ffe2a8", emissiveIntensity:0 }), tower, ax ? s*(tw/2 + .02) : 0, TH - 3.6, ax ? 0 : s*(td/2 + .02), ax ? s*Math.PI/2 : (s < 0 ? Math.PI : 0), false);
-		c.userData.clock = true;
+	const tw = 4.6, td = 4.6;
+	const towerTex = millWindows(true); towerTex.repeat.set(1/2.3, 1/1.76);
+	const towerM = new THREE.MeshStandardMaterial({ map:towerTex, roughness:.9, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:millLit(true) }); softenFar(towerM);
+	box(tower, tw, TH - 2.2, td, towerM, 0, 0, 0);
+	const brickPlain = std("#a65a43");
+	box(tower, tw, 2.2, td, brickPlain, 0, TH - 2.2, 0);                       // étage des baies géminées
+	box(tower, tw + .35, .5, td + .35, friezeM, 0, TH - .5, 0);                // mâchicoulis
+	for(let k=0;k<4;k++) for(let j=0;j<5;j++){                                 // créneaux
+		const t_ = (j + .5)/5 - .5, ax = k % 2, sg = k < 2 ? 1 : -1;
+		box(tower, ax ? .32 : .5, .45, ax ? .5 : .32, brickPlain, ax ? sg*(tw/2 + .02) : t_*tw, TH, ax ? t_*td : sg*(td/2 + .02));
+	}
+	const archM = std("#25303b", { emissive:"#ffe2a8", emissiveIntensity:0 });
+	for(const s of [-1, 1]) for(const ax of [0, 1]) for(const o of [-.45, .45]){
+		// baies géminées en plein cintre, sur chaque face
+		const px = ax ? s*(tw/2 + .03) : o, pz = ax ? o : s*(td/2 + .03), ry = ax ? s*Math.PI/2 : (s < 0 ? Math.PI : 0);
+		const w = mesh(new THREE.PlaneGeometry(.55, 1.1), archM, tower, px, TH - 1.55, pz, ry, false); w.userData.clock = true;
+		const top = mesh(new THREE.CircleGeometry(.275, 12, 0, Math.PI), archM, tower, px, TH - 1, pz, ry, false); top.userData.clock = true;
+	}
+	for(const s of [-1, 1]) mesh(new THREE.PlaneGeometry(1.3, .45), std("#e8dcc6"), tower, 0, TH - 3.2, s*(td/2 + .03), s < 0 ? Math.PI : 0, false);   // la date, 1896
+	// pavillon d'ardoise : pyramide tronquée très raide, petit épi de faîtage
+	const slate = std("#5d6573", { roughness:.55 });
+	const pav = new THREE.Mesh(new THREE.CylinderGeometry((tw/2)*.62*Math.SQRT2, (tw/2 + .1)*Math.SQRT2, 3.9, 4, 1).rotateY(Math.PI/4).translate(0, 1.95, 0), slate);
+	pav.position.y = TH + .25; pav.castShadow = true; tower.add(pav);
+	box(tower, tw*.62*.95, .12, td*.62*.95, slate, 0, TH + 4.15, 0);
+	cyl(tower, .05, .05, 1.1, std("#2b2a30"), 0, TH + 4.27, 0, 6);
+	// l'auvent rouge, en porte-à-faux sur l'attique, près de la tour
+	{
+		const [bx, bz] = cen(BL), vx = bx - T.x, vz = bz - T.z, vl = Math.hypot(vx, vz);
+		box(scene, 7, .18, 2.6, std("#c8302c"), T.x + vx/vl*7, BH + 1.55, T.z + vz/vl*7, -T.ang);
+	}
+	// la tour d'escalier de l'aile Lafont, plus fine, à l'angle opposé
+	{
+		let far_ = BL[0], fd = 0;
+		for(const p of BL){ const d = Math.hypot(p[0] - T.x, p[1] - T.z); if(d > fd){ fd = d; far_ = p; } }
+		const [bx, bz] = cen(BL), kx = bx - far_[0], kz = bz - far_[1], kl = Math.hypot(kx, kz);
+		const sx = far_[0] + kx/kl*1.6, sz = far_[1] + kz/kl*1.6, H2 = BH + 2.4;
+		const st = new THREE.Group(); st.position.set(sx, 0, sz); st.rotation.y = -EMAP.blan.ang; scene.add(st);
+		box(st, 2.4, H2, 2.4, towerM, 0, 0, 0);
+		box(st, 2.7, .35, 2.7, friezeM, 0, H2 - .35, 0);
+		for(let k=0;k<4;k++) for(let j=0;j<3;j++){ const t_ = (j + .5)/3 - .5, ax = k % 2, sg = k < 2 ? 1 : -1; box(st, ax ? .25 : .4, .35, ax ? .4 : .25, brickPlain, ax ? sg*1.21 : t_*2.4, H2, ax ? t_*2.4 : sg*1.21); }
+		const lan = new THREE.Mesh(new THREE.ConeGeometry(.9, 1.4, 4).rotateY(Math.PI/4).translate(0, .7, 0), slate); lan.position.y = H2 + .1; st.add(lan);
+	}
+
+	/* ---------- Le Diamant (« Black Diamond », PDAA Pranlas-Descours, 2018) : socle de brique rouge à claustra
+	   (le parking silo), étage du sport, bureaux en métal laqué noir ; remplace le volume générique ---------- */
+	const pois = city.pois || {};
+	const footprint = k => { const b = EMAP.pois[k] && EMAP.buildings[EMAP.pois[k].i]; return b ? ring(b[4]) : null; };
+	if(footprint("diamant") && pois.diamant){
+		pois.diamant.group.visible = false;
+		const F = footprint("diamant"), FH2 = 1.64;
+		const lat = latticeBrick(); lat.repeat.set(1/1.6, 1/1.6);
+		ringSlab(F, null, FH2*2.5, new THREE.MeshStandardMaterial({ map:lat, roughness:.9 }), 0, scene);
+		const off = darkOffices(); off.repeat.set(1/1.8, 1/FH2);
+		const offM = new THREE.MeshStandardMaterial({ map:off, roughness:.4, metalness:.3, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:officeLit() }); softenFar(offM);
+		ringSlab(F, null, FH2*2.5, offM, FH2*2.5, scene);
+		ringSlab(F, null, .3, std("#1f2226"), FH2*5, scene);
+		var diamantM = offM;
+	}
+
+	/* ---------- La French Tech Lille : bureaux vitrés à double peau de lames de verre verticales (Barbarito Bancel),
+	   face au Blan-Lafont sur la cour de Bretagne ---------- */
+	if(footprint("frenchtech") && pois.frenchtech){
+		pois.frenchtech.group.visible = false;
+		const F = footprint("frenchtech"), H3 = 1.64*5;
+		const glass = new THREE.MeshStandardMaterial({ color:"#9fc3c9", roughness:.12, metalness:.35, transparent:true, opacity:.9, emissive:"#ffe2a8", emissiveIntensity:0 });
+		ringSlab(F, null, H3, glass, 0, scene);
+		for(const y of [0, H3]) ringSlab(F, null, .22, std("#e7e8e6"), y - (y ? .1 : 0), scene);
+		const fins = [];
+		for(let i=0;i<F.length;i++){
+			const a = F[i], b = F[(i+1)%F.length], l = Math.hypot(b[0]-a[0], b[1]-a[1]), n = Math.floor(l/.55);
+			for(let k=1;k<n;k++){ const t_ = k/n; fins.push([a[0] + (b[0]-a[0])*t_, a[1] + (b[1]-a[1])*t_, Math.atan2(b[1]-a[1], b[0]-a[0])]); }
+		}
+		const [fx, fz] = cen(F);
+		const finIM = new THREE.InstancedMesh(new THREE.BoxGeometry(.05, H3 - .3, .7).translate(0, (H3 - .3)/2 + .15, 0), std("#cfe6e8", { transparent:true, opacity:.55, roughness:.1, metalness:.4 }), fins.length), d = new THREE.Object3D();
+		fins.forEach(([x, z, a], i) => { const ox = x - fx, oz = z - fz, ol = Math.hypot(ox, oz) || 1; d.position.set(x + ox/ol*.35, 0, z + oz/ol*.35); d.rotation.set(0, -a, 0); d.updateMatrix(); finIM.setMatrixAt(i, d.matrix); });
+		scene.add(finIM);
+		var ftGlass = glass;
 	}
 
 	/* ---------- métro ligne 2 : Canteleu – Euratechnologies ---------- */
@@ -236,25 +352,68 @@ export function createEura({ background }){
 	const headIM = new THREE.InstancedMesh(new THREE.SphereGeometry(.28, 10, 8), lampMat, Math.max(1, spots.length));
 	{ const d = new THREE.Object3D(); spots.forEach(([x, z], i) => { d.position.set(x, 0, z); d.updateMatrix(); poleIM.setMatrixAt(i, d.matrix); d.position.set(x, 3.95, z); d.updateMatrix(); headIM.setMatrixAt(i, d.matrix); }); poleIM.count = headIM.count = spots.length; scene.add(poleIM, headIM); }
 
-	/* ---------- la Deûle : une péniche passe ---------- */
-	let barge = null;
-	{
-		const polys = EMAP.water.map(ring).filter(p => p.length > 8);
-		const big = polys.sort((a, b) => b.length - a.length)[0];
-		if(big){
-			// axe principal du bras de rivière le plus proche de Wenov
-			const near = big.filter(([x, z]) => Math.hypot(x, z) < 160);
-			const pts = near.length > 10 ? near : big, [mx, mz] = cen(pts);
-			let sxx = 0, szz = 0, sxz = 0; for(const [x, z] of pts){ sxx += (x-mx)**2; szz += (z-mz)**2; sxz += (x-mx)*(z-mz); }
-			const a = .5*Math.atan2(2*sxz, sxx - szz), ux = Math.cos(a), uz = Math.sin(a);
-			const along = pts.map(([x, z]) => (x-mx)*ux + (z-mz)*uz), L = Math.min(Math.max(...along) - Math.min(...along), 220);
-			const g = new THREE.Group(); scene.add(g);
-			box(g, 2.2, .9, 9, std("#2f3a4a"), 0, -.2, 0);
-			box(g, 2.0, .9, 2.4, std("#efe6d6"), 0, .7, -3);
-			box(g, 2.1, .25, 5, std("#7b4a33"), 0, .7, 1.4);
-			barge = { g, mx, mz, ux, uz, L, t:.2, dir:1, ok:p => pointInPoly(p[0], p[1], big) };
+	/* ---------- la Deûle, comme à Vauban : péniches et bateau de promenade qui naviguent, bateaux amarrés le long
+	   des quais (photos du quai Hegel et de la gare d'eau), canards, reflets du soleil sur l'eau ---------- */
+	const waterPolys = EMAP.water.map(ring);
+	const inWater = (x, z) => waterPolys.some(p => pointInPoly(x, z, p));
+	const lineLen = c => { let L = 0; for(let i=0;i+3<c.length;i+=2) L += Math.hypot(c[i+2]-c[i], c[i+3]-c[i+1]); return L; };
+	const deule = (EMAP.canals || []).slice().sort((a, b) => lineLen(b) - lineLen(a))[0];
+	const along = (c, d) => {
+		for(let i=0;i+3<c.length;i+=2){
+			const l = Math.hypot(c[i+2]-c[i], c[i+3]-c[i+1]);
+			if(d <= l || i + 4 >= c.length){ const f = l ? Math.min(1, d/l) : 0; return [c[i] + (c[i+2]-c[i])*f, c[i+1] + (c[i+3]-c[i+1])*f, Math.atan2(c[i+2]-c[i], c[i+3]-c[i+1])]; }
+			d -= l;
 		}
+		return [c[0], c[1], 0];
+	};
+	const boats = [], moored = [], ducks = [];
+	if(deule){
+		const len = lineLen(deule);
+		const hullM = std("#2b2f36"), deckM = std("#7c3a2c"), cabM = std("#eef0ec"), winM = std("#3a4a5f", { roughness:.3 }), tarpM = std("#2f5d4a"), redM = std("#9b2f2a");
+		const make = (L, W, kind) => {
+			const g = new THREE.Group();
+			box(g, W, .7, L, kind === "logement" ? redM : hullM, 0, -.2, 0);
+			box(g, W*.98, .12, L*.98, deckM, 0, .5, 0);
+			if(kind === "peniche"){
+				box(g, W*.8, .55, L*.62, tarpM, 0, .55, L*.08);
+				box(g, W*.8, 1.3, L*.16, cabM, 0, .55, -L*.4);
+				box(g, W*.82, .35, L*.1, winM, 0, 1.45, -L*.36);
+			} else if(kind === "logement"){                            // péniche-logement : longue cabine blanche à hublots
+				box(g, W*.82, 1.1, L*.7, cabM, 0, .55, -L*.04);
+				box(g, W*.84, .32, L*.66, winM, 0, .95, -L*.04);
+				box(g, W*.6, .5, L*.12, cabM, 0, 1.65, -L*.3);
+			} else {
+				box(g, W*.7, .9, L*.45, cabM, 0, .55, -L*.05);
+				box(g, W*.72, .3, L*.4, winM, 0, 1.05, -L*.05);
+			}
+			g.traverse(o => { if(o.isMesh) o.castShadow = true; });
+			scene.add(g); return g;
+		};
+		const r = mulberry32(31);
+		for(const [kind, L, W, v] of [["peniche", 9, 1.6, .55], ["peniche", 8, 1.5, .45], ["promenade", 3.6, 1.1, .9]])
+			boats.push({ g:make(L, W, kind), L, v, s:(.15 + r()*.7)*len, dir:r() < .5 ? 1 : -1 });
+		// amarrés le long d'un quai : on cherche, de part et d'autre de l'axe, le bord de l'eau
+		for(let k=0;k<5;k++){
+			const d = len*(.3 + k*.09 + r()*.04), [x, z, a] = along(deule, d), nx = Math.cos(a), nz = -Math.sin(a);
+			for(const sg of [1, -1]){
+				let off = 0; for(let o=2; o<14; o+=.5){ if(inWater(x + nx*o*sg, z + nz*o*sg)) off = o; else break; }
+				if(off < 4) continue;
+				const kind = k % 2 ? "logement" : "peniche", Lb = kind === "logement" ? 7 : 9;
+				const g = make(Lb, 1.6, kind); g.position.set(x + nx*(off - 1.4)*sg, .12, z + nz*(off - 1.4)*sg); g.rotation.y = a;
+				moored.push({ g, ph:r()*6 }); break;
+			}
+		}
+		for(let i=0;i<6;i++){
+			const g = new THREE.Group();
+			const b = new THREE.Mesh(new THREE.SphereGeometry(.45, 10, 8), std(i ? "#8a6a4a" : "#f4f1ea", { flatShading:false })); b.scale.set(1, .65, 1.4);
+			const h = new THREE.Mesh(new THREE.SphereGeometry(.26, 10, 8), std(i ? "#2f6b4a" : "#f4f1ea", { flatShading:false })); h.position.set(0, .38, .5);
+			const k = new THREE.Mesh(new THREE.BoxGeometry(.14, .07, .22), std("#e8963a")); k.position.set(0, .34, .78);
+			g.add(b, h, k); scene.add(g);
+			ducks.push({ g, ph:r()*6, d0:(.35 + r()*.3)*len, off:(r() - .5)*6 });
+		}
+		var deuleLen = len;
 	}
+	waterRipples(city.ground.water);          // reflets et paillettes du soleil (ou de la lune), comme sur la Deûle de Vauban
 
 	/* ---------- étudiants et passants sur les vrais trottoirs ---------- */
 	const WN = []; for(let i=0;i<EMAP.walk.n.length;i+=2) WN.push([EMAP.walk.n[i], EMAP.walk.n[i+1]]);
@@ -270,7 +429,20 @@ export function createEura({ background }){
 	// sur le parvis de Wenov, des groupes qui discutent
 	for(let k=0;k<4;k++){ const q = patioTrees[k]; for(const a of [0, Math.PI]){ const s = makePerson(scene); s.g.position.set(q.x + Math.sin(a)*.8 - 1, 0, q.z + Math.cos(a)*.8); s.g.rotation.y = a + Math.PI; Object.assign(s, { chat:true, ph:rr()*6 }); walkers.push(s); } }
 
-	function update(dt, t){
+	/* ---------- météo, comme à Vauban : pluie et rues mouillées, brouillard, ombres de nuages ---------- */
+	const rain = createRain(scene);
+	for(const m of [ground.material, city.ground.lawn, city.ground.road, city.ground.ped, city.ground.walk, ...city.roofs, ...city.flats, ...city.walls, brickM, towerM, facadeM]) if(m) cloudShade(m);
+	const wetBase = [city.ground.road, city.ground.ped, city.ground.walk].filter(Boolean).map(m => ({ m, c:m.color.clone(), r:m.roughness }));
+	function setWeather(w, night){
+		rain.set(w === "pluie" ? (night ? .7 : 1) : 0);
+		for(const { m, c, r } of wetBase){ m.color.copy(c).multiplyScalar(w === "pluie" ? .72 : 1); m.roughness = w === "pluie" ? .28 : r; m.metalness = w === "pluie" ? .12 : 0; }
+		// brume : le lointain disparaît dans le brouillard du matin, s'estompe sous la pluie
+		scene.fog.near = w === "brouillard" ? 40 : w === "pluie" ? 120 : 220;
+		scene.fog.far = w === "brouillard" ? 260 : w === "pluie" ? 430 : 560;
+	}
+
+	function update(dt, t, camera){
+		if(camera) rain.follow(camera.position);
 		for(const s of walkers){
 			if(s.chat){ s.body.rotation.z = Math.sin(t*1.3 + s.ph)*.04; continue; }
 			if(s.wait > 0){ s.wait -= dt; continue; }
@@ -290,19 +462,29 @@ export function createEura({ background }){
 			const step = t*s.speed*4.2 + s.ph;
 			s.body.position.y = .65 + Math.abs(Math.sin(step))*.07; s.body.rotation.z = Math.sin(step)*.05;
 		}
-		if(barge){
-			barge.t += dt*barge.dir*.012;
-			if(barge.t > .45 || barge.t < -.45) barge.dir *= -1;
-			const x = barge.mx + barge.ux*barge.t*barge.L, z = barge.mz + barge.uz*barge.t*barge.L;
-			barge.g.position.set(x, .25 + Math.sin(t*1.2)*.04, z);
-			barge.g.rotation.y = Math.atan2(barge.ux*barge.dir, barge.uz*barge.dir);
-			barge.g.visible = barge.ok([x, z]);
+		for(const b of boats){
+			b.s += b.v*b.dir*dt;
+			if(b.s > deuleLen - b.L){ b.s = deuleLen - b.L; b.dir = -1; }
+			if(b.s < b.L){ b.s = b.L; b.dir = 1; }
+			const [x, z, a] = along(deule, b.s);
+			b.g.position.set(x, .12 + Math.sin(t*1.1 + b.L)*.03, z);
+			b.g.rotation.set(Math.sin(t*.9 + b.L)*.01, a + (b.dir < 0 ? Math.PI : 0), 0);
+			b.g.visible = inWater(x, z);
+		}
+		for(const m of moored) m.g.position.y = .12 + Math.sin(t*.8 + m.ph)*.025;
+		for(const d of ducks){
+			const k = d.d0 + Math.sin(t*.02 + d.ph)*30, [x, z, a] = along(deule, k);
+			d.g.position.set(x + Math.cos(a)*d.off, .14 + Math.sin(t*1.6 + d.ph)*.04, z - Math.sin(a)*d.off);
+			d.g.rotation.y = a + (Math.cos(t*.02 + d.ph) < 0 ? Math.PI : 0);
+			d.g.visible = inWater(d.g.position.x, d.g.position.z);
 		}
 	}
 
 	/* ---------- ambiance (saison, nuit) ---------- */
 	const canopyCol = new THREE.Color();
-	function setAmbiance(S, L, night){
+	function setAmbiance(S, L, night, W){
+		// W : la lumière déjà ajustée à la météo (ciel gris sous la pluie, laiteux dans le brouillard) et la météo elle-même
+		if(W && W.light) L = W.light;
 		scene.fog.color.set(L.fog);
 		hemi.color.set(L.hemiSky); hemi.groundColor.set(L.hemiGround); hemi.intensity = L.hemiI;
 		sun.color.set(L.sun); sun.intensity = L.sunI; sun.position.set(...L.sunPos);
@@ -314,9 +496,11 @@ export function createEura({ background }){
 		});
 		if(canopyIM.instanceColor) canopyIM.instanceColor.needsUpdate = true;
 		setNight(night);
+		setWeather(W ? W.weather : "soleil", night);
 	}
 	function setNight(night){
-		facadeM.emissiveIntensity = night ? 1.1 : 0; brickM.emissiveIntensity = night ? .8 : 0;
+		facadeM.emissiveIntensity = night ? 1.1 : 0; brickM.emissiveIntensity = night ? .8 : 0; towerM.emissiveIntensity = night ? .6 : 0; atticM.emissiveIntensity = night ? .7 : 0;
+		if(diamantM) diamantM.emissiveIntensity = night ? .8 : 0; if(ftGlass) ftGlass.emissiveIntensity = night ? .6 : 0;
 		shopM.emissiveIntensity = night ? .9 : 0; glassM.emissiveIntensity = night ? .55 : 0; shedMat.emissiveIntensity = night ? .7 : 0;
 		lampMat.emissiveIntensity = night ? 2.2 : 0;
 		tower.traverse(o => { if(o.userData.clock) o.material.emissiveIntensity = night ? 1.2 : 0; });

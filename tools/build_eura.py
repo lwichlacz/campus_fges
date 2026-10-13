@@ -298,8 +298,12 @@ def bd_rec(b, q, A, kind=None, lv=None, col=None):
     rm = { "1":1, "2":2, "3":3 }.get(mat1(b["mr"]), 0) or (0 if not rh else (1 if r % 10 < 7 else 2))
     rec = { "house":0, "campus":1, "modern":1, "sport":3, "church":4, "shed":6, "office":7 }[kind]
     return [rec, lv or bd_levels(b), bd_col(b, r) if col is None else col, roof, flat(G(v) for v in q), rh, style, rm, roof_colour(q, bool(rh))]
+# année de construction (tools/fetch_eura_annees.py) : absente de l'extrait d'origine, elle donne l'époque des façades
+_yp = ROOT / "tools" / "osm" / "bdtopo_eura_annees.json"
+YEARS = json.load(open(_yp, encoding="utf-8")) if _yp.exists() else {}
 BD = []
 for b in json.load(open(ROOT / "tools" / "osm" / "bdtopo_eura.json", encoding="utf-8"))["buildings"]:
+    if not b.get("y") and b["id"] in YEARS: b["y"] = YEARS[b["id"]]
     q = [mp({ "lon":c[0], "lat":c[1] }) for c in b["g"]]
     q2 = [q[0]]
     for v in q[1:]:
@@ -351,10 +355,16 @@ for k, (e, q, A, _) in enumerate(cands):
     col = (r // 7) % 12 if kind == "house" else (r // 7) % 4
     rec = { "house":0, "campus":1, "modern":1, "sport":3, "church":4, "shed":6, "office":7 }[kind]
     if kind == "modern": col = 1                                     # béton clair des immeubles récents
+    # d'après les photos et les fiches d'architecture du quartier (Rives de la Haute-Deûle : la brique y est la règle)
+    style = 0
+    if "rives de l'isle" in n and kind in ("modern", "house", "campus"): rec_kind, col, style = 0, r % 5, 2       # logements récents en brique
+    elif n.startswith("terraneo"): rec_kind = None; col = 0                                                       # Téranéo : bois brûlé, gris sombre
+    else: rec_kind = None
     gp = [G(v) for v in q]
     if ps and not t.get("building:levels"):          # bâtiment nommé : sa hauteur réelle d'après la BD TOPO
         lv = max(bd_levels(x[0]) for x in ps)
-    buildings.append([rec, lv, col, roof, flat(gp), 0, 0, 0, roof_colour(q, bool(roof))])
+    if rec_kind is not None: rec = rec_kind
+    buildings.append([rec, lv, col, roof, flat(gp), 0, style, 0, roof_colour(q, bool(roof))])
     if t.get("name"): pois_src[t["name"]] = (len(buildings) - 1, gp, lv)
 for bb, bq, bA, _ in free: buildings.append(bd_rec(bb, bq, bA))
 print("bâtiments :", len(buildings))
@@ -436,6 +446,14 @@ for e in E:
                 p = [mp(q) for q in m["geometry"]]
                 if len(p) >= 4: water.append(flat(G(q) for q in p[:-1]))
 water = [w for w in water if min(math.hypot(w[i], w[i+1]) for i in range(0, len(w), 2)) < (CORE + 200)*S]
+# axe de la Deûle et des bras d'eau (péniches, bateaux, canards : js/eura.js)
+canals = []
+for e in ways:
+    t = e.get("tags", {})
+    if t.get("waterway") not in ("canal", "river"): continue
+    p_ = [q for q in P(e) if dist(q) < CORE + 250]
+    if len(p_) >= 2: canals.append(flat(G(q) for q in p_))
+print("cours d'eau :", len(canals), "tronçons")
 tpts = [mp(n) for n in E if n["type"] == "node" and n.get("tags", {}).get("natural") == "tree" and dist(mp(n)) < CORE]
 _tg = {}
 for p_ in tpts: _tg.setdefault((int(p_[0]//8), int(p_[1]//8)), []).append(p_)
@@ -449,6 +467,7 @@ def in_bd(x, z, m=1.5):
         q = _bp[k_]; bb = bbox(q)
         if bb[0] - m <= x <= bb[2] + m and bb[1] - m <= z <= bb[3] + m and (inside(x, z, q) or min(seg_d(x, z, q[i], q[i-1]) for i in range(len(q))) < m): return True
     return False
+_no_tree = [P(e) for e in ways if (e.get("tags", {}).get("name") or "").startswith("Jardin Le Blan")]
 n_garden = 0
 if ORT:
     x = WC[0] - CORE
@@ -459,7 +478,7 @@ if ORT:
             q_ = (x + j_[0], z + j_[1])
             if dist(q_) < CORE - 4:
                 e_, l_ = canopy(*q_, 1.5)
-                if e_ > .045 and l_ < .36 and not in_bd(*q_) and not any(math.dist(q_, o) < 5 for i in (-1, 0, 1) for j in (-1, 0, 1) for o in _tg.get((int(q_[0]//8) + i, int(q_[1]//8) + j), ())):
+                if e_ > .045 and l_ < .36 and not in_bd(*q_) and not any(inside(*q_, g_) for g_ in _no_tree) and not any(math.dist(q_, o) < 5 for i in (-1, 0, 1) for j in (-1, 0, 1) for o in _tg.get((int(q_[0]//8) + i, int(q_[1]//8) + j), ())):
                     tpts.append(q_); _tg.setdefault((int(q_[0]//8), int(q_[1]//8)), []).append(q_); n_garden += 1
             z += 7.0
         x += 7.0
@@ -552,7 +571,7 @@ SPOTS = {
 }
 out = {
     "S":S, "wenov":{ "pts":flat(wen_in), "street":flat(wen) }, "blan":blan, "hand":hand, "buildings":buildings, "roads":roads,
-    "greens":greens, "trees":trees, "walk":walk, "canals":[], "water":water, "parks":[], "pois":POIS, "spots":SPOTS,
+    "greens":greens, "trees":trees, "walk":walk, "canals":canals, "water":water, "parks":[], "pois":POIS, "spots":SPOTS,
     "fh":FH_MAP, "streets":STREETS, "places":places, "stations":stations, "sol":sol
 }
 js = ("/* Généré par tools/build_eura.py — ne pas modifier à la main.\n"
