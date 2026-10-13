@@ -64,8 +64,8 @@ export const GAME_INFO = {
 		pitch:"La trésorerie d'une PME fond sans raison : trie les pièces, rapproche la banque, analyse le budget… et démasque le fraudeur." },
 	robot:{ fid:"spi", title:"Cellule robotique Wenov", icon:"🦾", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"7 min",
 		pitch:"Pilote un vrai bras robot en 3D, programme le cycle d'une ligne de production, puis donne-lui des yeux pour trier les pièces." },
-	biodata:{ fid:"dmb", title:"From Blood to Decision", icon:"🧬", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"6 min",
-		pitch:"En anglais, comme le master : suis la prise de sang d'un patient fatigué, nettoie ses données de séquençage et trouve la mutation qui explique sa fatigue." }
+	biodata:{ fid:"dmb", title:"From Blood to Decision", icon:"🧬", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12-15 min",
+		pitch:"En anglais, comme le master : du dossier d'un patient fatigué à l'étude d'une cohorte. RGPD, contrôle qualité du séquençage, interprétation d'un variant, biostatistiques, machine learning et compte rendu clinique." }
 };
 
 export const PROFILES = {
