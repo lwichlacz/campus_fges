@@ -1,13 +1,15 @@
 /* Le quartier d'Euratechnologies (Bois-Blancs, Lille), autour du campus Wenov et de l'École du Numérique.
-   Tout vient d'OpenStreetMap (js/euramap.js, généré par tools/build_eura.py), sauf trois bâtiments faits main
+   Comme Vauban : OpenStreetMap, BD TOPO et photo aérienne de l'IGN (js/euramap.js, généré par tools/build_eura.py),
+   à la même échelle verticale (un étage = 1,64 unité), avec plaques de rue, jalonnement « M » et lieux réels. Trois bâtiments faits main
    d'après photos : Wenov (Lalou+Lebec, 2022 : béton clair, patio planté sur pilotis, volume vitré),
    le Blan-Lafont (filature de coton de 1896, siège d'Euratechnologies depuis 2009) et sa tour.
    Chargé à la demande, comme l'atrium : une seule scène de quartier à la fois (léger sur téléphone). */
 import * as THREE from "three";
-import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js?v=4e6f40a23c";
-import { buildCity, pointInPoly, softenFar } from "./city.js?v=4e6f40a23c";
-import { buildStation } from "./station.js?v=4e6f40a23c";
-import { EMAP } from "./euramap.js?v=4e6f40a23c";
+import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js?v=65afbc6917";
+import { buildCity, pointInPoly, softenFar } from "./city.js?v=65afbc6917";
+import { buildStation } from "./station.js?v=65afbc6917";
+import { EMAP } from "./euramap.js?v=65afbc6917";
+import { buildLandmarks } from "./landmarks.js?v=65afbc6917";
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const ring = f => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; };
@@ -74,16 +76,37 @@ export function createEura({ background }){
 
 	const ground = new THREE.Mesh(new THREE.CircleGeometry(520, 48).rotateX(-Math.PI/2), std("#a9b05c", { flatShading:false }));
 	ground.position.y = -.02; ground.receiveShadow = true; scene.add(ground);
+	// sol d'après la photo aérienne de l'IGN (img/sol_eura.png) : herbe dans les jardins, cour pavée ailleurs (comme à Vauban)
+	if(EMAP.sol){
+		const [x0, z0, w, h] = EMAP.sol, gm = ground.material;
+		const U = { uSol:{ value:null }, uSolBox:{ value:new THREE.Vector4(x0, z0, w, h) }, uPaved:{ value:new THREE.Color("#b3aa9b") }, uSolOn:{ value:0 } };
+		new THREE.TextureLoader().load("img/sol_eura.png", t => { t.flipY = false; t.colorSpace = THREE.NoColorSpace; U.uSol.value = t; U.uSolOn.value = 1; });
+		gm.polygonOffset = true; gm.polygonOffsetFactor = 6; gm.polygonOffsetUnits = 12;
+		gm.onBeforeCompile = sh => {
+			Object.assign(sh.uniforms, U);
+			sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec2 vSolXZ;")
+				.replace("#include <project_vertex>", "#include <project_vertex>\n	vSolXZ = ( modelMatrix * vec4( transformed, 1.0 ) ).xz;");
+			sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nuniform sampler2D uSol; uniform vec4 uSolBox; uniform vec3 uPaved; uniform float uSolOn; varying vec2 vSolXZ;")
+				.replace("#include <color_fragment>", `#include <color_fragment>
+	{ vec2 st = ( vSolXZ - uSolBox.xy )/uSolBox.zw;
+	  if( uSolOn > 0.5 && st.x > 0.0 && st.y > 0.0 && st.x < 1.0 && st.y < 1.0 ){
+	    float veg = smoothstep( 0.25, 0.75, texture2D( uSol, st ).r );
+	    diffuseColor.rgb = mix( uPaved, diffuseColor.rgb, veg ); } }`);
+		};
+		gm.customProgramCacheKey = () => "sol";
+	}
 
 	// pas de pelouse OpenStreetMap sous Wenov (fait main) : elle affleurerait sous le patio et les pilotis
 	{ const blk = ring(EMAP.wenov.street); EMAP.greens = EMAP.greens.filter(([, f]) => { const p = ring(f), [cx, cz] = cen(p); return !pointInPoly(cx, cz, blk); }); }
 	const city = buildCity(scene, EMAP, { offices:true });
+	// plaques de rue, panneaux « M » de Wenov jusqu'à la station, lieux réels du quartier
+	const landmarks = buildLandmarks(scene, EMAP, { inBuilding:city.inBuilding, roadGap:city.roadGap, home:[0, -12] });
 
 	/* ---------- Wenov ---------- */
 	const W = ring(EMAP.wenov.pts), WC = cen(W);
 	const wen = new THREE.Group(); scene.add(wen);
 	const white = std("#efede8"), slabM = std("#f6f4ef");
-	const gridTex = concreteGrid(), FH = 1.45, NF = 5;                       // R+4, ~3,6 m par niveau
+	const gridTex = concreteGrid(), FH = 2.16, NF = 5;                       // R+4 : 20,5 m à l'acrotère (PSS-archi), à l'échelle de Vauban
 	gridTex.repeat.set(1/1.6, 1/FH);
 	const facadeM = new THREE.MeshStandardMaterial({ map:gridTex, roughness:.85, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:litGrid() }); softenFar(facadeM);
 	const patio = inset(W, .5);
@@ -125,7 +148,7 @@ export function createEura({ background }){
 	const BL = ring(EMAP.blan.pts);
 	const brickTex = brickArches(); brickTex.repeat.set(1/2.4, 1/2);
 	const brickM = new THREE.MeshStandardMaterial({ map:brickTex, roughness:.9, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:litGrid() }); softenFar(brickM);
-	const BH = 8;                                                             // ~20 m
+	const BH = 8.8;                                                           // 16,6 m à la gouttière (BD TOPO), à l'échelle de Vauban
 	ringSlab(BL, null, BH, brickM, 0, scene);
 	ringSlab(offset(BL, -.25), null, .35, std("#8f4632"), BH, scene);
 	// sheds vitrés de la filature
@@ -284,7 +307,7 @@ export function createEura({ background }){
 		shopM.emissiveIntensity = night ? .9 : 0; glassM.emissiveIntensity = night ? .55 : 0; shedMat.emissiveIntensity = night ? .7 : 0;
 		lampMat.emissiveIntensity = night ? 2.2 : 0;
 		tower.traverse(o => { if(o.userData.clock) o.material.emissiveIntensity = night ? 1.2 : 0; });
-		city.setNight(night);
+		city.setNight(night); landmarks.setNight(night ? 1 : 0);
 	}
 
 	/* ---------- lieux : épingles et points de vue ---------- */

@@ -1,0 +1,9349 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-10-13T12:31:16Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 470456234,
+  "lat": 50.6361406,
+  "lon": 3.0264333,
+  "tags": {
+    "check_date:opening_hours": "2026-08-13",
+    "level": "0",
+    "name": "Pro Tech 59",
+    "opening_hours:signed": "no",
+    "shop": "mobile_phone"
+  }
+},
+{
+  "type": "node",
+  "id": 470456259,
+  "lat": 50.6361598,
+  "lon": 3.0263692,
+  "tags": {
+    "check_date": "2026-08-13",
+    "check_date:opening_hours": "2026-08-13",
+    "female": "yes",
+    "level": "0",
+    "male": "yes",
+    "name": "Hair attitude",
+    "opening_hours": "Tu,Th,Fr 09:00-12:00, Tu,Th,Fr 14:00-18:00, We 09:30-12:00, We 14:00-17:00, Sa 09:00-12:00, Sa 14:00-17:00",
+    "phone": "+33 3 20 92 00 72",
+    "ref:FR:SIRET": "53378794100012",
+    "shop": "hairdresser",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "node",
+  "id": 470544816,
+  "lat": 50.6365552,
+  "lon": 3.0253976,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "kebab",
+    "indoor_seating": "yes",
+    "level": "0",
+    "name": "Byzance",
+    "opening_hours": "Tu-Sa 11:30-14:30,17:30-22:30, Su 17:00-22:30",
+    "outdoor_seating": "no",
+    "ref:FR:SIRET": "92132364800011",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 470936898,
+  "lat": 50.6370784,
+  "lon": 3.0242154,
+  "tags": {
+    "addr:housenumber": "4",
+    "addr:street": "Place du Broquelet",
+    "male": "yes",
+    "name": "Palistro",
+    "opening_hours": "Tu-Sa 09:00-20:00; Fr 09:00-12:30,14:00-20:00; Su 09:00-15:00",
+    "phone": "+33 7 58 13 62 69",
+    "shop": "hairdresser",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "node",
+  "id": 470936900,
+  "lat": 50.6371473,
+  "lon": 3.0243391,
+  "tags": {
+    "addr:housenumber": "7",
+    "addr:street": "Place du Broquelet",
+    "amenity": "fast_food",
+    "check_date:opening_hours": "2026-08-13",
+    "cuisine": "burger",
+    "name": "Hollyfood",
+    "opening_hours": "Mo-Fr 11:00-24:00; Sa 12:00-24:00; Su 12:00-24:00",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 888429559,
+  "lat": 50.6361410,
+  "lon": 3.0265550,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "bollard",
+    "capacity": "4",
+    "covered": "no",
+    "mapillary": "509800677056657",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 888429913,
+  "lat": 50.6373923,
+  "lon": 3.0242035,
+  "tags": {
+    "access": "yes",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "4",
+    "covered": "no",
+    "fee": "no",
+    "indoor": "no",
+    "lit": "yes",
+    "mapillary": "2546883188940872",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 976119795,
+  "lat": 50.6324434,
+  "lon": 3.0275711,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "24",
+    "covered": "no",
+    "mapillary": "187364163235665",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 1149410766,
+  "lat": 50.6361608,
+  "lon": 3.0270592,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date": "2023-05-11",
+    "cuisine": "korean",
+    "level": "0",
+    "name": "Out Fry"
+  }
+},
+{
+  "type": "node",
+  "id": 1149410771,
+  "lat": 50.6360707,
+  "lon": 3.0289443,
+  "tags": {
+    "amenity": "post_box",
+    "collection_times": "Mo-Fr 08:30; Sa 08:00; PH off",
+    "drive_through": "no",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "operator:wikipedia": "fr:La Poste (entreprise française)",
+    "post_box:type": "wall",
+    "ref": "A1F2J4",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 1149410794,
+  "lat": 50.6363896,
+  "lon": 3.0264262,
+  "tags": {
+    "addr:housenumber": "232",
+    "addr:street": "Avenue de Dunkerque",
+    "check_date": "2026-08-17",
+    "check_date:opening_hours": "2026-08-17",
+    "level": "0",
+    "name": "Korner CBD",
+    "opening_hours": "Mo-Su 12:30-19:30",
+    "shop": "cannabis",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 1149410796,
+  "lat": 50.6363379,
+  "lon": 3.0265877,
+  "tags": {
+    "addr:housenumber": "228",
+    "addr:street": "Avenue de Dunkerque",
+    "amenity": "doctors",
+    "check_date:opening_hours": "2026-08-24",
+    "healthcare": "doctor",
+    "name": "Docteur MAES Jean-Yves",
+    "opening_hours:signed": "no",
+    "phone": "+33 3 20 93 05 93"
+  }
+},
+{
+  "type": "node",
+  "id": 1149410801,
+  "lat": 50.6361331,
+  "lon": 3.0271364,
+  "tags": {
+    "name": "Le Comptoir d'Aristée",
+    "opening_hours": "Tu-Fr 09:00-12:30,15:30-19:00; Sa 09:00-13:00,15:00-19:00; Su 10:00-13:00",
+    "shop": "cheese"
+  }
+},
+{
+  "type": "node",
+  "id": 1149410809,
+  "lat": 50.6365294,
+  "lon": 3.0260981,
+  "tags": {
+    "addr:city": "Lambersart",
+    "addr:housenumber": "236",
+    "addr:postcode": "59130",
+    "addr:street": "Avenue de Dunkerque",
+    "amenity": "fast_food",
+    "brand": "Domino's",
+    "brand:wikidata": "Q839466",
+    "brand:wikipedia": "en:Domino's Pizza",
+    "check_date": "2026-08-17",
+    "check_date:opening_hours": "2026-08-17",
+    "cuisine": "pizza",
+    "indoor_seating": "yes",
+    "name": "Domino's",
+    "opening_hours": "Mo-Su 11:30-14:00, Mo-Su 18:00-22:30",
+    "outdoor_seating": "no",
+    "phone": "+33 3 20 09 18 00",
+    "short_name": "Domino's",
+    "source": "survey",
+    "takeaway": "yes",
+    "website": "https://www.dominos.fr/magasin/lambersart_59130",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1149410813,
+  "lat": 50.6377805,
+  "lon": 3.0257545,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2022-01-18",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 1149410835,
+  "lat": 50.6364266,
+  "lon": 3.0263400,
+  "tags": {
+    "amenity": "bank",
+    "atm": "yes",
+    "brand": "LCL",
+    "brand:wikidata": "Q779722",
+    "brand:wikipedia": "en:Crédit Lyonnais",
+    "check_date": "2026-08-17",
+    "check_date:opening_hours": "2026-08-17",
+    "name": "LCL",
+    "opening_hours": "Tu,We,Fr 09:00-12:30,14:00-18:00; Th 09:00-12:30,15:00-18:00; Sa 09:00-13:00",
+    "operator": "LCL",
+    "source": "survey",
+    "website": "https://www.lcl.fr/agence-banque/06643-LCL-LAMBERSART"
+  }
+},
+{
+  "type": "node",
+  "id": 1149410843,
+  "lat": 50.6371937,
+  "lon": 3.0249514,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2022-01-18",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 1149457005,
+  "lat": 50.6365993,
+  "lon": 3.0253168,
+  "tags": {
+    "drink:wine": "yes",
+    "level": "0",
+    "name": "Cave de récoltants",
+    "opening_hours": "Tu,Th 10:00-12:30, Mo-Th 15:00-19:00, Fr,Sa 09:30-19:30",
+    "ref:FR:SIRET": "44485569600019",
+    "shop": "alcohol",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2011"
+  }
+},
+{
+  "type": "node",
+  "id": 1149457008,
+  "lat": 50.6366404,
+  "lon": 3.0252533,
+  "tags": {
+    "level": "0",
+    "name": "L'atelier Beauté",
+    "opening_hours": "Tu-Fr 09:00-20:00; Sa 09:00-17:00",
+    "ref:FR:SIRET": "81992297200016",
+    "shop": "beauty"
+  }
+},
+{
+  "type": "node",
+  "id": 1209159712,
+  "lat": 50.6351069,
+  "lon": 3.0240173,
+  "tags": {
+    "amenity": "post_box",
+    "check_date:collection_times": "2025-05-11",
+    "collection_times": "Mo-Sa 09:00",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "operator:wikipedia": "fr:La Poste (entreprise française)",
+    "post_box:type": "lamp",
+    "ref": "A1F2Z1",
+    "source": "data.gouv.fr:LaPoste - 05/2016"
+  }
+},
+{
+  "type": "node",
+  "id": 1276033289,
+  "lat": 50.6319152,
+  "lon": 3.0208849,
+  "tags": {
+    "amenity": "drinking_water",
+    "check_date": "2026-07-13",
+    "man_made": "water_tap"
+  }
+},
+{
+  "type": "node",
+  "id": 1276033303,
+  "lat": 50.6323765,
+  "lon": 3.0204052,
+  "tags": {
+    "amenity": "drinking_water",
+    "check_date": "2026-07-13",
+    "man_made": "water_tap"
+  }
+},
+{
+  "type": "node",
+  "id": 1435715813,
+  "lat": 50.6307098,
+  "lon": 3.0292751,
+  "tags": {
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2011",
+    "tourism": "picnic_site"
+  }
+},
+{
+  "type": "node",
+  "id": 1439100619,
+  "lat": 50.6373775,
+  "lon": 3.0242319,
+  "tags": {
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "capacity": "18",
+    "fee": "yes",
+    "name": "Canteleu",
+    "network": "V'Lille",
+    "opening_hours": "24/7",
+    "operator": "CYKLEO",
+    "operator:type": "private",
+    "ref": "072",
+    "vending": "no",
+    "website": "https://www.ilevia.fr/cms/vlille/",
+    "wheelchair": "no",
+    "wikidata": "Q3552843",
+    "wikipedia": "fr:V'Lille"
+  }
+},
+{
+  "type": "node",
+  "id": 1439100620,
+  "lat": 50.6337793,
+  "lon": 3.0205670,
+  "tags": {
+    "amenity": "bicycle_rental",
+    "bicycle_rental": "docking_station",
+    "capacity": "24",
+    "name": "Euratechnologies",
+    "network": "V'Lille",
+    "operator": "CYKLEO",
+    "ref": "083",
+    "vending": "yes",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 1737871665,
+  "lat": 50.6299751,
+  "lon": 3.0256161,
+  "tags": {
+    "alt_name": "La Banque Postale",
+    "amenity": "post_office",
+    "atm": "yes",
+    "bic": "PSSTFRPPLIL",
+    "contact:city": "Lille",
+    "contact:housenumber": "54",
+    "contact:phone": "3631",
+    "contact:postcode": "59000",
+    "contact:street": "Rue du Général Anne de la Bourdonnaye",
+    "name": "La Poste - Bois Blancs",
+    "opening_hours": "Mo off; Tu-Fr 09:00-12:00, 13:30-16:30; Sa 09:00-12:00; Su off",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "operator:wikipedia": "fr:La Poste (entreprise française)",
+    "ref:FR:LaPoste": "11082A",
+    "ref:FR:SIRET": "35600000025347",
+    "source": "data.gouv.fr:LaPoste - 04/2012",
+    "website": "https://localiser.laposte.fr/nord/lille/lille-bois-blancs-599550",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 1919129503,
+  "lat": 50.6335381,
+  "lon": 3.0209041,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "70",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 2063752417,
+  "lat": 50.6378035,
+  "lon": 3.0234243,
+  "tags": {
+    "description": "Façades et toitures (cad. C 838) : inscription par arrêté du 2 février 1982",
+    "heritage": "3",
+    "heritage:operator": "mhs",
+    "mhs:inscription_date": "1982-02-02",
+    "name": "Ancienne maladrerie",
+    "ref:mhs": "PA00107730",
+    "source:heritage": "Ministère de la Culture - 06/2019",
+    "start_date:fr": "3e quart 15e siècle",
+    "tourism": "attraction",
+    "wikidata": "Q18589958"
+  }
+},
+{
+  "type": "node",
+  "id": 2231973386,
+  "lat": 50.6357010,
+  "lon": 3.0277174,
+  "tags": {
+    "amenity": "childcare",
+    "check_date": "2025-01-04",
+    "contact:city": "Lille",
+    "contact:housenumber": "165",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue de Dunkerque",
+    "level": "0",
+    "name": "Les Petits Chaperons Rouge",
+    "nursery": "yes",
+    "operator": "Grandir",
+    "operator:type": "private"
+  }
+},
+{
+  "type": "node",
+  "id": 2231973398,
+  "lat": 50.6299108,
+  "lon": 3.0248627,
+  "tags": {
+    "amenity": "kindergarten",
+    "name": "Multi-Accueil Petite-Enfance les Loupiots"
+  }
+},
+{
+  "type": "node",
+  "id": 2647919771,
+  "lat": 50.6309954,
+  "lon": 3.0264918,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:city": "Lille",
+    "contact:housenumber": "19",
+    "contact:phone": "+33 9 83 93 70 01",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Surcouf",
+    "contact:website": "https://whitewoodfood.fr/fr",
+    "name": "White Wood Food",
+    "opening_hours": "Tu-Th, Sa, Su 11:00-15:00, 18:00-23:00; Fr 19:00-23:00",
+    "ref:FR:SIRET": "85123150600011"
+  }
+},
+{
+  "type": "node",
+  "id": 2647919781,
+  "lat": 50.6320542,
+  "lon": 3.0277391,
+  "tags": {
+    "addr:housenumber": "5",
+    "addr:street": "Rue Guillaume Tell",
+    "amenity": "pharmacy",
+    "contact:city": "Lille",
+    "contact:housenumber": "5",
+    "contact:phone": "+33 3 20 92 85 51",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Guillaume Tell",
+    "dispensing": "yes",
+    "healthcare": "pharmacy",
+    "name": "Pharmacie Ho Tan Tai",
+    "opening_hours": "Mo-Sa 09:00-12:15,14:00-19:15; Su off",
+    "ref:FR:FINESS": "590021655",
+    "source": "Celtipharm - 10/2014"
+  }
+},
+{
+  "type": "node",
+  "id": 2947948790,
+  "lat": 50.6297123,
+  "lon": 3.0252286,
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "layer": "-1",
+    "parking": "underground"
+  }
+},
+{
+  "type": "node",
+  "id": 3407703784,
+  "lat": 50.6330968,
+  "lon": 3.0206807,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "24",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 3407703785,
+  "lat": 50.6333571,
+  "lon": 3.0203213,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "24",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 3645026330,
+  "lat": 50.6382529,
+  "lon": 3.0232030,
+  "tags": {
+    "air_conditioning": "yes",
+    "brand": "Carrefour City",
+    "brand:wikidata": "Q2940187",
+    "brand:wikipedia": "fr:Carrefour City",
+    "check_date:opening_hours": "2026-08-29",
+    "name": "Carrefour City",
+    "opening_hours": "Mo-Sa 07:00-22:00; Su 09:00-13:00",
+    "phone": "+33 3 20 00 38 27",
+    "shop": "convenience",
+    "website": "https://www.carrefour.fr/magasin/city-lambersart-dunkerque",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3650725825,
+  "lat": 50.6298432,
+  "lon": 3.0299869,
+  "tags": {
+    "board_type": "history",
+    "information": "board",
+    "name": "Berges des Bois-Blancs",
+    "tourism": "information"
+  }
+},
+{
+  "type": "node",
+  "id": 3650725855,
+  "lat": 50.6298589,
+  "lon": 3.0299918,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2011"
+  }
+},
+{
+  "type": "node",
+  "id": 3650725856,
+  "lat": 50.6298890,
+  "lon": 3.0300248,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2011"
+  }
+},
+{
+  "type": "node",
+  "id": 3650725857,
+  "lat": 50.6299047,
+  "lon": 3.0300755,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2011"
+  }
+},
+{
+  "type": "node",
+  "id": 3650725858,
+  "lat": 50.6300575,
+  "lon": 3.0303326,
+  "tags": {
+    "access": "customers",
+    "amenity": "drinking_water",
+    "fee": "yes",
+    "operator": "VNF",
+    "payment:cash": "no",
+    "payment:credit_cards": "no",
+    "payment:cryptocurrencies": "no",
+    "payment:debit_cards": "no",
+    "payment:ep:vignette_plaisance": "yes",
+    "power_supply": "yes",
+    "power_supply:voltage": "240"
+  }
+},
+{
+  "type": "node",
+  "id": 3650725859,
+  "lat": 50.6303492,
+  "lon": 3.0306720,
+  "tags": {
+    "access": "customers",
+    "amenity": "drinking_water",
+    "fee": "yes",
+    "operator": "VNF",
+    "payment:cash": "no",
+    "payment:credit_cards": "no",
+    "payment:cryptocurrencies": "no",
+    "payment:debit_cards": "no",
+    "payment:ep:vignette_plaisance": "yes",
+    "power_supply": "yes",
+    "power_supply:voltage": "240"
+  }
+},
+{
+  "type": "node",
+  "id": 3713723394,
+  "lat": 50.6359414,
+  "lon": 3.0269868,
+  "tags": {
+    "amenity": "restaurant",
+    "capacity": "25",
+    "check_date": "2026-05-28",
+    "contact:city": "Lille",
+    "contact:housenumber": "179",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue de Dunkerque",
+    "cuisine": "french",
+    "level": "0",
+    "name": "Youpi",
+    "opening_hours": "Tu-We 12:00-14:00; Th-Fr 12:00-14:00,19:00-21:30",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3784403997,
+  "lat": 50.6335510,
+  "lon": 3.0189316,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "14",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 3784403998,
+  "lat": 50.6332714,
+  "lon": 3.0186189,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 3784403999,
+  "lat": 50.6337402,
+  "lon": 3.0188337,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "16",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 3784404004,
+  "lat": 50.6329923,
+  "lon": 3.0182928,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 3784432331,
+  "lat": 50.6310350,
+  "lon": 3.0190031,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "14",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 3784432332,
+  "lat": 50.6342703,
+  "lon": 3.0213915,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "18",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 3784432333,
+  "lat": 50.6341308,
+  "lon": 3.0204056,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "46",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 3784432334,
+  "lat": 50.6342433,
+  "lon": 3.0211543,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "4",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 3784621570,
+  "lat": 50.6360050,
+  "lon": 3.0268763,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "2",
+    "check_date": "2024-12-18",
+    "check_date:capacity": "2024-12-18",
+    "covered": "no",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 3893115522,
+  "lat": 50.6306907,
+  "lon": 3.0228255,
+  "tags": {
+    "amenity": "car_sharing",
+    "capacity": "3",
+    "name": "Euratechnologies",
+    "operator": "Citiz",
+    "operator:type": "private",
+    "operator:wikidata": "Q3080530"
+  }
+},
+{
+  "type": "node",
+  "id": 3973099457,
+  "lat": 50.6349165,
+  "lon": 3.0229155,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "capacity:disabled": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973131273,
+  "lat": 50.6367774,
+  "lon": 3.0237249,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973131274,
+  "lat": 50.6370317,
+  "lon": 3.0234757,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973131604,
+  "lat": 50.6332095,
+  "lon": 3.0285644,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973143256,
+  "lat": 50.6372483,
+  "lon": 3.0244179,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973143921,
+  "lat": 50.6366100,
+  "lon": 3.0254366,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973154457,
+  "lat": 50.6376344,
+  "lon": 3.0238463,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973156006,
+  "lat": 50.6311800,
+  "lon": 3.0287771,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973156007,
+  "lat": 50.6308354,
+  "lon": 3.0275897,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973158086,
+  "lat": 50.6295796,
+  "lon": 3.0252445,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973158087,
+  "lat": 50.6302638,
+  "lon": 3.0257244,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973158088,
+  "lat": 50.6306859,
+  "lon": 3.0270286,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973158089,
+  "lat": 50.6320305,
+  "lon": 3.0279078,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973158090,
+  "lat": 50.6335402,
+  "lon": 3.0264568,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973158091,
+  "lat": 50.6335994,
+  "lon": 3.0252020,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973158092,
+  "lat": 50.6346343,
+  "lon": 3.0245331,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973182493,
+  "lat": 50.6355816,
+  "lon": 3.0211969,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973203024,
+  "lat": 50.6315018,
+  "lon": 3.0263463,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973203025,
+  "lat": 50.6295572,
+  "lon": 3.0270551,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973232245,
+  "lat": 50.6347898,
+  "lon": 3.0279287,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973232248,
+  "lat": 50.6329719,
+  "lon": 3.0256165,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973232249,
+  "lat": 50.6360503,
+  "lon": 3.0224946,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973232250,
+  "lat": 50.6363848,
+  "lon": 3.0238182,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973232251,
+  "lat": 50.6358013,
+  "lon": 3.0183005,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973289463,
+  "lat": 50.6299258,
+  "lon": 3.0239454,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3973289464,
+  "lat": 50.6345320,
+  "lon": 3.0212857,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4416740147,
+  "lat": 50.6338901,
+  "lon": 3.0207151,
+  "tags": {
+    "addr:housenumber": "175",
+    "addr:street": "Avenue de Bretagne",
+    "amenity": "restaurant",
+    "check_date": "2024-09-20",
+    "contact:website": "https://www.alexens.com",
+    "cuisine": "regional",
+    "name": "Alexens",
+    "opening_hours": "Mo-We 08:00-16:30; Th 08:00-22:00; Fr 08:00-16:30",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4416740148,
+  "lat": 50.6342051,
+  "lon": 3.0202757,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "sandwich",
+    "diet:vegan": "yes",
+    "diet:vegetarian": "yes",
+    "level": "0",
+    "name": "Bagelcorner",
+    "opening_hours": "Mo-Fr 08:00-17:00; Th-Fr,Su 19:00-21:00",
+    "self_service": "yes",
+    "takeaway": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4416740150,
+  "lat": 50.6341460,
+  "lon": 3.0200495,
+  "tags": {
+    "addr:housenumber": "166 bis",
+    "addr:street": "Avenue de Bretagne",
+    "amenity": "fast_food",
+    "check_date": "2025-08-05",
+    "level": "0",
+    "name": "La Famille",
+    "opening_hours": "Mo-Fr 08:00-15:00; PH closed",
+    "phone": "+33 3 20 05 05 12",
+    "ref:FR:SIRET": "50881109800062",
+    "website": "https://www.lf.fr/restaurants/la-famille-lille-euratechnologies",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4416740151,
+  "lat": 50.6345407,
+  "lon": 3.0214259,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date": "2026-07-13",
+    "cuisine": "pizza",
+    "email": "contact@pick-it-up.fr",
+    "level": "0",
+    "name": "Pickit Up",
+    "phone": "+33 3 20 09 44 17",
+    "website": "https://pick-it-up.fr",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 4416740152,
+  "lat": 50.6342062,
+  "lon": 3.0213502,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:city": "Lille",
+    "contact:housenumber": "163",
+    "contact:phone": "+33 3 20 53 40 12",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue De Bretagne",
+    "cuisine": "burger",
+    "diet:vegetarian": "yes",
+    "name": "Sogood Euratechnologies",
+    "official_name": "Sogood Euratechnologies",
+    "opening_hours": "Mo-Fr 08:00-14:00",
+    "ref:FR:SIRET": "75038304400021",
+    "website": "https://www.sogood.fr/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4416740153,
+  "lat": 50.6303364,
+  "lon": 3.0205609,
+  "tags": {
+    "addr:city": "Lomme",
+    "addr:postcode": "59160",
+    "addr:street": "Quai Hegel",
+    "amenity": "restaurant",
+    "building": "houseboat",
+    "cuisine": "regional",
+    "name": "Kok Piraat Péniche-Restaurant",
+    "opening_hours": "Mo-Tu 12:00-14:00; We-Fr 12:00-14:00,18:00-22:00",
+    "website": "https://www.kokpiraat.fr/",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 4421990906,
+  "lat": 50.6319337,
+  "lon": 3.0231292,
+  "tags": {
+    "access": "yes",
+    "amenity": "parking",
+    "name": "Handicapped"
+  }
+},
+{
+  "type": "node",
+  "id": 4597801854,
+  "lat": 50.6340306,
+  "lon": 3.0196049,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "check_date": "2026-01-17",
+    "covered": "no",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 4867707165,
+  "lat": 50.6387893,
+  "lon": 3.0243299,
+  "tags": {
+    "board:title": "La naissance du quartier ouvrier de Canteleu",
+    "board_type": "history",
+    "image": "http://www.lambersart.fr/var/ptic/storage/images/media/images/naissance-du-quartier-canteleu2/326646-1-fre-FR/Naissance-du-quartier-canteleu_zoom_colorbox.jpg",
+    "information": "board",
+    "name": "La naissance du quartier ouvrier de Canteleu",
+    "operator": "Ville de Lambersart",
+    "tourism": "information",
+    "url": "http://www.lambersart.fr/Vos-demarches/Espace-documentaire/Galerie-d-images/Decouvrir-notre-ville/Naissance-du-quartier-ouvrier-de-Canteleu",
+    "website": "https://www.lambersart.fr/Tourisme-et-culture/Decouvrir-notre-ville/Nos-parcours-touristiques/Signaletique-touristique"
+  }
+},
+{
+  "type": "node",
+  "id": 4903432339,
+  "lat": 50.6322692,
+  "lon": 3.0238058,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 4903435583,
+  "lat": 50.6319049,
+  "lon": 3.0225737,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "24",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 4903435584,
+  "lat": 50.6311430,
+  "lon": 3.0214289,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 4903435585,
+  "lat": 50.6310831,
+  "lon": 3.0212449,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 4907625885,
+  "lat": 50.6358320,
+  "lon": 3.0291741,
+  "tags": {
+    "board:title": "De la Haute Deûle à l'avenue du Colysée",
+    "board_type": "history",
+    "image": "http://www.lambersart.fr/var/ptic/storage/images/media/images/de-la-haute-deule/326654-1-fre-FR/De-la-haute-deule_zoom_colorbox.jpg",
+    "information": "board",
+    "name": "De la Haute Deûle à l'avenue du Colysée",
+    "operator": "Ville de Lambersart",
+    "tourism": "information",
+    "url": "http://www.lambersart.fr/Vos-demarches/Espace-documentaire/Galerie-d-images/Decouvrir-notre-ville/De-la-Haute-Deule-a-l-avenue-du-Colysee",
+    "website": "https://www.lambersart.fr/Tourisme-et-culture/Decouvrir-notre-ville/Nos-parcours-touristiques/Signaletique-touristique"
+  }
+},
+{
+  "type": "node",
+  "id": 4907699283,
+  "lat": 50.6388240,
+  "lon": 3.0219882,
+  "tags": {
+    "addr:city": "Lambersart",
+    "addr:housenumber": "310",
+    "addr:postcode": "59130",
+    "addr:street": "Avenue de Dunkerque",
+    "amenity": "cafe",
+    "level": "0",
+    "name": "Pies & Potes",
+    "opening_hours": "Mo-Sa 10:00-18:30",
+    "outdoor_seating": "yes",
+    "ref:FR:SIRET": "82391923800019",
+    "takeaway": "yes",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 5112453775,
+  "lat": 50.6331386,
+  "lon": 3.0189462,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "4",
+    "addr:postcode": "59160",
+    "addr:street": "Avenue des Saules",
+    "amenity": "college",
+    "internet_access": "yes",
+    "name": "Wild Code School",
+    "operator:type": "private",
+    "ref:UAI": "0597226J",
+    "website": "https://wildcodeschool.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 5153141560,
+  "lat": 50.6337826,
+  "lon": 3.0210779,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "46",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 5153141561,
+  "lat": 50.6337344,
+  "lon": 3.0207082,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "46",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 5163667145,
+  "lat": 50.6340741,
+  "lon": 3.0200480,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "12",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 5179723505,
+  "lat": 50.6328492,
+  "lon": 3.0300741,
+  "tags": {
+    "air_conditioning": "no",
+    "amenity": "college",
+    "contact:housenumber": "30",
+    "contact:phone": "+33 3 20 85 32 60",
+    "contact:street": "Rue Henri Regnault",
+    "contact:website": "https://lidd.univ-catholille.fr/",
+    "name": "LiDD - Ecole de Design",
+    "operator": "Université Catholique de Lille"
+  }
+},
+{
+  "type": "node",
+  "id": 5361882734,
+  "lat": 50.6311944,
+  "lon": 3.0260505,
+  "tags": {
+    "amenity": "bar",
+    "contact:city": "Lille",
+    "contact:housenumber": "197",
+    "contact:postcode": "59000",
+    "contact:street": "Rue des Bois Blancs",
+    "name": "Le Saint-Charles",
+    "ref:FR:SIRET": "39101382800010"
+  }
+},
+{
+  "type": "node",
+  "id": 5361882735,
+  "lat": 50.6317917,
+  "lon": 3.0271315,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "173",
+    "addr:postcode": "59000",
+    "addr:street": "Rue des Bois Blancs",
+    "amenity": "restaurant",
+    "brewery": "yes",
+    "contact:facebook": "https://www.facebook.com/tokicicafe/",
+    "description": "Café Participatif de Bois Blancs",
+    "diet:non-vegetarian": "yes",
+    "diet:vegetarian": "yes",
+    "internet_access": "wlan",
+    "name": "Tok'ici",
+    "opening_hours": "Mo-We 11:00-20:00; Th 11:00-23:00; Fr 11:00-24:00; Sa 18:00-24:00",
+    "outdoor_seating": "yes",
+    "phone": "+33 7 81 61 70 72",
+    "takeaway": "yes",
+    "tobacco": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5361882737,
+  "lat": 50.6300393,
+  "lon": 3.0263080,
+  "tags": {
+    "name": "Le bon marché",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 5525557119,
+  "lat": 50.6322117,
+  "lon": 3.0275373,
+  "tags": {
+    "contact:city": "Lille",
+    "contact:housenumber": "11",
+    "contact:phone": "+33 3 20 93 88 20",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Guillaume Tell",
+    "contact:website": "http://cabb3.over-blog.org/",
+    "description": "L'Espace Edouard Pignon, lieu d'exposition municipal animé par le CABB (Comité d'Animation des Bois-Blancs)",
+    "museum": "art",
+    "name": "Espace Édouard Pignon",
+    "opening_hours": "15:00-18:00",
+    "tourism": "museum"
+  }
+},
+{
+  "type": "node",
+  "id": 5590189667,
+  "lat": 50.6307218,
+  "lon": 3.0291840,
+  "tags": {
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2011",
+    "tourism": "picnic_site"
+  }
+},
+{
+  "type": "node",
+  "id": 5590189668,
+  "lat": 50.6307491,
+  "lon": 3.0290288,
+  "tags": {
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2011",
+    "tourism": "picnic_site"
+  }
+},
+{
+  "type": "node",
+  "id": 5590189669,
+  "lat": 50.6307726,
+  "lon": 3.0289781,
+  "tags": {
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2011",
+    "tourism": "picnic_site"
+  }
+},
+{
+  "type": "node",
+  "id": 5636158915,
+  "lat": 50.6369192,
+  "lon": 3.0243153,
+  "tags": {
+    "amenity": "driving_school",
+    "name": "Auto-école Avenue",
+    "phone": "+33 3 20 93 09 52",
+    "website": "http://autoecoleavenue.fr/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5636158916,
+  "lat": 50.6369552,
+  "lon": 3.0242602,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "pizza",
+    "name": "Station Pizza"
+  }
+},
+{
+  "type": "node",
+  "id": 5650548248,
+  "lat": 50.6363126,
+  "lon": 3.0266561,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "indian",
+    "indoor_seating": "yes",
+    "level": "0",
+    "name": "Au cœur de l'Inde",
+    "opening_hours": "Mo-Su 11:30-14:30,19:00-23:00",
+    "outdoor_seating": "yes",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5650548253,
+  "lat": 50.6363969,
+  "lon": 3.0262783,
+  "tags": {
+    "amenity": "atm",
+    "brand": "LCL",
+    "brand:wikidata": "Q779722",
+    "brand:wikipedia": "fr:Crédit lyonnais",
+    "cash_in": "yes",
+    "check_date": "2025-08-04",
+    "level": "0",
+    "name": "LCL",
+    "opening_hours": "24/7",
+    "operator": "LCL",
+    "operator:wikidata": "Q779722",
+    "operator:wikipedia": "fr:Crédit lyonnais"
+  }
+},
+{
+  "type": "node",
+  "id": 5650548255,
+  "lat": 50.6387007,
+  "lon": 3.0221759,
+  "tags": {
+    "level": "0",
+    "name": "La Maison du Vapoteur",
+    "opening_hours": "Mo-Sa 10:00-19:00",
+    "shop": "e-cigarette",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5651627754,
+  "lat": 50.6384241,
+  "lon": 3.0220640,
+  "tags": {
+    "brand": "Selectour",
+    "brand:wikidata": "Q3478073",
+    "brand:wikipedia": "fr:Selectour",
+    "name": "Oceane Voyages",
+    "ref:FR:SIRET": "40297465300022",
+    "shop": "travel_agency"
+  }
+},
+{
+  "type": "node",
+  "id": 5651627755,
+  "lat": 50.6384908,
+  "lon": 3.0219225,
+  "tags": {
+    "female": "yes",
+    "level": "0",
+    "male": "yes",
+    "name": "Bons Plans Coiffure",
+    "ref:FR:SIRET": "75288048400023",
+    "shop": "hairdresser"
+  }
+},
+{
+  "type": "node",
+  "id": 5651627756,
+  "lat": 50.6386691,
+  "lon": 3.0215173,
+  "tags": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "healthcare:speciality": "dermatology"
+  }
+},
+{
+  "type": "node",
+  "id": 5654778639,
+  "lat": 50.6372915,
+  "lon": 3.0242613,
+  "tags": {
+    "addr:housenumber": "235",
+    "addr:street": "Avenue de Dunkerque",
+    "brand": "Zeeman",
+    "brand:wikidata": "Q184399",
+    "brand:wikipedia": "en:Zeeman (store)",
+    "check_date": "2026-08-13",
+    "check_date:opening_hours": "2026-08-13",
+    "level": "0",
+    "name": "Zeeman",
+    "opening_hours": "Mo-Sa 09:30-19:00; Su off",
+    "opening_hours:signed": "no",
+    "phone": "+33 3 59 81 00 27",
+    "ref:FR:SIRET": "44391877600263",
+    "shop": "clothes",
+    "website": "https://www.zeeman.com/fr-fr/magasins/833-lille-avenue-de-dunkerque",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5654778642,
+  "lat": 50.6375258,
+  "lon": 3.0238969,
+  "tags": {
+    "check_date:opening_hours": "2026-08-13",
+    "name": "Paresys",
+    "opening_hours": "Mo-Fr 06:30-19:30; Sa 07:30-13:00",
+    "ref:FR:SIRET": "49176697800010",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 5654778644,
+  "lat": 50.6378895,
+  "lon": 3.0237627,
+  "tags": {
+    "brand": "Alain Afflelou",
+    "brand:wikidata": "Q2829511",
+    "brand:wikipedia": "fr:Alain Afflelou (entreprise)",
+    "check_date:opening_hours": "2026-08-17",
+    "email": "evla@afflelou.net",
+    "level": "0",
+    "name": "Alain Afflelou",
+    "opening_hours": "Tu-Sa 09:30-12:30,14:00-19:00",
+    "phone": "+33 3 20 09 29 67",
+    "shop": "optician",
+    "website": "https://www.afflelou.com/opticien/lambersart/afflelou-278-avenue-de-dunkerque-59130"
+  }
+},
+{
+  "type": "node",
+  "id": 5654778645,
+  "lat": 50.6378418,
+  "lon": 3.0238432,
+  "tags": {
+    "check_date": "2026-01-18",
+    "level": "0",
+    "name": "Méga Fête",
+    "shop": "party"
+  }
+},
+{
+  "type": "node",
+  "id": 5654778646,
+  "lat": 50.6377566,
+  "lon": 3.0234074,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "253",
+    "addr:postcode": "59160",
+    "addr:street": "Avenue de Dunkerque",
+    "amenity": "bar",
+    "name": "Arcania",
+    "opening_hours": "We-Sa 10:00-23:00; Su 10:00-21:00",
+    "ref:FR:SIRET": "93867688900018"
+  }
+},
+{
+  "type": "node",
+  "id": 5654778647,
+  "lat": 50.6383260,
+  "lon": 3.0243479,
+  "tags": {
+    "check_date:opening_hours": "2023-05-11",
+    "name": "Prim'vert",
+    "opening_hours:signed": "no",
+    "shop": "greengrocer"
+  }
+},
+{
+  "type": "node",
+  "id": 5700475750,
+  "lat": 50.6368423,
+  "lon": 3.0249373,
+  "tags": {
+    "brand": "Roc-Eclerc",
+    "brand:wikidata": "Q62558102",
+    "check_date:opening_hours": "2026-08-13",
+    "level": "0",
+    "name": "Roc-Eclerc",
+    "opening_hours": "Mo-Sa 09:00-12:00,14:00-18:00",
+    "ref:FR:SIRET": "44123235200274;81450075701598",
+    "shop": "funeral_directors"
+  }
+},
+{
+  "type": "node",
+  "id": 5700475751,
+  "lat": 50.6362114,
+  "lon": 3.0269039,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date:opening_hours": "2026-08-11",
+    "cuisine": "thai",
+    "diet:vegetarian": "yes",
+    "indoor_seating": "yes",
+    "level": "0",
+    "name": "Les Petites Douceurs de Phuket",
+    "opening_hours": "Mo-Fr 12:00-14:30,19:00-22:00; Sa 19:00-22:30",
+    "outdoor_seating": "no",
+    "phone": "+33 3 20 65 62 36",
+    "takeaway": "yes",
+    "website": "http://www.les-petites-douceurs-de-phuket.com/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5700475753,
+  "lat": 50.6360936,
+  "lon": 3.0265600,
+  "tags": {
+    "check_date": "2026-08-11",
+    "check_date:opening_hours": "2026-08-11",
+    "level": "0",
+    "name": "Audio 2000",
+    "opening_hours": "Mo-Fr 10:00-12:30, Mo-Fr 14:00-18:00",
+    "shop": "hearing_aids"
+  }
+},
+{
+  "type": "node",
+  "id": 5700475754,
+  "lat": 50.6381261,
+  "lon": 3.0234250,
+  "tags": {
+    "check_date:opening_hours": "2026-08-13",
+    "level": "0",
+    "name": "Plaquet opticiens",
+    "opening_hours": "Mo-Fr 09:00-12:00, Mo-Fr 14:00-19:00, Sa 09:00-13:00, Fr 14:00-18:00",
+    "shop": "optician",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5700475760,
+  "lat": 50.6369751,
+  "lon": 3.0247456,
+  "tags": {
+    "level": "0",
+    "name": "La Maison des Obsèques",
+    "opening_hours": "Mo-Fr 09:00-12:00,14:00-18:00, Sa 09:00-12:00, Sa 14:00-17:00",
+    "ref:FR:SIRET": "81450075700442",
+    "shop": "funeral_directors"
+  }
+},
+{
+  "type": "node",
+  "id": 5700475764,
+  "lat": 50.6359110,
+  "lon": 3.0270694,
+  "tags": {
+    "amenity": "social_facility",
+    "check_date": "2024-12-18",
+    "level": "0",
+    "name": "Senior Compagnie",
+    "social_facility": "ambulatory_care",
+    "social_facility:for": "senior"
+  }
+},
+{
+  "type": "node",
+  "id": 5733541707,
+  "lat": 50.6383325,
+  "lon": 3.0221767,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10",
+    "check_date:capacity": "2024-06-22",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5733541708,
+  "lat": 50.6380871,
+  "lon": 3.0233339,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "4",
+    "check_date:capacity": "2023-04-12",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5733541709,
+  "lat": 50.6380110,
+  "lon": 3.0231683,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "4",
+    "check_date:capacity": "2023-05-11",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5733592632,
+  "lat": 50.6324822,
+  "lon": 3.0176329,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5733592633,
+  "lat": 50.6320956,
+  "lon": 3.0179114,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "22",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5733592634,
+  "lat": 50.6318525,
+  "lon": 3.0181651,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5733592635,
+  "lat": 50.6309123,
+  "lon": 3.0191345,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "4",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 5745648144,
+  "lat": 50.6380270,
+  "lon": 3.0229518,
+  "tags": {
+    "amenity": "fast_food",
+    "check_date": "2025-12-16",
+    "cuisine": "kebab",
+    "level": "0",
+    "name": "Royal Naan"
+  }
+},
+{
+  "type": "node",
+  "id": 5745648146,
+  "lat": 50.6380563,
+  "lon": 3.0228867,
+  "tags": {
+    "check_date": "2025-04-06",
+    "female": "yes",
+    "level": "0",
+    "male": "yes",
+    "name": "L'Atelier de Cristina",
+    "opening_hours": "Tu-Fr 09:00-19:00; Sa 08:30-17:30",
+    "phone": "+33 3 20 09 71 56",
+    "ref:FR:SIRET": "90160028800020",
+    "shop": "hairdresser"
+  }
+},
+{
+  "type": "node",
+  "id": 5770072677,
+  "lat": 50.6376107,
+  "lon": 3.0242050,
+  "tags": {
+    "brand": "AliZés",
+    "check_date:opening_hours": "2026-08-17",
+    "level": "0",
+    "name": "AliZés",
+    "opening_hours": "Mo-Sa 08:00-19:00",
+    "phone": "+333 20 92 29 41",
+    "ref:FR:SIRET": "79934200100101",
+    "shop": "dry_cleaning",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 5889058839,
+  "lat": 50.6384084,
+  "lon": 3.0265695,
+  "tags": {
+    "amenity": "school",
+    "check_date": "2025-12-07",
+    "contact:email": "ce.0593819f@ac-lille.fr",
+    "contact:phone": "+33 320081550",
+    "name": "École primaire privée Sainte-Odile",
+    "operator:type": "private",
+    "ref:FR:SIRET": "78366167100041",
+    "ref:UAI": "0593819F",
+    "school:FR": "primaire",
+    "source": "data.gouv.fr:Éducation Nationale - 05/2016",
+    "start_date": "1971-03-17",
+    "website": "http://www.institution-sainte-odile.org/1-66-Ecole.php"
+  }
+},
+{
+  "type": "node",
+  "id": 5898792898,
+  "lat": 50.6328265,
+  "lon": 3.0209519,
+  "tags": {
+    "amenity": "studio",
+    "name": "Studio Redfrog",
+    "studio": "video",
+    "website": "https://www.studioredfrog.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 6007078135,
+  "lat": 50.6383979,
+  "lon": 3.0228605,
+  "tags": {
+    "check_date": "2025-12-16",
+    "level": "0",
+    "name": "O'Aromes",
+    "shop": "tobacco"
+  }
+},
+{
+  "type": "node",
+  "id": 6057243383,
+  "lat": 50.6306849,
+  "lon": 3.0232272,
+  "tags": {
+    "amenity": "drinking_water",
+    "man_made": "water_tap"
+  }
+},
+{
+  "type": "node",
+  "id": 6057243384,
+  "lat": 50.6311814,
+  "lon": 3.0262319,
+  "tags": {
+    "access": "yes",
+    "amenity": "drinking_water",
+    "man_made": "water_tap"
+  }
+},
+{
+  "type": "node",
+  "id": 6171411077,
+  "lat": 50.6362375,
+  "lon": 3.0268323,
+  "tags": {
+    "amenity": "social_facility",
+    "check_date": "2026-08-11",
+    "name": "Foyer d'Adolescentes Scolaires",
+    "ref:FR:FINESS": "590788360",
+    "social_facility": "group_home",
+    "social_facility:for": "child",
+    "source": "Le ministère des solidarités et de la santé - 10/2018",
+    "website": "https://tempsdevie.fr/etablissements/maison-denfants-de-lambersart/"
+  }
+},
+{
+  "type": "node",
+  "id": 6171946491,
+  "lat": 50.6369219,
+  "lon": 3.0248273,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date": "2026-08-13",
+    "check_date:opening_hours": "2026-08-13",
+    "cuisine": "italian;pizza",
+    "level": "0",
+    "name": "La Gondole",
+    "opening_hours": "Tu-Th 12:00-14:00, Tu-Th 19:00-22:00, Fr 12:00-14:00, Fr,Sa 19:00-22:30, Su 12:00-15:00",
+    "ref:FR:SIRET": "94451273000010",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6171946492,
+  "lat": 50.6362096,
+  "lon": 3.0262393,
+  "tags": {
+    "amenity": "cafe",
+    "board_games": "yes",
+    "check_date": "2024-12-01",
+    "contact:instagram": "chatjouebar_",
+    "description": "Bar à jeux de société",
+    "indoor_seating": "yes",
+    "level": "0",
+    "name": "Chat Joue",
+    "opening_hours": "Tu,Th-Fr 17:00-23:00; We,Sa 15:00-23:00; Su 15:00-20:00; Su[2,4] off",
+    "outdoor_seating": "no",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "ref:FR:SIRET": "93021110700030",
+    "start_date": "2024-07-20",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6171946494,
+  "lat": 50.6388788,
+  "lon": 3.0208741,
+  "tags": {
+    "brand": "Avia",
+    "brand:wikidata": "Q300147",
+    "brand:wikipedia": "de:Avia International",
+    "name": "Avia",
+    "opening_hours": "Mo-Sa 07:00-20:15",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 6171946495,
+  "lat": 50.6382292,
+  "lon": 3.0225448,
+  "tags": {
+    "name": "Optique Forestier",
+    "opening_hours": "Tu-Sa 09:30-12:00,14:30-19:00",
+    "shop": "optician"
+  }
+},
+{
+  "type": "node",
+  "id": 6171946496,
+  "lat": 50.6385654,
+  "lon": 3.0217642,
+  "tags": {
+    "check_date:opening_hours": "2024-06-22",
+    "level": "0",
+    "name": "Actimômes",
+    "opening_hours": "Tu-Sa 10:00-12:00,14:30-19:00; PH closed",
+    "ref:FR:SIRET": "43981580400026",
+    "shop": "toys",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6171946497,
+  "lat": 50.6380026,
+  "lon": 3.0230131,
+  "tags": {
+    "name": "Le Jean Bart",
+    "opening_hours": "Mo,Su 09:00-13:00; Tu-Sa 09:00-18:00",
+    "ref:FR:SIRET": "47821454700018",
+    "shop": "newsagent",
+    "tobacco": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6172598441,
+  "lat": 50.6379833,
+  "lon": 3.0236232,
+  "tags": {
+    "addr:housenumber": "282",
+    "addr:street": "Avenue de Dunkerque",
+    "amenity": "restaurant",
+    "check_date": "2026-03-11",
+    "level": "0",
+    "name": "Chez Mon Cousin",
+    "opening_hours": "Mo,Sa 19:30-22:00; Tu-Fr 12:00-14:00,19:30-22:00",
+    "phone": "+33 3 62 13 42 88",
+    "website": "https://nicolas-pourcheresse.fr/fr/chez-mon-cousin.html"
+  }
+},
+{
+  "type": "node",
+  "id": 6172598442,
+  "lat": 50.6377631,
+  "lon": 3.0239645,
+  "tags": {
+    "amenity": "bank",
+    "branch": "Lambersart Canteleu",
+    "brand": "CIC",
+    "brand:wikidata": "Q746525",
+    "brand:wikipedia": "fr:Crédit industriel et commercial",
+    "check_date": "2026-01-18",
+    "level": "0",
+    "name": "CIC",
+    "opening_hours": "Tu-Fr 09:00-12:30,14:00-18:00; Th 09:00-12:30,14:30-18:00; Sa 09:00-12:30",
+    "phone": "+33 3 20 18 77 61",
+    "website": "https://www.cic.fr/fr/banques/particuliers/Details.aspx?banque=30027&guichet=17011&bureau=00"
+  }
+},
+{
+  "type": "node",
+  "id": 6172598443,
+  "lat": 50.6375542,
+  "lon": 3.0243004,
+  "tags": {
+    "addr:housenumber": "256 bis",
+    "addr:street": "Avenue de Dunkerque",
+    "brand": "Rapid Pare-Brise",
+    "brand:wikidata": "Q112064766",
+    "check_date": "2026-05-11",
+    "level": "0",
+    "name": "SOS Pare-Brise+",
+    "opening_hours": "Mo-Fr 09:00-12:00,13:30-18:00",
+    "phone": "+33 3 66 59 88 15",
+    "service:vehicle:glass": "yes",
+    "shop": "car_repair",
+    "website": "https://www.sosparebriseplus.fr/lambersart/"
+  }
+},
+{
+  "type": "node",
+  "id": 6172598444,
+  "lat": 50.6373944,
+  "lon": 3.0245308,
+  "tags": {
+    "diet:halal": "yes",
+    "level": "0",
+    "name": "Boucherie du Nord",
+    "opening_hours": "Tu-Sa 09:00-20:00; Su 09:00-16:00",
+    "phone": "+33 3 20 17 11 83",
+    "shop": "butcher"
+  }
+},
+{
+  "type": "node",
+  "id": 6172598445,
+  "lat": 50.6373546,
+  "lon": 3.0245997,
+  "tags": {
+    "clothes": "men",
+    "level": "0",
+    "name": "Luc Boutique",
+    "opening_hours": "Tu-Sa 10:00-12:00, Tu-Sa 14:00-19:00",
+    "phone": "+33 3 20 92 30 23",
+    "shop": "clothes",
+    "website": "https://lucboutique.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 6172598446,
+  "lat": 50.6373015,
+  "lon": 3.0246813,
+  "tags": {
+    "brand": "Atol",
+    "brand:wikidata": "Q2869542",
+    "brand:wikipedia": "fr:Atol (opticien)",
+    "check_date:opening_hours": "2026-08-17",
+    "level": "0",
+    "name": "Atol",
+    "opening_hours": "Tu-Sa 09:30-12:15,14:00-19:00",
+    "phone": "+33 3 20 09 45 54",
+    "shop": "optician",
+    "website": "https://magasins.atol.fr/france/cible-lambersart-637"
+  }
+},
+{
+  "type": "node",
+  "id": 6177307732,
+  "lat": 50.6386979,
+  "lon": 3.0214593,
+  "tags": {
+    "books": "manga",
+    "check_date": "2024-12-26",
+    "description": "Libraire-café",
+    "level": "0",
+    "name": "Ma Pause Manga",
+    "opening_hours": "Tu-Sa 10:00-19:00",
+    "phone": "+33 3 62 27 90 73",
+    "shop": "books",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6221458456,
+  "lat": 50.6385739,
+  "lon": 3.0243480,
+  "tags": {
+    "access": "yes",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "anchors",
+    "capacity": "6",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6259722256,
+  "lat": 50.6379513,
+  "lon": 3.0236787,
+  "tags": {
+    "addr:city": "Lambersart",
+    "addr:housenumber": "280",
+    "addr:postcode": "59130",
+    "addr:street": "Avenue de Dunkerque",
+    "check_date": "2023-05-11",
+    "name": "Dahlia Pinnata",
+    "shop": "florist"
+  }
+},
+{
+  "type": "node",
+  "id": 6328548768,
+  "lat": 50.6345419,
+  "lon": 3.0302533,
+  "tags": {
+    "amenity": "post_box",
+    "check_date": "2025-12-09",
+    "collection_times": "Mo-Sa 09:00; PH closed",
+    "drive_through": "no",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "operator:wikipedia": "fr:La Poste (entreprise française)",
+    "post_box:type": "pillar",
+    "ref": "A1G0R0",
+    "source": "data.gouv.fr:LaPoste - 05/2016"
+  }
+},
+{
+  "type": "node",
+  "id": 6333900373,
+  "lat": 50.6313983,
+  "lon": 3.0264000,
+  "tags": {
+    "contact:city": "Lille",
+    "contact:housenumber": "195",
+    "contact:postcode": "59000",
+    "contact:street": "Rue des Bois Blancs",
+    "name": "Epicerie",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 6338486525,
+  "lat": 50.6299322,
+  "lon": 3.0211279,
+  "tags": {
+    "amenity": "restaurant",
+    "contact:facebook": "https://www.facebook.com/primafilalille/",
+    "contact:housenumber": "73",
+    "contact:phone": "+33 3 20 88 20 12",
+    "contact:street": "Quai de l'Ouest",
+    "cuisine": "italian",
+    "name": "Prima Fila",
+    "ref:FR:SIRET": "84349273700013"
+  }
+},
+{
+  "type": "node",
+  "id": 6370201285,
+  "lat": 50.6318236,
+  "lon": 3.0270794,
+  "tags": {
+    "amenity": "post_box",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "operator:wikipedia": "fr:La Poste (entreprise française)",
+    "post_box:type": "wall",
+    "ref": "A1G0R1",
+    "source": "data.gouv.fr:LaPoste - 05/2016"
+  }
+},
+{
+  "type": "node",
+  "id": 6380876199,
+  "lat": 50.6298531,
+  "lon": 3.0251470,
+  "tags": {
+    "amenity": "arts_centre",
+    "contact:city": "Lille",
+    "contact:housenumber": "60",
+    "contact:postcode": "59000",
+    "contact:street": "Rue du Général Anne de la Bourdonnaye",
+    "name": "Centre Social Rosette de Mey"
+  }
+},
+{
+  "type": "node",
+  "id": 6389628510,
+  "lat": 50.6330077,
+  "lon": 3.0191598,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "addr:street": "Avenue Marie-Louïse Delwaulle",
+    "amenity": "restaurant",
+    "cuisine": "poke",
+    "diet:omnivore": "yes",
+    "diet:vegetarian": "yes",
+    "email": "contact@bombora.fr",
+    "name": "Bombora",
+    "opening_hours": "Mo-Fr 09:00-16:30",
+    "ref:FR:SIRET": "88427764100012",
+    "website": "https://bombora.fr/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6456290808,
+  "lat": 50.6369830,
+  "lon": 3.0242192,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "burger",
+    "level": "0",
+    "name": "Station Burger"
+  }
+},
+{
+  "type": "node",
+  "id": 6528349654,
+  "lat": 50.6374322,
+  "lon": 3.0165899,
+  "tags": {
+    "amenity": "post_box",
+    "collection_times": "Mo-Fr 09:00; Sa 08:00; PH closed",
+    "drive_through": "no",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "operator:wikipedia": "fr:La Poste (entreprise française)",
+    "post_box:type": "wall",
+    "ref": "A1F3O2"
+  }
+},
+{
+  "type": "node",
+  "id": 6537383190,
+  "lat": 50.6350162,
+  "lon": 3.0275132,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-08-14"
+  }
+},
+{
+  "type": "node",
+  "id": 6537383191,
+  "lat": 50.6347846,
+  "lon": 3.0270364,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "yes",
+    "check_date": "2026-08-14",
+    "seats": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 6537384392,
+  "lat": 50.6344211,
+  "lon": 3.0302119,
+  "tags": {
+    "amenity": "fast_food",
+    "check_date:opening_hours": "2026-08-17",
+    "name": "L'Etoile de Rabat",
+    "opening_hours:signed": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6537384393,
+  "lat": 50.6347738,
+  "lon": 3.0303015,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2026-07-20"
+  }
+},
+{
+  "type": "node",
+  "id": 6537384395,
+  "lat": 50.6363598,
+  "lon": 3.0262565,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2025-08-04"
+  }
+},
+{
+  "type": "node",
+  "id": 6537384396,
+  "lat": 50.6366614,
+  "lon": 3.0255377,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2025-08-04"
+  }
+},
+{
+  "type": "node",
+  "id": 6537402093,
+  "lat": 50.6354588,
+  "lon": 3.0283270,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 6537764705,
+  "lat": 50.6382448,
+  "lon": 3.0231984,
+  "tags": {
+    "addr:postcode": "59130",
+    "amenity": "post_office",
+    "brand": "La Poste",
+    "brand:wikipedia": "fr:La Poste (entreprise française)",
+    "name": "Lambersart Canteleu Carrefour City",
+    "opening_hours": "Mo-Sa 08:00-19:00; PH off; 2024 May 20 off",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "operator:wikipedia": "fr:La Poste (entreprise française)",
+    "post_office": "post_partner",
+    "ref:FR:LaPoste": "14273D",
+    "source": "LaPoste - 2021-06",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6583786019,
+  "lat": 50.6317529,
+  "lon": 3.0205698,
+  "tags": {
+    "access": "yes",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6583786020,
+  "lat": 50.6322969,
+  "lon": 3.0200203,
+  "tags": {
+    "access": "yes",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6583786021,
+  "lat": 50.6329388,
+  "lon": 3.0193655,
+  "tags": {
+    "access": "yes",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6583956564,
+  "lat": 50.6336711,
+  "lon": 3.0189224,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "4",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 6583956565,
+  "lat": 50.6332419,
+  "lon": 3.0188081,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "4",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382986,
+  "lat": 50.6332984,
+  "lon": 3.0192793,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382987,
+  "lat": 50.6332073,
+  "lon": 3.0193697,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382988,
+  "lat": 50.6331149,
+  "lon": 3.0194636,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382989,
+  "lat": 50.6326939,
+  "lon": 3.0199473,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382990,
+  "lat": 50.6327527,
+  "lon": 3.0198299,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382991,
+  "lat": 50.6326861,
+  "lon": 3.0198970,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382992,
+  "lat": 50.6326606,
+  "lon": 3.0199243,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382993,
+  "lat": 50.6325954,
+  "lon": 3.0199904,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382994,
+  "lat": 50.6325722,
+  "lon": 3.0200141,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382995,
+  "lat": 50.6325034,
+  "lon": 3.0200839,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382996,
+  "lat": 50.6324820,
+  "lon": 3.0201057,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382997,
+  "lat": 50.6324128,
+  "lon": 3.0201756,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640382999,
+  "lat": 50.6323030,
+  "lon": 3.0202876,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383000,
+  "lat": 50.6322119,
+  "lon": 3.0203804,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383001,
+  "lat": 50.6321210,
+  "lon": 3.0204740,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383002,
+  "lat": 50.6320316,
+  "lon": 3.0205631,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383004,
+  "lat": 50.6319404,
+  "lon": 3.0206571,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383005,
+  "lat": 50.6318696,
+  "lon": 3.0207274,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383006,
+  "lat": 50.6319296,
+  "lon": 3.0207901,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383007,
+  "lat": 50.6319442,
+  "lon": 3.0208255,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383008,
+  "lat": 50.6319234,
+  "lon": 3.0208591,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383009,
+  "lat": 50.6317565,
+  "lon": 3.0208422,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383010,
+  "lat": 50.6316679,
+  "lon": 3.0209333,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383011,
+  "lat": 50.6315990,
+  "lon": 3.0210014,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383012,
+  "lat": 50.6315111,
+  "lon": 3.0210945,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383013,
+  "lat": 50.6314192,
+  "lon": 3.0211904,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383014,
+  "lat": 50.6313965,
+  "lon": 3.0212108,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383015,
+  "lat": 50.6313276,
+  "lon": 3.0212791,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383016,
+  "lat": 50.6312390,
+  "lon": 3.0213682,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383018,
+  "lat": 50.6319616,
+  "lon": 3.0225066,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383019,
+  "lat": 50.6320564,
+  "lon": 3.0224173,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383020,
+  "lat": 50.6321485,
+  "lon": 3.0223226,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383021,
+  "lat": 50.6322349,
+  "lon": 3.0222377,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383022,
+  "lat": 50.6322938,
+  "lon": 3.0221775,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383023,
+  "lat": 50.6324817,
+  "lon": 3.0219821,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383024,
+  "lat": 50.6325705,
+  "lon": 3.0218948,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383025,
+  "lat": 50.6326618,
+  "lon": 3.0217994,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383026,
+  "lat": 50.6327299,
+  "lon": 3.0217360,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "16",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383027,
+  "lat": 50.6328440,
+  "lon": 3.0216138,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383028,
+  "lat": 50.6330242,
+  "lon": 3.0214303,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383029,
+  "lat": 50.6332956,
+  "lon": 3.0211600,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383030,
+  "lat": 50.6333624,
+  "lon": 3.0210910,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383031,
+  "lat": 50.6334106,
+  "lon": 3.0210467,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383032,
+  "lat": 50.6333888,
+  "lon": 3.0210370,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383033,
+  "lat": 50.6334746,
+  "lon": 3.0209724,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383034,
+  "lat": 50.6334774,
+  "lon": 3.0209450,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383035,
+  "lat": 50.6337187,
+  "lon": 3.0207193,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383036,
+  "lat": 50.6337030,
+  "lon": 3.0207521,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383037,
+  "lat": 50.6336823,
+  "lon": 3.0207627,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383038,
+  "lat": 50.6337732,
+  "lon": 3.0206724,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383039,
+  "lat": 50.6337956,
+  "lon": 3.0206592,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383040,
+  "lat": 50.6339000,
+  "lon": 3.0204459,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383041,
+  "lat": 50.6338776,
+  "lon": 3.0203920,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383042,
+  "lat": 50.6338349,
+  "lon": 3.0202858,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383043,
+  "lat": 50.6338551,
+  "lon": 3.0203415,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383044,
+  "lat": 50.6341352,
+  "lon": 3.0204415,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383045,
+  "lat": 50.6341425,
+  "lon": 3.0204778,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383046,
+  "lat": 50.6342177,
+  "lon": 3.0206317,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383047,
+  "lat": 50.6342076,
+  "lon": 3.0206671,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383048,
+  "lat": 50.6342839,
+  "lon": 3.0208591,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383049,
+  "lat": 50.6339550,
+  "lon": 3.0200726,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383050,
+  "lat": 50.6328023,
+  "lon": 3.0174403,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383056,
+  "lat": 50.6330026,
+  "lon": 3.0175535,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383057,
+  "lat": 50.6329987,
+  "lon": 3.0175907,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383058,
+  "lat": 50.6329998,
+  "lon": 3.0176305,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383059,
+  "lat": 50.6330015,
+  "lon": 3.0176712,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383060,
+  "lat": 50.6330021,
+  "lon": 3.0177101,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383061,
+  "lat": 50.6330054,
+  "lon": 3.0177517,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383062,
+  "lat": 50.6330077,
+  "lon": 3.0177933,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383063,
+  "lat": 50.6329353,
+  "lon": 3.0177553,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383064,
+  "lat": 50.6329190,
+  "lon": 3.0177420,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383065,
+  "lat": 50.6329229,
+  "lon": 3.0177818,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383066,
+  "lat": 50.6329089,
+  "lon": 3.0177650,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383067,
+  "lat": 50.6328853,
+  "lon": 3.0175810,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383068,
+  "lat": 50.6328797,
+  "lon": 3.0176164,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383069,
+  "lat": 50.6328590,
+  "lon": 3.0175872,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383070,
+  "lat": 50.6328562,
+  "lon": 3.0176225,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383072,
+  "lat": 50.6329549,
+  "lon": 3.0175403,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383073,
+  "lat": 50.6329392,
+  "lon": 3.0175535,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383074,
+  "lat": 50.6330049,
+  "lon": 3.0175367,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383075,
+  "lat": 50.6336481,
+  "lon": 3.0192423,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383076,
+  "lat": 50.6336240,
+  "lon": 3.0192163,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383077,
+  "lat": 50.6335926,
+  "lon": 3.0190511,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383078,
+  "lat": 50.6337228,
+  "lon": 3.0191398,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383079,
+  "lat": 50.6337048,
+  "lon": 3.0190920,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383080,
+  "lat": 50.6337145,
+  "lon": 3.0191151,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383083,
+  "lat": 50.6323273,
+  "lon": 3.0204342,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383084,
+  "lat": 50.6323144,
+  "lon": 3.0203997,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383085,
+  "lat": 50.6323582,
+  "lon": 3.0204192,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383086,
+  "lat": 50.6323447,
+  "lon": 3.0204342,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383087,
+  "lat": 50.6327600,
+  "lon": 3.0213014,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383088,
+  "lat": 50.6327269,
+  "lon": 3.0213332,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383089,
+  "lat": 50.6327510,
+  "lon": 3.0213748,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383090,
+  "lat": 50.6327381,
+  "lon": 3.0213642,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383091,
+  "lat": 50.6319430,
+  "lon": 3.0208475,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383092,
+  "lat": 50.6318113,
+  "lon": 3.0210262,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383093,
+  "lat": 50.6317657,
+  "lon": 3.0210162,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383094,
+  "lat": 50.6318910,
+  "lon": 3.0212157,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383095,
+  "lat": 50.6316406,
+  "lon": 3.0211498,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383096,
+  "lat": 50.6315292,
+  "lon": 3.0216362,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383097,
+  "lat": 50.6314940,
+  "lon": 3.0216254,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383098,
+  "lat": 50.6315184,
+  "lon": 3.0216062,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383099,
+  "lat": 50.6317793,
+  "lon": 3.0219751,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383100,
+  "lat": 50.6317686,
+  "lon": 3.0219412,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383101,
+  "lat": 50.6317095,
+  "lon": 3.0219143,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383102,
+  "lat": 50.6316933,
+  "lon": 3.0219320,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383103,
+  "lat": 50.6317916,
+  "lon": 3.0219967,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383104,
+  "lat": 50.6316894,
+  "lon": 3.0222008,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383105,
+  "lat": 50.6317266,
+  "lon": 3.0222416,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383106,
+  "lat": 50.6317153,
+  "lon": 3.0222547,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383112,
+  "lat": 50.6323202,
+  "lon": 3.0218323,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383113,
+  "lat": 50.6322920,
+  "lon": 3.0218562,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383114,
+  "lat": 50.6322695,
+  "lon": 3.0218013,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-07-13"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383115,
+  "lat": 50.6297821,
+  "lon": 3.0195031,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383116,
+  "lat": 50.6299071,
+  "lon": 3.0197034,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383117,
+  "lat": 50.6303327,
+  "lon": 3.0203728,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383118,
+  "lat": 50.6304695,
+  "lon": 3.0205900,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383119,
+  "lat": 50.6306571,
+  "lon": 3.0209066,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383120,
+  "lat": 50.6307734,
+  "lon": 3.0211176,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383121,
+  "lat": 50.6311164,
+  "lon": 3.0217415,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383122,
+  "lat": 50.6315571,
+  "lon": 3.0226011,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383123,
+  "lat": 50.6318073,
+  "lon": 3.0230941,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-09-20"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383124,
+  "lat": 50.6319186,
+  "lon": 3.0233167,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-09-20"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383125,
+  "lat": 50.6323120,
+  "lon": 3.0240708,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383126,
+  "lat": 50.6324453,
+  "lon": 3.0242772,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-09-20"
+  }
+},
+{
+  "type": "node",
+  "id": 6640383127,
+  "lat": 50.6325885,
+  "lon": 3.0244621,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no",
+    "check_date": "2026-09-20"
+  }
+},
+{
+  "type": "node",
+  "id": 6776808267,
+  "lat": 50.6374074,
+  "lon": 3.0225613,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6776808268,
+  "lat": 50.6373610,
+  "lon": 3.0225412,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6776808269,
+  "lat": 50.6372384,
+  "lon": 3.0224411,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6776808272,
+  "lat": 50.6372726,
+  "lon": 3.0224573,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 6776808273,
+  "lat": 50.6374118,
+  "lon": 3.0226368,
+  "tags": {
+    "amenity": "waste_basket",
+    "check_date": "2026-09-15"
+  }
+},
+{
+  "type": "node",
+  "id": 6782621907,
+  "lat": 50.6312282,
+  "lon": 3.0289329,
+  "tags": {
+    "artwork_type": "graffiti",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 6877691801,
+  "lat": 50.6370740,
+  "lon": 3.0179571,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "51",
+    "addr:postcode": "59160",
+    "addr:street": "Rue Jean Jaurès",
+    "amenity": "animal_boarding",
+    "animal_boarding": "cat",
+    "email": "youpicatpalace@gmail.com",
+    "name": "Le Youpicat Palace - Pension féline",
+    "phone": "+33643507483",
+    "website": "https://www.le-youpicat-palace.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 7010745844,
+  "lat": 50.6305836,
+  "lon": 3.0229769,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "280-248",
+    "addr:postcode": "59000",
+    "addr:street": "Rue du Pont à Fourchon",
+    "amenity": "bicycle_rental",
+    "brand": "V'Lille",
+    "brand:wikidata": "Q3552843",
+    "brand:wikipedia": "fr:V'Lille",
+    "capacity": "14",
+    "fee": "yes",
+    "name": "Rives de la Haute Deûle",
+    "network": "V'Lille",
+    "network:wikidata": "Q3552843",
+    "network:wikipedia": "fr:V'Lille",
+    "opening_hours": "24/7",
+    "operator": "CYKLEO",
+    "operator:type": "private",
+    "payment:mastercard": "yes",
+    "payment:visa": "yes",
+    "ref": "168",
+    "vending": "yes",
+    "website": "https://www.ilevia.fr/cms/vlille/"
+  }
+},
+{
+  "type": "node",
+  "id": 7013748698,
+  "lat": 50.6383085,
+  "lon": 3.0221162,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7013748699,
+  "lat": 50.6382853,
+  "lon": 3.0221599,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7013748700,
+  "lat": 50.6383756,
+  "lon": 3.0221162,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7013748703,
+  "lat": 50.6383923,
+  "lon": 3.0221731,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 7013748704,
+  "lat": 50.6383994,
+  "lon": 3.0223428,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 7117040445,
+  "lat": 50.6309043,
+  "lon": 3.0266018,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "Rue de Tourville",
+    "operator": "Ville de Lille",
+    "operator:type": "public"
+  }
+},
+{
+  "type": "node",
+  "id": 7117040446,
+  "lat": 50.6324179,
+  "lon": 3.0259453,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "Rue de la Bruyère",
+    "operator": "Ville de Lille",
+    "operator:type": "public",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 7155943255,
+  "lat": 50.6337596,
+  "lon": 3.0192350,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "12",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 7163645179,
+  "lat": 50.6313447,
+  "lon": 3.0182128,
+  "tags": {
+    "access": "customers",
+    "fee": "no",
+    "garden:type": "community",
+    "leisure": "garden",
+    "name": "L'îlot 26 / Un bio potager au Marais",
+    "operator": "Les gens qui sèment"
+  }
+},
+{
+  "type": "node",
+  "id": 7257434612,
+  "lat": 50.6320434,
+  "lon": 3.0287841,
+  "tags": {
+    "access": "yes",
+    "animated": "no",
+    "board_type": "notice",
+    "information": "board",
+    "luminous": "no",
+    "man_made": "advertising",
+    "message": "opinions;non_profit",
+    "support": "pole",
+    "tourism": "information"
+  }
+},
+{
+  "type": "node",
+  "id": 7346017215,
+  "lat": 50.6324640,
+  "lon": 3.0276756,
+  "tags": {
+    "amenity": "internet_cafe",
+    "contact:city": "Lille",
+    "contact:housenumber": "4",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Guillaume Tell",
+    "name": "Cyber Base Bois-Blancs"
+  }
+},
+{
+  "type": "node",
+  "id": 7350151864,
+  "lat": 50.6333129,
+  "lon": 3.0261665,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7350151865,
+  "lat": 50.6332792,
+  "lon": 3.0262944,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7350151869,
+  "lat": 50.6333632,
+  "lon": 3.0264176,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7350151870,
+  "lat": 50.6334189,
+  "lon": 3.0263606,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7350151871,
+  "lat": 50.6334580,
+  "lon": 3.0262728,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7350151872,
+  "lat": 50.6334506,
+  "lon": 3.0261973,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7350151875,
+  "lat": 50.6332528,
+  "lon": 3.0266436,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "covered": "no",
+    "survey:date": "2020-11-30"
+  }
+},
+{
+  "type": "node",
+  "id": 7350151876,
+  "lat": 50.6331824,
+  "lon": 3.0266518,
+  "tags": {
+    "amenity": "vending_machine",
+    "check_date": "2026-09-20",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 7350300345,
+  "lat": 50.6330278,
+  "lon": 3.0305283,
+  "tags": {
+    "amenity": "college",
+    "check_date": "2026-08-17",
+    "contact:city": "Lille",
+    "contact:housenumber": "26",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Henri Regnault",
+    "name": "GRETA",
+    "ref:UAI": "0596834H"
+  }
+},
+{
+  "type": "node",
+  "id": 7350554011,
+  "lat": 50.6298410,
+  "lon": 3.0242837,
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "layer": "-1",
+    "parking": "underground"
+  }
+},
+{
+  "type": "node",
+  "id": 7350554043,
+  "lat": 50.6299028,
+  "lon": 3.0256907,
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7350554062,
+  "lat": 50.6303981,
+  "lon": 3.0259302,
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "layer": "-1",
+    "parking": "underground"
+  }
+},
+{
+  "type": "node",
+  "id": 7354632930,
+  "lat": 50.6304198,
+  "lon": 3.0231182,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 7362649750,
+  "lat": 50.6318644,
+  "lon": 3.0299266,
+  "tags": {
+    "access": "destination",
+    "amenity": "recycling",
+    "description": "Accessible aux résidents",
+    "name": "Résidence Clément Ader",
+    "operator": "des Jardins et des Hommes",
+    "owner": "Métropole Européenne de Lille",
+    "recycling:compost": "yes",
+    "recycling:organic": "yes",
+    "recycling_type": "container"
+  }
+},
+{
+  "type": "node",
+  "id": 7362649751,
+  "lat": 50.6358445,
+  "lon": 3.0269426,
+  "tags": {
+    "amenity": "recycling",
+    "description": "Accessible aux résidents",
+    "name": "Résidence Armor",
+    "operator": "des Jardins et des Hommes",
+    "owner": "Métropole Européenne de Lille",
+    "recycling:compost": "yes",
+    "recycling:organic": "yes",
+    "recycling_type": "container"
+  }
+},
+{
+  "type": "node",
+  "id": 7363009470,
+  "lat": 50.6316985,
+  "lon": 3.0258912,
+  "tags": {
+    "access": "destination",
+    "amenity": "recycling",
+    "check_date": "2026-10-10",
+    "description": "Accessible aux foyers du quartier inscrits pendant la permanence le samedi matin de 10h30 à 12h",
+    "name": "Jardin des Passereaux",
+    "operator": "des Jardins et des Hommes",
+    "owner": "Ville de Lille",
+    "recycling:compost": "yes",
+    "recycling:organic": "yes",
+    "recycling_type": "container"
+  }
+},
+{
+  "type": "node",
+  "id": 7410139383,
+  "lat": 50.6296666,
+  "lon": 3.0205580,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 7417118348,
+  "lat": 50.6358462,
+  "lon": 3.0288549,
+  "tags": {
+    "addr:housenumber": "2",
+    "addr:street": "Avenue Hippolyte Peslin",
+    "amenity": "restaurant",
+    "check_date": "2026-03-11",
+    "check_date:opening_hours": "2026-03-11",
+    "contact:facebook": "BrasserieLeQuai",
+    "cuisine": "french",
+    "email": "lequaischerpereel@gmail.com",
+    "name": "Le Quai",
+    "opening_hours": "Mo 11:30-14:30; Tu-Th 11:30-14:30, 19:00-21:30; Fr-Sa 11:30-14:30, 19:00-22:00",
+    "phone": "+33 3 20 18 38 66",
+    "ref:FR:SIRET": "87929542600016",
+    "website": "https://lequailambersart-restaurant.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 7417412535,
+  "lat": 50.6388621,
+  "lon": 3.0218649,
+  "tags": {
+    "level": "0",
+    "name": "Visual",
+    "opening_hours": "Tu-Sa 10:00-12:30,14:30-19:00",
+    "phone": "+33 3 20 93 56 59",
+    "shop": "optician",
+    "website": "https://www.visual.fr/opticiens/magasin/59-visual-optique-lambersart/"
+  }
+},
+{
+  "type": "node",
+  "id": 7417412537,
+  "lat": 50.6385737,
+  "lon": 3.0224495,
+  "tags": {
+    "name": "Ligne en soie",
+    "ref:FR:SIRET": "39779701000022",
+    "shop": "clothes"
+  }
+},
+{
+  "type": "node",
+  "id": 7417412538,
+  "lat": 50.6385332,
+  "lon": 3.0225452,
+  "tags": {
+    "amenity": "fast_food",
+    "check_date": "2026-05-23",
+    "name": "Crousty Game"
+  }
+},
+{
+  "type": "node",
+  "id": 7417412539,
+  "lat": 50.6384504,
+  "lon": 3.0227548,
+  "tags": {
+    "amenity": "bank",
+    "brand": "BNP Paribas",
+    "brand:wikidata": "Q499707",
+    "brand:wikipedia": "en:BNP Paribas",
+    "check_date:opening_hours": "2022-08-28",
+    "name": "BNP Paribas",
+    "opening_hours": "Tu-Fr 09:00-12:30, Sa 09:00-13:00, Tu,We,Fr 13:30-18:00, Th 13:30-19:00",
+    "phone": "+33 3 20 17 10 33",
+    "ref:FR:SIRET": "66204244905062",
+    "website": "https://nos-agences.mabanque.bnpparibas/hauts-de-france/nord/lambersart/agence-lambersart-1389"
+  }
+},
+{
+  "type": "node",
+  "id": 7417412540,
+  "lat": 50.6383618,
+  "lon": 3.0229446,
+  "tags": {
+    "check_date": "2024-10-28",
+    "name": "Wibra",
+    "opening_hours": "Mo-Sa 09:30-19:00",
+    "shop": "variety_store",
+    "website": "https://www.wibra.fr/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7451909234,
+  "lat": 50.6374070,
+  "lon": 3.0229513,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 7451909235,
+  "lat": 50.6372598,
+  "lon": 3.0228239,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7452579394,
+  "lat": 50.6344704,
+  "lon": 3.0211405,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:city": "Lille",
+    "contact:housenumber": "144",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue de Bretagne",
+    "cuisine": "sandwich",
+    "name": "Pause Sandwiche",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 7506493245,
+  "lat": 50.6299572,
+  "lon": 3.0208366,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 7506493246,
+  "lat": 50.6299138,
+  "lon": 3.0207561,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "14"
+  }
+},
+{
+  "type": "node",
+  "id": 7636066308,
+  "lat": 50.6360503,
+  "lon": 3.0286476,
+  "tags": {
+    "amenity": "doctors",
+    "check_date:opening_hours": "2026-07-13",
+    "healthcare": "doctor",
+    "healthcare:speciality": "general",
+    "name": "Salima Domrane",
+    "opening_hours:signed": "no",
+    "phone": "+33 3 20 93 92 12",
+    "ref:FR:SIRET": "41830861500024"
+  }
+},
+{
+  "type": "node",
+  "id": 7636066309,
+  "lat": 50.6360585,
+  "lon": 3.0286343,
+  "tags": {
+    "amenity": "doctors",
+    "healthcare": "doctor",
+    "healthcare:speciality": "general",
+    "name": "Philippe Spanneut",
+    "opening_hours": "Mo-Fr 14:00-15:30,18:00-19:00; We 09:00-10:00,14:00-15:30; Th 15:00-16:00,18:00-19:00; Sa 09:00-10:00",
+    "phone": "+33 3 20 93 92 12",
+    "ref:FR:SIRET": "35192547400022"
+  }
+},
+{
+  "type": "node",
+  "id": 7900246164,
+  "lat": 50.6312273,
+  "lon": 3.0184119,
+  "tags": {
+    "access": "customers",
+    "amenity": "recycling",
+    "name": "Composteur L'îlot 26 / Un bio potager au Marais",
+    "operator": "Ajonc",
+    "recycling:compost": "yes",
+    "recycling:organic": "yes",
+    "recycling_type": "container"
+  }
+},
+{
+  "type": "node",
+  "id": 8059565803,
+  "lat": 50.6352808,
+  "lon": 3.0240971,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "12",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 8059565805,
+  "lat": 50.6327633,
+  "lon": 3.0245109,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "2",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8059565806,
+  "lat": 50.6322701,
+  "lon": 3.0234580,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "18",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8059593390,
+  "lat": 50.6339986,
+  "lon": 3.0202644,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "22",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 8059593391,
+  "lat": 50.6369634,
+  "lon": 3.0243744,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 8059593392,
+  "lat": 50.6359259,
+  "lon": 3.0265040,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 8059593393,
+  "lat": 50.6356162,
+  "lon": 3.0251891,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "2",
+    "check_date": "2025-05-11",
+    "check_date:capacity": "2025-05-11",
+    "covered": "no",
+    "source": "survey"
+  }
+},
+{
+  "type": "node",
+  "id": 8059593395,
+  "lat": 50.6330003,
+  "lon": 3.0247559,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8059708268,
+  "lat": 50.6337815,
+  "lon": 3.0218842,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-10-28"
+  }
+},
+{
+  "type": "node",
+  "id": 8059708269,
+  "lat": 50.6349716,
+  "lon": 3.0272463,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8112115427,
+  "lat": 50.6311396,
+  "lon": 3.0226668,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "covered": "no",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8112115428,
+  "lat": 50.6303962,
+  "lon": 3.0232586,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "covered": "no",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8112115429,
+  "lat": 50.6329101,
+  "lon": 3.0254630,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "covered": "no",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8112115430,
+  "lat": 50.6333117,
+  "lon": 3.0259489,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "4",
+    "covered": "no",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8112115431,
+  "lat": 50.6336065,
+  "lon": 3.0262556,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "covered": "no",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8112115432,
+  "lat": 50.6343228,
+  "lon": 3.0270115,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "covered": "no",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8112115433,
+  "lat": 50.6339036,
+  "lon": 3.0274999,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8112115434,
+  "lat": 50.6313077,
+  "lon": 3.0264239,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "covered": "no",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8112115435,
+  "lat": 50.6309109,
+  "lon": 3.0267105,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "covered": "no",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8112137962,
+  "lat": 50.6300569,
+  "lon": 3.0260316,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8112137963,
+  "lat": 50.6298633,
+  "lon": 3.0256354,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "anchors",
+    "capacity": "2",
+    "operator": "MEL",
+    "survey:date": "2020-12-11",
+    "traffic_sign": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 8112137964,
+  "lat": 50.6298686,
+  "lon": 3.0254218,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 8121423688,
+  "lat": 50.6342578,
+  "lon": 3.0303486,
+  "tags": {
+    "addr:housenumber": "125",
+    "addr:street": "Avenue de Dunkerque",
+    "amenity": "restaurant",
+    "check_date": "2025-12-09",
+    "cuisine": "japanese",
+    "diet:vegetarian": "yes",
+    "name": "Nagoya Roll",
+    "opening_hours": "Tu-Su 11:30-14:00,18:00-22:00",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "phone": "+33 3 59 50 49 43",
+    "ref:FR:SIRET": "90846237700015",
+    "takeaway": "yes",
+    "website": "https://nagoyaroll.com/",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 8134289555,
+  "lat": 50.6384827,
+  "lon": 3.0225416,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "2",
+    "covered": "no",
+    "survey:date": "2020-11-17"
+  }
+},
+{
+  "type": "node",
+  "id": 8134289556,
+  "lat": 50.6387164,
+  "lon": 3.0220107,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "2",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-11-17"
+  }
+},
+{
+  "type": "node",
+  "id": 8134289557,
+  "lat": 50.6387722,
+  "lon": 3.0219148,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "2",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-11-17"
+  }
+},
+{
+  "type": "node",
+  "id": 8134617901,
+  "lat": 50.6370951,
+  "lon": 3.0249932,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "4",
+    "covered": "no",
+    "source": "survey",
+    "survey:date": "2020-11-17"
+  }
+},
+{
+  "type": "node",
+  "id": 8149921817,
+  "lat": 50.6361095,
+  "lon": 3.0272054,
+  "tags": {
+    "check_date:opening_hours": "2026-08-10",
+    "laundry_service": "no",
+    "name": "Ma Laverie",
+    "opening_hours": "Mo-Su 07:00-22:00",
+    "ref:FR:SIRET": "51921870500134",
+    "self_service": "yes",
+    "shop": "laundry"
+  }
+},
+{
+  "type": "node",
+  "id": 8179807641,
+  "lat": 50.6328806,
+  "lon": 3.0289077,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "6",
+    "survey:date": "2020-11-30"
+  }
+},
+{
+  "type": "node",
+  "id": 8179807888,
+  "lat": 50.6341596,
+  "lon": 3.0305812,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "12",
+    "covered": "no",
+    "survey:date": "2020-11-30"
+  }
+},
+{
+  "type": "node",
+  "id": 8179807889,
+  "lat": 50.6345718,
+  "lon": 3.0304162,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "12",
+    "covered": "no",
+    "survey:date": "2020-11-30"
+  }
+},
+{
+  "type": "node",
+  "id": 8179807890,
+  "lat": 50.6345315,
+  "lon": 3.0287267,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "survey:date": "2020-11-30"
+  }
+},
+{
+  "type": "node",
+  "id": 8245616031,
+  "lat": 50.6332273,
+  "lon": 3.0224506,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10",
+    "covered": "no",
+    "description": "5 arceaux pour 10 vélos"
+  }
+},
+{
+  "type": "node",
+  "id": 8245636555,
+  "lat": 50.6335409,
+  "lon": 3.0233585,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "16",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 8245654532,
+  "lat": 50.6329998,
+  "lon": 3.0233319,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "capacity": "20"
+  }
+},
+{
+  "type": "node",
+  "id": 8245660063,
+  "lat": 50.6334624,
+  "lon": 3.0235294,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "26",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 8250032109,
+  "lat": 50.6335862,
+  "lon": 3.0214355,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "32",
+    "covered": "no",
+    "fee": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 8423136670,
+  "lat": 50.6360036,
+  "lon": 3.0291094,
+  "tags": {
+    "addr:housenumber": "1",
+    "addr:street": "Avenue Hippolyte Peslin",
+    "check_date": "2026-08-22",
+    "level": "0",
+    "name": "Boulangerie Olivier Vandromme",
+    "opening_hours": "Mo,PH off; Tu-Sa 07:00-19:00; Su 07:00-18:00",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "phone": "+33 3 20 73 27 17",
+    "ref:FR:SIRET": "90492859500027",
+    "shop": "bakery",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 8467330904,
+  "lat": 50.6359216,
+  "lon": 3.0260013,
+  "tags": {
+    "check_date": "2026-08-14",
+    "check_date:opening_hours": "2026-08-14",
+    "level": "0",
+    "name": "CBD 24/7",
+    "opening_hours": "Mo-Fr 11:00-19:00",
+    "shop": "cannabis"
+  }
+},
+{
+  "type": "node",
+  "id": 8473463177,
+  "lat": 50.6310906,
+  "lon": 3.0266608,
+  "tags": {
+    "name": "L'Aziza",
+    "opening_hours": "Mo-Su 07:00-20:00",
+    "phone": "+33 9 80 83 13 62",
+    "shop": "bakery",
+    "website": "https://boulangerielaziza.fr"
+  }
+},
+{
+  "type": "node",
+  "id": 8473463178,
+  "lat": 50.6302096,
+  "lon": 3.0239628,
+  "tags": {
+    "brand": "Carrefour City",
+    "brand:wikidata": "Q2940187",
+    "brand:wikipedia": "fr:Carrefour City",
+    "contact:website": "https://www.carrefour.fr/magasin/carrefour-city-lille-pont-a-fourchon",
+    "name": "Carrefour City Lille Pont à Fourchon",
+    "opening_hours": "Mo-Sa 07:00-22:00; Su 09:00-13:00",
+    "ref:FR:SIRET": "81430256800039",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 8473463188,
+  "lat": 50.6311797,
+  "lon": 3.0289094,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 8473463189,
+  "lat": 50.6313622,
+  "lon": 3.0298978,
+  "tags": {
+    "access": "yes",
+    "amenity": "recycling",
+    "description": "Accessible à tous, dépot en libre service",
+    "name": "Composteur plaine des vachers",
+    "operator": "Ajoncs",
+    "recycling:compost": "yes",
+    "recycling:organic": "yes",
+    "recycling_type": "container"
+  }
+},
+{
+  "type": "node",
+  "id": 8579470936,
+  "lat": 50.6330274,
+  "lon": 3.0167146,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "Rue Jacquard",
+    "operator": "Ville de Lomme",
+    "operator:type": "public"
+  }
+},
+{
+  "type": "node",
+  "id": 8579470937,
+  "lat": 50.6377097,
+  "lon": 3.0175681,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "Rue Jean Jaurès",
+    "operator": "Ville de Lomme",
+    "operator:type": "public"
+  }
+},
+{
+  "type": "node",
+  "id": 8639779044,
+  "lat": 50.6381541,
+  "lon": 3.0232762,
+  "tags": {
+    "amenity": "post_box",
+    "collection_times": "Mo-Fr 16:00; Sa 12:00; PH off",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "operator:wikipedia": "fr:La Poste (entreprise française)",
+    "post_box:type": "wall",
+    "ref": "A1F2J6"
+  }
+},
+{
+  "type": "node",
+  "id": 8774059707,
+  "lat": 50.6367512,
+  "lon": 3.0247620,
+  "tags": {
+    "amenity": "post_box",
+    "check_date:collection_times": "2025-08-04",
+    "collection_times": "Mo-Sa 09:00",
+    "operator": "La Poste",
+    "operator:wikidata": "Q373724",
+    "operator:wikipedia": "fr:La Poste (entreprise française)",
+    "post_box:type": "wall",
+    "ref": "A1F2Z0"
+  }
+},
+{
+  "type": "node",
+  "id": 8913814429,
+  "lat": 50.6383251,
+  "lon": 3.0170187,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "92 rue Jean Jaures",
+    "operator": "Ville de Lomme",
+    "operator:type": "public"
+  }
+},
+{
+  "type": "node",
+  "id": 8913835548,
+  "lat": 50.6332002,
+  "lon": 3.0171852,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "3 Rue Gallieni",
+    "operator": "Ville de Lomme",
+    "operator:type": "public"
+  }
+},
+{
+  "type": "node",
+  "id": 9057219576,
+  "lat": 50.6320409,
+  "lon": 3.0272297,
+  "tags": {
+    "contact:city": "Lille",
+    "contact:housenumber": "12",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Van Oost",
+    "name": "Au Pain d'épi",
+    "ref:FR:SIRET": "75063448700011",
+    "shop": "bakery",
+    "source": "INSEE - 2021-08"
+  }
+},
+{
+  "type": "node",
+  "id": 9057219577,
+  "lat": 50.6315935,
+  "lon": 3.0267120,
+  "tags": {
+    "amenity": "dentist",
+    "healthcare": "dentist",
+    "ref:FR:SIRET": "31621806400012",
+    "source": "INSEE - 2021-08"
+  }
+},
+{
+  "type": "node",
+  "id": 9064101053,
+  "lat": 50.6310936,
+  "lon": 3.0293074,
+  "tags": {
+    "amenity": "drinking_water"
+  }
+},
+{
+  "type": "node",
+  "id": 9092295048,
+  "lat": 50.6335145,
+  "lon": 3.0221323,
+  "tags": {
+    "amenity": "parking_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 9138046672,
+  "lat": 50.6382901,
+  "lon": 3.0224243,
+  "tags": {
+    "amenity": "restaurant",
+    "craft": "caterer",
+    "cuisine": "asian",
+    "description": "Traiteur asiatique et japonais",
+    "level": "0",
+    "name": "Les Saveurs d'Asie - Lomme",
+    "ref:FR:SIRET": "98128236100014",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9138046673,
+  "lat": 50.6370533,
+  "lon": 3.0241726,
+  "tags": {
+    "male": "yes",
+    "name": "Chez Youssef",
+    "opening_hours": "Tu-Sa 09:00-19:00; Su 09:00-14:00",
+    "shop": "hairdresser"
+  }
+},
+{
+  "type": "node",
+  "id": 9208100579,
+  "lat": 50.6341667,
+  "lon": 3.0227168,
+  "tags": {
+    "amenity": "cafe",
+    "contact:city": "Lille",
+    "contact:housenumber": "177",
+    "contact:phone": "+33 4 28 29 47 53",
+    "contact:postcode": "59000",
+    "contact:street": "Allée Clémentine Deman",
+    "contact:website": "https://hiptown.com/",
+    "internet_access": "wlan",
+    "internet_access:fee": "no",
+    "name": "Hiptown Groove",
+    "opening_hours": "Mo-Fr 08:00-17:00"
+  }
+},
+{
+  "type": "node",
+  "id": 9208100580,
+  "lat": 50.6340120,
+  "lon": 3.0221215,
+  "tags": {
+    "amenity": "coworking_space",
+    "contact:city": "Lille",
+    "contact:housenumber": "177",
+    "contact:phone": "+33 4 28 29 47 53",
+    "contact:postcode": "59000",
+    "contact:street": "Allée Clémentine Deman",
+    "contact:website": "https://hiptown.com/nos-espaces/coworking-hauts-de-france/coworking-lille/centre-de-coworking-lille-euratechnologies/",
+    "internet_access": "yes",
+    "internet_access:fee": "no",
+    "name": "Hiptown Euratech",
+    "opening_hours": "24/7"
+  }
+},
+{
+  "type": "node",
+  "id": 9208100582,
+  "lat": 50.6342670,
+  "lon": 3.0226271,
+  "tags": {
+    "addr:housenumber": "219",
+    "addr:street": "Allée Clémentine Deman",
+    "amenity": "restaurant",
+    "check_date": "2025-05-11",
+    "contact:city": "Lille",
+    "contact:housenumber": "219",
+    "contact:instagram": "martarestaurant",
+    "contact:phone": "+33 3 74 09 86 20;+33 7 68 30 00 56",
+    "contact:postcode": "59000",
+    "contact:street": "Allée Clémentine Deman",
+    "contact:website": "https://hiptown.com/nos-restaurants/marta-restaurant/",
+    "cuisine": "pizza;italian",
+    "level": "0",
+    "name": "Marta",
+    "ref:FR:SIRET": "93286195800019",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9229747014,
+  "lat": 50.6375774,
+  "lon": 3.0238045,
+  "tags": {
+    "addr:housenumber": "249",
+    "addr:street": "Avenue de Dunkerque",
+    "amenity": "pharmacy",
+    "check_date": "2026-08-13",
+    "check_date:opening_hours": "2026-08-13",
+    "dispensing": "yes",
+    "healthcare": "pharmacy",
+    "name": "Pharmacie Serrure",
+    "opening_hours": "Mo-Fr 08:30-19:30; Sa 09:00-13:00,14:00-18:00; Su off",
+    "phone": "+33 3 20 09 24 70",
+    "ref:FR:FINESS": "590021622",
+    "ref:FR:SIRET": "49012904600010",
+    "source": "Celtipharm - 10/2014",
+    "website": "https://www.pharmacie-serrure-jaspar-lille.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 9229747015,
+  "lat": 50.6376310,
+  "lon": 3.0237147,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date:opening_hours": "2023-06-09",
+    "contact:city": "Lille",
+    "contact:housenumber": "251",
+    "contact:phone": "+33 7 54 37 49 25",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue de Dunkerque",
+    "contact:website": "https://cheztizote.fr/",
+    "cuisine": "french;regional",
+    "name": "Chez Tizote",
+    "opening_hours": "Tu-Th 08:30-21:30; Fr,Sa 08:30-23:00; Su 08:30-15:00",
+    "ref:FR:SIRET": "85312355200020"
+  }
+},
+{
+  "type": "node",
+  "id": 9415207451,
+  "lat": 50.6332748,
+  "lon": 3.0260324,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "Rue Gavarni",
+    "operator": "Ville de Lille",
+    "operator:type": "public",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 9415207452,
+  "lat": 50.6332748,
+  "lon": 3.0266184,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "Rue Guillaume Tell",
+    "operator": "Ville de Lille",
+    "operator:type": "public",
+    "survey:date": "2020-12-11"
+  }
+},
+{
+  "type": "node",
+  "id": 9487136469,
+  "lat": 50.6311645,
+  "lon": 3.0229949,
+  "tags": {
+    "access": "yes",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "50",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 9532722073,
+  "lat": 50.6339415,
+  "lon": 3.0284195,
+  "tags": {
+    "access": "destination",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "Rue de Cassel",
+    "operator": "Ville de Lille",
+    "operator:type": "public",
+    "source": "survey",
+    "survey:date": "2022-02-22"
+  }
+},
+{
+  "type": "node",
+  "id": 9532763525,
+  "lat": 50.6298189,
+  "lon": 3.0269938,
+  "tags": {
+    "access": "destination",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "Rue Chaplin",
+    "operator": "Ville de Lille",
+    "operator:type": "public"
+  }
+},
+{
+  "type": "node",
+  "id": 9543040859,
+  "lat": 50.6386240,
+  "lon": 3.0223410,
+  "tags": {
+    "amenity": "dentist",
+    "healthcare": "dentist",
+    "level": "0",
+    "name": "Centre dentaire Docali"
+  }
+},
+{
+  "type": "node",
+  "id": 9543040860,
+  "lat": 50.6343594,
+  "lon": 3.0302574,
+  "tags": {
+    "check_date:opening_hours": "2026-08-17",
+    "diet:halal": "only",
+    "diet:vegan": "no",
+    "diet:vegetarian": "no",
+    "level": "0",
+    "name": "Boucherie Bois Blanc",
+    "opening_hours:signed": "no",
+    "ref:FR:SIRET": "89812538000011",
+    "shop": "butcher",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "node",
+  "id": 9675632251,
+  "lat": 50.6295609,
+  "lon": 3.0213757,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date": "2025-06-13",
+    "cuisine": "asian",
+    "name": "Smoki",
+    "outdoor_seating": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9799408732,
+  "lat": 50.6360869,
+  "lon": 3.0272794,
+  "tags": {
+    "amenity": "driving_school",
+    "check_date": "2026-08-17",
+    "check_date:opening_hours": "2026-08-17",
+    "name": "Conduire Malin",
+    "opening_hours": "Tu-Fr 10:00-12:30, Sa 10:00-13:00, Mo-Fr 14:00-19:00"
+  }
+},
+{
+  "type": "node",
+  "id": 9925441198,
+  "lat": 50.6329774,
+  "lon": 3.0237289,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "description": "5 arceaux",
+    "fixme": "capacity"
+  }
+},
+{
+  "type": "node",
+  "id": 9981202645,
+  "lat": 50.6344957,
+  "lon": 3.0221817,
+  "tags": {
+    "amenity": "restaurant",
+    "check_date": "2026-05-13",
+    "level": "0",
+    "name": "Le Point de Chute",
+    "opening_hours": "Mo 08:30-20:00; Tu-Fr 08:30-22:30",
+    "ref:FR:SIRET": "90138693800012",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9981207546,
+  "lat": 50.6350010,
+  "lon": 3.0256937,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9981212352,
+  "lat": 50.6340988,
+  "lon": 3.0209903,
+  "tags": {
+    "addr:housenumber": "171",
+    "addr:street": "Avenue de Bretagne",
+    "amenity": "cafe",
+    "check_date": "2024-09-20",
+    "name": "Break & Dej'",
+    "opening_hours": "Mo-Th 08:00-15:00; Fr 08:00-14:00"
+  }
+},
+{
+  "type": "node",
+  "id": 9981217219,
+  "lat": 50.6326246,
+  "lon": 3.0245274,
+  "tags": {
+    "amenity": "vending_machine",
+    "bin": "no",
+    "check_date": "2026-09-20",
+    "fee": "no",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 9981230752,
+  "lat": 50.6359325,
+  "lon": 3.0268376,
+  "tags": {
+    "female:signed": "no",
+    "male:signed": "no",
+    "name": "By Laet&Prisc",
+    "opening_hours": "Tu-Fr 09:00-19:00; Sa 09:00-18:00",
+    "ref:FR:SIRET": "84386061000016",
+    "shop": "hairdresser"
+  }
+},
+{
+  "type": "node",
+  "id": 9981232779,
+  "lat": 50.6349779,
+  "lon": 3.0256250,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9981234336,
+  "lat": 50.6348408,
+  "lon": 3.0258094,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9981236483,
+  "lat": 50.6348236,
+  "lon": 3.0257343,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 9982884943,
+  "lat": 50.6301887,
+  "lon": 3.0239249,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 9982886366,
+  "lat": 50.6301045,
+  "lon": 3.0201281,
+  "tags": {
+    "board_type": "history",
+    "information": "board",
+    "name": "Pas de marais sans eau",
+    "tourism": "information"
+  }
+},
+{
+  "type": "node",
+  "id": 9982890928,
+  "lat": 50.6301446,
+  "lon": 3.0258988,
+  "tags": {
+    "amenity": "recycling",
+    "location": "overground",
+    "operator": "Le Relais",
+    "operator:wikidata": "Q16654240",
+    "recycling:clothes": "yes",
+    "recycling:shoes": "yes",
+    "recycling_type": "container"
+  }
+},
+{
+  "type": "node",
+  "id": 9982913989,
+  "lat": 50.6301118,
+  "lon": 3.0300178,
+  "tags": {
+    "amenity": "bicycle_parking"
+  }
+},
+{
+  "type": "node",
+  "id": 9982921038,
+  "lat": 50.6357194,
+  "lon": 3.0292192,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 9982929256,
+  "lat": 50.6300339,
+  "lon": 3.0236077,
+  "tags": {
+    "name": "La bonbonnière",
+    "shop": "tattoo"
+  }
+},
+{
+  "type": "node",
+  "id": 9982932900,
+  "lat": 50.6303050,
+  "lon": 3.0232325,
+  "tags": {
+    "amenity": "kindergarten"
+  }
+},
+{
+  "type": "node",
+  "id": 9982942976,
+  "lat": 50.6357653,
+  "lon": 3.0292648,
+  "tags": {
+    "amenity": "vending_machine",
+    "check_date": "2025-01-04",
+    "fee": "no",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 9982948850,
+  "lat": 50.6362835,
+  "lon": 3.0303328,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 9985473225,
+  "lat": 50.6338141,
+  "lon": 3.0229944,
+  "tags": {
+    "alt_name": "EDN",
+    "amenity": "college",
+    "name": "École du numérique",
+    "operator": "Université Catholique de Lille",
+    "operator:type": "private",
+    "ref:UAI": "0597250K",
+    "short_name": "EDN",
+    "source": "Onisep - Idéo-Structures d'enseignement supérieur - 07/2025",
+    "website": "https://www.fges.fr/cursus-universitaire/licence-sts/ecole-du-numerique/"
+  }
+},
+{
+  "type": "node",
+  "id": 10089715432,
+  "lat": 50.6307297,
+  "lon": 3.0233301,
+  "tags": {
+    "access": "yes",
+    "amenity": "recycling",
+    "description": "Accessible à tous, dépot en libre service",
+    "name": "Composteur Ada Lovelace",
+    "operator": "Ajoncs",
+    "recycling:compost": "yes",
+    "recycling:organic": "yes",
+    "recycling_type": "container"
+  }
+},
+{
+  "type": "node",
+  "id": 10118488824,
+  "lat": 50.6385199,
+  "lon": 3.0188128,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "Rue Becker",
+    "operator": "Ville de Lomme",
+    "operator:type": "public"
+  }
+},
+{
+  "type": "node",
+  "id": 10174210591,
+  "lat": 50.6329924,
+  "lon": 3.0169890,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "capacity": "6"
+  }
+},
+{
+  "type": "node",
+  "id": 10248439811,
+  "lat": 50.6317686,
+  "lon": 3.0282619,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "32 rue Gobin",
+    "operator": "Ville de Lille",
+    "operator:type": "public",
+    "source": "survey",
+    "start_date": "2022-11"
+  }
+},
+{
+  "type": "node",
+  "id": 10810917906,
+  "lat": 50.6309856,
+  "lon": 3.0211386,
+  "tags": {
+    "amenity": "fast_food",
+    "contact:housenumber": "2",
+    "contact:street": "Rue Hegel",
+    "cuisine": "hot_dog",
+    "name": "Dowl",
+    "opening_hours": "Mo-Su 11:00-15:00,18:00-21:30",
+    "ref:FR:SIRET": "91961869400013",
+    "website": "https://dowl.fr/"
+  }
+},
+{
+  "type": "node",
+  "id": 10810917907,
+  "lat": 50.6309445,
+  "lon": 3.0229743,
+  "tags": {
+    "amenity": "townhall",
+    "amenity_1": "bicycle_repair_station",
+    "email": "boisblancs@mairie-lille.fr",
+    "name": "Mairie de quartier Bois-Blancs",
+    "opening_hours": "Mo-Fr 08:30-12:30,13:30-17:00; Sa 09:00-12:00",
+    "phone": "+33320170040"
+  }
+},
+{
+  "type": "node",
+  "id": 10810917908,
+  "lat": 50.6309988,
+  "lon": 3.0226305,
+  "tags": {
+    "information": "map",
+    "map_size": "city",
+    "map_type": "yes",
+    "tourism": "information"
+  }
+},
+{
+  "type": "node",
+  "id": 10810917909,
+  "lat": 50.6309878,
+  "lon": 3.0226554,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 10810917910,
+  "lat": 50.6309387,
+  "lon": 3.0227270,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 10810917911,
+  "lat": 50.6309198,
+  "lon": 3.0227507,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 10810917912,
+  "lat": 50.6308892,
+  "lon": 3.0227940,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 10810917913,
+  "lat": 50.6308761,
+  "lon": 3.0228162,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 10810917914,
+  "lat": 50.6308513,
+  "lon": 3.0228476,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 10810917915,
+  "lat": 50.6308992,
+  "lon": 3.0227797,
+  "tags": {
+    "amenity": "waste_basket",
+    "colour": "red",
+    "material": "metal"
+  }
+},
+{
+  "type": "node",
+  "id": 10810917916,
+  "lat": 50.6337928,
+  "lon": 3.0221226,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "30",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 10887570520,
+  "lat": 50.6380788,
+  "lon": 3.0228348,
+  "tags": {
+    "addr:housenumber": "273",
+    "addr:street": "Avenue de Dunkerque",
+    "amenity": "restaurant",
+    "check_date": "2026-03-28",
+    "cuisine": "vietnamese",
+    "description": "Restaurant traditionnel vietnamien",
+    "level": "0",
+    "name": "Ha Noi Gourmet",
+    "ref:FR:SIRET": "10028313400011"
+  }
+},
+{
+  "type": "node",
+  "id": 11002119405,
+  "lat": 50.6298433,
+  "lon": 3.0211552,
+  "tags": {
+    "addr:housenumber": "82",
+    "addr:postcode": "59000",
+    "addr:street": "Quai de l'Ouest",
+    "amenity": "restaurant",
+    "contact:instagram": "au1ermai",
+    "cuisine": "french",
+    "name": "Au 1er Mai",
+    "opening_hours": "Tu-Fr 12:00-15:00,17:00-00:00; Sa 17:00-00:00",
+    "outdoor_seating": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 11032982681,
+  "lat": 50.6367789,
+  "lon": 3.0250741,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "4",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 11125197566,
+  "lat": 50.6310464,
+  "lon": 3.0294341,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11125197567,
+  "lat": 50.6309722,
+  "lon": 3.0294680,
+  "tags": {
+    "artwork_type": "sculpture",
+    "tourism": "artwork"
+  }
+},
+{
+  "type": "node",
+  "id": 11199469790,
+  "lat": 50.6372531,
+  "lon": 3.0231402,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "Rue Descartes",
+    "operator": "Ville de Lille",
+    "operator:type": "public",
+    "start_date": "2022"
+  }
+},
+{
+  "type": "node",
+  "id": 11199469793,
+  "lat": 50.6335117,
+  "lon": 3.0250808,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "capacity": "5",
+    "charge": "50 EUR",
+    "covered": "yes",
+    "fee": "yes",
+    "manufacturer": "ALTINNOVA",
+    "model": "AltaoCover",
+    "note": "Rue Hegel",
+    "operator": "Ville de Lille",
+    "operator:type": "public",
+    "start_date": "2022"
+  }
+},
+{
+  "type": "node",
+  "id": 11522028725,
+  "lat": 50.6331089,
+  "lon": 3.0172897,
+  "tags": {
+    "addr:city": "Lomme",
+    "addr:housenumber": "2",
+    "addr:postcode": "59160",
+    "addr:street": "Rue Gallieni",
+    "amenity": "bicycle_repair_station",
+    "contact:city": "Lille",
+    "contact:email": "bicyclette@lesmainsdansleguidon.fr",
+    "contact:facebook": "https://www.facebook.com/lesmainsdansleguidon",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Léon Gambetta",
+    "contact:website": "https://www.lesmainsdansleguidon.fr",
+    "description": "Atelier Vélocipédique Lillois Ici, c’est vous qui bichonnez votre vélo. Outils à disposition, boutique accessoires, et café convivial.",
+    "name": "Les Mains dans le Guidon - Euratech",
+    "opening_hours": "Mo-Tu 10:00-13:00,14:00-19:00; We 10:00-13:00,14:00-21:00; Th-Sa 10:00-13:00,14:00-19:00; PH off",
+    "outdoor_seating": "no",
+    "phone": "+33 3 62 52 94 87",
+    "service:bicycle:diy": "yes",
+    "service:bicycle:learning": "yes",
+    "service:bicycle:pump": "yes",
+    "service:bicycle:repair": "yes",
+    "service:bicycle:second_hand": "yes",
+    "shop": "bicycle",
+    "website": "https://www.lesmainsdansleguidon.fr",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12012028047,
+  "lat": 50.6387608,
+  "lon": 3.0216379,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12012064922,
+  "lat": 50.6380309,
+  "lon": 3.0233444,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12012067838,
+  "lat": 50.6386795,
+  "lon": 3.0219500,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12012067847,
+  "lat": 50.6380177,
+  "lon": 3.0230985,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12012068918,
+  "lat": 50.6384071,
+  "lon": 3.0224595,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12012070841,
+  "lat": 50.6384963,
+  "lon": 3.0244979,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12012112243,
+  "lat": 50.6388530,
+  "lon": 3.0244870,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12093501394,
+  "lat": 50.6318895,
+  "lon": 3.0228230,
+  "tags": {
+    "amenity": "bar",
+    "contact:facebook": "highton.bar",
+    "contact:instagram": "highton.bar",
+    "name": "Highton",
+    "opening_hours": "Mo 17:00-23:00; Tu,We 17:00-24:00; Th-Sa 17:00-01:00",
+    "ref:FR:SIRET": "98785022900012",
+    "website": "https://www.highton.bar/"
+  }
+},
+{
+  "type": "node",
+  "id": 12144470689,
+  "lat": 50.6335050,
+  "lon": 3.0294657,
+  "tags": {
+    "amenity": "parking_entrance",
+    "level": "0",
+    "maxheight": "1.95"
+  }
+},
+{
+  "type": "node",
+  "id": 12144480501,
+  "lat": 50.6339232,
+  "lon": 3.0303385,
+  "tags": {
+    "access": "customers",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "wall_loops",
+    "capacity": "5",
+    "covered": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12144480507,
+  "lat": 50.6339227,
+  "lon": 3.0305393,
+  "tags": {
+    "access": "customers",
+    "amenity": "toilets",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12144480508,
+  "lat": 50.6338183,
+  "lon": 3.0304044,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "no",
+    "material": "metal"
+  }
+},
+{
+  "type": "node",
+  "id": 12144480510,
+  "lat": 50.6338058,
+  "lon": 3.0304987,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "no",
+    "material": "metal"
+  }
+},
+{
+  "type": "node",
+  "id": 12144480511,
+  "lat": 50.6337882,
+  "lon": 3.0304276,
+  "tags": {
+    "amenity": "waste_basket",
+    "waste": "cigarettes"
+  }
+},
+{
+  "type": "node",
+  "id": 12361270613,
+  "lat": 50.6341841,
+  "lon": 3.0201820,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "166bis",
+    "addr:postcode": "59000",
+    "addr:street": "Avenue de Bretagne",
+    "brand": "Carrefour City",
+    "brand:wikidata": "Q2940187",
+    "check_date": "2025-07-16",
+    "name": "Carrefour City",
+    "opening_hours": "Mo-Sa 07:00-22:00; Su 09:00-13:00",
+    "shop": "convenience",
+    "website": "https://www.carrefour.fr/magasin/carrefour-city-lille-bretagne"
+  }
+},
+{
+  "type": "node",
+  "id": 12497848952,
+  "lat": 50.6345546,
+  "lon": 3.0226624,
+  "tags": {
+    "amenity": "restaurant",
+    "name": "La Promenade",
+    "ref:FR:SIRET": "92027880100013"
+  }
+},
+{
+  "type": "node",
+  "id": 12538813620,
+  "lat": 50.6349701,
+  "lon": 3.0283132,
+  "tags": {
+    "amenity": "recycling",
+    "recycling:glass_bottles": "yes",
+    "recycling_type": "container",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12538813621,
+  "lat": 50.6326588,
+  "lon": 3.0252616,
+  "tags": {
+    "amenity": "recycling",
+    "recycling:glass_bottles": "yes",
+    "recycling_type": "container",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12538813622,
+  "lat": 50.6329845,
+  "lon": 3.0247404,
+  "tags": {
+    "amenity": "recycling",
+    "recycling:glass_bottles": "yes",
+    "recycling_type": "container",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12565787759,
+  "lat": 50.6296230,
+  "lon": 3.0210767,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "capacity": "10"
+  }
+},
+{
+  "type": "node",
+  "id": 12610071667,
+  "lat": 50.6369495,
+  "lon": 3.0207920,
+  "tags": {
+    "amenity": "parking_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 12675942475,
+  "lat": 50.6301447,
+  "lon": 3.0299285,
+  "tags": {
+    "access": "customers",
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "floor",
+    "description": "Espaces de stationnement obligatoire des trottinettes électriques et vélos à assistance électrique en free-floating.",
+    "fee": "yes",
+    "id_origin": "1025.0",
+    "indoor": "no",
+    "level": "0",
+    "network": "Lime",
+    "network:wikidata": "Q39086685",
+    "operator": "Lime",
+    "operator:type": "private",
+    "operator:wikidata": "Q39086685",
+    "owner": "MEL",
+    "ref:INSEE": "59350",
+    "small_electric_vehicle": "no",
+    "source": "Opendata MEL - edpm_vae_libreservice - 2024/07",
+    "website": "https://www.li.me"
+  }
+},
+{
+  "type": "node",
+  "id": 12675942513,
+  "lat": 50.6337309,
+  "lon": 3.0206197,
+  "tags": {
+    "access": "customers",
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "floor",
+    "covered": "no",
+    "description": "Espaces de stationnement obligatoire des trottinettes électriques et vélos à assistance électrique en free-floating.",
+    "fee": "yes",
+    "id_origin": "987.0",
+    "indoor": "no",
+    "level": "0",
+    "network": "Lime",
+    "network:wikidata": "Q39086685",
+    "operator": "Lime",
+    "operator:type": "private",
+    "operator:wikidata": "Q39086685",
+    "owner": "MEL",
+    "ref:INSEE": "59350",
+    "small_electric_vehicle": "no",
+    "source": "Opendata MEL - edpm_vae_libreservice - 2024/07",
+    "website": "https://www.li.me"
+  }
+},
+{
+  "type": "node",
+  "id": 12675942514,
+  "lat": 50.6328881,
+  "lon": 3.0228017,
+  "tags": {
+    "access": "customers",
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "floor",
+    "description": "Espaces de stationnement obligatoire des trottinettes électriques et vélos à assistance électrique en free-floating.",
+    "fee": "yes",
+    "id_origin": "986.0",
+    "indoor": "no",
+    "level": "0",
+    "network": "Lime",
+    "network:wikidata": "Q39086685",
+    "operator": "Lime",
+    "operator:type": "private",
+    "operator:wikidata": "Q39086685",
+    "owner": "MEL",
+    "ref:INSEE": "59350",
+    "small_electric_vehicle": "no",
+    "source": "Opendata MEL - edpm_vae_libreservice - 2024/07",
+    "website": "https://www.li.me"
+  }
+},
+{
+  "type": "node",
+  "id": 12675942515,
+  "lat": 50.6303095,
+  "lon": 3.0237583,
+  "tags": {
+    "access": "customers",
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "floor",
+    "description": "Espaces de stationnement obligatoire des trottinettes électriques et vélos à assistance électrique en free-floating.",
+    "fee": "yes",
+    "id_origin": "985.0",
+    "indoor": "no",
+    "level": "0",
+    "network": "Lime",
+    "network:wikidata": "Q39086685",
+    "operator": "Lime",
+    "operator:type": "private",
+    "operator:wikidata": "Q39086685",
+    "owner": "MEL",
+    "ref:INSEE": "59350",
+    "small_electric_vehicle": "no",
+    "source": "Opendata MEL - edpm_vae_libreservice - 2024/07",
+    "website": "https://www.li.me"
+  }
+},
+{
+  "type": "node",
+  "id": 12675942516,
+  "lat": 50.6330885,
+  "lon": 3.0270404,
+  "tags": {
+    "access": "customers",
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "floor",
+    "description": "Espaces de stationnement obligatoire des trottinettes électriques et vélos à assistance électrique en free-floating.",
+    "fee": "yes",
+    "id_origin": "984.0",
+    "indoor": "no",
+    "level": "0",
+    "network": "Lime",
+    "network:wikidata": "Q39086685",
+    "operator": "Lime",
+    "operator:type": "private",
+    "operator:wikidata": "Q39086685",
+    "owner": "MEL",
+    "ref:INSEE": "59350",
+    "small_electric_vehicle": "no",
+    "source": "Opendata MEL - edpm_vae_libreservice - 2024/07",
+    "website": "https://www.li.me"
+  }
+},
+{
+  "type": "node",
+  "id": 12675942518,
+  "lat": 50.6341343,
+  "lon": 3.0305476,
+  "tags": {
+    "access": "customers",
+    "addr:city": "Lille",
+    "addr:postcode": "59000",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "floor",
+    "covered": "no",
+    "description": "Espaces de stationnement obligatoire des trottinettes électriques et vélos à assistance électrique en free-floating.",
+    "fee": "yes",
+    "id_origin": "982.0",
+    "indoor": "no",
+    "level": "0",
+    "network": "Lime",
+    "network:wikidata": "Q39086685",
+    "operator": "Lime",
+    "operator:type": "private",
+    "operator:wikidata": "Q39086685",
+    "owner": "MEL",
+    "ref:INSEE": "59350",
+    "small_electric_vehicle": "no",
+    "source": "Opendata MEL - edpm_vae_libreservice - 2024/07",
+    "website": "https://www.li.me"
+  }
+},
+{
+  "type": "node",
+  "id": 12675943195,
+  "lat": 50.6383477,
+  "lon": 3.0168519,
+  "tags": {
+    "access": "customers",
+    "addr:city": "Lomme",
+    "addr:postcode": "59160",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "floor",
+    "description": "Espaces de stationnement obligatoire des trottinettes électriques et vélos à assistance électrique en free-floating.",
+    "fee": "yes",
+    "id_origin": "277.0",
+    "indoor": "no",
+    "level": "0",
+    "network": "Lime",
+    "network:wikidata": "Q39086685",
+    "operator": "Lime",
+    "operator:type": "private",
+    "operator:wikidata": "Q39086685",
+    "owner": "MEL",
+    "ref:INSEE": "59355",
+    "small_electric_vehicle": "no",
+    "source": "Opendata MEL - edpm_vae_libreservice - 2024/07",
+    "website": "https://www.li.me"
+  }
+},
+{
+  "type": "node",
+  "id": 12675943215,
+  "lat": 50.6370628,
+  "lon": 3.0249453,
+  "tags": {
+    "access": "customers",
+    "addr:city": "Lambersart",
+    "addr:postcode": "59130",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "floor",
+    "covered": "no",
+    "description": "Espaces de stationnement obligatoire des trottinettes électriques et vélos à assistance électrique en free-floating.",
+    "fee": "yes",
+    "id_origin": "256.0",
+    "indoor": "no",
+    "level": "0",
+    "network": "Lime",
+    "network:wikidata": "Q39086685",
+    "operator": "Lime",
+    "operator:type": "private",
+    "operator:wikidata": "Q39086685",
+    "owner": "MEL",
+    "ref:INSEE": "59328",
+    "small_electric_vehicle": "yes",
+    "source": "Opendata MEL - edpm_vae_libreservice - 2024/07",
+    "website": "https://www.li.me"
+  }
+},
+{
+  "type": "node",
+  "id": 12675943404,
+  "lat": 50.6311741,
+  "lon": 3.0211727,
+  "tags": {
+    "access": "customers",
+    "addr:city": "Lomme",
+    "addr:postcode": "59160",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "floor",
+    "description": "Espaces de stationnement obligatoire des trottinettes électriques et vélos à assistance électrique en free-floating.",
+    "fee": "yes",
+    "id_origin": "52.0",
+    "indoor": "no",
+    "level": "0",
+    "network": "Lime",
+    "network:wikidata": "Q39086685",
+    "operator": "Lime",
+    "operator:type": "private",
+    "operator:wikidata": "Q39086685",
+    "owner": "MEL",
+    "ref:INSEE": "59355",
+    "small_electric_vehicle": "no",
+    "source": "Opendata MEL - edpm_vae_libreservice - 2024/07",
+    "website": "https://www.li.me"
+  }
+},
+{
+  "type": "node",
+  "id": 12759304069,
+  "lat": 50.6313847,
+  "lon": 3.0300008,
+  "tags": {
+    "access": "yes",
+    "amenity": "toilets",
+    "unisex": "yes",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438575,
+  "lat": 50.6312017,
+  "lon": 3.0262071,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438576,
+  "lat": 50.6311995,
+  "lon": 3.0262667,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438577,
+  "lat": 50.6312826,
+  "lon": 3.0263444,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438578,
+  "lat": 50.6312707,
+  "lon": 3.0263970,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438582,
+  "lat": 50.6312941,
+  "lon": 3.0263579,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438585,
+  "lat": 50.6312689,
+  "lon": 3.0260852,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438586,
+  "lat": 50.6313786,
+  "lon": 3.0262852,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438587,
+  "lat": 50.6313924,
+  "lon": 3.0259870,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438588,
+  "lat": 50.6313834,
+  "lon": 3.0259702,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438590,
+  "lat": 50.6310531,
+  "lon": 3.0266126,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438594,
+  "lat": 50.6303324,
+  "lon": 3.0237221,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438595,
+  "lat": 50.6303531,
+  "lon": 3.0236955,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438596,
+  "lat": 50.6304337,
+  "lon": 3.0235699,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438597,
+  "lat": 50.6304544,
+  "lon": 3.0235433,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438599,
+  "lat": 50.6305838,
+  "lon": 3.0233832,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 12823438600,
+  "lat": 50.6305670,
+  "lon": 3.0232832,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12823476302,
+  "lat": 50.6306265,
+  "lon": 3.0233097,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12823476303,
+  "lat": 50.6308650,
+  "lon": 3.0229399,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12823476304,
+  "lat": 50.6308959,
+  "lon": 3.0228930,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253985,
+  "lat": 50.6311495,
+  "lon": 3.0187334,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253986,
+  "lat": 50.6310928,
+  "lon": 3.0186684,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253987,
+  "lat": 50.6310142,
+  "lon": 3.0183919,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253988,
+  "lat": 50.6309252,
+  "lon": 3.0184793,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253989,
+  "lat": 50.6309432,
+  "lon": 3.0177109,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253990,
+  "lat": 50.6309922,
+  "lon": 3.0178329,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253991,
+  "lat": 50.6309613,
+  "lon": 3.0179955,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253992,
+  "lat": 50.6309233,
+  "lon": 3.0180373,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253993,
+  "lat": 50.6307563,
+  "lon": 3.0179874,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253994,
+  "lat": 50.6307318,
+  "lon": 3.0179183,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253995,
+  "lat": 50.6307073,
+  "lon": 3.0178553,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253998,
+  "lat": 50.6306170,
+  "lon": 3.0168714,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919253999,
+  "lat": 50.6307142,
+  "lon": 3.0168416,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 12919255811,
+  "lat": 50.6300753,
+  "lon": 3.0166308,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12919353874,
+  "lat": 50.6298532,
+  "lon": 3.0177641,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12919353875,
+  "lat": 50.6298806,
+  "lon": 3.0178027,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 12946809036,
+  "lat": 50.6310325,
+  "lon": 3.0179030,
+  "tags": {
+    "access": "yes",
+    "amenity": "drinking_water",
+    "fee": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 12946809037,
+  "lat": 50.6299845,
+  "lon": 3.0167160,
+  "tags": {
+    "amenity": "drinking_water",
+    "man_made": "water_tap"
+  }
+},
+{
+  "type": "node",
+  "id": 13004204334,
+  "lat": 50.6303352,
+  "lon": 3.0169444,
+  "tags": {
+    "amenity": "bench",
+    "backrest": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13004204335,
+  "lat": 50.6300416,
+  "lon": 3.0166250,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13004204342,
+  "lat": 50.6303896,
+  "lon": 3.0171302,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13018739423,
+  "lat": 50.6330743,
+  "lon": 3.0271340,
+  "tags": {
+    "addr:housenumber": "97 bis",
+    "addr:postcode": "59000",
+    "addr:street": "Rue de Cassel",
+    "check_date": "2026-03-11",
+    "contact:instagram": "rosyscookieslille",
+    "name": "Rosy's Cookies",
+    "shop": "pastry"
+  }
+},
+{
+  "type": "node",
+  "id": 13261295405,
+  "lat": 50.6313887,
+  "lon": 3.0296707,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13261295407,
+  "lat": 50.6309977,
+  "lon": 3.0290858,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13261295408,
+  "lat": 50.6310177,
+  "lon": 3.0291424,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13261295409,
+  "lat": 50.6310421,
+  "lon": 3.0291996,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13261295410,
+  "lat": 50.6309855,
+  "lon": 3.0290548,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279624589,
+  "lat": 50.6345826,
+  "lon": 3.0238787,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808954,
+  "lat": 50.6336747,
+  "lon": 3.0210257,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808955,
+  "lat": 50.6336868,
+  "lon": 3.0210156,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808957,
+  "lat": 50.6336286,
+  "lon": 3.0210735,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808958,
+  "lat": 50.6336519,
+  "lon": 3.0210859,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808971,
+  "lat": 50.6335725,
+  "lon": 3.0213721,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808972,
+  "lat": 50.6335287,
+  "lon": 3.0214150,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808973,
+  "lat": 50.6334819,
+  "lon": 3.0214659,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808974,
+  "lat": 50.6334255,
+  "lon": 3.0215181,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808979,
+  "lat": 50.6335492,
+  "lon": 3.0214106,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808980,
+  "lat": 50.6336645,
+  "lon": 3.0210757,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808981,
+  "lat": 50.6335534,
+  "lon": 3.0211341,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808987,
+  "lat": 50.6333668,
+  "lon": 3.0215917,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808988,
+  "lat": 50.6333483,
+  "lon": 3.0215496,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808989,
+  "lat": 50.6333853,
+  "lon": 3.0216384,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808990,
+  "lat": 50.6330247,
+  "lon": 3.0217189,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808991,
+  "lat": 50.6332252,
+  "lon": 3.0222125,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808992,
+  "lat": 50.6330062,
+  "lon": 3.0216804,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808993,
+  "lat": 50.6331995,
+  "lon": 3.0221754,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279808994,
+  "lat": 50.6332746,
+  "lon": 3.0223613,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279821206,
+  "lat": 50.6328143,
+  "lon": 3.0228269,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279821207,
+  "lat": 50.6326506,
+  "lon": 3.0223949,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279821208,
+  "lat": 50.6326817,
+  "lon": 3.0224813,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279821209,
+  "lat": 50.6324522,
+  "lon": 3.0221369,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 13279821212,
+  "lat": 50.6332964,
+  "lon": 3.0237819,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279821213,
+  "lat": 50.6332497,
+  "lon": 3.0238251,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279821214,
+  "lat": 50.6332075,
+  "lon": 3.0238672,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279821216,
+  "lat": 50.6314021,
+  "lon": 3.0197410,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279821217,
+  "lat": 50.6314160,
+  "lon": 3.0197749,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279821218,
+  "lat": 50.6313134,
+  "lon": 3.0198206,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13279821219,
+  "lat": 50.6313274,
+  "lon": 3.0198545,
+  "tags": {
+    "amenity": "bench"
+  }
+},
+{
+  "type": "node",
+  "id": 13315835534,
+  "lat": 50.6317565,
+  "lon": 3.0226520,
+  "tags": {
+    "amenity": "bicycle_repair_station",
+    "check_date": "2026-07-13",
+    "fee": "no",
+    "opening_hours": "24/7",
+    "operator": "Ville de Lille",
+    "service:bicycle:chain_tool": "no",
+    "service:bicycle:pump": "yes",
+    "service:bicycle:stand": "yes",
+    "service:bicycle:tools": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13440642352,
+  "lat": 50.6314521,
+  "lon": 3.0261695,
+  "tags": {
+    "amenity": "public_bookcase",
+    "check_date": "2025-12-14",
+    "noname": "yes",
+    "opening_hours": "24/7",
+    "panoramax": "2a5b1cd8-1228-4eef-b2b9-78875010c11d"
+  }
+},
+{
+  "type": "node",
+  "id": 13495248339,
+  "lat": 50.6317311,
+  "lon": 3.0251728,
+  "tags": {
+    "access": "yes",
+    "amenity": "recycling",
+    "description": "Accessible à tous, dépot en libre service",
+    "operator": "Ajoncs",
+    "recycling:compost": "yes",
+    "recycling:organic": "yes",
+    "recycling_type": "container"
+  }
+},
+{
+  "type": "node",
+  "id": 13495931676,
+  "lat": 50.6376559,
+  "lon": 3.0224575,
+  "tags": {
+    "amenity": "parking_entrance"
+  }
+},
+{
+  "type": "node",
+  "id": 13519199463,
+  "lat": 50.6323987,
+  "lon": 3.0296353,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10"
+  }
+},
+{
+  "type": "node",
+  "id": 13531968601,
+  "lat": 50.6346439,
+  "lon": 3.0186597,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "43",
+    "addr:postcode": "59000",
+    "addr:street": "Rue Fourier",
+    "email": "contact@poussesdartisans.fr",
+    "name": "Bric à Mat'",
+    "phone": "+33 6 36 43 12 53",
+    "shop": "doityourself",
+    "website": "https://www.bricamat.com/"
+  }
+},
+{
+  "type": "node",
+  "id": 13713621336,
+  "lat": 50.6310952,
+  "lon": 3.0280925,
+  "tags": {
+    "ref:FR:SIRET": "80439439300016",
+    "shop": "convenience",
+    "source": "INSEE"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471272,
+  "lat": 50.6368581,
+  "lon": 3.0249723,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471273,
+  "lat": 50.6357527,
+  "lon": 3.0213938,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471274,
+  "lat": 50.6350090,
+  "lon": 3.0189761,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471275,
+  "lat": 50.6339290,
+  "lon": 3.0200968,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471276,
+  "lat": 50.6351103,
+  "lon": 3.0239899,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471277,
+  "lat": 50.6337360,
+  "lon": 3.0256558,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471278,
+  "lat": 50.6354712,
+  "lon": 3.0283411,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471279,
+  "lat": 50.6344130,
+  "lon": 3.0270114,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471280,
+  "lat": 50.6310724,
+  "lon": 3.0226988,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471283,
+  "lat": 50.6298857,
+  "lon": 3.0256544,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471284,
+  "lat": 50.6310930,
+  "lon": 3.0289926,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13716471288,
+  "lat": 50.6312262,
+  "lon": 3.0246454,
+  "tags": {
+    "amenity": "vending_machine",
+    "vending": "excrement_bags"
+  }
+},
+{
+  "type": "node",
+  "id": 13760569111,
+  "lat": 50.6332102,
+  "lon": 3.0213906,
+  "tags": {
+    "addr:housenumber": "23",
+    "addr:street": "Rue des Templiers",
+    "amenity": "cafe",
+    "check_date": "2026-04-25",
+    "description": "Salon de thé spécialisé dans l'accueil des chiens",
+    "level": "0",
+    "name": "Patati",
+    "opening_hours": "Mo-We 10:00-18:00; Fr-Su 10:00-19:00",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "phone": "+33 7 62 56 32 46",
+    "website": "https://lepatati.fr/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 13822189783,
+  "lat": 50.6377441,
+  "lon": 3.0241439,
+  "tags": {
+    "access": "yes",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "wall_loops",
+    "capacity": "3",
+    "covered": "no",
+    "panoramax": "2b7f4abe-cf6a-4aa2-b93b-80ba6623275f"
+  }
+},
+{
+  "type": "node",
+  "id": 13822213113,
+  "lat": 50.6377079,
+  "lon": 3.0257828,
+  "tags": {
+    "access": "yes",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "8",
+    "covered": "yes",
+    "indoor": "no",
+    "panoramax": "112f82ac-8878-40b4-92d2-9d2d200edc1b"
+  }
+},
+{
+  "type": "node",
+  "id": 13892700076,
+  "lat": 50.6370325,
+  "lon": 3.0246414,
+  "tags": {
+    "check_date": "2026-08-13",
+    "check_date:opening_hours": "2026-08-13",
+    "level": "0",
+    "name": "La Parisienne",
+    "opening_date": "2026-09",
+    "opening_hours:signed": "no",
+    "shop": "bakery"
+  }
+},
+{
+  "type": "node",
+  "id": 13967797712,
+  "lat": 50.6341610,
+  "lon": 3.0204738,
+  "tags": {
+    "amenity": "drinking_water",
+    "man_made": "water_tap"
+  }
+},
+{
+  "type": "node",
+  "id": 14030963796,
+  "lat": 50.6326791,
+  "lon": 3.0207484,
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "165",
+    "addr:postcode": "59000",
+    "addr:street": "Avenue de Bretagne",
+    "amenity": "food_court",
+    "name": "Gong'ettes",
+    "opening_hours": "We-Su 16:00-23:00",
+    "website": "https://www.instagram.com/gong_ette/",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 14058955622,
+  "lat": 50.6306658,
+  "lon": 3.0167123,
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10",
+    "covered": "no"
+  }
+},
+{
+  "type": "node",
+  "id": 14058955623,
+  "lat": 50.6302729,
+  "lon": 3.0165753,
+  "tags": {
+    "amenity": "waste_basket"
+  }
+},
+{
+  "type": "node",
+  "id": 14058955625,
+  "lat": 50.6299195,
+  "lon": 3.0165364,
+  "tags": {
+    "board_type": "nature",
+    "information": "board",
+    "name": "Le sureau",
+    "tourism": "information"
+  }
+},
+{
+  "type": "node",
+  "id": 14077454125,
+  "lat": 50.6360602,
+  "lon": 3.0273495,
+  "tags": {
+    "addr:floor": "0",
+    "addr:housenumber": "208",
+    "addr:street": "Avenue de Dunkerque",
+    "check_date": "2026-08-06",
+    "level": "0",
+    "name": "City Mini Market",
+    "shop": "convenience"
+  }
+},
+{
+  "type": "node",
+  "id": 14097432413,
+  "lat": 50.6348419,
+  "lon": 3.0271491,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "yes",
+    "check_date": "2026-08-14",
+    "seats": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 14097432414,
+  "lat": 50.6348611,
+  "lon": 3.0271885,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "yes",
+    "check_date": "2026-08-14",
+    "seats": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 14097432415,
+  "lat": 50.6348076,
+  "lon": 3.0270715,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "yes",
+    "check_date": "2026-08-14",
+    "seats": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 14134566972,
+  "lat": 50.6358264,
+  "lon": 3.0291885,
+  "tags": {
+    "amenity": "bench",
+    "armrest": "no",
+    "backrest": "yes",
+    "colour": "gray",
+    "direction": "334",
+    "material": "wood",
+    "operational_status": "ok",
+    "panoramax": "9e61bf35-dd9c-4d39-ab74-d1b7aca59951",
+    "seats:separated": "no",
+    "survey:date": "2026-08-30",
+    "two_sided": "no"
+  }
+},
+{
+  "type": "way",
+  "id": 39288816,
+  "center": {
+    "lat": 50.6341436,
+    "lon": 3.0199407
+  },
+  "tags": {
+    "amenity": "restaurant",
+    "building": "apartments",
+    "building:levels": "2",
+    "contact:city": "Lille",
+    "contact:facebook": "https://www.facebook.com/LeSwitchOuBien/",
+    "contact:housenumber": "168",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue de Bretagne",
+    "name": "Le Switch",
+    "roof:levels": "1",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "wheelchair": "limited"
+  }
+},
+{
+  "type": "way",
+  "id": 39301269,
+  "center": {
+    "lat": 50.6370143,
+    "lon": 3.0246096
+  },
+  "tags": {
+    "bic": "SOGEFRPPLLM",
+    "building": "yes",
+    "name": "La Parisienne",
+    "shop": "bakery",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 39363202,
+  "center": {
+    "lat": 50.6354105,
+    "lon": 3.0200264
+  },
+  "tags": {
+    "addr:housenumber": "108",
+    "addr:street": "Rue Turgot",
+    "amenity": "vehicle_inspection",
+    "brand": "Autosur",
+    "brand:wikidata": "Q64224807",
+    "building": "yes",
+    "building:levels": "1",
+    "check_date": "2025-09-06",
+    "contact:city": "Lille",
+    "contact:housenumber": "108",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Turgot",
+    "name": "Autosur",
+    "opening_hours": "Mo-Fr 08:30-17:00; Sa 08:30-12:30",
+    "phone": "+33 3 20 52 89 51",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "website": "https://controle-technique.autosur.fr/795-autosur-lille-canteleu/"
+  }
+},
+{
+  "type": "way",
+  "id": 39395027,
+  "center": {
+    "lat": 50.6346611,
+    "lon": 3.0300024
+  },
+  "tags": {
+    "amenity": "fast_food",
+    "building": "yes",
+    "check_date": "2026-08-17",
+    "check_date:opening_hours": "2026-08-17",
+    "contact:city": "Lille",
+    "contact:housenumber": "135",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue de Dunkerque",
+    "indoor_seating": "yes",
+    "name": "Mc Sushi",
+    "opening_hours:signed": "no",
+    "outdoor_seating": "yes",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 39395043,
+  "center": {
+    "lat": 50.6344712,
+    "lon": 3.0289009
+  },
+  "tags": {
+    "amenity": "college",
+    "building": "school",
+    "name": "École du Nord",
+    "operator:type": "private",
+    "ref:UAI": "0596781A",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 39395049,
+  "center": {
+    "lat": 50.6333703,
+    "lon": 3.0263341
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Square Gavarni",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 39437081,
+  "center": {
+    "lat": 50.6343354,
+    "lon": 3.0308520
+  },
+  "tags": {
+    "brand": "Carrefour Express",
+    "brand:wikidata": "Q2940190",
+    "brand:wikipedia": "fr:Carrefour Express",
+    "building": "yes",
+    "name": "Carrefour Express",
+    "opening_hours": "Mo-Sa 08:00-21:00; Su 09:00-13:00",
+    "phone": "+33 3 28 82 08 08",
+    "ref:FR:SIRET": "50368240300038",
+    "shop": "convenience",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre ; mise à jour : 2008",
+    "website": "https://www.carrefour.fr/magasin/express-lille-dunkerque"
+  }
+},
+{
+  "type": "way",
+  "id": 39437332,
+  "center": {
+    "lat": 50.6322430,
+    "lon": 3.0287599
+  },
+  "tags": {
+    "amenity": "doctors",
+    "building": "yes",
+    "contact:city": "Lille",
+    "contact:housenumber": "68",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Henri Regnault",
+    "healthcare": "doctor",
+    "name": "Maison médicale",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 39437638,
+  "center": {
+    "lat": 50.6344667,
+    "lon": 3.0307296
+  },
+  "tags": {
+    "addr:housenumber": "136",
+    "addr:street": "Avenue de Dunkerque",
+    "amenity": "pharmacy",
+    "building": "yes",
+    "contact:city": "Lille",
+    "contact:housenumber": "136",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue de Dunkerque",
+    "dispensing": "yes",
+    "healthcare": "pharmacy",
+    "name": "Pharmacie des Bois Blancs",
+    "opening_hours": "Mo-Fr 09:00-13:00,14:00-19:30; Sa 09:00-13:00",
+    "operator": "Payelleville",
+    "phone": "+33 3 20 92 56 17",
+    "ref:FR:FINESS": "590021283",
+    "ref:FR:SIRET": "84111121400018",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008;Celtipharm - 10/2014"
+  }
+},
+{
+  "type": "way",
+  "id": 39437722,
+  "center": {
+    "lat": 50.6342720,
+    "lon": 3.0302079
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "apartments",
+    "building:levels": "5",
+    "check_date": "2024-11-17",
+    "contact:city": "Lille",
+    "contact:housenumber": "125 bis",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue de Dunkerque",
+    "contact:website": "https://www.ebtn-lille.com/",
+    "denomination": "baptist",
+    "name": "Église évangélique baptiste de toutes les nations",
+    "religion": "christian",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008"
+  }
+},
+{
+  "type": "way",
+  "id": 39437730,
+  "center": {
+    "lat": 50.6331438,
+    "lon": 3.0307863
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 39437914,
+  "center": {
+    "lat": 50.6344936,
+    "lon": 3.0300696
+  },
+  "tags": {
+    "amenity": "fast_food",
+    "building": "yes",
+    "contact:city": "Lille",
+    "contact:housenumber": "133",
+    "contact:postcode": "59000",
+    "contact:street": "Avenue de Dunkerque",
+    "cuisine": "sandwich",
+    "level": "0",
+    "name": "La Baguette du Bois",
+    "opening_hours:signed": "no",
+    "ref:FR:SIRET": "80333136200019",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 39646111,
+  "center": {
+    "lat": 50.6315757,
+    "lon": 3.0258194
+  },
+  "tags": {
+    "amenity": "place_of_worship",
+    "building": "church",
+    "contact:city": "Lille",
+    "contact:housenumber": "210",
+    "contact:postcode": "59000",
+    "contact:street": "Rue des Bois Blancs",
+    "denomination": "catholic",
+    "name": "Église Saint-Charles",
+    "religion": "christian",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "wikidata": "Q38479489"
+  }
+},
+{
+  "type": "way",
+  "id": 95097903,
+  "center": {
+    "lat": 50.6319241,
+    "lon": 3.0302300
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 95097929,
+  "center": {
+    "lat": 50.6301671,
+    "lon": 3.0291783
+  },
+  "tags": {
+    "access": "customers",
+    "amenity": "parking",
+    "capacity": "32",
+    "capacity:disabled": "3",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 95097938,
+  "center": {
+    "lat": 50.6316018,
+    "lon": 3.0304156
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Plaine des Vachers"
+  }
+},
+{
+  "type": "way",
+  "id": 95097950,
+  "center": {
+    "lat": 50.6328091,
+    "lon": 3.0276922
+  },
+  "tags": {
+    "amenity": "school",
+    "contact:city": "Lille",
+    "contact:email": "ce.0591615K@ac-lille.fr",
+    "contact:housenumber": "6",
+    "contact:phone": "+33 320921422",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Guillaume Tell",
+    "education": "school",
+    "name": "École maternelle Jean Jaurès",
+    "operator:type": "public",
+    "ref:FR:SIRET": "21590350100561",
+    "ref:UAI": "0591615K",
+    "school:FR": "maternelle",
+    "source": "data.gouv.fr:Éducation Nationale - 06/2021",
+    "start_date": "1965-09-01"
+  }
+},
+{
+  "type": "way",
+  "id": 117108920,
+  "center": {
+    "lat": 50.6320174,
+    "lon": 3.0214583
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Jardin Le Blan - Lafont"
+  }
+},
+{
+  "type": "way",
+  "id": 125877871,
+  "center": {
+    "lat": 50.6378700,
+    "lon": 3.0242425
+  },
+  "tags": {
+    "addr:city": "Lambersart",
+    "addr:housenumber": "260-264",
+    "addr:postcode": "59130",
+    "addr:street": "Avenue de Dunkerque",
+    "air_conditioning": "yes",
+    "brand": "Picard",
+    "brand:wikidata": "Q3382454",
+    "brand:wikipedia": "en:Picard Surgelés",
+    "building": "retail",
+    "building:levels": "1",
+    "check_date": "2026-08-17",
+    "check_date:opening_hours": "2026-08-17",
+    "level": "0",
+    "name": "Picard",
+    "opening_hours": "Mo-Sa 09:00-19:30; Su 09:00-12:45",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "phone": "+33 3 20 93 78 85",
+    "roof:levels": "0",
+    "shop": "frozen_food",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2011",
+    "website": "https://magasins.picard.fr/508-picard-lille-lambersart",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 125878209,
+  "center": {
+    "lat": 50.6359490,
+    "lon": 3.0281674
+  },
+  "tags": {
+    "building": "retail",
+    "name": "Stadium Garage",
+    "opening_hours": "Mo-Fr 08:00-12:00,14:00-18:00",
+    "ref:FR:SIRET": "82410122400015",
+    "shop": "car",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2011"
+  }
+},
+{
+  "type": "way",
+  "id": 125885373,
+  "center": {
+    "lat": 50.6384117,
+    "lon": 3.0273405
+  },
+  "tags": {
+    "amenity": "school",
+    "building": "school",
+    "check_date": "2025-11-08",
+    "contact:email": "ce.0595393s@ac-lille.fr",
+    "contact:phone": "+33 3 20 08 15 50",
+    "contact:website": "https://institution-sainte-odile.fr/",
+    "name": "Collège Sainte-Odile",
+    "operator:type": "private",
+    "ref:FR:SIRET": "78366167100025",
+    "ref:UAI": "0595393S",
+    "school:FR": "collège",
+    "source": "data.gouv.fr:Éducation Nationale - 05/2016",
+    "start_date": "1935-10-04",
+    "website": "https://institution-sainte-odile.fr/"
+  }
+},
+{
+  "type": "way",
+  "id": 125892043,
+  "center": {
+    "lat": 50.6390354,
+    "lon": 3.0271795
+  },
+  "tags": {
+    "amenity": "school",
+    "building": "school",
+    "check_date": "2025-11-08",
+    "contact:email": "ce.0593106f@ac-lille.fr",
+    "contact:phone": "+33 3 20 08 15 50",
+    "contact:website": "http://www.institution-sainte-odile.org",
+    "name": "Lycée général privé Sainte-Odile",
+    "operator:type": "private",
+    "ref:FR:SIRET": "78366167100017",
+    "ref:UAI": "0593106F",
+    "school:FR": "lycée",
+    "source": "data.gouv.fr:Éducation Nationale - 05/2016",
+    "start_date": "1935-10-04",
+    "website": "http://www.institution-sainte-odile.org"
+  }
+},
+{
+  "type": "way",
+  "id": 195742630,
+  "center": {
+    "lat": 50.6353139,
+    "lon": 3.0302752
+  },
+  "tags": {
+    "access": "customers",
+    "amenity": "parking",
+    "fee": "no",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 273774003,
+  "center": {
+    "lat": 50.6301928,
+    "lon": 3.0291284
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774004,
+  "center": {
+    "lat": 50.6302864,
+    "lon": 3.0291977
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774005,
+  "center": {
+    "lat": 50.6302444,
+    "lon": 3.0292297
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774006,
+  "center": {
+    "lat": 50.6300995,
+    "lon": 3.0291645
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774007,
+  "center": {
+    "lat": 50.6302267,
+    "lon": 3.0290860
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774008,
+  "center": {
+    "lat": 50.6299829,
+    "lon": 3.0291701
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774009,
+  "center": {
+    "lat": 50.6300315,
+    "lon": 3.0290585
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774010,
+  "center": {
+    "lat": 50.6301589,
+    "lon": 3.0291708
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774011,
+  "center": {
+    "lat": 50.6301629,
+    "lon": 3.0292984
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774012,
+  "center": {
+    "lat": 50.6300072,
+    "lon": 3.0291143
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774013,
+  "center": {
+    "lat": 50.6301253,
+    "lon": 3.0293347
+  },
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "bollard",
+    "capacity": "10",
+    "covered": "no"
+  }
+},
+{
+  "type": "way",
+  "id": 273774014,
+  "center": {
+    "lat": 50.6300363,
+    "lon": 3.0293578
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 273774015,
+  "center": {
+    "lat": 50.6300437,
+    "lon": 3.0290306
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774016,
+  "center": {
+    "lat": 50.6302098,
+    "lon": 3.0291072
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774017,
+  "center": {
+    "lat": 50.6301332,
+    "lon": 3.0291217
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774018,
+  "center": {
+    "lat": 50.6301669,
+    "lon": 3.0290789
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774019,
+  "center": {
+    "lat": 50.6301500,
+    "lon": 3.0291003
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774020,
+  "center": {
+    "lat": 50.6300680,
+    "lon": 3.0289748
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774021,
+  "center": {
+    "lat": 50.6299951,
+    "lon": 3.0291422
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774022,
+  "center": {
+    "lat": 50.6300662,
+    "lon": 3.0293900
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 273774023,
+  "center": {
+    "lat": 50.6300801,
+    "lon": 3.0289469
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774024,
+  "center": {
+    "lat": 50.6300066,
+    "lon": 3.0293253
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1",
+    "parking_space": "disabled"
+  }
+},
+{
+  "type": "way",
+  "id": 273774025,
+  "center": {
+    "lat": 50.6300559,
+    "lon": 3.0290027
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774026,
+  "center": {
+    "lat": 50.6300828,
+    "lon": 3.0291860
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774027,
+  "center": {
+    "lat": 50.6301163,
+    "lon": 3.0291431
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774028,
+  "center": {
+    "lat": 50.6301081,
+    "lon": 3.0292345
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774029,
+  "center": {
+    "lat": 50.6302036,
+    "lon": 3.0292640
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774030,
+  "center": {
+    "lat": 50.6301251,
+    "lon": 3.0292132
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774031,
+  "center": {
+    "lat": 50.6301421,
+    "lon": 3.0291920
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774032,
+  "center": {
+    "lat": 50.6301759,
+    "lon": 3.0291496
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774034,
+  "center": {
+    "lat": 50.6300194,
+    "lon": 3.0290864
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 273774035,
+  "center": {
+    "lat": 50.6300660,
+    "lon": 3.0292074
+  },
+  "tags": {
+    "amenity": "parking_space"
+  }
+},
+{
+  "type": "way",
+  "id": 273774036,
+  "center": {
+    "lat": 50.6299707,
+    "lon": 3.0291979
+  },
+  "tags": {
+    "amenity": "parking_space",
+    "capacity": "1"
+  }
+},
+{
+  "type": "way",
+  "id": 274667482,
+  "center": {
+    "lat": 50.6336782,
+    "lon": 3.0297189
+  },
+  "tags": {
+    "amenity": "parking",
+    "building": "parking",
+    "parking": "multi-storey",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008;survey;streetlevel imagery"
+  }
+},
+{
+  "type": "way",
+  "id": 291196531,
+  "center": {
+    "lat": 50.6326144,
+    "lon": 3.0191263
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "building": "parking",
+    "building:levels": "4",
+    "capacity": "200",
+    "level": "3",
+    "parking": "multi-storey",
+    "roof:shape": "flat"
+  }
+},
+{
+  "type": "way",
+  "id": 312891845,
+  "center": {
+    "lat": 50.6378265,
+    "lon": 3.0183552
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 312891851,
+  "center": {
+    "lat": 50.6374797,
+    "lon": 3.0248727
+  },
+  "tags": {
+    "amenity": "restaurant",
+    "building": "retail",
+    "contact:phone": "+33 9 83 55 45 54",
+    "cuisine": "burger",
+    "name": "FBI",
+    "opening_hours": "Mo-Sa 11:00-15:00, Mo-Sa 18:00-22:00",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 312891854,
+  "center": {
+    "lat": 50.6385102,
+    "lon": 3.0242876
+  },
+  "tags": {
+    "building": "yes",
+    "check_date": "2026-05-28",
+    "check_date:opening_hours": "2024-05-19",
+    "level": "0",
+    "name": "Maison Pitman",
+    "opening_hours": "Tu-Sa 06:30-19:30, Su 06:30-13:00",
+    "payment:cash": "yes",
+    "payment:credit_cards": "yes",
+    "payment:debit_cards": "yes",
+    "phone": "+33 3 20 92 51 63",
+    "shop": "bakery",
+    "source": "survey",
+    "wheelchair": "no"
+  }
+},
+{
+  "type": "way",
+  "id": 312891860,
+  "center": {
+    "lat": 50.6379802,
+    "lon": 3.0245231
+  },
+  "tags": {
+    "access": "customers",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 320710422,
+  "center": {
+    "lat": 50.6388865,
+    "lon": 3.0203933
+  },
+  "tags": {
+    "amenity": "car_wash",
+    "automated": "no",
+    "building": "yes",
+    "name": "La Cool Douche",
+    "opening_hours": "PH,Mo-Su 00:00-24:00",
+    "self_service": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 374849761,
+  "center": {
+    "lat": 50.6298133,
+    "lon": 3.0300274
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Berges des Bois-Blancs"
+  }
+},
+{
+  "type": "way",
+  "id": 405450339,
+  "center": {
+    "lat": 50.6308317,
+    "lon": 3.0233613
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Square Ada Lovelace",
+    "source": "Ville de Lille - 2019"
+  }
+},
+{
+  "type": "way",
+  "id": 405462498,
+  "center": {
+    "lat": 50.6317301,
+    "lon": 3.0156105
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Parc de l'Avenue des Saules"
+  }
+},
+{
+  "type": "way",
+  "id": 411330424,
+  "center": {
+    "lat": 50.6323484,
+    "lon": 3.0281374
+  },
+  "tags": {
+    "amenity": "school",
+    "check_date": "2024-11-17",
+    "contact:city": "Lille",
+    "contact:email": "ce.0591599T@ac-lille.fr",
+    "contact:housenumber": "4",
+    "contact:phone": "+33 320929455",
+    "contact:postcode": "59000",
+    "contact:street": "Rue Guillaume Tell",
+    "education": "school",
+    "name": "École élémentaire Desbordes Valmore",
+    "operator:type": "public",
+    "ref:FR:SIRET": "21590350100579",
+    "ref:UAI": "0591599T",
+    "school:FR": "élémentaire",
+    "source": "data.gouv.fr:Éducation Nationale - 06/2021",
+    "start_date": "1965-09-01"
+  }
+},
+{
+  "type": "way",
+  "id": 444739934,
+  "center": {
+    "lat": 50.6306390,
+    "lon": 3.0201203
+  },
+  "tags": {
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 444864229,
+  "center": {
+    "lat": 50.6382008,
+    "lon": 3.0275692
+  },
+  "tags": {
+    "amenity": "school",
+    "education": "school",
+    "name": "Institution Sainte-Odile",
+    "website": "http://www.institution-sainte-odile.org/"
+  }
+},
+{
+  "type": "way",
+  "id": 494296833,
+  "center": {
+    "lat": 50.6387357,
+    "lon": 3.0246582
+  },
+  "tags": {
+    "access": "yes",
+    "amenity": "parking",
+    "capacity": "29",
+    "fee": "no",
+    "maxstay:conditional": "1.5 hours @ (09:00-18:00)",
+    "parking": "surface",
+    "supervised": "no",
+    "surface": "asphalt"
+  }
+},
+{
+  "type": "way",
+  "id": 535327186,
+  "center": {
+    "lat": 50.6354496,
+    "lon": 3.0266409
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 573251873,
+  "center": {
+    "lat": 50.6357259,
+    "lon": 3.0191192
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 573251880,
+  "center": {
+    "lat": 50.6355254,
+    "lon": 3.0188676
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 625238431,
+  "center": {
+    "lat": 50.6317687,
+    "lon": 3.0250411
+  },
+  "tags": {
+    "garden:type": "community",
+    "leisure": "garden",
+    "name": "Jardin Hedy Lamarr",
+    "source": "Ville de Lille - 2019"
+  }
+},
+{
+  "type": "way",
+  "id": 626637972,
+  "center": {
+    "lat": 50.6312882,
+    "lon": 3.0241480
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Square Katherine Johnson",
+    "source": "Ville de Lille - 2019"
+  }
+},
+{
+  "type": "way",
+  "id": 664350361,
+  "center": {
+    "lat": 50.6332704,
+    "lon": 3.0218409
+  },
+  "tags": {
+    "access": "yes",
+    "amenity": "parking",
+    "brand": "Indigo",
+    "brand:wikidata": "Q3559970",
+    "building": "parking",
+    "building:levels": "7",
+    "fee": "yes",
+    "name": "Parking Euratechnologies",
+    "operator": "Indigo",
+    "operator:type": "private",
+    "operator:wikidata": "Q3559970",
+    "parking": "multi-storey",
+    "roof:shape": "flat"
+  }
+},
+{
+  "type": "way",
+  "id": 686038795,
+  "center": {
+    "lat": 50.6329240,
+    "lon": 3.0176350
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Square de l'Avenue des Saules"
+  }
+},
+{
+  "type": "way",
+  "id": 686909852,
+  "center": {
+    "lat": 50.6353226,
+    "lon": 3.0268954
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 686909853,
+  "center": {
+    "lat": 50.6356521,
+    "lon": 3.0272708
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 738533312,
+  "center": {
+    "lat": 50.6382265,
+    "lon": 3.0215895
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "building": "parking",
+    "parking": "multi-storey"
+  }
+},
+{
+  "type": "way",
+  "id": 738533313,
+  "center": {
+    "lat": 50.6377931,
+    "lon": 3.0222510
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "multi-storey"
+  }
+},
+{
+  "type": "way",
+  "id": 738533314,
+  "center": {
+    "lat": 50.6371791,
+    "lon": 3.0212191
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "multi-storey"
+  }
+},
+{
+  "type": "way",
+  "id": 738538266,
+  "center": {
+    "lat": 50.6368502,
+    "lon": 3.0200578
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 738538268,
+  "center": {
+    "lat": 50.6375024,
+    "lon": 3.0183683
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 785351089,
+  "center": {
+    "lat": 50.6374196,
+    "lon": 3.0254255
+  },
+  "tags": {
+    "access": "yes",
+    "amenity": "parking",
+    "fee": "no",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 785351090,
+  "center": {
+    "lat": 50.6378076,
+    "lon": 3.0260923
+  },
+  "tags": {
+    "addr:city": "Lambersart",
+    "addr:housenumber": "250",
+    "addr:postcode": "59130",
+    "addr:street": "Avenue de Dunkerque",
+    "air_conditioning": "yes",
+    "branch": "Lambersart",
+    "brand": "Match",
+    "brand:wikidata": "Q513977",
+    "brand:wikipedia": "en:Match (supermarket)",
+    "building": "retail",
+    "building:levels": "1",
+    "level": "0",
+    "name": "Match",
+    "opening_hours": "Mo-Sa 08:00-20:00; Su 08:30-12:45",
+    "operator": "Match",
+    "phone": "+33 3 20 09 27 66",
+    "ref:FR:SIRET": "78548035102214",
+    "roof:levels": "0",
+    "shop": "supermarket",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2011",
+    "website": "https://www.supermarchesmatch.fr/97-lambersart-av-de-dunkerque",
+    "wheelchair": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 786179385,
+  "center": {
+    "lat": 50.6302227,
+    "lon": 3.0245788
+  },
+  "tags": {
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 786179386,
+  "center": {
+    "lat": 50.6302952,
+    "lon": 3.0252342
+  },
+  "tags": {
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 786179397,
+  "center": {
+    "lat": 50.6299525,
+    "lon": 3.0257846
+  },
+  "tags": {
+    "amenity": "parking",
+    "parking": "street_side"
+  }
+},
+{
+  "type": "way",
+  "id": 786179398,
+  "center": {
+    "lat": 50.6302956,
+    "lon": 3.0261830
+  },
+  "tags": {
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 786179405,
+  "center": {
+    "lat": 50.6303046,
+    "lon": 3.0255836
+  },
+  "tags": {
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 787504487,
+  "center": {
+    "lat": 50.6316774,
+    "lon": 3.0259281
+  },
+  "tags": {
+    "garden:style": "kitchen",
+    "garden:type": "community",
+    "leisure": "garden",
+    "name": "Jardin des Passereaux"
+  }
+},
+{
+  "type": "way",
+  "id": 796843837,
+  "center": {
+    "lat": 50.6352936,
+    "lon": 3.0180570
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 796843840,
+  "center": {
+    "lat": 50.6343486,
+    "lon": 3.0191386
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "operator": "Orange",
+    "operator:type": "private",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 1363695489,
+  "center": {
+    "lat": 50.6343525,
+    "lon": 3.0174587
+  },
+  "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "parking": "surface"
+  }
+},
+{
+  "type": "way",
+  "id": 1395674171,
+  "center": {
+    "lat": 50.6304525,
+    "lon": 3.0171407
+  },
+  "tags": {
+    "leisure": "park",
+    "name": "Parc Rosa Bonheur",
+    "note": "Prévoir un passage sur place pour relever les mobiliers urbains ajoutés en 2026 (banc, chaise longue, ....)",
+    "start_date": "2025-06-18"
+  }
+},
+{
+  "type": "way",
+  "id": 1447364282,
+  "center": {
+    "lat": 50.6342029,
+    "lon": 3.0243604
+  },
+  "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "shed",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 1473547237,
+  "center": {
+    "lat": 50.6372815,
+    "lon": 3.0250807
+  },
+  "tags": {
+    "amenity": "charging_station",
+    "authentication:none": "yes",
+    "bicycle": "no",
+    "capacity:motorcar": "8",
+    "fee": "yes",
+    "motorcar": "yes",
+    "network": "Power Dot France",
+    "opening_hours": "24/7",
+    "operator": "Power Dot France",
+    "operator:email": "hello@powerdot.fr",
+    "operator:phone": "+33176310684",
+    "owner": "Power Dot France",
+    "payment:credit_cards": "no",
+    "ref:EU:EVSE": "FR*PD1*PMATLMD",
+    "socket:type2": "2",
+    "socket:type2_combo": "16",
+    "start_date": "2024-05-02"
+  }
+},
+{
+  "type": "relation",
+  "id": 214949,
+  "center": {
+    "lat": 50.6344931,
+    "lon": 3.0311902
+  },
+  "tags": {
+    "addr:city": "Lille",
+    "addr:housenumber": "44",
+    "addr:postcode": "59000",
+    "addr:street": "Avenue Marx Dormoy",
+    "amenity": "clinic",
+    "building": "hospital",
+    "fax": "+33320157777",
+    "healthcare": "hospital",
+    "healthcare:speciality": "intensive",
+    "mapillary": "763401934366064",
+    "name": "Hôpital privé Le Bois",
+    "old_name": "Polyclinique du Bois",
+    "operator": "Ramsay Santé",
+    "operator:type": "private",
+    "operator:wikidata": "Q3123085",
+    "operator:wikipedia": "fr:Ramsay Santé",
+    "phone": "+33 3 59 75 75 75",
+    "ref:FR:FINESS": "590780268",
+    "ref:FR:SIRET": "88608028200090",
+    "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre;mise à jour : 2008",
+    "survey:date": "2017-09-13",
+    "type": "multipolygon",
+    "type:FR:FINESS": "365",
+    "website": "https://hopital-prive-le-bois-lille.ramsaygds.fr/"
+  }
+},
+{
+  "type": "relation",
+  "id": 21125617,
+  "center": {
+    "lat": 50.6299189,
+    "lon": 3.0162590
+  },
+  "tags": {
+    "garden:type": "community",
+    "leisure": "garden",
+    "name": "Les Mains dans la Terre",
+    "type": "multipolygon"
+  }
+}
+
+  ]
+}
