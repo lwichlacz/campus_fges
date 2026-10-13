@@ -512,9 +512,45 @@ function buildCitadelleReal(){
 	cordS.holes.push(new THREE.Path(P.map(([x, z]) => new THREE.Vector2((x - cx)*.985, -(z - cz)*.985))));
 	const cord = new THREE.Mesh(new THREE.ExtrudeGeometry(cordS, { depth:.25, bevelEnabled:false }).rotateX(-Math.PI/2), std("#e3d7c1"));
 	cord.position.y = 3.2; g.add(cord);                                                             // cordon de pierre blanche
-	const court = new THREE.Mesh(new THREE.ShapeGeometry(shape(inner)).rotateX(-Math.PI/2), std("#cdbf9f", { flatShading:false })); court.position.y = .08;          // place d'armes en gravier court.receiveShadow = true; g.add(court);
+	const court = new THREE.Mesh(new THREE.ShapeGeometry(shape(inner)).rotateX(-Math.PI/2), std("#cdbf9f", { flatShading:false })); court.position.y = .08;          // place d'armes en gravier
+	court.receiveShadow = true; g.add(court);
+	buildPorteRoyale(P, cx, cz, g);
 	LIFE.citadelle.pos = V(cx, 0, cz);
 	register(g, "citadelle");
+}
+/* La Porte Royale (1670), entrée principale de la Citadelle côté ville : pavillon de brique à façade de pierre blanche,
+   arche, fronton et soleil de Louis XIV, et son pont sur les douves. Position : OpenStreetMap, nœud 897130482. */
+const PORTE_ROYALE = [169.55, -108.73];
+function buildPorteRoyale(P, cx, cz, g){
+	// le rempart du jeu est plus épais que le vrai : on garde la vraie direction (du centre vers la porte) et l'on pose
+	// la porte là où elle coupe l'enceinte, façade vers l'extérieur
+	let rx = PORTE_ROYALE[0] - cx, rz = PORTE_ROYALE[1] - cz; const rl = Math.hypot(rx, rz); rx /= rl; rz /= rl;
+	let hitT = 0;
+	for(let i=0;i<P.length;i++){
+		const [ax, az] = P[i], [bx, bz] = P[(i+1) % P.length], ex = bx - ax, ez = bz - az, den = rx*ez - rz*ex;
+		if(Math.abs(den) < 1e-9) continue;
+		const t = ((ax - cx)*ez - (az - cz)*ex)/den, u = ((ax - cx)*rz - (az - cz)*rx)/den;
+		if(t > 0 && u >= 0 && u <= 1) hitT = Math.max(hitT, t);
+	}
+	const best = { px:cx + rx*(hitT - .4), pz:cz + rz*(hitT - .4) }, nx = rx, nz = rz;
+	const G = new THREE.Group(); G.position.set(best.px - cx, 0, best.pz - cz); G.rotation.y = Math.atan2(nx, nz); g.add(G);
+	const brick = std("#a9533c"), stone = std("#e8dcc6"), dark = std("#2a2226"), slate = std("#4a4f5c"), gold = std("#d9a441", { metalness:.5, roughness:.35 });
+	box(G, 7.2, 5.2, 3.2, brick, 0, 0, -.6);                                   // pavillon dans le rempart
+	box(G, 5.2, 5.4, .3, stone, 0, 0, 1.05);                                   // façade de pierre
+	for(const x of [-2.25, 2.25]) box(G, .45, 5.4, .45, stone, x, 0, 1.15);     // pilastres
+	box(G, 1.9, 2.6, .2, dark, 0, 0, 1.15);                                    // passage
+	mesh(new THREE.CircleGeometry(.95, 16, 0, Math.PI), dark, G, 0, 2.6, 1.26, 0, false);          // arc en plein cintre
+	box(G, 5.6, .35, .5, stone, 0, 5.2, 1.0);                                  // corniche
+	const tri = new THREE.Shape([new THREE.Vector2(-2.7, 0), new THREE.Vector2(2.7, 0), new THREE.Vector2(0, 1.5)]);
+	mesh(new THREE.ExtrudeGeometry(tri, { depth:.5, bevelEnabled:false }), stone, G, 0, 5.55, .75);            // fronton
+	const sun = mesh(new THREE.CylinderGeometry(.42, .42, .1, 20).rotateX(Math.PI/2), gold, G, 0, 6.05, 1.3);   // soleil de Louis XIV
+	for(let k=0;k<12;k++){ const r = box(G, .07, .32, .06, gold, Math.sin(k/12*Math.PI*2)*.55, 6.05 + Math.cos(k/12*Math.PI*2)*.55 - .16, 1.32); r.rotation.z = -k/12*Math.PI*2; r.geometry = BOXC; r.position.y += .16; }
+	box(G, 7.6, .25, 3.6, slate, 0, 5.2, -.6);                                 // toiture
+	// le pont sur les douves, dans l'axe du passage
+	box(G, 2.4, .35, 11, std("#bdb2a3"), 0, .7, 6.6);
+	for(const x of [-1.3, 1.3]) box(G, .25, .55, 11, stone, x, 1.05, 6.6);
+	for(const z of [3.4, 7, 10.6]) box(G, 2.6, .7, .7, std("#a9a091"), 0, 0, z);   // piles
+	sun.castShadow = false;
 }
 function buildCitadelle(){
 	if(citadelRing) return buildCitadelleReal();

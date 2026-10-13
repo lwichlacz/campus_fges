@@ -211,8 +211,8 @@ export const LIFE = {
 	citadelle: {
 		icon:"🏰", name:"Citadelle de Lille", kicker:"À deux pas du campus",
 		links:[{ label:"La Citadelle de Lille", url:"https://fr.wikipedia.org/wiki/Citadelle_de_Lille" }],
-		text:"La « reine des citadelles », bâtie par Vauban au XVIIe siècle et entourée du Bois de Boulogne et du Jardin Vauban : le grand parc des joggings et des pique-niques entre deux cours.",
-		facts:["Vauban, XVIIe siècle","Bois de Boulogne","Jardin Vauban"]
+		text:"La « reine des citadelles », bâtie par Vauban au XVIIe siècle et entourée du Bois de Boulogne et du Jardin Vauban : le grand parc des joggings et des pique-niques entre deux cours. On y entre par la Porte Royale (1670), ornée du soleil de Louis XIV.",
+		facts:["Vauban, XVIIe siècle","Porte Royale (1670)","Bois de Boulogne"]
 	}
 };
 
