@@ -7,7 +7,7 @@
    Les contenus sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { std, mesh, box, cyl, cone, mulberry32 } from "../kit.js?v=b29d511e7c";
+import { std, mesh, box, cyl, cone, mulberry32 } from "../kit.js?v=412b8ca7b6";
 
 /* ---------- contenus (à valider par l'enseignant) ---------- */
 const COURSES = {

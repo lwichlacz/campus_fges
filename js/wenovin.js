@@ -3,7 +3,7 @@
    l'espace du Campus Cyber Hauts-de-France, le coworking et son café, le hall et la passerelle de l'étage.
    Les murs côté caméra s'effacent tout seuls. */
 import * as THREE from "three";
-import { std, box, cyl, mesh, beam, makeStudent, makePerson, mulberry32 } from "./kit.js?v=b29d511e7c";
+import { std, box, cyl, mesh, beam, makeStudent, makePerson, mulberry32 } from "./kit.js?v=412b8ca7b6";
 
 const W = 44, D = 34, FL = 4.2, WING = 8;
 const HX = W/2, HZ = D/2, PX = HX - WING, PZ = HZ - WING;      // patio : 28 × 18
@@ -202,6 +202,21 @@ export function createWenovIn({ background }){
 		scr.position.set(HX - .12, 2.4, rz); scr.rotation.y = -Math.PI/2; scene.add(scr);
 	}
 
+	/* aile sud : le laboratoire bio-data (mini-jeu du Master Data Management in Biosciences) */
+	{
+		const lz = PZ + 4, labW = std("#f4f6f8"), steel = std("#c4c8cc", { metalness:.6, roughness:.3 });
+		box(scene, 7.4, .1, 3.4, std("#e9e2f5"), -4, 0, lz, 0, false);                         // sol du labo, légèrement teinté
+		box(scene, 5.6, .95, 1.1, labW, -4, 0, lz + 1);                                      // paillasse
+		box(scene, 5.8, .08, 1.3, std("#2f3a4a"), -4, .95, lz + 1);
+		box(scene, 1.3, .9, .9, std("#e7e8ec"), -6, 1.03, lz + 1);                            // séquenceur
+		box(scene, .9, .12, .05, cyan, -6, 1.6, lz + .54);
+		for(let k=0;k<6;k++) cyl(scene, .07, .07, .4, std(["#c0392b", "#8a5cc7", "#21b6ce"][k % 3]), -4.4 + k*.22, 1.03, lz + .9, 8);   // tubes
+		cyl(scene, .35, .35, .45, steel, -2.4, 1.03, lz + 1.1, 14);                           // centrifugeuse
+		const dna = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.2), new THREE.MeshStandardMaterial({ map:codeTex(41, "Bio-data lab · Master DMB"), emissive:"#ffffff", emissiveMap:codeTex(41, "Bio-data lab · Master DMB"), emissiveIntensity:.55 }));
+		dna.position.set(-4, 2.6, HZ - .14); dna.rotation.y = Math.PI; scene.add(dna);
+		{ const s = makePerson(scene, false, "pro"); s.g.position.set(-1.6, 0, lz + .1); s.g.rotation.y = Math.PI; people.push({ ...s, ph:r()*6 }); }
+	}
+
 	/* plafonniers */
 	for(const [x, z] of [[-14, zN], [-7, zN], [8, zN], [15, zN], [-HX + 4, -4], [-HX + 4, 8], [HX - 4, 0]]) box(scene, 2.4, .08, .4, lampM, x, FL - .1, z, 0, false);
 
@@ -234,6 +249,7 @@ export function createWenovIn({ background }){
 			{ id:"cyber", icon:"🛡️", name:"Campus Cyber Hauts-de-France", pos:[11, 5.6, zN] },
 			{ id:"hiptown", icon:"☕", name:"Coworking et café", pos:[-HX + 4, 5, 3] },
 			{ id:"robot", icon:"🦾", name:"Plateau robotique · mini-jeu", pos:[HX - 4, 4.6, -4] },
+			{ id:"biolab", icon:"🧬", name:"Laboratoire bio-data · mini-jeu (en anglais)", pos:[-4, 4.6, PZ + 4] },
 			{ id:"sortir", icon:"🚪", name:"Ressortir dans le quartier", pos:[HX - 4, 4.4, 12] }
 		]
 	};
