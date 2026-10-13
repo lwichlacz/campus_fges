@@ -4,10 +4,10 @@
    le Blan-Lafont (filature de coton de 1896, siège d'Euratechnologies depuis 2009) et sa tour.
    Chargé à la demande, comme l'atrium : une seule scène de quartier à la fois (léger sur téléphone). */
 import * as THREE from "three";
-import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js";
-import { buildCity, pointInPoly, softenFar } from "./city.js";
-import { buildStation } from "./station.js";
-import { EMAP } from "./euramap.js";
+import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js?v=4b0a7c2fc5";
+import { buildCity, pointInPoly, softenFar } from "./city.js?v=4b0a7c2fc5";
+import { buildStation } from "./station.js?v=4b0a7c2fc5";
+import { EMAP } from "./euramap.js?v=4b0a7c2fc5";
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const ring = f => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; };

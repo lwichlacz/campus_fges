@@ -49,6 +49,7 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/games/robot.js` | Mini-jeu « Cellule robotique Wenov » (Licence Sciences pour l'Ingénieur) : bras 3D, programmation, vision |
 | `docs/validation-*.md` | Fiches de validation des mini-jeux (contenus validés par les enseignants) |
 | `docs/mise-en-ligne.md` | **Mise en ligne** : GitHub Pages, branchement du formulaire sur le CRM |
+| `tools/version.py` | **À lancer avant chaque push** : numérote les fichiers JS (`?v=…`) pour que les téléphones ne gardent pas d'anciennes versions en cache |
 | `tools/wordpress/` | Relais du formulaire pour la production (extension WordPress) |
 | `js/audio.js` | Musique lofi, ambiances et effets sonores générés |
 | `js/kit.js` | Outils 3D partagés (formes, fenêtres, étudiants) |
