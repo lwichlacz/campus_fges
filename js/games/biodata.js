@@ -11,6 +11,8 @@
    6. report & ethics : compte rendu clinique prudent, découverte fortuite (BRCA2) traitée selon le consentement.
    Cas : hémochromatose HFE C282Y homozygote. Séquences, cohorte et chiffres sont simulés ; contenu à relire par l'équipe du master. */
 
+import * as THREE from "three";
+
 const COURSES = {
 	protect: ["M2", "Data protection & health data", "GDPR, data minimisation, pseudonymisation, certified hosting (HDS): health data are handled before they are analysed."],
 	biotech: ["M1", "Biotechnologies", "Sequencers make errors that grow along each read. Knowing the technology tells you where to trim and what to distrust."],
@@ -74,6 +76,89 @@ function rocOf(pred){
 	let auc = 0; const sorted = [...pts].sort((a, b) => (1 - a.spec) - (1 - b.spec) || a.sens - b.sens);
 	for(let i=1;i<sorted.length;i++) auc += ((1 - sorted[i].spec) - (1 - sorted[i-1].spec))*(sorted[i].sens + sorted[i-1].sens)/2;
 	return { pts, auc:Math.min(1, Math.max(0, auc)), pos, neg };
+}
+
+
+/* ---------- portraits d'Alex et de la médecin, dans le style low-poly du campus (rendus une fois en 3D) ---------- */
+function portraits(){
+	const out = {};
+	let r;
+	try { r = new THREE.WebGLRenderer({ antialias:true, alpha:true, preserveDrawingBuffer:true }); }
+	catch(e){ return out; }
+	const S = 320; r.setPixelRatio(1); r.setSize(S, S, false);
+	const mat = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color:c, roughness:.85, flatShading:true }, o));
+	const add = (g, geo, m, x = 0, y = 0, z = 0, sx = 1, sy = 1, sz = 1) => { const me = new THREE.Mesh(geo, m); me.position.set(x, y, z); me.scale.set(sx, sy, sz); g.add(me); return me; };
+	const SPH = new THREE.IcosahedronGeometry(1, 1), BOX = new THREE.BoxGeometry(1, 1, 1);
+	function scene(build, bg){
+		const sc = new THREE.Scene();
+		sc.add(new THREE.HemisphereLight("#fff3e0", "#7d6a5a", 1.6));
+		const sun = new THREE.DirectionalLight("#fff1dc", 2.2); sun.position.set(2.5, 3, 4); sc.add(sun);
+		const g = new THREE.Group(); sc.add(g); build(g);
+		const cam = new THREE.PerspectiveCamera(30, 1, .1, 50); cam.position.set(.4, 1.5, 3.5); cam.lookAt(0, 1.22, 0);
+		r.render(sc, cam);
+		// fond rond coloré, comme les pastilles du site
+		const c = document.createElement("canvas"); c.width = c.height = S; const x = c.getContext("2d");
+		const gr = x.createRadialGradient(S/2, S*.42, S*.1, S/2, S/2, S*.5); gr.addColorStop(0, bg[0]); gr.addColorStop(1, bg[1]);
+		x.fillStyle = gr; x.beginPath(); x.arc(S/2, S/2, S/2, 0, Math.PI*2); x.fill();
+		x.save(); x.beginPath(); x.arc(S/2, S/2, S/2, 0, Math.PI*2); x.clip(); x.drawImage(r.domElement, 0, 0); x.restore();
+		sc.traverse(o => { if(o.isMesh) o.material.dispose(); });
+		return c.toDataURL("image/png");
+	}
+	const torso = (g, m) => {
+		add(g, new THREE.CylinderGeometry(.5, .78, 1.1, 8), m, 0, .45, 0);
+		for(const s of [-1, 1]) add(g, SPH, m, s*.47, .88, 0, .3, .22, .3);
+	};
+	const eyes = (g, skin, tired) => {
+		const dark = mat("#22252b", { roughness:.4 });
+		for(const s of [-1, 1]){
+			add(g, SPH, mat("#ffffff"), s*.15, 1.47, .37, .075, .06, .04);
+			add(g, SPH, dark, s*.15, 1.465, .405, .04, .045, .02);
+			if(tired){
+				add(g, BOX, skin, s*.15, 1.515, .39, .17, .06, .05).rotation.z = -s*.15;              // paupières lourdes
+				add(g, SPH, mat("#c7a0a8"), s*.15, 1.385, .385, .08, .028, .02);                      // cernes
+			}
+		}
+	};
+	// Alex : 27 ans, roux, veste bleue à capuche, tee-shirt vert-gris, l'air fatigué
+	out.alex = scene(g => {
+		const skin = mat("#f1c9a5"), jacket = mat("#2f5592"), hair = mat("#b5562b");
+		torso(g, jacket);
+		add(g, BOX, mat("#9fb2a6"), 0, .66, .58, .3, .68, .06).rotation.x = -.25;                    // tee-shirt dans l'ouverture
+		add(g, BOX, mat("#1f3c6e"), 0, .62, .62, .03, .6, .03).rotation.x = -.25;                    // fermeture éclair
+		add(g, new THREE.TorusGeometry(.36, .1, 6, 14), jacket, 0, 1.0, -.08).rotation.x = Math.PI/2.1;   // capuche
+		add(g, new THREE.CylinderGeometry(.16, .18, .28, 8), skin, 0, 1.08, 0);
+		add(g, SPH, skin, 0, 1.45, 0, .42, .47, .42);
+		add(g, SPH, hair, 0, 1.64, -.04, .45, .3, .45);                                               // calotte
+		for(let k=0;k<5;k++){ const m = add(g, new THREE.ConeGeometry(.11, .26, 5), hair, -.24 + k*.12, 1.76, .3 - Math.abs(k - 2)*.04); m.rotation.set(1.25, 0, (k - 2)*.22); }   // mèches en avant
+		for(const s of [-1, 1]) add(g, SPH, skin, s*.42, 1.44, 0, .07, .1, .06);                       // oreilles
+		eyes(g, skin, true);
+		add(g, BOX, mat("#a8604f"), 0, 1.27, .39, .14, .025, .02).rotation.z = .05;                  // bouche
+		add(g, SPH, skin, 0, 1.38, .43, .055, .07, .05);                                              // nez
+	}, ["#f6eefc", "#d9c8ef"]);
+	// la médecin : blouse blanche sur une tenue bleu FGES, stéthoscope, lunettes, chignon
+	out.doctor = scene(g => {
+		const skin = mat("#c68b62"), coat = mat("#f4f4f1"), hair = mat("#2b2a33"), metal = mat("#3a3f47", { roughness:.35, metalness:.5 });
+		torso(g, coat);
+		add(g, BOX, mat("#21b6ce"), 0, .7, .58, .28, .62, .05).rotation.x = -.25;                    // tenue bleu FGES
+		for(const s of [-1, 1]){ const l = add(g, BOX, mat("#dcdcd6"), s*.17, .72, .61, .1, .6, .04); l.rotation.set(-.25, 0, s*.35); }   // revers
+		add(g, BOX, mat("#1e305e"), .33, .6, .62, .2, .09, .02).rotation.x = -.25;                   // badge
+		add(g, new THREE.CylinderGeometry(.16, .18, .28, 8), skin, 0, 1.08, 0);
+		for(const s of [-1, 1]){ const t = add(g, new THREE.CylinderGeometry(.022, .022, .5, 6), metal, s*.13, .78, .64); t.rotation.set(-.25, 0, s*.18); }   // stéthoscope autour du cou
+		add(g, new THREE.TorusGeometry(.17, .022, 6, 14, Math.PI), metal, 0, 1.0, .5).rotation.x = -.5;
+		add(g, new THREE.CylinderGeometry(.07, .07, .03, 12), metal, -.08, .5, .68).rotation.x = Math.PI/2 - .25;
+		add(g, SPH, skin, 0, 1.45, 0, .42, .47, .42);
+		add(g, SPH, hair, 0, 1.66, -.06, .45, .3, .46);
+		for(const s of [-1, 1]){ add(g, SPH, hair, s*.37, 1.42, -.1, .13, .34, .22); add(g, SPH, hair, s*.33, 1.16, -.16, .12, .2, .18); }   // cheveux mi-longs
+		add(g, SPH, hair, 0, 1.62, -.44, .2, .2, .2);                                                 // chignon
+		for(const s of [-1, 1]) add(g, SPH, skin, s*.42, 1.44, 0, .07, .1, .06);
+		eyes(g, skin, false);
+		for(const s of [-1, 1]) add(g, new THREE.TorusGeometry(.1, .016, 6, 16), metal, s*.15, 1.47, .43);   // lunettes
+		add(g, BOX, metal, 0, 1.48, .44, .1, .016, .016);
+		add(g, new THREE.TorusGeometry(.09, .018, 6, 12, Math.PI), mat("#8c3b34"), 0, 1.3, .4).rotation.z = Math.PI;   // sourire
+		add(g, SPH, skin, 0, 1.38, .43, .055, .07, .05);
+	}, ["#e9f8fb", "#bfe6ee"]);
+	r.dispose(); r.forceContextLoss && r.forceContextLoss();
+	return out;
 }
 
 const CSS = `
@@ -186,7 +271,12 @@ const CSS = `
 .bd-crd li{display:flex;gap:8px;align-items:center;background:#f2f5f7;border-radius:10px;padding:7px 10px;margin:5px 0;font-weight:700;font-size:13.5px}
 .bd-crd li span{background:#1e305e;color:#fff;border-radius:6px;padding:2px 7px;font-size:12px;flex:none}
 .bd-say{display:flex;gap:10px;align-items:flex-start;margin:8px 0}
-.bd-say .av{flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:22px;background:#eef7f9}
+.bd-say .av{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:22px;background:#eef7f9;overflow:hidden}
+.bd-say .av img{width:100%;height:100%;display:block}
+.bd-who{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.bd-who img{width:64px;height:64px;border-radius:50%;flex:none}
+.bd-duo{display:flex;justify-content:center;gap:14px;margin:6px 0 10px}
+.bd-duo img{width:92px;height:92px;border-radius:50%;box-shadow:0 8px 20px rgba(30,48,94,.18)}
 .bd-say .bub{background:#f2f5f7;border-radius:14px;padding:9px 12px;font-size:14px;line-height:1.45}
 .bd-say.doc .av{background:#f1ecfa}
 .bd-crd .bd-btn{width:100%;margin-top:6px}
@@ -218,6 +308,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 			<div class="bd-col">
 				<div class="bd-pan" id="bdHelix"><h4>Sample P-0412</h4><canvas class="bd-helix" width="520" height="220"></canvas></div>
 				<div class="bd-pan bd-file" id="bdFile"><h4>Case file</h4>
+					<div class="bd-who" id="bdWho"></div>
 					<p><b>Alex, 27</b>, student. Unusually tired for months, joint pain. Rest and vitamins have not helped.</p>
 					<p>First blood tests: <b>ferritin 1,140 µg/L</b>, <b>transferrin saturation 78 %</b> (both high).</p>
 					<p>A targeted gene panel is ordered. In the lab, Alex becomes <b>P-0412</b>.</p></div>
@@ -237,6 +328,8 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	const S = { errors:0, mission:0, learned:new Set(), done:new Set() };
 	let closed = false;
 	const cohort = makeCohort();
+	const PT = portraits();
+	const av = (k, emoji) => PT[k] ? `<img src="${PT[k]}" alt="">` : emoji;
 
 	/* ---------- interface commune ---------- */
 	const mis = $("#bdMis"), work = $("#bdWork"), term = $("#bdTerm");
@@ -698,7 +791,8 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 		onEvent && onEvent("win", code);
 		const order = ["protect", "biotech", "stats", "bioinf", "disease", "epi", "ml", "bigdata", "clin"];
 		card(`<div class="k">Case closed · ${MENTIONS[code]}</div><h2>From biology to data, from data to decision</h2>
-			<div class="bd-big">🧬📊🩺</div>
+			${PT.alex ? `<div class="bd-duo"><img src="${PT.alex}" alt="Alex"><img src="${PT.doctor}" alt="Alex's doctor"></div>
+			<div class="bd-say"><div class="av">${av("alex", "🧑")}</div><div class="bub">Thanks to all of you, I finally know why I was so exhausted. And my brother is getting tested too.</div></div>` : `<div class="bd-big">🧬📊🩺</div>`}
 			<p>Alex's blood test became a decision: governed data, clean reads, a variant weighed on evidence, a cohort analysed without traps, a screening model that stays honest, and a report that respects consent. <b>This is what the Master in Data Management in Biosciences is about.</b> ${e ? `Errors on the way: ${e}.` : "Not a single error!"}</p>
 			${course("clin")}
 			<ul>${order.map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
@@ -712,8 +806,8 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 		mis.innerHTML = `<span class="k">Wenov · École du Numérique</span><h3>From Blood to Decision</h3><p>Six missions, the way a health data scientist works: governance, sequencing quality, variant interpretation, cohort statistics, machine learning, clinical reporting.</p>`;
 		work.innerHTML = `<p style="margin:0;font-size:14px;color:#5b6b7a">The missions will appear here.</p>`;
 		card(`<span class="bd-lang">🇬🇧 In English, like the Master</span><span class="bd-lang">⏱ 12–15 min</span><div class="k">Mini-game · ${formation.name}</div><h2>From Blood to Decision</h2>
-			<div class="bd-say"><div class="av">🧑</div><div class="bub">Doctor, I've been feeling unusually tired for several months, and the treatments I've tried haven't really helped.</div></div>
-			<div class="bd-say doc"><div class="av">👩‍⚕️</div><div class="bub">Your iron levels are very high. I'd like a genetic analysis and a closer look at your biological data.</div></div>
+			<div class="bd-say"><div class="av">${av("alex", "🧑")}</div><div class="bub">Doctor, I've been feeling unusually tired for several months, and the treatments I've tried haven't really helped.</div></div>
+			<div class="bd-say doc"><div class="av">${av("doctor", "👩‍⚕️")}</div><div class="bub">Your iron levels are very high. I'd like a genetic analysis and a closer look at your biological data.</div></div>
 			<p>You join the health data team. Take Alex's sample from consent to the medical decision, then scale up to the whole cohort.</p>
 			<ul><li><span>1</span>Data governance (GDPR, consent)</li><li><span>2</span>Sequencing quality control</li><li><span>3</span>Variant interpretation</li><li><span>4</span>Cohort biostatistics</li><li><span>5</span>Machine learning for screening</li><li><span>6</span>Clinical report & ethics</li></ul>
 			<button class="bd-btn dark" data-a="m1">Start the case</button>`);
@@ -737,6 +831,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	function onKey(e){ if(e.key === "Escape") close(); }
 	document.addEventListener("keydown", onKey);
 	$(".bd-x").addEventListener("click", close);
+	if(PT.alex) $("#bdWho").innerHTML = `<img src="${PT.alex}" alt="Alex"><span style="font-size:12.5px;font-weight:700;color:#5b6b7a">Patient P-0412<br>seen by Dr Lemaire, internal medicine</span>`;
 	intro();
 	onEvent && onEvent("start");
 	if(window.campus) window.campus.game = { S, GO, cohort, FIELDS, RUNS, PASS, CAND, VARS, REPORT, get m5(){ return m5; }, fitPredict, rocOf };
