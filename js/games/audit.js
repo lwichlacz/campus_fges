@@ -105,8 +105,8 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 		if(keep) return;                     // mise à jour sur place (ex. tampon) : ni animation ni retour en haut
 		card.style.animation = "none"; void card.offsetWidth; card.style.animation = ""; root.scrollTo({ top:0, behavior:"smooth" });
 	}
-	function stage(t){ root.querySelector("#auStage").textContent = t; }
-	function err(){ S.errors++; play("bad"); root.querySelector("#auErr").textContent = `🔎 ${S.errors} erreur${S.errors > 1 ? "s" : ""}`; }
+	function stage(t){ root.querySelector("#auStage").textContent = t; onEvent && onEvent("stage", t); }
+	function err(){ S.errors++; play("bad"); onEvent && onEvent("err"); root.querySelector("#auErr").textContent = `🔎 ${S.errors} erreur${S.errors > 1 ? "s" : ""}`; }
 	function course(k){ const [y, n, t] = COURSES[k]; S.learned.add(k); return `<div class="au-course"><span class="tag">📚 En Licence Comptabilité-Finance-Audit · ${y}</span><b>${n}</b><span>${t}</span></div>`; }
 	function qcm(el, opts, good, onOk){
 		el.innerHTML = `<div class="au-opts">${opts.map(([v, t]) => `<button class="au-opt" data-q="${v}">${t}</button>`).join("")}</div><div data-after></div>`;

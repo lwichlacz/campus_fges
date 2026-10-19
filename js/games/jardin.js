@@ -327,8 +327,8 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 	function hide(){ panel.hidden = true; }
 	function say(msg, ms){ coach.hidden = !msg; if(msg){ coach.textContent = msg; if(ms) setTimeout(() => { if(coach.textContent === msg) coach.hidden = true; }, ms); } }
 	function course(key){ const [y, n, t] = COURSES[key]; S.learned.add(key); return `<div class="jd-course"><span class="tag">📚 En Licence Sciences de la Vie · ${y}</span><b>${n}</b><span>${t}</span></div>`; }
-	function setStage(t){ $("#jdStage").textContent = t; say(null); }
-	function err(kind){ S.errors++; if(kind) S[kind]++; play("bad"); }
+	function setStage(t){ $("#jdStage").textContent = t; say(null); onEvent && onEvent("stage", t); }
+	function err(kind){ S.errors++; if(kind) S[kind]++; play("bad"); onEvent && onEvent("err", kind); }
 
 	function intro(){
 		stage = "intro";

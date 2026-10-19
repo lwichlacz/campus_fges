@@ -648,6 +648,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	}
 	function prep(){
 		const def = DAYS[S.day];
+		onEvent && onEvent("stage", `${def.year} · ${def.title.split(" · ")[0]}`);
 		paintMenu(); $("#czDay").textContent = `${def.year} · ${def.title.split(" · ")[0]}`;
 		const est = () => Math.round(def.base*BASE_K * priceFactor(S.price) * (.75 + .5*S.rep));
 		const render = () => {
@@ -726,6 +727,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 
 	/* ---------- exercice L1 : le compte de résultat (avec SES chiffres) ---------- */
 	function exCompte(){
+		onEvent && onEvent("stage", "L1 · Compte de résultat");
 		const r = S.results[S.results.length - 1];
 		const vals = { ca:Math.round(r.ca), achats:Math.round(r.achats), sal:Math.round(r.salaires) };
 		const res = vals.ca - vals.achats - vals.sal;
@@ -747,14 +749,14 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 				const ok = s.dataset.slot === sel;
 				s.classList.toggle("ok", ok); s.classList.toggle("ko", !ok);
 				s.querySelector("b").textContent = ok ? toks.find(x => x[0] === sel)[1] + " €" : "Pas ici";
-				play(ok ? "pop" : "bad");
+				play(ok ? "pop" : "bad"); if(!ok && onEvent) onEvent("err");
 				if(ok){ placed[sel] = true; card.querySelector(`[data-tok="${sel}"]`).classList.add("used"); sel = null; }
 				if(Object.keys(placed).length === 3) card.querySelector("[data-q]").hidden = false;
 				return;
 			}
 			if(o && !card.querySelector(".cz-opt.ok")){
 				const ok = +o.dataset.res === res;
-				o.classList.add(ok ? "ok" : "ko"); play(ok ? "good" : "bad");
+				o.classList.add(ok ? "ok" : "ko"); play(ok ? "good" : "bad"); if(!ok && onEvent) onEvent("err");
 				if(ok){
 					card.removeEventListener("click", h);
 					card.querySelector("[data-done]").innerHTML = `<p class="cz-p" style="margin-top:10px">Exact : ${vals.ca} − ${vals.achats} − ${vals.sal} = <b>${res} €</b>. ${res >= 0 ? "Ton activité crée de la valeur." : "Tes charges dépassent tes produits : il faudra ajuster."}</p>${courseCard("compte")}<button class="cz-go" data-a="next">Passer en L2 →</button>`;
@@ -765,6 +767,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 
 	/* ---------- exercice L2 : coût de revient et seuil de rentabilité ---------- */
 	function exCout(){
+		onEvent && onEvent("stage", "L2 · Coût de revient");
 		const fixe = S.staff*ECO.salaire;
 		show(`<div class="cz-k">L2 · exercice</div><h2 class="cz-h">Combien te coûte un cappuccino ?</h2>
 			<p class="cz-p">Pour fixer un bon prix, il faut d'abord connaître son <b>coût de revient</b>. Voici ce que contient chaque tasse :</p>
@@ -774,13 +777,13 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		card.addEventListener("click", function h(e){
 			const o = e.target.closest("[data-c]");
 			if(o && !card.querySelector("[data-s1] .ok")){
-				const ok = +o.dataset.c === ECO.tasse; o.classList.add(ok ? "ok" : "ko"); play(ok ? "good" : "bad");
+				const ok = +o.dataset.c === ECO.tasse; o.classList.add(ok ? "ok" : "ko"); play(ok ? "good" : "bad"); if(!ok && onEvent) onEvent("err");
 				if(ok) step2();
 				return;
 			}
 			const s = e.target.closest("[data-seuilopt]");
 			if(s && !card.querySelector("[data-s2] .ok")){
-				const ok = +s.dataset.seuilopt === S.seuil; s.classList.add(ok ? "ok" : "ko"); play(ok ? "good" : "bad");
+				const ok = +s.dataset.seuilopt === S.seuil; s.classList.add(ok ? "ok" : "ko"); play(ok ? "good" : "bad"); if(!ok && onEvent) onEvent("err");
 				if(ok){ card.removeEventListener("click", h); card.querySelector("[data-end]").innerHTML = `${courseCard("cout")}<p class="cz-p">Désormais, ton seuil de rentabilité s'affiche quand tu fixes ton prix.</p><button class="cz-go" data-a="prep">Préparer la journée</button>`; }
 			}
 		});
@@ -811,6 +814,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 
 	/* ---------- exercice L3 : investir dans un vélo cargo ---------- */
 	function exInvest(){
+		onEvent && onEvent("stage", "L3 · Investir");
 		const cout = 3000, livr = 30, marge = 1.5, gain = livr*marge, delai = Math.round(cout/gain);
 		show(`<div class="cz-k">L3 · exercice</div><h2 class="cz-h">Un vélo cargo pour livrer Wenov ?</h2>
 			<p class="cz-p">Un fournisseur te propose un vélo cargo à <b>${euro0(cout)}</b>. Avec, tu pourrais livrer les bureaux d'Euratechnologies : environ <b>${livr} livraisons par semaine</b>, avec <b>${euro(marge)}</b> de marge chacune.</p>
@@ -820,7 +824,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		card.addEventListener("click", function h(e){
 			const o = e.target.closest("[data-d]");
 			if(o && !card.querySelector("[data-s1] .ok")){
-				const ok = +o.dataset.d === delai; o.classList.add(ok ? "ok" : "ko"); play(ok ? "good" : "bad");
+				const ok = +o.dataset.d === delai; o.classList.add(ok ? "ok" : "ko"); play(ok ? "good" : "bad"); if(!ok && onEvent) onEvent("err");
 				if(ok) card.querySelector("[data-s2]").innerHTML = `<p class="cz-p" style="margin-top:10px">${livr} × ${euro(marge)} = <b>${euro0(gain)} par semaine</b>, donc ${euro0(cout)} ÷ ${euro0(gain)} ≈ <b>${delai} semaines</b>, un peu plus d'une année universitaire. C'est ton <b>délai de récupération</b>.</p>
 					<p class="cz-p"><b>Alors, tu investis ?</b></p>
 					<div class="cz-opts"><button class="cz-opt" data-buy="1">🚲 J'achète : le Comptoir livre dès ce matin</button><button class="cz-opt" data-buy="0">⏳ Pas maintenant : je garde ma trésorerie</button></div><div data-end></div>`;

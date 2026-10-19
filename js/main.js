@@ -2283,6 +2283,7 @@ function openGame(fid){
 		formation:f, audio:Audio,
 		isFav:() => favs.has(fid), toggleFav:() => toggleFav(fid),
 		onEvent:(ev, v, sub) => {
+			if(fid === JEU) relecture?.event(ev, v);
 			if(ev !== "win") return;
 			won = true; mention = v;
 			if(sub){ const m = { ...(medalsSub[kind] || {}) }; if(MENTION_RANK.indexOf(v) > MENTION_RANK.indexOf(m[sub])) m[sub] = v; medalsSub = { ...medalsSub, [kind]:m }; store.set("medalsSub", medalsSub); }
@@ -2290,6 +2291,7 @@ function openGame(fid){
 		},
 		onClose:() => {
 			gamePaused = false;
+			if(fid === JEU) relecture?.event("close");
 			const suggest = () => { justWon = kind; openPanel("nav:jeux"); };
 			if(won && kind === "comptoir"){
 				const party = () => { interiors.atrium.celebrate(); Audio.play("win"); toast("🎓 Bravo, diplômé·e ! Toute l'atrium fête ta réussite !", 4500); setTimeout(suggest, 4200); };
@@ -2954,7 +2956,64 @@ if(BORNE){
 	enter();
 	lastInput = -1e9;      // la visite démarre dès la fin de l'intro
 }
-if(/[?&]debug/.test(location.search)) window.campus = { THREE, scene, camera, controls, renderer, city, selectPlace, enterInterior, exitInterior, openGame, PLACES, LIFE, MAP, interiors, get mode(){ return mode; },
+// lien direct vers un mini-jeu (?jeu=dmb : l'identifiant de la formation), pour les enseignants qui le valident ;
+// avec &relecture=<page de relecture>, une bannière chronomètre la partie et tient un journal à coller dans le formulaire
+const QS = new URLSearchParams(location.search);
+const JEU = QS.get("jeu");
+const relecture = GAMES[JEU] && QS.has("relecture") ? relectureMode(JEU, QS.get("relecture")) : null;
+if(!BORNE && GAMES[JEU]){
+	profile = profile || (JEU === "dmb" ? "bac3" : "lycee");
+	$("musicPref").checked = false;
+	store.set("introSeen", true);
+	enter();
+	openGame(JEU);
+	$("loader").classList.add("gone");      // le campus ne se dessine pas pendant le jeu : il apparaîtra à la sortie
+}
+function relectureMode(fid, page){
+	const info = GAME_INFO[GAMES[fid]], t0 = Date.now(), steps = [];
+	let errors = 0, end = "Partie non terminée";
+	const cur = () => steps[steps.length - 1];
+	const stage = name => { if(cur()?.name === name) return; const now = Date.now(); if(cur()) cur().end = now; steps.push({ name, start:now, err:0, why:[] }); };
+	const dur = ms => { const s = Math.round(ms/1000), m = Math.floor(s/60); return m ? `${m} min ${String(s % 60).padStart(2, "0")} s` : `${s} s`; };
+	const plural = n => `${n} erreur${n > 1 ? "s" : ""}`;
+	const text = () => {
+		const now = Date.now();
+		return [`Journal de partie · ${info.title}`,
+			`${new Date(t0).toLocaleString("fr-FR", { dateStyle:"short", timeStyle:"short" })} · ${dur(now - t0)} · ${plural(errors)} · ${end}`,
+			`Écran ${innerWidth}×${innerHeight}${matchMedia("(pointer:coarse)").matches ? ", tactile" : ""}`,
+			...steps.map(st => `- ${st.name} : ${dur((st.end || now) - st.start)}${st.err ? `, ${plural(st.err)}` : ""}${st.why.length ? ` (${st.why.join(" ; ")})` : ""}`)].join("\n");
+	};
+	const el = document.createElement("div");
+	el.id = "relecture";
+	el.innerHTML = `<b>● Relecture</b><span data-t>0:00</span><span data-e>0 erreur</span><button type="button" data-copy>Copier le journal</button>${/^[A-Za-z0-9]{8,40}$/.test(page || "") ? `<a data-form href="https://claude.ai/artifact/${page}" target="_blank" rel="noopener">Formulaire ↗</a>` : ""}`;
+	el.style.cssText = "position:fixed;z-index:70;left:max(10px, env(safe-area-inset-left, 0px));bottom:max(10px, env(safe-area-inset-bottom, 0px));display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:calc(100vw - 20px);padding:7px 8px 7px 12px;border-radius:14px;background:rgba(24,28,38,.92);color:#fff;font:600 13px Nunito,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25)";
+	for(const b of el.querySelectorAll("button, a")) b.style.cssText = "font:700 13px Nunito,system-ui,sans-serif;color:#18202c;background:#ffd36b;border:0;border-radius:9px;padding:6px 10px;cursor:pointer;text-decoration:none";
+	el.querySelector("b").style.cssText = "color:#ff8f7a;cursor:pointer";
+	el.querySelector("b").title = "Réduire ou agrandir la bannière";
+	el.querySelector("b").addEventListener("click", () => el.querySelectorAll("[data-e], button, a").forEach(x => x.hidden = !x.hidden));
+	document.body.append(el);
+	const copy = async () => {
+		const b = el.querySelector("[data-copy]");
+		try { await navigator.clipboard.writeText(text()); b.textContent = "Journal copié ✓"; }
+		catch(e){ prompt("Copiez ce journal puis collez-le dans le formulaire :", text()); }
+		setTimeout(() => b.textContent = "Copier le journal", 2200);
+	};
+	el.querySelector("[data-copy]").addEventListener("click", copy);
+	el.querySelector("[data-form]")?.addEventListener("click", copy);
+	const tick = () => { const s = Math.floor((Date.now() - t0)/1000); el.querySelector("[data-t]").textContent = `${Math.floor(s/60)}:${String(s % 60).padStart(2, "0")}`; };
+	setInterval(tick, 1000);
+	return {
+		text,
+		event(ev, v){
+			if(ev === "stage") stage(String(v));
+			else if(ev === "err"){ if(!cur()) stage("Accueil du jeu"); errors++; cur().err++; if(typeof v === "string" && v && cur().why.length < 4) cur().why.push(v.replace(/\s+/g, " ").slice(0, 90)); }
+			else if(ev === "win"){ end = `Terminée, mention ${v}`; el.querySelector("[data-copy]").textContent = "Partie finie : copier le journal"; }
+			else if(ev === "close" && end === "Partie non terminée") stage("Jeu fermé, retour au campus");
+			el.querySelector("[data-e]").textContent = plural(errors);
+		}
+	};
+}
+if(/[?&]debug/.test(location.search)) window.campus = { THREE, scene, camera, controls, renderer, city, selectPlace, enterInterior, exitInterior, openGame, PLACES, LIFE, MAP, interiors, relecture, get mode(){ return mode; },
 	view(px,py,pz,tx,ty,tz){ fly = null; intro = null; camera.position.set(px,py,pz); controls.target.set(tx,ty,tz); controls.update(); if(entered) updatePins(); },
 	set(k,v){ if(k === "season") seasonKey = v; if(k === "time") timeMode = v; applyAmbiance(true); }, setQuality, get post(){ return post; }, crowd, get quality(){ return quality; }, get far(){ return { horizon, farWood }; } };
 requestAnimationFrame(frame);

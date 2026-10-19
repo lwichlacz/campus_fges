@@ -242,8 +242,8 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 	/* ---------- interface ---------- */
 	const ctl = $("#rbCtl"), mis = $("#rbMis"), term = $("#rbTerm");
 	function log(t, cls = ""){ const d = document.createElement("div"); if(cls) d.className = cls; d.textContent = ">> " + t; term.appendChild(d); while(term.children.length > 40) term.firstChild.remove(); term.scrollTop = term.scrollHeight; }
-	function err(t){ S.errors++; play("bad"); $("#rbErr").textContent = `${S.errors} erreur${S.errors > 1 ? "s" : ""}`; if(t) log(t, "ko"); }
-	function stage(t){ $("#rbSt").textContent = t; }
+	function err(t){ S.errors++; play("bad"); onEvent && onEvent("err", t); $("#rbErr").textContent = `${S.errors} erreur${S.errors > 1 ? "s" : ""}`; if(t) log(t, "ko"); }
+	function stage(t){ $("#rbSt").textContent = t; onEvent && onEvent("stage", t); }
 	function sys(t){ $("#rbSys").textContent = "● " + t; }
 	function course(k){ const [y, n, t] = COURSES[k]; S.learned.add(k); return `<div class="rb-course"><span class="tag">📚 En ${formation.name} · ${y}</span><b>${n}</b>${t}</div>`; }
 	function card(html){ $("#rbCard").innerHTML = html; $("#rbOv").hidden = false; }

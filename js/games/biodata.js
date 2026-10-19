@@ -334,8 +334,8 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	/* ---------- interface commune ---------- */
 	const mis = $("#bdMis"), work = $("#bdWork"), term = $("#bdTerm");
 	function log(t, cls = ""){ const d = document.createElement("div"); if(cls) d.className = cls; d.textContent = "> " + t; term.appendChild(d); while(term.children.length > 60) term.firstChild.remove(); term.scrollTop = term.scrollHeight; }
-	function err(t){ S.errors++; play("bad"); $("#bdErr").textContent = `${S.errors} error${S.errors > 1 ? "s" : ""}`; if(t) log(t, "ko"); }
-	function stage(t){ $("#bdSt").textContent = t; }
+	function err(t){ S.errors++; play("bad"); onEvent && onEvent("err", t); $("#bdErr").textContent = `${S.errors} error${S.errors > 1 ? "s" : ""}`; if(t) log(t, "ko"); }
+	function stage(t){ $("#bdSt").textContent = t; onEvent && onEvent("stage", t); }
 	function dots(){ root.querySelectorAll("#bdDots i").forEach((d, k) => { d.className = S.done.has(k + 1) ? "done" : (S.mission === k + 1 ? "on" : ""); }); }
 	function course(k){ const [y, n, t] = COURSES[k]; S.learned.add(k); renderSkills(); return `<div class="bd-course"><span class="tag">📚 In the Master · ${y}</span><b>${n}</b>${t}</div>`; }
 	function renderSkills(){ const sk = [...S.learned].map(k => `<span>${COURSES[k][1]}</span>`); $("#bdSk").innerHTML = sk.length ? sk.join("") : "<em>None yet</em>"; }
