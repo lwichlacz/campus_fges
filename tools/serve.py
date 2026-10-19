@@ -52,7 +52,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         # jamais de fichiers cachés (.env, .git…) ni d'outils serveur
         path = self.path.split("?", 1)[0].split("#", 1)[0]
         parts = [p for p in urllib.parse.unquote(path).replace("\\", "/").split("/") if p]
-        if any(p.startswith(".") for p in parts) or (parts and parts[0] in ("tools", "node_modules")):
+        if any(p.startswith(".") for p in parts) or (parts and parts[0] in ("tools", "node_modules") and parts[:2] != ["tools", "film"]):      # tools/film : script de tournage du film
             self.send_error(404)
             return None
         return super().send_head()

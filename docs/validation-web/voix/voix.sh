@@ -1,4 +1,4 @@
 #!/bin/zsh
-# Bande son de la vidéo : musique seule (python3 mix.py). Avec voix off de synthèse : décommenter la boucle say et lancer mix.py --voix.
+# Musique du film de présentation (100 s), utilisée par tools/film/film.js : voix/musique-film.wav (non versionnée).
 cd "$(dirname "$0")"
-python3 mix.py && afconvert -f m4af -d aac -b 64000 bande-son.wav ../media/bande-son.mp4 && rm -f bande-son.wav
+python3 mix.py --duree 100 --sortie musique-film.wav

@@ -1,6 +1,9 @@
 # Bande son de la vidéo : musique douce synthétisée (sans voix off : les sous-titres portent le texte)
 import wave, array, math, sys
-SR = 24000; D = 52.0; N = int(SR*D)
+SR = 24000
+D = float(sys.argv[sys.argv.index("--duree") + 1]) if "--duree" in sys.argv else 52.0      # 100 pour le film du campus
+OUT = sys.argv[sys.argv.index("--sortie") + 1] if "--sortie" in sys.argv else "bande-son.wav"
+N = int(SR*D)
 STARTS = [0.5, 5.9, 14.0, 23.4, 33.6, 40.3, 47.6]
 voice = array.array("f", [0.0])*N
 for i, t0 in enumerate(STARTS if "--voix" in sys.argv else [], 1):
@@ -34,5 +37,5 @@ out = array.array("h", [0])*N
 for j in range(N):
     v = .92*voice[j] + 1.6*music[j]
     out[j] = int(max(-1, min(1, v))*32767)
-w = wave.open("bande-son.wav", "wb"); w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes(out.tobytes()); w.close()
+w = wave.open(OUT, "wb"); w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes(out.tobytes()); w.close()
 print("ok")

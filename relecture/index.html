@@ -50,6 +50,7 @@ header.top{padding-top:28px;display:flex;flex-direction:column;gap:14px}
 .due span{font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--warn-soft);color:var(--warn)}
 .due span.n{background:var(--accent-soft);color:var(--accent)}
 /* la vidéo */
+.film{display:block;width:100%;aspect-ratio:16 / 9;border-radius:var(--r);background:var(--screen)}
 .player{position:relative;border-radius:var(--r);overflow:hidden;background:var(--screen);aspect-ratio:16 / 9;max-width:100%}
 .player canvas{display:block;width:100%;height:100%;cursor:pointer}
 .bigplay{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:10px;font:700 16px var(--body);color:#0b1730;background:#ffffff;border:0;border-radius:999px;padding:12px 20px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap}
@@ -183,19 +184,9 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 	</header>
 
 	<section class="stack" id="video" aria-labelledby="t-projet">
-		<h2 id="t-projet">Le projet en 52 secondes</h2>
-		<div class="player">
-			<canvas id="mv" role="img" aria-label="Vidéo de présentation du campus FGES en 3D et de ses mini-jeux, sous-titrée"></canvas>
-			<button type="button" class="bigplay" id="mvPlay"><i></i>Lancer la vidéo · 52 s</button>
-		</div>
-		<audio id="mvAudio" preload="auto"></audio>
-		<div class="mvbar">
-			<button type="button" id="mvToggle">Lecture</button>
-			<input type="range" id="mvSeek" min="0" max="52" step="0.1" value="0" aria-label="Position dans la vidéo">
-			<span id="mvTime">0:00 / 0:52</span>
-			<button type="button" id="mvSound" aria-pressed="true" title="Couper ou remettre le son">🔊 Son</button>
-		</div>
-		<p class="hint">Musique douce et sous-titres : elle se regarde aussi sans le son.</p>
+		<h2 id="t-projet">Le campus et ses formations, en 1 min 40</h2>
+		<video id="film" class="film" controls playsinline preload="metadata" poster="img/affiche.jpg" src="media/campus-3d.mp4" aria-describedby="filmHint"></video>
+		<p class="hint" id="filmHint">Filmée dans le vrai campus 3D : chaque bâtiment, toutes les formations, et pour chacune son mini-jeu, déjà jouable ou en préparation.</p>
 	</section>
 
 	<!-- accueil -->
@@ -345,256 +336,6 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 	</section>
 </div>
 
-<script>/* Vidéo de présentation en motion design (52 s, musique : media/bande-son.mp4, refaite par voix/voix.sh ; sous-titrée), dessinée en direct dans un canvas 1280×720.
-   createMotion(canvas, { games, current, accent, images:{ campus, logo } }) → { play, pause, seek, toggle, t, duration, playing }
-   Six scènes : titre · « choisir sur un intitulé ? » · le campus en 3D · un mini-jeu par formation · où il sert · pourquoi vous. */
-function createMotion(canvas, o){
-	const W = 1280, H = 720, D = 52;
-	const NAVY = "#13254a", NAVY2 = "#0b1730", CYAN = "#21b6ce", CREAM = "#f7f2e9", WHITE = "#ffffff", ACC = o.accent || CYAN, INK = o.accentInk || NAVY;
-	const ctx = canvas.getContext("2d");
-	const k = Math.min(2, window.devicePixelRatio || 1);
-	canvas.width = W*k; canvas.height = H*k;
-	const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
-	const seg = (t, a, b) => clamp((t - a)/(b - a));
-	const out = x => 1 - Math.pow(1 - x, 3);
-	const inOut = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3)/2;
-	const back = x => x <= 0 ? 0 : x >= 1 ? 1 : 1 + 2.4*Math.pow(x - 1, 3) + 1.4*Math.pow(x - 1, 2);
-	const life = (t, a, b, fi = .5, fo = .5) => Math.min(seg(t, a, a + fi), 1 - seg(t, b - fo, b));
-	const DISP = "Fraunces, Georgia, serif", BODY = "'Public Sans', system-ui, sans-serif";
-	const font = (w, s, f = BODY) => ctx.font = `${w} ${s}px ${f}`;
-	function rr(x, y, w, h, r){ ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
-	function text(s, x, y, { size = 32, weight = 600, fam = BODY, color = WHITE, align = "center", a = 1, dy = 0 } = {}){
-		if(a <= 0) return;
-		ctx.save(); ctx.globalAlpha *= a; font(weight, size, fam); ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = "middle";
-		ctx.fillText(s, x, y + dy); ctx.restore();
-	}
-	function wrap(s, maxW, size, weight = 600, fam = BODY){
-		font(weight, size, fam); const words = s.split(" "), lines = []; let line = "";
-		for(const w of words){ const tryL = line ? line + " " + w : w; if(ctx.measureText(tryL).width > maxW && line){ lines.push(line); line = w; } else line = tryL; }
-		if(line) lines.push(line); return lines;
-	}
-	function caption(s, a){
-		if(a <= 0 || !s || !started) return;          // pas de sous-titre sur l'image d'attente, sous le bouton de lecture
-		const lines = wrap(s, 1000, 28, 500);
-		const h = 24 + lines.length*38;
-		ctx.save(); ctx.globalAlpha = a;
-		rr(W/2 - 560, H - 34 - h, 1120, h, 16); ctx.fillStyle = "rgba(6,12,28,.72)"; ctx.fill();
-		lines.forEach((l, i) => text(l, W/2, H - 34 - h + 12 + 19 + i*38, { size:28, weight:500 }));
-		ctx.restore();
-	}
-	function background(t){
-		const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, NAVY); g.addColorStop(1, NAVY2);
-		ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-		ctx.fillStyle = "rgba(33,182,206,.10)";
-		const off = (t*12) % 40;
-		for(let x = -40; x < W + 40; x += 40) for(let y = -40; y < H + 40; y += 40){ ctx.beginPath(); ctx.arc(x + off, y + off*.5, 1.6, 0, 7); ctx.fill(); }
-	}
-	function pin(x, y, label, p, color = CYAN){
-		if(p <= 0) return;
-		const yy = y - (1 - out(p))*60;
-		ctx.save(); ctx.globalAlpha = clamp(p*2);
-		ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, yy - 34, 16, Math.PI*.85, Math.PI*2.15); ctx.lineTo(x, yy); ctx.closePath(); ctx.fill();
-		ctx.fillStyle = WHITE; ctx.beginPath(); ctx.arc(x, yy - 34, 6, 0, 7); ctx.fill();
-		font(700, 22); const w = ctx.measureText(label).width + 28;
-		rr(x + 22, yy - 52, w, 38, 10); ctx.fillStyle = WHITE; ctx.fill();
-		text(label, x + 36, yy - 33, { size:22, weight:700, color:NAVY, align:"left" });
-		ctx.restore();
-	}
-	const NAMES = ["Licence Gestion", "Licence Sciences de la Vie", "Master Data Management in Biosciences", "Licence Sciences pour l'Ingénieur", "Licence Comptabilité-Finance-Audit", "Master Data & IA"];
-	const SPOTS = [[250, 260, -.06], [640, 230, .04], [1010, 280, -.03], [330, 420, .05], [720, 400, -.04], [1040, 450, .06]];
-
-	function draw(t){
-		ctx.setTransform(k, 0, 0, k, 0, 0);
-		background(t);
-		const camp = o.images?.campus;
-
-		/* 1 · titre (0 → 5,5 s) */
-		let a = life(t, 0, 5.6, .6, .6);
-		if(a > 0){
-			if(camp?.complete){ ctx.save(); ctx.globalAlpha = .28*a; ctx.drawImage(camp, 300, 0, 560, 315, 0, 0, W, H); ctx.restore();
-				const v = ctx.createRadialGradient(W/2, H/2, 100, W/2, H/2, 760); v.addColorStop(0, "rgba(19,37,74,.35)"); v.addColorStop(1, "rgba(11,23,48,.95)");
-				ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = v; ctx.fillRect(0, 0, W, H); ctx.restore(); }
-			const p1 = out(seg(t, .3, 1.3)), p2 = out(seg(t, .9, 1.9)), p3 = inOut(seg(t, 1.2, 2.2));
-			text("FGES · UNIVERSITÉ CATHOLIQUE DE LILLE", W/2, 230, { size:20, weight:700, color:CYAN, a:a*p1 });
-			text("Campus FGES en 3D", W/2, 320, { size:96, weight:700, fam:DISP, a:a*p1, dy:(1 - p1)*30 });
-			ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = CYAN; rr(W/2 - 160*p3, 388, 320*p3, 6, 3); ctx.fill(); ctx.restore();
-			text("Une visite du campus, et un mini-jeu par formation", W/2, 450, { size:34, weight:500, color:CREAM, a:a*p2, dy:(1 - p2)*20 });
-			text(`Ce qu'on vous demande, en moins d'une minute`, W/2, 510, { size:24, weight:500, color:"rgba(247,242,233,.7)", a:a*out(seg(t, 1.6, 2.4)) });
-			caption("Le campus de la FGES, en 3D. Et un mini-jeu pour chaque formation.", life(t, .5, 5.5, .3, .4));
-		}
-
-		/* 2 · choisir sur un intitulé ? (5,5 → 13,5 s) */
-		a = life(t, 5.4, 13.6, .5, .6);
-		if(a > 0){
-			const ph = out(seg(t, 5.7, 6.5));
-			text("Choisir sa formation… sur un intitulé ?", W/2, 110, { size:54, weight:700, fam:DISP, a:a*ph, dy:(1 - ph)*20 });
-			const dim = 1 - .6*seg(t, 10.2, 10.9);
-			NAMES.forEach((n, i) => {
-				const p = back(seg(t, 6.3 + i*.38, 7.1 + i*.38));
-				if(p <= 0) return;
-				const [x, y, r] = SPOTS[i];
-				ctx.save(); ctx.globalAlpha = a*dim*clamp(p*1.5); ctx.translate(x, y - (1 - p)*260); ctx.rotate(r*p);
-				font(700, 24); const w = Math.min(420, ctx.measureText(n).width + 48);
-				rr(-w/2, -32, w, 64, 14); ctx.fillStyle = WHITE; ctx.fill();
-				const lines = wrap(n, w - 40, 24, 700);
-				lines.forEach((l, j) => text(l, 0, (j - (lines.length - 1)/2)*28, { size: lines.length > 1 ? 20 : 24, weight:700, color:NAVY }));
-				ctx.restore();
-			});
-			const q = back(seg(t, 10.3, 11.1));
-			if(q > 0){
-				ctx.save(); ctx.globalAlpha = a; ctx.translate(W/2, 360); ctx.scale(q, q);
-				rr(-430, -70, 860, 140, 24); ctx.fillStyle = CYAN; ctx.fill();
-				text("Un nom ne dit pas ce qu'on y fait vraiment.", 0, 0, { size:38, weight:700, color:NAVY2 });
-				ctx.restore();
-			}
-			caption("Choisir sa formation sur un simple intitulé, c'est difficile. Un nom ne dit pas ce qu'on y fait vraiment.", a*seg(t, 5.9, 6.3));
-		}
-
-		/* 3 · le campus en 3D (13,5 → 23 s) */
-		a = life(t, 13.4, 23.1, .6, .6);
-		if(a > 0){
-			const g = out(seg(t, 13.5, 14.5)), kb = inOut(seg(t, 13.5, 23));
-			const fw = 1040, fh = 585, fx = (W - fw)/2, fy = 40;
-			ctx.save(); ctx.globalAlpha = a*g; ctx.translate(W/2, fy + fh/2); ctx.scale(.9 + .1*g, .9 + .1*g); ctx.translate(-W/2, -(fy + fh/2));
-			rr(fx, fy, fw, fh, 22); ctx.save(); ctx.clip();
-			if(camp?.complete){
-				const sw = 560 - 150*kb, sh = sw*9/16, cx = 580 + 40*kb, cy = 157 + 20*kb;
-				ctx.drawImage(camp, cx - sw/2, Math.max(0, cy - sh/2), sw, sh, fx, fy, fw, fh);
-			} else { ctx.fillStyle = "#c97b52"; ctx.fillRect(fx, fy, fw, fh); }
-			ctx.restore();
-			ctx.lineWidth = 3; ctx.strokeStyle = "rgba(255,255,255,.6)"; rr(fx, fy, fw, fh, 22); ctx.stroke();
-			ctx.restore();
-			pin(640 - 40*kb, 330 + 10*kb, "Hôtel Académique", seg(t, 15, 15.7)*a);
-			const chips = [["Bâtiments réels, à l'échelle", 15.9], ["Vauban et Euratechnologies", 16.5], ["Sur ordinateur et téléphone", 17.1]];
-			chips.forEach(([s, s0], i) => {
-				const p = out(seg(t, s0, s0 + .6)); if(p <= 0) return;
-				ctx.save(); ctx.globalAlpha = a*p; font(700, 22); const w = ctx.measureText(s).width + 36;
-				const x = fx + 30 + (1 - p)*-30, y = fy + 30 + i*54;
-				rr(x, y, w, 42, 21); ctx.fillStyle = "rgba(11,23,48,.85)"; ctx.fill();
-				text(s, x + 18, y + 21, { size:22, weight:700, align:"left" }); ctx.restore();
-			});
-			caption("Alors, nous avons reconstitué le campus, à l'échelle, visitable dans le navigateur, sur ordinateur comme sur téléphone.", a*seg(t, 14, 14.4));
-		}
-
-		/* 4 · un mini-jeu par formation (23 → 33 s) */
-		a = life(t, 22.9, 33.1, .5, .6);
-		if(a > 0){
-			const ph = out(seg(t, 23.1, 23.9));
-			text("Chaque formation a son mini-jeu", W/2, 92, { size:52, weight:700, fam:DISP, a:a*ph, dy:(1 - ph)*20 });
-			const G = o.games || [], n = G.length, gap = 22, cw = Math.min(212, (W - 80 - (n - 1)*gap)/n), total = n*cw + (n - 1)*gap, x0 = (W - total)/2;
-			const focus = o.current ? inOut(seg(t, 27.6, 28.6)) : 0;
-			G.forEach((gm, i) => {
-				const p = back(seg(t, 23.7 + i*.3, 24.5 + i*.3)); if(p <= 0) return;
-				const me = gm.id === o.current;
-				const s = me ? 1 + .14*focus : 1 - .08*focus;
-				const x = x0 + i*(cw + gap) + cw/2, y = 330 + (1 - p)*200;
-				ctx.save(); ctx.globalAlpha = a*clamp(p*1.4)*(me ? 1 : 1 - .45*focus); ctx.translate(x, y); ctx.scale(s, s);
-				rr(-cw/2, -140, cw, 280, 18); ctx.fillStyle = WHITE; ctx.fill();
-				if(me && focus > 0){ ctx.lineWidth = 5; ctx.strokeStyle = ACC; ctx.stroke(); }
-				ctx.font = "56px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(gm.icon, 0, -84);
-				const tl = wrap(gm.title, cw - 30, 23, 700, DISP).slice(0, 3);
-				tl.forEach((l, j) => text(l, 0, -34 + j*27, { size:23, weight:700, fam:DISP, color:NAVY }));
-				wrap(gm.formation, cw - 30, 14, 500).slice(0, 3).forEach((l, j) => text(l, 0, -34 + tl.length*27 + 10 + j*18, { size:14, weight:500, color:"#55607a" }));
-				rr(-48, 108, 96, 26, 13); ctx.fillStyle = "#eef3f8"; ctx.fill();
-				text(gm.dur, 0, 121, { size:14, weight:700, color:NAVY });
-				ctx.restore();
-			});
-			// progression L1 → L3 sous le jeu mis en avant
-			const pr = o.current ? seg(t, 28.8, 31.4) : 0;
-			if(pr > 0){
-				const st = o.steps || ["L1", "L2", "L3"], bw = st.length > 4 ? 980 : 560, bx = (W - bw)/2, by = 506;
-				ctx.save(); ctx.globalAlpha = a*clamp(pr*4);
-				rr(bx, by, bw, 14, 7); ctx.fillStyle = "rgba(255,255,255,.18)"; ctx.fill();
-				rr(bx, by, bw*inOut(pr), 14, 7); ctx.fillStyle = ACC; ctx.fill();
-				st.forEach((s, i, arr) => { const sx = bx + bw*(i + .5)/arr.length; text(s, sx, by + 38, { size:19, weight:700, color: pr > (i + .3)/arr.length ? WHITE : "rgba(255,255,255,.45)" }); });
-				ctx.restore();
-			}
-			caption("Chaque formation a son mini-jeu : quelques minutes pour faire ce que font vraiment les étudiants. Manipuler, calculer, se tromper, comprendre.", a*seg(t, 23.4, 23.8));
-		}
-
-		/* 5 · là où les candidats choisissent (33 → 40 s) */
-		a = life(t, 32.9, 40.1, .5, .6);
-		if(a > 0){
-			const ph = out(seg(t, 33.1, 33.9));
-			text("Montré là où l'on choisit sa formation", W/2, 110, { size:52, weight:700, fam:DISP, a:a*ph, dy:(1 - ph)*20 });
-			const items = [["Sur le site de la FGES", 0], ["Sur une borne, en salon", 1], ["Aux journées portes ouvertes", 2]];
-			items.forEach(([s, i]) => {
-				const p = seg(t, 33.8 + i*.7, 35 + i*.7); if(p <= 0) return;
-				const cx = 270 + i*370, cy = 330;
-				ctx.save(); ctx.globalAlpha = a; ctx.lineWidth = 6; ctx.lineCap = ctx.lineJoin = "round"; ctx.strokeStyle = CYAN;
-				ctx.setLineDash([900]); ctx.lineDashOffset = 900*(1 - inOut(p));
-				ctx.beginPath();
-				if(i === 0){ ctx.roundRect(cx - 110, cy - 90, 220, 140, 12); ctx.moveTo(cx, cy + 50); ctx.lineTo(cx, cy + 85); ctx.moveTo(cx - 55, cy + 88); ctx.lineTo(cx + 55, cy + 88); }
-				else if(i === 1){ ctx.roundRect(cx - 60, cy - 120, 120, 210, 14); ctx.roundRect(cx - 42, cy - 100, 84, 110, 6); ctx.moveTo(cx - 75, cy + 90); ctx.lineTo(cx + 75, cy + 90); }
-				else { ctx.moveTo(cx - 110, cy + 88); ctx.lineTo(cx + 110, cy + 88); ctx.moveTo(cx - 90, cy + 88); ctx.lineTo(cx - 90, cy - 30); ctx.lineTo(cx, cy - 95); ctx.lineTo(cx + 90, cy - 30); ctx.lineTo(cx + 90, cy + 88);
-					ctx.moveTo(cx - 28, cy + 88); ctx.lineTo(cx - 28, cy + 20); ctx.lineTo(cx + 28, cy + 20); ctx.lineTo(cx + 28, cy + 88); ctx.moveTo(cx, cy - 95); ctx.lineTo(cx, cy - 150); ctx.lineTo(cx + 45, cy - 135); ctx.lineTo(cx, cy - 120); }
-				ctx.stroke(); ctx.restore();
-				text(s, cx, cy + 140, { size:26, weight:700, a:a*seg(t, 34.5 + i*.7, 35.1 + i*.7) });
-			});
-			caption("Il sera montré sur le site, en salon, et aux journées portes ouvertes.", a*seg(t, 33.6, 34));
-		}
-
-		/* 6 · pourquoi vous (40 → 50 s) */
-		a = life(t, 39.9, 52.5, .5, .01);
-		if(a > 0){
-			const card = inOut(seg(t, 45.2, 46.2));
-			const ph = out(seg(t, 40.1, 40.9));
-			ctx.save(); ctx.globalAlpha = a*(1 - card);
-			text("Pourquoi vous ?", W/2, 130, { size:64, weight:700, fam:DISP, a:ph, dy:(1 - ph)*20 });
-			const checks = ["Juste sur le fond", "Fidèle à la maquette de la formation", "Au bon niveau pour le public visé"];
-			checks.forEach((s, i) => {
-				const p = seg(t, 41 + i*.8, 41.6 + i*.8); if(p <= 0) return;
-				const y = 270 + i*96, x = 330;
-				ctx.save(); ctx.globalAlpha = clamp(p*2);
-				ctx.beginPath(); ctx.arc(x, y, 30, 0, 7); ctx.fillStyle = ACC; ctx.fill();
-				ctx.lineWidth = 7; ctx.lineCap = ctx.lineJoin = "round"; ctx.strokeStyle = WHITE; ctx.setLineDash([60]); ctx.lineDashOffset = 60*(1 - out(p));
-				ctx.beginPath(); ctx.moveTo(x - 13, y + 1); ctx.lineTo(x - 3, y + 11); ctx.lineTo(x + 14, y - 10); ctx.stroke();
-				text(s, x + 56, y, { size:36, weight:700, align:"left", dy:(1 - out(p))*12 });
-				ctx.restore();
-			});
-			ctx.restore();
-			caption(t < 47.4 ? "Avant cela, il doit être juste, fidèle à la formation, et au bon niveau. C'est là que nous avons besoin de vous." : "Votre relecture prend environ quinze minutes. Merci !", a*seg(t, 40.3, 40.7));
-			if(card > 0){
-				ctx.save(); ctx.globalAlpha = a*card;
-				const cw = 860, ch = 470, cx = (W - cw)/2, cy = (H - ch)/2 + (1 - card)*40;
-				rr(cx, cy, cw, ch, 28); ctx.fillStyle = CREAM; ctx.fill();
-				const logo = o.images?.logo;
-				if(logo?.complete) ctx.drawImage(logo, W/2 - 163, cy + 36, 326, 97.5);
-				text(o.gameTitle ? `« ${o.gameTitle} »` : "Votre relecture", W/2, cy + 178, { size:30, weight:700, fam:DISP, color:NAVY });
-				text("Votre relecture : environ 15 minutes", W/2, cy + 232, { size:40, weight:700, fam:DISP, color:NAVY });
-				["Jouer", "Noter", "Envoyer"].forEach((s, i) => {
-					const p = back(seg(t, 46.4 + i*.4, 47 + i*.4)); if(p <= 0) return;
-					const bx = W/2 - 300 + i*210, by = cy + 300;
-					ctx.save(); ctx.translate(bx + 90, by + 32); ctx.scale(p, p);
-					rr(-90, -32, 180, 64, 32); ctx.fillStyle = i === 2 ? INK : NAVY; ctx.fill();
-					text(`${i + 1}  ${s}`, 0, 0, { size:26, weight:700 });
-					ctx.restore();
-					if(i < 2) text("→", bx + 195, by + 32, { size:30, weight:700, color:NAVY, a:p });
-				});
-				text("Merci !", W/2, cy + 420, { size:34, weight:700, fam:DISP, color:INK, a:seg(t, 50, 50.6) });
-				ctx.restore();
-			}
-		}
-	}
-
-	let t = o.poster ?? 2.6, playing = false, last = 0, raf = 0, started = false;
-	const api = { duration:D, get t(){ return t; }, get playing(){ return playing; }, onTime:null, onState:null };
-	function loop(now){
-		if(!playing) return;
-		const src = api.clock?.(); t = src != null ? src : t + Math.min(.1, (now - last)/1000); last = now;
-		if(t >= D){ t = D; playing = false; api.onState?.(false); }
-		draw(t); api.onTime?.(t);
-		if(playing) raf = requestAnimationFrame(loop);
-	}
-	api.play = () => { if(playing) return; started = true; if(t >= D - .05) t = 0; playing = true; last = performance.now(); api.onState?.(true); raf = requestAnimationFrame(loop); };
-	api.pause = () => { playing = false; cancelAnimationFrame(raf); api.onState?.(false); };
-	api.toggle = () => playing ? api.pause() : api.play();
-	api.seek = s => { started = true; t = clamp(s, 0, D); draw(t); api.onTime?.(t); };
-	api.draw = draw;
-	draw(t);
-	return api;
-}
-</script>
 <script id="cfg" type="application/json">{"games": {"dmb": {"id": "dmb", "game": "From Blood to Decision (Master Data Management in Biosciences)", "h1": "From Blood to Decision : votre relecture", "lead": "Le mini-jeu du Master Data Management in Biosciences, dans le campus 3D de la FGES. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux candidats.", "facts": ["12 à 15 min", "En anglais, comme le master", "6 missions", "Public : candidats bac+3/4", "Données simulées"], "url": "https://lwichlacz.github.io/campus_fges/?jeu=dmb", "howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › From Blood to Decision. Le jeu est aussi dans Wenov, aile sud, épingle « Laboratoire bio-data ».", "short": "From Blood to Decision", "videoSteps": ["Données", "Séquençage", "Variants", "Cohorte", "IA", "Compte rendu"], "card": {"icon": "🧬", "title": "From Blood to Decision", "formation": "Master Data Management in Biosciences", "steps": [["1", "Data governance (GDPR, consent)"], ["2", "Sequencing quality control"], ["3", "Variant interpretation"], ["4", "Cohort biostatistics"], ["5", "Machine learning for screening"], ["6", "Clinical report & ethics"]]}, "publicHint": "Des candidats titulaires d'une licence (biologie, informatique, maths), avant leur entrée en M1.", "dureeHint": "Durée prévue : 12 à 15 minutes.", "sections": [{"t": "Le cas", "sub": "Alex, 27 ans", "items": [{"k": "cas", "q": "Le cas d'Alex est-il juste et bien choisi pour illustrer le master ?", "d": "Fatigue chronique, ferritine 1 140 µg/L, saturation de la transferrine 78 %, HFE C282Y homozygote : hémochromatose héréditaire."}, {"k": "anglais", "q": "L'anglais du jeu est-il correct et naturel ?", "d": "Vocabulaire scientifique, consignes, dialogues."}]}, {"t": "Mission 1 · Data governance", "items": [{"k": "m1_champs", "q": "Le tri des champs du dossier est-il juste ?", "d": "Garder, transformer (date de naissance → âge, code postal → département) ou retirer (nom, n° de sécurité sociale, e-mail)."}, {"k": "m1_chaine", "q": "L'ordre de la chaîne est-il juste ?", "d": "Consentement, prélèvement, pseudonymisation, séquençage, stockage sur hébergeur HDS, contrôle qualité, interprétation, compte rendu. La pseudonymisation est acceptée au prélèvement ou juste après le séquençage, toujours avant le stockage."}]}, {"t": "Mission 2 · Sequencing QC", "items": [{"k": "m2_coupe", "q": "La coupe des lectures est-elle réaliste ?", "d": "Lectures de 150 bases, garder Phred ≥ 25 en conservant au moins 80 % des bases."}, {"k": "m2_seuils", "q": "Les seuils de contrôle sont-ils réalistes pour un panel clinique ?", "d": "Qualité moyenne ≥ 30, alignement ≥ 90 %, contamination ≤ 2 %, profondeur ≥ 30×, concordance < 99 %."}, {"k": "m2_pieges", "q": "Les pièges sont-ils crédibles ?", "d": "Inversion d'échantillons (femme déclarée avec des lectures du chromosome Y), doublon à 99,8 % de concordance."}]}, {"t": "Mission 3 · Variant interpretation", "items": [{"k": "m3_vaf", "q": "Le calcul de la fréquence allélique (VAF) est-il bien présenté ?", "d": "Artefact (1/12 lecture, faible qualité), hétérozygote (6/12), homozygote (12/12)."}, {"k": "m3_acmg", "q": "Le classement des variants et ses preuves sont-ils exacts ?", "d": "C282Y pathogène (fréquence ~6 % en Europe du Nord-Ouest, ClinVar, études fonctionnelles), synonyme fréquent bénin, faux-sens rare sans données = VUS."}, {"k": "m3_seq", "q": "Faut-il afficher la vraie séquence de HFE plutôt qu'une séquence illustrative ?", "d": "", "kind": "q"}]}, {"t": "Mission 4 · Cohort biostatistics", "items": [{"k": "m4_test", "q": "Le choix du test et l'interprétation de la p-value sont-ils justes ?", "d": "Ferritine très asymétrique : Mann–Whitney ou t-test sur le log. Pièges : t-test sur les valeurs brutes, « probabilité que H0 soit vraie », « significatif donc cliniquement important »."}, {"k": "m4_cohorte", "q": "Les ordres de grandeur de la cohorte simulée sont-ils plausibles ?", "d": "240 patients dont 24 homozygotes, ferritine log-normale, pénétrance plus forte chez les hommes."}]}, {"t": "Mission 5 · Machine learning", "items": [{"k": "m5_fuites", "q": "Les fuites de données et le découpage par patient sont-ils bien expliqués ?", "d": "Variables piégées : nombre de saignées déjà faites, numéro d'inscription (AUC 0,998 au lieu de 0,96). 3 visites par patient."}, {"k": "m5_seuil", "q": "L'objectif de dépistage est-il pertinent ?", "d": "Seuil sur la courbe ROC : sensibilité ≥ 90 %, spécificité ≥ 60 %."}]}, {"t": "Mission 6 · Report & ethics", "items": [{"k": "m6_cr", "q": "La conclusion du compte rendu est-elle bien formulée ?", "d": "Constat, interprétation, recommandation : bilan martial, avis spécialisé, dépistage familial avec conseil génétique. Piège : « c'est une hémochromatose » (génotype ≠ diagnostic)."}, {"k": "m6_brca", "q": "La conduite face à la découverte fortuite BRCA2 est-elle conforme aux pratiques françaises ?", "d": "Alex a consenti à être informé des découvertes actionnables : confirmer, puis annoncer en consultation de conseil génétique."}]}, {"t": "Le master dans le jeu", "items": [{"k": "cours", "q": "Les intitulés de cours affichés correspondent-ils à la maquette ?", "d": "M1 : biologie des maladies, biostatistiques, bio-informatique, bases de données, biotechnologies, programmation, IA. M2 : essais cliniques, protection des données, épidémiologie, data mining, Big Data."}, {"k": "mention", "q": "Les mentions de fin sont-elles bien calibrées ?", "d": "Highest distinction : 3 erreurs au plus ; Distinction : 8 au plus ; Pass au-delà."}]}], "open": [{"k": "autre_cas", "q": "Souhaitez-vous un autre cas que l'hémochromatose ? Lequel ?"}, {"k": "python", "q": "Faut-il ajouter une mission de programmation (lire ou corriger quelques lignes de Python) ?"}, {"k": "manque", "q": "Qu'est-ce qui manque pour donner envie de rejoindre le master ?"}], "accent": ["#24407a", "#e6ecf7", "#93b0ea", "#1d2a44"], "videoAccent": "#93b0ea", "videoInk": "#24407a"}, "sv": {"id": "sv", "game": "Mission Jardin Boulay (Licence Sciences de la Vie)", "h1": "Mission Jardin Boulay : votre relecture", "lead": "Le mini-jeu de la Licence Sciences de la Vie, dans le campus 3D de la FGES. Il se joue dans le jardin botanique Nicolas Boulay, avec un tronc commun puis trois parcours de L3. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux lycéens.", "facts": ["7 min par partie", "Tronc commun L1-L2", "3 parcours de L3", "Public : lycéens"], "url": "https://lwichlacz.github.io/campus_fges/?jeu=sv", "howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Mission Jardin Boulay. À la fin, « Rejouer la L3 » permet d'essayer les deux autres parcours sans tout refaire : si vous le pouvez, jouez les trois.", "short": "Mission Jardin Boulay", "card": {"icon": "🔍", "title": "Mission Jardin Boulay", "formation": "Licence Sciences de la Vie", "steps": [["L1", "Identifier les espèces, comprendre qui mange qui"], ["L2", "Vérifier une loi de la génétique"], ["L3", "Ta spécialisation : écologie, biotech ou ingénieur"]]}, "publicHint": "Des lycéens de première et terminale qui hésitent entre plusieurs licences.", "dureeHint": "Durée prévue : environ 7 minutes, plus 2 à 3 minutes par parcours rejoué.", "parcours": [["eco", "🌿 Écologie opérationnelle"], ["biotech", "🧬 Biotechnologies"], ["inge", "⚙️ Ingénieur"]], "sections": [{"t": "Le déroulé", "items": [{"k": "activites", "q": "Les activités sont-elles représentatives de la licence ?", "d": "Terrain et identification, réseau trophique, génétique de Mendel, puis un parcours de L3."}, {"k": "annees", "q": "Les années associées à chaque notion sont-elles justes ?", "d": "Identification et écologie en L1, génétique en L2, parcours en L3."}, {"k": "parcours_noms", "q": "Les intitulés des trois parcours sont-ils exacts ?", "d": "Écologie opérationnelle, Biotechnologies, Ingénieur."}]}, {"t": "Terrain · la clé de détermination", "sub": "L1", "items": [{"k": "cle", "q": "La clé simplifiée est-elle juste scientifiquement ?", "d": "Plumes → mésange ; poils → hérisson ; pas de pattes → lombric ; 8 pattes → épeire ; 6 pattes et élytres → coccinelle ; ailes transparentes → abeille."}, {"k": "anecdotes", "q": "Les rangs taxonomiques et les anecdotes sont-ils corrects ?", "d": "Coccinelle et pucerons, abeille et pollinisation, épeire (arachnide), lombric, mésange et chenilles, hérisson espèce protégée."}, {"k": "especes", "q": "Faut-il d'autres espèces (une plante, un champignon) ?", "d": "", "kind": "q"}]}, {"t": "Réseau trophique", "sub": "L1", "items": [{"k": "liens", "q": "Les liens acceptés et refusés sont-ils justes ?", "d": "La flèche va de celui qui est mangé vers celui qui mange. Rosier → puceron → coccinelle → mésange → épervier ; feuilles mortes → lombric → hérisson."}, {"k": "detritivore", "q": "Mettre les « feuilles mortes » dans le réseau est-il acceptable, ou faut-il parler de réseau détritivore ?", "d": "", "kind": "q"}, {"k": "insecticide", "q": "Le scénario de l'insecticide est-il correct ?", "d": "Un insecticide non sélectif tue pucerons et coccinelles ; les pucerons reviennent plus vite que leurs prédateurs ; conclusion sur la lutte biologique."}]}, {"t": "Génétique", "sub": "L2", "items": [{"k": "mendel", "q": "Le croisement de Mendel est-il juste ?", "d": "Pois violet (V, dominant) × blanc (b, récessif) en lignées pures ; F1 toute violette ; échiquier Vb × Vb ; 1/4 de blanches attendu ; 40 graines semées."}, {"k": "notation", "q": "La notation des allèles (V / b) convient-elle, ou préférez-vous celle utilisée en cours ?", "d": "", "kind": "q"}, {"k": "chi2", "q": "Citer le test du χ² est-il pertinent à ce niveau ?", "d": "", "kind": "q"}]}, {"t": "Parcours Écologie opérationnelle", "sub": "L3", "items": [{"k": "quadrats", "q": "Le vocabulaire et la méthode des quadrats sont-ils justes ?", "d": "100 quadrats d'1 m², 4 choisis ou tirés au hasard, estimation = moyenne × 100, explication du biais d'échantillonnage."}, {"k": "ic", "q": "Faut-il évoquer l'intervalle de confiance, ou est-ce trop pour des lycéens ?", "d": "", "kind": "q"}]}, {"t": "Parcours Biotechnologies", "sub": "L3", "items": [{"k": "pcr", "q": "La simplification de l'amorce de PCR est-elle acceptable ?", "d": "Brin complémentaire de ATGCGTAC → TACGCATG, écrit dans le même sens (sans orientation 5'→3')."}, {"k": "valeurs", "q": "Les valeurs sont-elles crédibles ?", "d": "Bande à 750 pb, pipetage de 100 µL, dilution finale 1/1 000, bioréacteur à 37 °C et pH 7."}, {"k": "ufc", "q": "Faut-il parler d'UFC plutôt que de « bactéries par mL » ?", "d": "", "kind": "q"}]}, {"t": "Parcours Ingénieur", "sub": "L3", "items": [{"k": "ferme", "q": "La ferme urbaine du Palais Rameau est-elle un bon exemple ?", "d": "Dimensionner (300 salades, 25 bacs, pompe de 60 L/h), modéliser une croissance logistique, piloter une serre avec un budget énergie."}, {"k": "inge_ton", "q": "Le parcours prépare-t-il bien aux écoles d'ingénieurs (agro, bio) ? Le ton est-il juste ?", "d": ""}]}, {"t": "Fin de partie", "items": [{"k": "mention", "q": "Les mentions sont-elles bien calibrées ?", "d": "Très bien : 3 erreurs au plus et parcours ≥ 70 % ; Bien : 8 erreurs au plus et ≥ 40 % ; Assez bien au-delà."}, {"k": "ton", "q": "Le ton vous convient-il ?", "d": "« Ton labo de licence », label « refuge de biodiversité », tutoiement des lycéens."}]}], "open": [{"k": "terrain", "q": "Une sortie de terrain, un TP ou un stage emblématique de la licence à mettre en scène (Ambleteuse, par exemple) ?"}, {"k": "autre_inge", "q": "Pour le parcours Ingénieur, un meilleur exemple qu'une ferme urbaine (bioprocédé industriel, traitement de l'eau…) ?"}, {"k": "manque", "q": "Qu'est-ce qui manque pour donner envie de rejoindre la licence ?"}], "accent": ["#2f6a43", "#e3f0e6", "#86c99b", "#1b3324"], "videoAccent": "#86c99b", "videoInk": "#2f6a43"}, "spi": {"id": "spi", "game": "Cellule robotique Wenov (Licence Sciences pour l'Ingénieur)", "short": "Cellule robotique Wenov", "h1": "Cellule robotique Wenov : votre relecture", "lead": "Le mini-jeu de la Licence Sciences pour l'Ingénieur de l'École du Numérique, dans le campus 3D de la FGES. Le joueur fait fonctionner une cellule robotique avec les outils de chaque année. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux lycéens.", "facts": ["Environ 9 min", "4 missions, de L1 à L3", "Public : lycéens", "Cellule mise en scène, pas un équipement réel"], "url": "https://lwichlacz.github.io/campus_fges/?jeu=spi", "howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Cellule robotique Wenov. Le jeu est aussi dans Wenov, épingle « Plateau robotique ».", "card": {"icon": "🦾", "title": "Cellule robotique Wenov", "formation": "Licence Sciences pour l'Ingénieur", "steps": [["L1", "Piloter les articulations du bras"], ["L2", "Programmer le cycle de la ligne"], ["L2", "Régler le moteur d'une articulation"], ["L3", "Lui donner des yeux pour trier"]]}, "videoSteps": ["L1", "L2", "L2", "L3"], "publicHint": "Des lycéens de première et terminale, notamment en spécialité sciences de l'ingénieur, maths ou NSI.", "dureeHint": "Durée prévue : environ 9 minutes.", "sections": [{"t": "Le déroulé", "items": [{"k": "progression", "q": "La progression L1 → L2 → L2 → L3 est-elle fidèle à la maquette ?", "d": "Piloter le bras (L1), programmer la cellule (L2), régler le moteur (L2), donner la vue au robot (L3)."}, {"k": "cours", "q": "Les intitulés des cours révélés sont-ils les bons ?", "d": "Mécanique et systèmes numériques ; Robotique et systèmes industriels ; Automatique et asservissement ; Vision par ordinateur et IA embarquée."}]}, {"t": "Mission 1 · Prends la main", "sub": "L1", "items": [{"k": "m1", "q": "La prise en main du bras est-elle juste ?", "d": "Bras à 3 articulations (base en rotation, épaule et coude en élévation), pince qui reste verticale, angles affichés en direct, collisions refusées."}, {"k": "m1_vocab", "q": "Le vocabulaire (articulation, degré de liberté, cinématique) est-il adapté à des lycéens ?", "d": ""}]}, {"t": "Mission 2 · Programme la cellule", "sub": "L2", "items": [{"k": "m2", "q": "Le cycle attendu est-il juste ?", "d": "Attendre une pièce (capteur) → aller au-dessus du tapis → saisir → aller au-dessus du bac → déposer, en boucle. Sans le capteur, la saisie échoue."}, {"k": "m2_api", "q": "Faut-il parler d'automate programmable (API) plutôt que de microcontrôleur ?", "d": "", "kind": "q"}]}, {"t": "Mission 3 · Règle le moteur", "sub": "L2", "items": [{"k": "m3", "q": "Le modèle et les critères de réglage sont-ils acceptables ?", "d": "Moteur asservi en position, correcteur proportionnel-dérivé (P et D), sans gravité ni saturation. Réussite : dépassement de 4° au plus et stabilité à ±2° en moins de 1,5 s."}, {"k": "m3_annee", "q": "Le correcteur PD est-il vu en L2 ? Faut-il parler de PID ?", "d": "", "kind": "q"}, {"k": "m3_mots", "q": "Les mots « gain » et « amortissement » conviennent-ils pour des lycéens ?", "d": "", "kind": "q"}]}, {"t": "Mission 4 · Donne-lui des yeux", "sub": "L3", "items": [{"k": "m4", "q": "La classification est-elle bien présentée ?", "d": "10 exemples étiquetés (teinte mesurée par la caméra), un seuil entre pièces orange et bleues, puis le tri automatique de 8 pièces (7 bien triées au moins)."}, {"k": "m4_ia", "q": "« IA embarquée » est-il juste pour un seuil appris sur des exemples, ou faut-il dire « apprentissage » ou « classification » ?", "d": "", "kind": "q"}]}, {"t": "Fin de partie", "items": [{"k": "mention", "q": "Les mentions sont-elles bien calibrées ?", "d": "Très bien : 3 erreurs au plus ; Bien : 8 au plus ; Assez bien au-delà. Une erreur : collision, pièce lâchée hors du bac, cycle qui échoue, réglage raté, pièce mal triée."}, {"k": "ton", "q": "Le ton « tableau de bord d'ingénieur » vous convient-il pour présenter la licence ?", "d": ""}]}], "open": [{"k": "materiel", "q": "L'école dispose-t-elle d'un bras robotisé ou d'une cellule de démonstration ? Des photos permettraient d'en rapprocher le jeu."}, {"k": "missions", "q": "Quelles missions ajouter ensuite (câblage d'un capteur en L1, jumeau numérique à deux bras en L3…) ?"}, {"k": "manque", "q": "Qu'est-ce qui manque pour donner envie de rejoindre la licence ?"}], "accent": ["#a8501c", "#f8e9df", "#f0a473", "#3a2316"], "videoAccent": "#f0a473", "videoInk": "#a8501c"}, "gestion": {"id": "gestion", "game": "Le Comptoir (Licence Gestion)", "short": "Le Comptoir", "h1": "Le Comptoir : votre relecture", "lead": "Le mini-jeu de la Licence Gestion, dans le campus 3D de la FGES. Le joueur pilote le café de l'atrium pendant quatre matinées, avec un exercice à chaque année. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux lycéens.", "facts": ["Environ 6 min", "4 matinées, 4 imprévus, 3 exercices", "Public : lycéens", "Chiffres volontairement simplifiés"], "url": "https://lwichlacz.github.io/campus_fges/?jeu=gestion", "howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Le Comptoir. Le jeu est aussi dans l'atrium de Michel Falise.", "card": {"icon": "☕", "title": "Le Comptoir", "formation": "Licence Gestion", "steps": [["L1", "Prix, équipe et compte de résultat"], ["L2", "Coût de revient et seuil de rentabilité"], ["L3", "Investir pour grandir"]]}, "publicHint": "Des lycéens de première et terminale qui hésitent entre plusieurs licences.", "dureeHint": "Durée prévue : environ 6 minutes.", "sections": [{"t": "Le déroulé", "items": [{"k": "progression", "q": "Le déroulé et la progression L1 → L2 → L3 sont-ils fidèles à la maquette ?", "d": "Chaque matinée : prix, croissants et baristas, puis le service en direct avec des leviers (prix, happy hour, renfort, réassort, geste commercial)."}, {"k": "cours", "q": "Les cours associés sont-ils placés dans la bonne année ?", "d": "Comptabilité financière (L1), Gestion des coûts (L2), Décision d'investissement (L3), plus Marketing, GRH et Logistique."}]}, {"t": "Hypothèses économiques", "sub": "volontairement simplifiées", "items": [{"k": "chiffres", "q": "Les ordres de grandeur sont-ils crédibles pour des lycéens ?", "d": "Cappuccino à 0,55 € de coût, vendu 1 à 3,50 € ; croissant acheté 0,45 €, revendu 1,20 € ; barista à 25 € la matinée ; vélo cargo à 3 000 €."}, {"k": "vocab", "q": "Le vocabulaire est-il juste ?", "d": "Achats consommés, charges, résultat, coût de revient, seuil de rentabilité, délai de récupération, amortissement, coût d'acquisition client."}, {"k": "fixes", "q": "Faut-il parler explicitement de « charges fixes » et de « charges variables » ?", "d": "", "kind": "q"}]}, {"t": "Les imprévus", "items": [{"k": "imprevus", "q": "Les situations sont-elles réalistes ?", "d": "Commande groupée avec 20 % de remise ; rupture de lait ; barista malade (intérim à 38 €) ; story Instagram contre 10 cappuccinos offerts."}, {"k": "malade", "q": "Barista malade : le raccourci « salaire non versé pendant l'absence » est-il acceptable, ou faut-il évoquer les indemnités journalières ?", "d": "", "kind": "q"}]}, {"t": "Les exercices", "items": [{"k": "ex1", "q": "Exercice 1 · Le compte de résultat est-il correct ?", "d": "Le joueur classe ses propres montants (chiffre d'affaires, achats, salaires) puis calcule le résultat."}, {"k": "ex2", "q": "Exercice 2 · Le raccourci « seuil de rentabilité = couvrir les salaires du jour » est-il acceptable à ce niveau ?", "d": "Coût de revient 0,25 + 0,20 + 0,10 = 0,55 € ; cafés à vendre = salaires ÷ (prix − 0,55)."}, {"k": "ex3", "q": "Exercice 3 · Faut-il ajouter une notion (VAN, trésorerie, financement) au délai de récupération ?", "d": "3 000 € ÷ (30 × 1,50 €) ≈ 67 semaines ; investir ou non sont deux choix défendables.", "kind": "q"}]}, {"t": "Fin de partie", "items": [{"k": "analyse", "q": "Les messages d'analyse en fin de matinée sont-ils justes ?", "d": "Rupture, invendus, clients partis, gaspillage, prix trop haut ou trop bas."}, {"k": "mention", "q": "La mention (résultat cumulé et satisfaction des clients) vous paraît-elle juste ?", "d": "Bons réglages et leviers bien utilisés : Très bien ; prix cassé : De justesse ; trois baristas : Assez bien (trop de salaires)."}]}], "open": [{"k": "situation", "q": "Une situation vécue en stage ou en cours à ajouter (négociation fournisseur, recrutement, contrôle de gestion…) ?"}, {"k": "exercice", "q": "Un exercice plus emblématique de la licence que l'un des trois actuels ?"}, {"k": "manque", "q": "Qu'est-ce qui manque pour donner envie de rejoindre la licence ?"}], "accent": ["#1d7488", "#e0f1f5", "#6fc6da", "#163039"], "videoAccent": "#6fc6da", "videoInk": "#1d7488"}, "cfa": {"id": "cfa", "game": "L'Enquête de l'auditeur (Licence Comptabilité-Finance-Audit)", "short": "L'Enquête de l'auditeur", "h1": "L'Enquête de l'auditeur : votre relecture", "lead": "Le mini-jeu de la Licence Comptabilité-Finance-Audit (ISEA), dans le campus 3D de la FGES. La trésorerie d'une PME fictive fond sans raison : le joueur mène l'enquête avec les outils de chaque année. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux lycéens.", "facts": ["Environ 6 min", "7 étapes, de L1 à L3", "Public : lycéens", "Entreprise et personnes fictives"], "url": "https://lwichlacz.github.io/campus_fges/?jeu=cfa", "howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › L'Enquête de l'auditeur.", "card": {"icon": "🕵️", "title": "L'Enquête de l'auditeur", "formation": "Licence Comptabilité-Finance-Audit", "steps": [["L1", "Trier les pièces, calculer la TVA, rapprocher la banque"], ["L2", "Analyser les écarts du budget"], ["L3", "Mener l'audit et confondre le coupable"]]}, "publicHint": "Des lycéens de première et terminale qui hésitent entre plusieurs licences.", "dureeHint": "Durée prévue : environ 6 minutes.", "sections": [{"t": "Le déroulé", "items": [{"k": "progression", "q": "La progression L1 → L2 → L3 est-elle fidèle à la maquette ?", "d": "Tri des pièces, TVA et rapprochement bancaire (L1) ; budget et réel (L2) ; audit des pièces, tableau d'enquête et déontologie (L3)."}, {"k": "cours", "q": "Les intitulés des cours sont-ils les bons ?", "d": "Comptabilité financière, Fiscalité, Rapprochement bancaire, Contrôle de gestion, Audit et expertise comptable (alternance)."}]}, {"t": "Trier les pièces et la TVA", "sub": "L1", "items": [{"k": "tri", "q": "Le classement des 6 pièces est-il juste ?", "d": "Farine et électricité : charges ; ventes à l'hôtel et ticket Z : produits ; four et camionnette : investissements."}, {"k": "immo", "q": "Faut-il dire « immobilisation » plutôt qu'« investissement » ?", "d": "", "kind": "q"}, {"k": "tva", "q": "Toutes les factures sont à 20 % de TVA (la farine relève normalement du taux réduit). Faut-il corriger ?", "d": "", "kind": "q"}]}, {"t": "Rapprochement et budget", "sub": "L1 · L2", "items": [{"k": "rappro", "q": "Le rapprochement bancaire est-il juste ?", "d": "Montants TTC = HT × 1,2 (984 €, 1 380 €, 480 €, 7 680 €) et un virement de 2 940 € sans justificatif."}, {"k": "budget", "q": "L'analyse budget / réel est-elle juste ?", "d": "Prestations de services : 500 € prévus, 3 440 € réels, soit un écart de 2 940 €."}, {"k": "ecart", "q": "La notion d'écart « favorable / défavorable » doit-elle apparaître ?", "d": "", "kind": "q"}]}, {"t": "L'audit", "sub": "L3", "items": [{"k": "anomalies", "q": "Les anomalies sont-elles représentatives du travail d'un auditeur junior ?", "d": "TVA fausse (66 € au lieu de 60 € sur 300 € HT) ; « mission de conseil » de 2 450 € HT sans détail ni bon de commande."}, {"k": "enquete", "q": "Le tableau d'enquête est-il crédible ?", "d": "Le RIB de Dupont Conseil (ou son Kbis) relié à la fiche du comptable : même IBAN, même adresse."}, {"k": "deonto", "q": "La conclusion déontologique est-elle juste ?", "d": "Documenter les preuves et alerter la gérante dans le rapport, sans diffusion publique."}, {"k": "cac", "q": "Faut-il évoquer le commissaire aux comptes et la révélation au procureur ?", "d": "", "kind": "q"}]}, {"t": "Fin de partie", "items": [{"k": "mention", "q": "Les mentions sont-elles bien calibrées ?", "d": "Très bien : 2 erreurs au plus ; Bien : 6 au plus ; Assez bien au-delà."}, {"k": "ton", "q": "Le ton « enquête policière » vous convient-il pour présenter le métier ?", "d": ""}]}], "open": [{"k": "alternance", "q": "Une situation vécue en alternance (cabinet ou entreprise) qu'on pourrait mettre en scène ?"}, {"k": "bilan", "q": "Faut-il un passage sur le bilan (actif / passif), en plus du compte de résultat ?"}, {"k": "manque", "q": "Qu'est-ce qui manque pour donner envie de rejoindre la licence ?"}], "accent": ["#8c2b3c", "#f6e4e7", "#ec8fa0", "#3a1d23"], "videoAccent": "#ec8fa0", "videoInk": "#8c2b3c"}, "info": {"id": "info", "game": "Projet Gaming (Licence Informatique)", "short": "Projet Gaming", "h1": "Projet Gaming : votre relecture", "lead": "Le mini-jeu de la Licence Informatique de l'École du Numérique, dans le campus 3D de la FGES. À partir du Projet Gaming de L1, le joueur programme, interroge une base de données, sécurise des comptes et repère des tricheurs. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux lycéens.", "facts": ["Environ 7 min", "4 missions, de L1 à L3", "Public : lycéens", "Pas besoin de savoir programmer"], "url": "https://lwichlacz.github.io/campus_fges/?jeu=info", "howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Projet Gaming. Le jeu est aussi dans Wenov, épingle « Projet Gaming ».", "card": {"icon": "🎮", "title": "Projet Gaming", "formation": "Licence Informatique", "steps": [["L1", "Programmer le rebond de la balle"], ["L1", "Afficher les meilleurs scores en SQL"], ["L2", "Protéger les comptes des joueurs (Cyber)"], ["L3", "Repérer les tricheurs avec les données (Data)"]]}, "videoSteps": ["L1", "L1", "L2", "L3"], "publicHint": "Des lycéens de première et terminale, notamment en spécialité NSI ou maths.", "dureeHint": "Durée prévue : environ 7 minutes.", "sections": [{"t": "Le déroulé", "items": [{"k": "missions", "q": "Les missions sont-elles représentatives de la licence et du Projet Gaming ?", "d": "Programmer un rebond (L1), une requête SQL (L1), la cryptologie (L2, Cyber), un détecteur de tricheurs (L3, Data)."}, {"k": "annees", "q": "Les années et les parcours associés sont-ils justes ?", "d": "Cryptologie en L2 (parcours Cyber), machine learning en L3 (parcours Data) ; parcours Data, Cyber, IoT et réalité virtuelle."}, {"k": "cours", "q": "Les intitulés des cours révélés sont-ils exacts ?", "d": "Programmation et Projet Gaming ; Bases de données ; Cryptologie ; Machine learning."}]}, {"t": "Mission 1 · La balle traverse la raquette", "sub": "L1", "items": [{"k": "m1", "q": "La fonction de rebond et son test sont-ils justes ?", "d": "if (balle.x <= raquette.x + raquette.largeur && balle.y >= raquette.y && balle.y <= raquette.y + raquette.hauteur) balle.vx = -balle.vx ; testé sur trois tirs (sur la raquette, au-dessus, en dessous)."}, {"k": "m1_langage", "q": "La syntaxe proche du JavaScript convient-elle, ou faut-il du Python ?", "d": "", "kind": "q"}, {"k": "m1_msgs", "q": "Les messages d'erreur sont-ils pédagogiquement justes ?", "d": "Balle qui s'arrête, qui ralentit, qui rebondit sur du vide au-dessus ou en dessous de la raquette, qui la traverse."}]}, {"t": "Mission 2 · Le podium des meilleurs joueurs", "sub": "L1", "items": [{"k": "m2", "q": "La requête et ses pièges sont-ils adaptés ?", "d": "SELECT pseudo, score FROM scores ORDER BY score DESC LIMIT 3 ; pièges : table inexistante, ASC, LIMIT 1 ou 10, colonne niveau seule ; SELECT * accepté avec une remarque."}]}, {"t": "Mission 3 · Un message codé dans le chat", "sub": "L2 · Cyber", "items": [{"k": "m3_cesar", "q": "Le code de César est-il bien présenté ?", "d": "« LE TOURNOI COMMENCE A MIDI » décalé de 3, retrouvé avec un curseur ; 25 possibilités, cassé en un instant."}, {"k": "m3_hash", "q": "L'explication du stockage des mots de passe est-elle juste ?", "d": "Hacher avec un sel plutôt que stocker en clair ou chiffrer par César ; on compare les empreintes à la connexion."}, {"k": "m3_algo", "q": "Faut-il citer un algorithme (bcrypt, Argon2) ?", "d": "", "kind": "q"}]}, {"t": "Mission 4 · Des tricheurs dans le classement", "sub": "L3 · Data", "items": [{"k": "m4", "q": "Le détecteur et ses données sont-ils crédibles ?", "d": "28 joueurs, 5 tricheurs ; deux seuils (précision des tirs, temps de réaction) ; objectif : 5 tricheurs sur 5 avec un seul innocent au plus."}, {"k": "m4_ml", "q": "Deux seuils réglés à la main peuvent-ils être présentés comme du machine learning, ou faut-il ajouter une étape d'apprentissage ?", "d": "", "kind": "q"}, {"k": "m4_humain", "q": "La conclusion (faux positifs, vérification humaine avant sanction) est-elle juste ?", "d": ""}]}, {"t": "Fin de partie", "items": [{"k": "mention", "q": "Les mentions sont-elles bien calibrées ?", "d": "Très bien : 2 erreurs au plus ; Bien : 6 au plus ; Assez bien au-delà."}, {"k": "ton", "q": "Le ton « studio de jeu vidéo » vous convient-il pour présenter la licence ?", "d": ""}]}], "open": [{"k": "projet", "q": "Le Projet Gaming de L1 : quel moteur ou langage utilisent les étudiants ? Des captures d'un vrai projet seraient utiles."}, {"k": "iot", "q": "Faut-il une mission sur le parcours IoT et réalité virtuelle ?"}, {"k": "manque", "q": "Qu'est-ce qui manque pour donner envie de rejoindre la licence ?"}], "accent": ["#5b3fd0", "#ece8fd", "#a996ff", "#2a2350"], "videoAccent": "#a996ff", "videoInk": "#5b3fd0"}}, "order": ["dmb", "sv", "spi", "gestion", "cfa", "info"], "videoGames": [{"id": "gestion", "icon": "☕", "title": "Le Comptoir", "formation": "Licence Gestion", "dur": "6 min"}, {"id": "cfa", "icon": "🕵️", "title": "L'Enquête de l'auditeur", "formation": "Licence Comptabilité-Finance-Audit", "dur": "6 min"}, {"id": "sv", "icon": "🔍", "title": "Mission Jardin Boulay", "formation": "Licence Sciences de la Vie", "dur": "7 min"}, {"id": "spi", "icon": "🦾", "title": "Cellule robotique Wenov", "formation": "Licence Sciences pour l'Ingénieur", "dur": "9 min"}, {"id": "info", "icon": "🎮", "title": "Projet Gaming", "formation": "Licence Informatique", "dur": "7 min"}, {"id": "dmb", "icon": "🧬", "title": "From Blood to Decision", "formation": "Master Data Management in Biosciences", "dur": "12-15 min"}], "defaults": {"deadline": "2026-11-06", "attendus": 2}, "endpoint": "https://script.google.com/macros/s/AKfycbz_OLoC_boho79ZP4B81BbqPG6QyXosLxJ6JZ2sIPoek6tn3fF1pybnVH7NIj80-aL9/exec", "homeAccent": ["#0b7a8e", "#e2f3f6", "#5fcbe0", "#17343b"], "homeLead": "Le campus 3D de la FGES propose un mini-jeu par formation. Avant de les montrer aux candidats, nous demandons à chaque équipe pédagogique de relire le sien : environ 15 minutes."}</script>
 <script>
 /* Page de relecture des mini-jeux (servie par GitHub Pages : relecture/).
@@ -650,43 +391,6 @@ async function loadReviews(){
 		refresh(); return true;
 	} catch(e){ return false; }
 }
-
-/* ---------- la vidéo (avec sa musique) ---------- */
-const img = src => { const i = new Image(); i.src = src; return i; };
-const images = { campus:img("img/campus.jpg"), logo:img("img/logo-fges.png") };
-const audio = $("mvAudio");
-let mv = null, soundOn = true, audioOk = true;
-const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
-audio.addEventListener("error", () => { audioOk = false; $("mvSound").hidden = true; });
-fetch("media/bande-son.mp4").then(r => r.ok ? r.blob() : Promise.reject()).then(b => { audio.src = URL.createObjectURL(b); }).catch(() => { audioOk = false; $("mvSound").hidden = true; });
-function setupVideo(g){
-	if(mv?.playing) mv.pause();
-	audio.pause();
-	mv = createMotion($("mv"), { games:CFG.videoGames, current:g?.id, accent:g?.videoAccent || "#5fcbe0", accentInk:g?.videoInk || "#0b7a8e", gameTitle:g?.short, steps:g?.videoSteps, images, poster:2.6 });
-	// la vidéo garde sa propre horloge ; la musique est recalée sur elle si elle s'en écarte
-	mv.onTime = t => {
-		$("mvSeek").value = t; $("mvTime").textContent = `${fmt(t)} / ${fmt(mv.duration)}`;
-		if(mv.playing && soundOn && audioOk && !audio.paused && Math.abs(audio.currentTime - t) > .3){ try { audio.currentTime = t; } catch(e){} }
-	};
-	mv.onState = on => { $("mvToggle").textContent = on ? "Pause" : (mv.t >= mv.duration - .05 ? "Revoir" : "Lecture"); if(on) $("mvPlay").hidden = true; else audio.pause(); };
-	$("mvTime").textContent = `0:00 / ${fmt(mv.duration)}`; $("mvSeek").max = mv.duration; $("mvSeek").value = 0; $("mvPlay").hidden = false; $("mvToggle").textContent = "Lecture";
-}
-function play(){
-	if(mv.t >= mv.duration - .05) mv.seek(0);
-	if(soundOn && audioOk){ try { audio.currentTime = mv.t; } catch(e){} audio.play().catch(() => {}); }
-	mv.play();
-}
-$("mvPlay").addEventListener("click", () => { mv.seek(0); play(); });
-$("mvToggle").addEventListener("click", () => mv.playing ? mv.pause() : play());
-$("mv").addEventListener("click", () => mv.playing ? mv.pause() : play());
-$("mvSeek").addEventListener("input", e => { $("mvPlay").hidden = true; mv.seek(+e.target.value); try { audio.currentTime = +e.target.value; } catch(x){} });
-$("mvSound").addEventListener("click", () => {
-	soundOn = !soundOn; $("mvSound").setAttribute("aria-pressed", String(soundOn)); $("mvSound").textContent = soundOn ? "🔊 Son" : "🔇 Son coupé";
-	if(!soundOn) audio.pause(); else if(mv.playing && audioOk){ try { audio.currentTime = mv.t; } catch(e){} audio.play().catch(() => {}); }
-});
-const redraw = () => { if(mv && !mv.playing) mv.draw(mv.t); };
-images.campus.onload = images.logo.onload = redraw;
-document.fonts?.ready.then(redraw);
 
 /* ---------- accueil et tableau de bord ---------- */
 function dueHTML(id){
@@ -1007,7 +711,7 @@ $("copyTodo").addEventListener("click", () => copyText(todoMarkdown(G, reviewsBy
 function showTab(view){
 	$("viewGame").hidden = view !== "form"; $("viewRes").hidden = view !== "res";
 	$("tabForm").setAttribute("aria-pressed", String(view === "form")); $("tabRes").setAttribute("aria-pressed", String(view === "res"));
-	if(view === "res" && mv.playing) mv.pause();
+	if(view === "res") $("film").pause();
 	store.set("relecture:vue", view);
 }
 $("toForm").addEventListener("click", () => $("formulaire").scrollIntoView({ behavior:matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }));
@@ -1021,7 +725,6 @@ function route(){
 	G = CFG.games[id] || null;
 	const acc = G ? G.accent : CFG.homeAccent, root = document.documentElement.style;
 	root.setProperty("--accent-l", acc[0]); root.setProperty("--soft-l", acc[1]); root.setProperty("--accent-d", acc[2]); root.setProperty("--soft-d", acc[3]);
-	setupVideo(G);
 	$("viewHome").hidden = !!G;
 	if(G){
 		document.title = `Relecture · ${G.card.title} · Campus FGES`;

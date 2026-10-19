@@ -51,8 +51,8 @@ Page de relecture sur le site : https://lwichlacz.github.io/campus_fges/relectur
 `#tableau` : tableau de bord, avec la clé du script). Lien public, sans compte. Les réponses vont dans un tableur Google
 via `docs/validation-web/google-apps-script.js` (installation en tête du fichier ; l'URL du script va dans
 `docs/validation-web/pages.json`), les captures dans un dossier Drive. Tant que l'URL n'est pas renseignée, l'enseignant
-obtient un récapitulatif à copier. L'accueil montre la vidéo (52 s, motion design et musique, sous-titrée) et les jeux
-avec leur compteur. E-mail d'invitation : `docs/validation-web/invitation.md`. (Les anciennes pages claude.ai ont été
+obtient un récapitulatif à copier. L'accueil montre le film du campus (1 min 40, tourné dans le vrai campus 3D : toutes les formations, mini-jeu
+disponible ou à venir ; `tools/film/film.js`, `docs/validation-web/media/campus-3d.mp4`) et les jeux avec leur compteur. E-mail d'invitation : `docs/validation-web/invitation.md`. (Les anciennes pages claude.ai ont été
 supprimées.)
 
 Côté site : `?jeu=<formation>` ouvre directement un jeu ; `&relecture` ajoute la bannière « Relecture » (chronomètre,
@@ -93,3 +93,13 @@ tricheurs (L3 Data). Épingle dans Wenov, salle de l'École du Numérique.
 
 > On reprend le projet Campus FGES (lis `docs/suivi-rendu-3d.md`). Commence par le point 1 de « La suite ».
 > À la fin de chaque série de modifications, propose-moi 10 nouvelles améliorations.
+
+## Film de présentation
+
+`tools/film/film.js` tourne le film dans le site lui-même (plans de caméra, panneaux de formations, musique), et
+`tools/film/recepteur.py` l'écrit dans `docs/validation-web/media/campus-3d.mp4`. Pour le refaire (nouvelle formation,
+nouveau mini-jeu) : `docs/validation-web/voix/voix.sh` (musique), `python3 tools/serve.py`, `python3 tools/film/recepteur.py`,
+ouvrir http://localhost:8765/?debug (onglet au premier plan pendant 100 s), puis dans la console
+`(await import("/tools/film/film.js")).tourner()`. `apercu(n° du plan, seconde)` montre une image sans tourner ;
+`controle()` vérifie que chaque formation apparaît une fois. Ensuite `avconvert -p PresetPassthrough` (MP4 standard)
+et `python3 docs/validation-web/build.py`.

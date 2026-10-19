@@ -52,43 +52,6 @@ async function loadReviews(){
 	} catch(e){ return false; }
 }
 
-/* ---------- la vidéo (avec sa musique) ---------- */
-const img = src => { const i = new Image(); i.src = src; return i; };
-const images = { campus:img("img/campus.jpg"), logo:img("img/logo-fges.png") };
-const audio = $("mvAudio");
-let mv = null, soundOn = true, audioOk = true;
-const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
-audio.addEventListener("error", () => { audioOk = false; $("mvSound").hidden = true; });
-fetch("media/bande-son.mp4").then(r => r.ok ? r.blob() : Promise.reject()).then(b => { audio.src = URL.createObjectURL(b); }).catch(() => { audioOk = false; $("mvSound").hidden = true; });
-function setupVideo(g){
-	if(mv?.playing) mv.pause();
-	audio.pause();
-	mv = createMotion($("mv"), { games:CFG.videoGames, current:g?.id, accent:g?.videoAccent || "#5fcbe0", accentInk:g?.videoInk || "#0b7a8e", gameTitle:g?.short, steps:g?.videoSteps, images, poster:2.6 });
-	// la vidéo garde sa propre horloge ; la musique est recalée sur elle si elle s'en écarte
-	mv.onTime = t => {
-		$("mvSeek").value = t; $("mvTime").textContent = `${fmt(t)} / ${fmt(mv.duration)}`;
-		if(mv.playing && soundOn && audioOk && !audio.paused && Math.abs(audio.currentTime - t) > .3){ try { audio.currentTime = t; } catch(e){} }
-	};
-	mv.onState = on => { $("mvToggle").textContent = on ? "Pause" : (mv.t >= mv.duration - .05 ? "Revoir" : "Lecture"); if(on) $("mvPlay").hidden = true; else audio.pause(); };
-	$("mvTime").textContent = `0:00 / ${fmt(mv.duration)}`; $("mvSeek").max = mv.duration; $("mvSeek").value = 0; $("mvPlay").hidden = false; $("mvToggle").textContent = "Lecture";
-}
-function play(){
-	if(mv.t >= mv.duration - .05) mv.seek(0);
-	if(soundOn && audioOk){ try { audio.currentTime = mv.t; } catch(e){} audio.play().catch(() => {}); }
-	mv.play();
-}
-$("mvPlay").addEventListener("click", () => { mv.seek(0); play(); });
-$("mvToggle").addEventListener("click", () => mv.playing ? mv.pause() : play());
-$("mv").addEventListener("click", () => mv.playing ? mv.pause() : play());
-$("mvSeek").addEventListener("input", e => { $("mvPlay").hidden = true; mv.seek(+e.target.value); try { audio.currentTime = +e.target.value; } catch(x){} });
-$("mvSound").addEventListener("click", () => {
-	soundOn = !soundOn; $("mvSound").setAttribute("aria-pressed", String(soundOn)); $("mvSound").textContent = soundOn ? "🔊 Son" : "🔇 Son coupé";
-	if(!soundOn) audio.pause(); else if(mv.playing && audioOk){ try { audio.currentTime = mv.t; } catch(e){} audio.play().catch(() => {}); }
-});
-const redraw = () => { if(mv && !mv.playing) mv.draw(mv.t); };
-images.campus.onload = images.logo.onload = redraw;
-document.fonts?.ready.then(redraw);
-
 /* ---------- accueil et tableau de bord ---------- */
 function dueHTML(id){
 	const d = daysLeft(), n = counts[id] || 0, y = expected(id);
@@ -408,7 +371,7 @@ $("copyTodo").addEventListener("click", () => copyText(todoMarkdown(G, reviewsBy
 function showTab(view){
 	$("viewGame").hidden = view !== "form"; $("viewRes").hidden = view !== "res";
 	$("tabForm").setAttribute("aria-pressed", String(view === "form")); $("tabRes").setAttribute("aria-pressed", String(view === "res"));
-	if(view === "res" && mv.playing) mv.pause();
+	if(view === "res") $("film").pause();
 	store.set("relecture:vue", view);
 }
 $("toForm").addEventListener("click", () => $("formulaire").scrollIntoView({ behavior:matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }));
@@ -422,7 +385,6 @@ function route(){
 	G = CFG.games[id] || null;
 	const acc = G ? G.accent : CFG.homeAccent, root = document.documentElement.style;
 	root.setProperty("--accent-l", acc[0]); root.setProperty("--soft-l", acc[1]); root.setProperty("--accent-d", acc[2]); root.setProperty("--soft-d", acc[3]);
-	setupVideo(G);
 	$("viewHome").hidden = !!G;
 	if(G){
 		document.title = `Relecture · ${G.card.title} · Campus FGES`;

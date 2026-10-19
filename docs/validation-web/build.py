@@ -319,10 +319,12 @@ cfg = {"games": games, "order": list(PAGES), "videoGames": GAMES, "defaults": DE
 	"homeLead": "Le campus 3D de la FGES propose un mini-jeu par formation. Avant de les montrer aux candidats, nous demandons à chaque équipe pédagogique de relire le sien : environ 15 minutes."}
 OUT = HERE.parent.parent / "relecture"
 (OUT / "img").mkdir(parents=True, exist_ok=True); (OUT / "media").mkdir(exist_ok=True)
-for f in ["img/campus.jpg", "img/logo-fges.png", "media/bande-son.mp4"]: shutil.copyfile(HERE / f, OUT / f)
+# le film n'est versionné qu'une fois, dans relecture/media (la copie de docs/ sert au tournage)
+for f in ["img/affiche.jpg", "media/campus-3d.mp4"]:
+	if (HERE / f).exists(): shutil.copyfile(HERE / f, OUT / f)
+for f in ["img/campus.jpg", "img/logo-fges.png", "media/bande-son.mp4"]: (OUT / f).unlink(missing_ok=True)
 tpl = (HERE / "template.html").read_text(encoding="utf-8")
-html = (tpl.replace("__MOTION__", (HERE / "motion.js").read_text(encoding="utf-8"))
-	.replace("__APP__", (HERE / "app.js").read_text(encoding="utf-8"))
+html = (tpl.replace("__APP__", (HERE / "app.js").read_text(encoding="utf-8"))
 	.replace("__CONFIG__", json.dumps(cfg, ensure_ascii=False).replace("</", "<\\/")))
 (OUT / "index.html").write_text(html, encoding="utf-8")
 (HERE / "relecture.html").write_text(html, encoding="utf-8")       # copie locale
