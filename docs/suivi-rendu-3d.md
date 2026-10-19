@@ -52,8 +52,8 @@ Page de relecture sur le site : https://lwichlacz.github.io/campus_fges/relectur
 via `docs/validation-web/google-apps-script.js` (installation en tête du fichier ; l'URL du script va dans
 `docs/validation-web/pages.json`), les captures dans un dossier Drive. Tant que l'URL n'est pas renseignée, l'enseignant
 obtient un récapitulatif à copier. L'accueil montre la vidéo (52 s, motion design et musique, sous-titrée) et les jeux
-avec leur compteur. E-mail d'invitation : `docs/validation-web/invitation.md`. (Les pages claude.ai faites avant sont
-remplacées par celle-ci.)
+avec leur compteur. E-mail d'invitation : `docs/validation-web/invitation.md`. (Les anciennes pages claude.ai ont été
+supprimées.)
 
 Côté site : `?jeu=<formation>` ouvre directement un jeu ; `&relecture` ajoute la bannière « Relecture » (chronomètre,
 erreurs, « Aller à… » pour sauter à une étape, « ✏️ Noter ici », lien vers le formulaire). Le journal est gardé dans le
