@@ -52,7 +52,7 @@ export const CATALOGUE_PLAQUETTES = "https://www.calameo.com/accounts/7206845";
 export const LEAD_ENDPOINT = "";     // ex. "https://www.fges.fr/wp-json/campus-fges/v1/lead"
 
 /* Mini-jeux disponibles : id de formation → id du jeu */
-export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata" };
+export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming" };
 /* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */
 export const GAME_INFO = {
 	comptoir:{ fid:"gestion", title:"Le Comptoir", icon:"☕", where:"falise", whereLabel:"Atrium de Michel Falise", dur:"6 min",
@@ -64,6 +64,8 @@ export const GAME_INFO = {
 		pitch:"La trésorerie d'une PME fond sans raison : trie les pièces, rapproche la banque, analyse le budget… et démasque le fraudeur." },
 	robot:{ fid:"spi", title:"Cellule robotique Wenov", icon:"🦾", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"7 min",
 		pitch:"Pilote un vrai bras robot en 3D, programme le cycle d'une ligne de production, puis donne-lui des yeux pour trier les pièces." },
+	gaming:{ fid:"info", title:"Projet Gaming", icon:"🎮", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"7 min",
+		pitch:"Le jeu vidéo de ton équipe de L1 bugue : programme le rebond de la balle, affiche les scores en SQL, protège les comptes des joueurs, puis démasque les tricheurs avec les données." },
 	biodata:{ fid:"dmb", title:"From Blood to Decision", icon:"🧬", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12-15 min",
 		pitch:"En anglais, comme le master : du dossier d'un patient fatigué à l'étude d'une cohorte. RGPD, contrôle qualité du séquençage, interprétation d'un variant, biostatistiques, machine learning et compte rendu clinique." }
 };

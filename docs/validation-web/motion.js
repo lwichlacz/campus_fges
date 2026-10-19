@@ -1,8 +1,8 @@
-/* Vidéo de présentation en motion design (50 s), dessinée en direct dans un canvas 1280×720.
+/* Vidéo de présentation en motion design (52 s, musique : media/bande-son.mp4, refaite par voix/voix.sh ; sous-titrée), dessinée en direct dans un canvas 1280×720.
    createMotion(canvas, { games, current, accent, images:{ campus, logo } }) → { play, pause, seek, toggle, t, duration, playing }
    Six scènes : titre · « choisir sur un intitulé ? » · le campus en 3D · un mini-jeu par formation · où il sert · pourquoi vous. */
 function createMotion(canvas, o){
-	const W = 1280, H = 720, D = 50;
+	const W = 1280, H = 720, D = 52;
 	const NAVY = "#13254a", NAVY2 = "#0b1730", CYAN = "#21b6ce", CREAM = "#f7f2e9", WHITE = "#ffffff", ACC = o.accent || CYAN, INK = o.accentInk || NAVY;
 	const ctx = canvas.getContext("2d");
 	const k = Math.min(2, window.devicePixelRatio || 1);
@@ -27,7 +27,7 @@ function createMotion(canvas, o){
 		if(line) lines.push(line); return lines;
 	}
 	function caption(s, a){
-		if(a <= 0 || !s) return;
+		if(a <= 0 || !s || !started) return;          // pas de sous-titre sur l'image d'attente, sous le bouton de lecture
 		const lines = wrap(s, 1000, 28, 500);
 		const h = 24 + lines.length*38;
 		ctx.save(); ctx.globalAlpha = a;
@@ -73,6 +73,7 @@ function createMotion(canvas, o){
 			ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = CYAN; rr(W/2 - 160*p3, 388, 320*p3, 6, 3); ctx.fill(); ctx.restore();
 			text("Une visite du campus, et un mini-jeu par formation", W/2, 450, { size:34, weight:500, color:CREAM, a:a*p2, dy:(1 - p2)*20 });
 			text(`Ce qu'on vous demande, en moins d'une minute`, W/2, 510, { size:24, weight:500, color:"rgba(247,242,233,.7)", a:a*out(seg(t, 1.6, 2.4)) });
+			caption("Le campus de la FGES, en 3D. Et un mini-jeu pour chaque formation.", life(t, .5, 5.5, .3, .4));
 		}
 
 		/* 2 · choisir sur un intitulé ? (5,5 → 13,5 s) */
@@ -99,7 +100,7 @@ function createMotion(canvas, o){
 				text("Un nom ne dit pas ce qu'on y fait vraiment.", 0, 0, { size:38, weight:700, color:NAVY2 });
 				ctx.restore();
 			}
-			caption("Un lycéen ou un candidat compare des intitulés, rarement ce qu'il fera en cours.", a*seg(t, 7, 7.6));
+			caption("Choisir sa formation sur un simple intitulé, c'est difficile. Un nom ne dit pas ce qu'on y fait vraiment.", a*seg(t, 5.9, 6.3));
 		}
 
 		/* 3 · le campus en 3D (13,5 → 23 s) */
@@ -125,7 +126,7 @@ function createMotion(canvas, o){
 				rr(x, y, w, 42, 21); ctx.fillStyle = "rgba(11,23,48,.85)"; ctx.fill();
 				text(s, x + 18, y + 21, { size:22, weight:700, align:"left" }); ctx.restore();
 			});
-			caption("Un vrai campus, reconstitué en 3D et visitable dans le navigateur, sans rien installer.", a*seg(t, 14.6, 15.2));
+			caption("Alors, nous avons reconstitué le campus, à l'échelle, visitable dans le navigateur, sur ordinateur comme sur téléphone.", a*seg(t, 14, 14.4));
 		}
 
 		/* 4 · un mini-jeu par formation (23 → 33 s) */
@@ -133,8 +134,8 @@ function createMotion(canvas, o){
 		if(a > 0){
 			const ph = out(seg(t, 23.1, 23.9));
 			text("Chaque formation a son mini-jeu", W/2, 92, { size:52, weight:700, fam:DISP, a:a*ph, dy:(1 - ph)*20 });
-			const G = o.games || [], n = G.length, cw = 212, gap = 22, total = n*cw + (n - 1)*gap, x0 = (W - total)/2;
-			const focus = inOut(seg(t, 27.6, 28.6));
+			const G = o.games || [], n = G.length, gap = 22, cw = Math.min(212, (W - 80 - (n - 1)*gap)/n), total = n*cw + (n - 1)*gap, x0 = (W - total)/2;
+			const focus = o.current ? inOut(seg(t, 27.6, 28.6)) : 0;
 			G.forEach((gm, i) => {
 				const p = back(seg(t, 23.7 + i*.3, 24.5 + i*.3)); if(p <= 0) return;
 				const me = gm.id === o.current;
@@ -152,7 +153,7 @@ function createMotion(canvas, o){
 				ctx.restore();
 			});
 			// progression L1 → L3 sous le jeu mis en avant
-			const pr = seg(t, 28.8, 31.4);
+			const pr = o.current ? seg(t, 28.8, 31.4) : 0;
 			if(pr > 0){
 				const st = o.steps || ["L1", "L2", "L3"], bw = st.length > 4 ? 980 : 560, bx = (W - bw)/2, by = 506;
 				ctx.save(); ctx.globalAlpha = a*clamp(pr*4);
@@ -161,7 +162,7 @@ function createMotion(canvas, o){
 				st.forEach((s, i, arr) => { const sx = bx + bw*(i + .5)/arr.length; text(s, sx, by + 38, { size:19, weight:700, color: pr > (i + .3)/arr.length ? WHITE : "rgba(255,255,255,.45)" }); });
 				ctx.restore();
 			}
-			caption("Quelques minutes pour faire ce que font vraiment les étudiants : manipuler, calculer, se tromper, comprendre.", a*seg(t, 24.6, 25.2));
+			caption("Chaque formation a son mini-jeu : quelques minutes pour faire ce que font vraiment les étudiants. Manipuler, calculer, se tromper, comprendre.", a*seg(t, 23.4, 23.8));
 		}
 
 		/* 5 · là où les candidats choisissent (33 → 40 s) */
@@ -183,11 +184,11 @@ function createMotion(canvas, o){
 				ctx.stroke(); ctx.restore();
 				text(s, cx, cy + 140, { size:26, weight:700, a:a*seg(t, 34.5 + i*.7, 35.1 + i*.7) });
 			});
-			caption("Un candidat visite, joue, puis ouvre la fiche de la formation et sa plaquette.", a*seg(t, 34.4, 35));
+			caption("Il sera montré sur le site, en salon, et aux journées portes ouvertes.", a*seg(t, 33.6, 34));
 		}
 
 		/* 6 · pourquoi vous (40 → 50 s) */
-		a = life(t, 39.9, 50.5, .5, .01);
+		a = life(t, 39.9, 52.5, .5, .01);
 		if(a > 0){
 			const card = inOut(seg(t, 45.2, 46.2));
 			const ph = out(seg(t, 40.1, 40.9));
@@ -205,7 +206,7 @@ function createMotion(canvas, o){
 				ctx.restore();
 			});
 			ctx.restore();
-			caption("Avant de le montrer aux candidats, le jeu doit être relu par l'équipe pédagogique.", a*(1 - card)*seg(t, 41, 41.6));
+			caption(t < 47.4 ? "Avant cela, il doit être juste, fidèle à la formation, et au bon niveau. C'est là que nous avons besoin de vous." : "Votre relecture prend environ quinze minutes. Merci !", a*seg(t, 40.3, 40.7));
 			if(card > 0){
 				ctx.save(); ctx.globalAlpha = a*card;
 				const cw = 860, ch = 470, cx = (W - cw)/2, cy = (H - ch)/2 + (1 - card)*40;
@@ -223,25 +224,25 @@ function createMotion(canvas, o){
 					ctx.restore();
 					if(i < 2) text("→", bx + 195, by + 32, { size:30, weight:700, color:NAVY, a:p });
 				});
-				text("Merci !", W/2, cy + 420, { size:34, weight:700, fam:DISP, color:INK, a:seg(t, 48, 48.6) });
+				text("Merci !", W/2, cy + 420, { size:34, weight:700, fam:DISP, color:INK, a:seg(t, 50, 50.6) });
 				ctx.restore();
 			}
 		}
 	}
 
-	let t = o.poster ?? 2.6, playing = false, last = 0, raf = 0;
+	let t = o.poster ?? 2.6, playing = false, last = 0, raf = 0, started = false;
 	const api = { duration:D, get t(){ return t; }, get playing(){ return playing; }, onTime:null, onState:null };
 	function loop(now){
 		if(!playing) return;
-		t += Math.min(.1, (now - last)/1000); last = now;
+		const src = api.clock?.(); t = src != null ? src : t + Math.min(.1, (now - last)/1000); last = now;
 		if(t >= D){ t = D; playing = false; api.onState?.(false); }
 		draw(t); api.onTime?.(t);
 		if(playing) raf = requestAnimationFrame(loop);
 	}
-	api.play = () => { if(playing) return; if(t >= D - .05) t = 0; playing = true; last = performance.now(); api.onState?.(true); raf = requestAnimationFrame(loop); };
+	api.play = () => { if(playing) return; started = true; if(t >= D - .05) t = 0; playing = true; last = performance.now(); api.onState?.(true); raf = requestAnimationFrame(loop); };
 	api.pause = () => { playing = false; cancelAnimationFrame(raf); api.onState?.(false); };
 	api.toggle = () => playing ? api.pause() : api.play();
-	api.seek = s => { t = clamp(s, 0, D); draw(t); api.onTime?.(t); };
+	api.seek = s => { started = true; t = clamp(s, 0, D); draw(t); api.onTime?.(t); };
 	api.draw = draw;
 	draw(t);
 	return api;

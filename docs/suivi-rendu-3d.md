@@ -47,22 +47,21 @@ Mention affichée en bas de l'écran.
 
 ## Relecture des mini-jeux par les enseignants
 
-Cinq pages de relecture publiées en artefacts claude.ai (privées, à partager depuis leur menu Partager : inviter chaque
-enseignant par e-mail en **Éditeur**, sans lien public, sinon il ne peut pas enregistrer sa réponse). Chacune contient une
-vidéo de présentation en motion design (50 s, `docs/validation-web/motion.js`), les consignes et le formulaire de la fiche
-`docs/validation-*.md` ; l'onglet « Retours reçus » (visible du seul propriétaire) donne la liste des corrections à faire.
-
-| Jeu | Page |
-|---|---|
-| From Blood to Decision (Master DMB) | https://claude.ai/artifact/7b43dbFLMgykBsxSZgrsFX |
-| Mission Jardin Boulay (Licence SV) | https://claude.ai/artifact/B4UETahA9W7RydpHB27jMb |
-| Cellule robotique Wenov (Licence SPI) | https://claude.ai/artifact/2hP2sYbvc43T8PFSwyHWZn |
-| Le Comptoir (Licence Gestion) | https://claude.ai/artifact/UFxH7uEGNyBDrGjP2jZCGb |
-| L'Enquête de l'auditeur (Licence CFA) | https://claude.ai/artifact/BN6ootdbhNhNDrEWL6ETLj |
+Une seule page de relecture, publiée en artefact claude.ai : https://claude.ai/artifact/PeZ2mUoAeCAfXnH6vz3XVF
+(privée : la partager depuis son menu Partager, en invitant chaque enseignant par e-mail en **Éditeur**, sans lien
+public, sinon il ne peut pas enregistrer sa réponse). Un lien par jeu : `#dmb`, `#sv`, `#spi`, `#gestion`, `#cfa`, `#info`.
+L'accueil montre la vidéo (52 s, motion design et musique, sous-titrée), les jeux avec leur compteur de relectures,
+et pour le propriétaire seul le tableau de bord (avancement, avis, corrections ; date limite et nombre attendu
+réglables). Chaque jeu : consignes, formulaire tiré de `docs/validation-*.md`, journal de partie, captures d'écran ;
+onglet « Retours reçus » avec la liste des corrections à faire. E-mail d'invitation : `docs/validation-web/invitation.md`.
 
 Côté site : `?jeu=<formation>` ouvre directement un jeu ; `&relecture=<id de la page>` ajoute la bannière « Relecture »
-(chronomètre, erreurs, journal de partie par étape à coller dans le formulaire, lien de retour). Pour modifier les pages :
-`python3 docs/validation-web/build.py`, puis republier chaque `docs/validation-web/<jeu>.html` (ids dans `pages.json`).
+(chronomètre, erreurs, « Aller à… » pour sauter à une étape, « ✏️ Noter ici », journal à coller, lien de retour).
+Pour modifier la page : `python3 docs/validation-web/build.py`, puis republier `docs/validation-web/relecture.html`.
+
+Nouveau jeu : **Projet Gaming** (Licence Informatique, `js/games/gaming.js`, fiche `docs/validation-licence-info.md`) :
+rebond de balle programmé (L1), podium en SQL (L1), code de César et mots de passe hachés (L2 Cyber), détecteur de
+tricheurs (L3 Data). Épingle dans Wenov, salle de l'École du Numérique.
 
 ## Points de vigilance
 

@@ -1,9 +1,9 @@
 """Pages de relecture des mini-jeux par les enseignants (publiées en artefacts claude.ai).
 
-Usage : python3 docs/validation-web/build.py   → docs/validation-web/<jeu>.html (dmb, sv, spi, gestion, cfa)
+Usage : python3 docs/validation-web/build.py   → docs/validation-web/relecture.html (une page, un lien par jeu : #dmb, #sv…)
 Le contenu suit les fiches docs/validation-*.md. La vidéo de présentation (motion.js) est intégrée à chaque page.
-pages.json garde l'adresse de chaque page publiée : le bouton « Ouvrir le jeu » la passe au jeu (&relecture=…),
-pour que la bannière du jeu ramène au bon formulaire.
+pages.json garde l'adresse de la page publiée : le bouton « Ouvrir le jeu » la passe au jeu (&relecture=…),
+pour que la bannière du jeu ramène au bon formulaire (#jeu).
 Les réponses sont gardées dans la base de l'artefact (collection « retours », une fiche par relecteur).
 """
 import json, pathlib
@@ -247,25 +247,75 @@ PAGES = {
 			],
 		},
 	},
+	"info": {
+		"title": "Relecture Projet Gaming",
+		"accent": ("#5b3fd0", "#ece8fd", "#a996ff", "#2a2350"),
+		"cfg": {
+			"id": "info", "game": "Projet Gaming (Licence Informatique)", "short": "Projet Gaming",
+			"h1": "Projet Gaming : votre relecture",
+			"lead": "Le mini-jeu de la Licence Informatique de l'École du Numérique, dans le campus 3D de la FGES. À partir du Projet Gaming de L1, le joueur programme, interroge une base de données, sécurise des comptes et repère des tricheurs. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux lycéens.",
+			"facts": ["Environ 7 min", "4 missions, de L1 à L3", "Public : lycéens", "Pas besoin de savoir programmer"],
+			"url": SITE + "?jeu=info",
+			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Projet Gaming. Le jeu est aussi dans Wenov, épingle « Projet Gaming ».",
+			"card": {"icon": "🎮", "title": "Projet Gaming", "formation": "Licence Informatique", "steps": [
+				["L1", "Programmer le rebond de la balle"], ["L1", "Afficher les meilleurs scores en SQL"],
+				["L2", "Protéger les comptes des joueurs (Cyber)"], ["L3", "Repérer les tricheurs avec les données (Data)"]]},
+			"videoSteps": ["L1", "L1", "L2", "L3"],
+			"publicHint": "Des lycéens de première et terminale, notamment en spécialité NSI ou maths.",
+			"dureeHint": "Durée prévue : environ 7 minutes.",
+			"sections": [
+				{"t": "Le déroulé", "items": [
+					c("missions", "Les missions sont-elles représentatives de la licence et du Projet Gaming ?", "Programmer un rebond (L1), une requête SQL (L1), la cryptologie (L2, Cyber), un détecteur de tricheurs (L3, Data)."),
+					c("annees", "Les années et les parcours associés sont-ils justes ?", "Cryptologie en L2 (parcours Cyber), machine learning en L3 (parcours Data) ; parcours Data, Cyber, IoT et réalité virtuelle."),
+					c("cours", "Les intitulés des cours révélés sont-ils exacts ?", "Programmation et Projet Gaming ; Bases de données ; Cryptologie ; Machine learning.")]},
+				{"t": "Mission 1 · La balle traverse la raquette", "sub": "L1", "items": [
+					c("m1", "La fonction de rebond et son test sont-ils justes ?", "if (balle.x <= raquette.x + raquette.largeur && balle.y >= raquette.y && balle.y <= raquette.y + raquette.hauteur) balle.vx = -balle.vx ; testé sur trois tirs (sur la raquette, au-dessus, en dessous)."),
+					q("m1_langage", "La syntaxe proche du JavaScript convient-elle, ou faut-il du Python ?"),
+					c("m1_msgs", "Les messages d'erreur sont-ils pédagogiquement justes ?", "Balle qui s'arrête, qui ralentit, qui rebondit sur du vide au-dessus ou en dessous de la raquette, qui la traverse.")]},
+				{"t": "Mission 2 · Le podium des meilleurs joueurs", "sub": "L1", "items": [
+					c("m2", "La requête et ses pièges sont-ils adaptés ?", "SELECT pseudo, score FROM scores ORDER BY score DESC LIMIT 3 ; pièges : table inexistante, ASC, LIMIT 1 ou 10, colonne niveau seule ; SELECT * accepté avec une remarque.")]},
+				{"t": "Mission 3 · Un message codé dans le chat", "sub": "L2 · Cyber", "items": [
+					c("m3_cesar", "Le code de César est-il bien présenté ?", "« LE TOURNOI COMMENCE A MIDI » décalé de 3, retrouvé avec un curseur ; 25 possibilités, cassé en un instant."),
+					c("m3_hash", "L'explication du stockage des mots de passe est-elle juste ?", "Hacher avec un sel plutôt que stocker en clair ou chiffrer par César ; on compare les empreintes à la connexion."),
+					q("m3_algo", "Faut-il citer un algorithme (bcrypt, Argon2) ?")]},
+				{"t": "Mission 4 · Des tricheurs dans le classement", "sub": "L3 · Data", "items": [
+					c("m4", "Le détecteur et ses données sont-ils crédibles ?", "28 joueurs, 5 tricheurs ; deux seuils (précision des tirs, temps de réaction) ; objectif : 5 tricheurs sur 5 avec un seul innocent au plus."),
+					q("m4_ml", "Deux seuils réglés à la main peuvent-ils être présentés comme du machine learning, ou faut-il ajouter une étape d'apprentissage ?"),
+					c("m4_humain", "La conclusion (faux positifs, vérification humaine avant sanction) est-elle juste ?")]},
+				{"t": "Fin de partie", "items": [
+					c("mention", "Les mentions sont-elles bien calibrées ?", "Très bien : 2 erreurs au plus ; Bien : 6 au plus ; Assez bien au-delà."),
+					c("ton", "Le ton « studio de jeu vidéo » vous convient-il pour présenter la licence ?")]},
+			],
+			"open": [
+				{"k": "projet", "q": "Le Projet Gaming de L1 : quel moteur ou langage utilisent les étudiants ? Des captures d'un vrai projet seraient utiles."},
+				{"k": "iot", "q": "Faut-il une mission sur le parcours IoT et réalité virtuelle ?"},
+				{"k": "manque", "q": "Qu'est-ce qui manque pour donner envie de rejoindre la licence ?"},
+			],
+		},
+	},
 }
 
-# les cinq jeux, pour la scène « un mini-jeu par formation » de la vidéo
+# les jeux, pour la scène « un mini-jeu par formation » de la vidéo
 GAMES = [
 	{"id": "gestion", "icon": "☕", "title": "Le Comptoir", "formation": "Licence Gestion", "dur": "6 min"},
 	{"id": "cfa", "icon": "🕵️", "title": "L'Enquête de l'auditeur", "formation": "Licence Comptabilité-Finance-Audit", "dur": "6 min"},
 	{"id": "sv", "icon": "🔍", "title": "Mission Jardin Boulay", "formation": "Licence Sciences de la Vie", "dur": "7 min"},
 	{"id": "spi", "icon": "🦾", "title": "Cellule robotique Wenov", "formation": "Licence Sciences pour l'Ingénieur", "dur": "9 min"},
+	{"id": "info", "icon": "🎮", "title": "Projet Gaming", "formation": "Licence Informatique", "dur": "7 min"},
 	{"id": "dmb", "icon": "🧬", "title": "From Blood to Decision", "formation": "Master Data Management in Biosciences", "dur": "12-15 min"},
 ]
+# une seule page pour les cinq jeux : #dmb, #sv… ; l'accueil réunit la vidéo, les jeux et le tableau de bord
 ids_file = HERE / "pages.json"
-PAGE_IDS = json.loads(ids_file.read_text()) if ids_file.exists() else {}
-tpl = (HERE / "template.html").read_text(encoding="utf-8")
-motion = (HERE / "motion.js").read_text(encoding="utf-8")
+PAGE_ID = json.loads(ids_file.read_text()).get("relecture", "") if ids_file.exists() else ""
+DEFAULTS = {"deadline": "2026-11-06", "attendus": 2}
+games = {}
 for key, p in PAGES.items():
 	a, a_soft, a_dark, a_soft_dark = p["accent"]
-	cfg = {**p["cfg"], "games": GAMES, "videoAccent": a_dark, "videoInk": a, "pageId": PAGE_IDS.get(key, "")}
-	html = (tpl.replace("__TITLE__", p["title"]).replace("__ACCENT_SOFT_DARK__", a_soft_dark).replace("__ACCENT_DARK__", a_dark)
-		.replace("__ACCENT_SOFT__", a_soft).replace("__ACCENT__", a).replace("__MOTION__", motion)
-		.replace("__CONFIG__", json.dumps(cfg, ensure_ascii=False).replace("</", "<\\/")))
-	(HERE / f"{key}.html").write_text(html, encoding="utf-8")
-	print("écrit", key + ".html", "· page", cfg["pageId"] or "pas encore publiée")
+	games[key] = {**p["cfg"], "accent": [a, a_soft, a_dark, a_soft_dark], "videoAccent": a_dark, "videoInk": a}
+cfg = {"games": games, "order": list(PAGES), "videoGames": GAMES, "defaults": DEFAULTS, "pageId": PAGE_ID,
+	"homeAccent": ["#0b7a8e", "#e2f3f6", "#5fcbe0", "#17343b"],
+	"homeLead": "Le campus 3D de la FGES propose un mini-jeu par formation. Avant de les montrer aux candidats, nous demandons à chaque équipe pédagogique de relire le sien : environ 15 minutes."}
+tpl = (HERE / "template.html").read_text(encoding="utf-8")
+html = tpl.replace("__MOTION__", (HERE / "motion.js").read_text(encoding="utf-8")).replace("__CONFIG__", json.dumps(cfg, ensure_ascii=False).replace("</", "<\\/"))
+(HERE / "relecture.html").write_text(html, encoding="utf-8")
+print("écrit relecture.html ·", len(games), "jeux · page", PAGE_ID or "pas encore publiée")

@@ -1,14 +1,17 @@
 <meta charset="utf-8">
-<title>__TITLE__</title>
+<title>Relecture des mini-jeux</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&display=swap">
 <style>
-/* Mise en page : une colonne de lecture (vidéo, visite, consignes, formulaire) ; vue « Retours » réservée au propriétaire */
+/* Mise en page : une colonne de lecture. Accueil (vidéo, jeux à relire, tableau de bord du propriétaire) ;
+   une vue par jeu (#dmb, #sv…) : consignes et formulaire, et pour le propriétaire l'onglet « Retours reçus ».
+   La couleur d'accent suit le jeu affiché (--accent-l / --accent-d posées par le script). */
 :root{
 	--bg:#f6f4ef; --paper:#ffffff; --ink:#1f2633; --muted:#5d6472; --line:#e1ddd3;
-	--accent:__ACCENT__; --accent-soft:__ACCENT_SOFT__; --on-accent:#ffffff;
-	--ok:#2f7a4b; --ok-soft:#e3f2e8; --ko:#b5452f; --ko-soft:#fbe7e2; --na:#6b7280; --na-soft:#eceef1;
+	--accent-l:#0b7a8e; --accent-d:#5fcbe0; --soft-l:#e2f3f6; --soft-d:#17343b;
+	--accent:var(--accent-l); --accent-soft:var(--soft-l); --on-accent:#ffffff;
+	--ok:#2f7a4b; --ok-soft:#e3f2e8; --ko:#b5452f; --ko-soft:#fbe7e2; --na:#6b7280; --na-soft:#eceef1; --warn:#9a6a00; --warn-soft:#fbf0d4;
 	--screen:#0b1730;
 	--display:"Fraunces", Georgia, "Times New Roman", serif;
 	--body:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -16,12 +19,12 @@
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
 	--bg:#14171d; --paper:#1d2129; --ink:#eceae4; --muted:#a5abb6; --line:#2e333d;
-	--accent:__ACCENT_DARK__; --accent-soft:__ACCENT_SOFT_DARK__; --on-accent:#10131a;
-	--ok:#6fcf92; --ok-soft:#1b3326; --ko:#f08a72; --ko-soft:#3a221c; --na:#a5abb6; --na-soft:#262a32; color-scheme:dark } }
+	--accent:var(--accent-d); --accent-soft:var(--soft-d); --on-accent:#10131a;
+	--ok:#6fcf92; --ok-soft:#1b3326; --ko:#f08a72; --ko-soft:#3a221c; --na:#a5abb6; --na-soft:#262a32; --warn:#f2c35b; --warn-soft:#3a2f14; color-scheme:dark } }
 :root[data-theme="dark"]{
 	--bg:#14171d; --paper:#1d2129; --ink:#eceae4; --muted:#a5abb6; --line:#2e333d;
-	--accent:__ACCENT_DARK__; --accent-soft:__ACCENT_SOFT_DARK__; --on-accent:#10131a;
-	--ok:#6fcf92; --ok-soft:#1b3326; --ko:#f08a72; --ko-soft:#3a221c; --na:#a5abb6; --na-soft:#262a32; color-scheme:dark }
+	--accent:var(--accent-d); --accent-soft:var(--soft-d); --on-accent:#10131a;
+	--ok:#6fcf92; --ok-soft:#1b3326; --ko:#f08a72; --ko-soft:#3a221c; --na:#a5abb6; --na-soft:#262a32; --warn:#f2c35b; --warn-soft:#3a2f14; color-scheme:dark }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 64px}
@@ -30,19 +33,24 @@ h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
 h1{font-size:clamp(30px, 6vw, 44px)} h2{font-size:26px} h3{font-size:19px}
 p{margin:0} a{color:var(--accent)}
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.eyebrow a{color:inherit;text-decoration:none}
 .lead{font-size:18px;color:var(--muted);max-width:62ch}
 .stack{display:flex;flex-direction:column;gap:14px}
 header.top{padding-top:28px;display:flex;flex-direction:column;gap:14px}
 .tabs{display:flex;gap:8px;flex-wrap:wrap}
 .tabs button{font:600 14px var(--body);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer}
 .tabs button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.due{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.due span{font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--warn-soft);color:var(--warn)}
+.due span.n{background:var(--accent-soft);color:var(--accent)}
 /* la vidéo */
 .player{position:relative;border-radius:var(--r);overflow:hidden;background:var(--screen);aspect-ratio:16 / 9;max-width:100%}
 .player canvas{display:block;width:100%;height:100%;cursor:pointer}
 .bigplay{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:10px;font:700 16px var(--body);color:#0b1730;background:#ffffff;border:0;border-radius:999px;padding:12px 20px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap}
 .bigplay i{width:0;height:0;border-left:13px solid #0b1730;border-top:8px solid transparent;border-bottom:8px solid transparent}
-.mvbar{display:flex;align-items:center;gap:12px}
-.mvbar button{font:700 14px var(--body);border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;min-width:84px}
+.mvbar{display:flex;align-items:center;gap:10px}
+.mvbar button{font:700 14px var(--body);border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;white-space:nowrap}
+.mvbar #mvToggle{min-width:84px}
 .mvbar input{flex:1;min-width:0;accent-color:var(--accent)}
 .mvbar span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 .tour{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:12px;counter-reset:s}
@@ -52,10 +60,33 @@ header.top{padding-top:28px;display:flex;flex-direction:column;gap:14px}
 @media (max-width:560px){ .tour{grid-template-columns:minmax(0, 1fr)} }
 .why{background:var(--accent-soft);border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;gap:8px}
 .why p{max-width:62ch}
+/* accueil : les jeux à relire */
+.games{display:grid;grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));gap:12px}
+.game{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:8px;text-decoration:none;color:var(--ink);min-width:0}
+.game:hover{border-color:var(--accent)}
+.game .ic{font-size:32px;line-height:1}
+.game b{font:700 18px var(--display)}
+.game small{color:var(--muted);font-size:13px}
+.game .cnt{margin-top:auto;font-size:13px;font-weight:700;color:var(--accent)}
+.meter{height:6px;border-radius:3px;background:var(--na-soft);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--accent);border-radius:3px}
+/* tableau de bord du propriétaire */
+.dash{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:var(--r)}
+.dash table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
+.dash th,.dash td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.dash th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.dash tr:last-child td{border-bottom:0}
+.dash td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.dash .pills{display:flex;gap:4px;flex-wrap:wrap}
+.settings{display:flex;flex-direction:column;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.settings .row{display:flex;flex-wrap:wrap;gap:12px}
+.settings label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600}
+.settings input{font:15px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;width:130px}
+.settings input[type=number]{width:80px}
+/* vue d'un jeu */
 .steps{display:grid;grid-template-columns:minmax(0, 1.1fr) minmax(0, .9fr);gap:20px;align-items:start}
 @media (max-width:640px){ .steps{grid-template-columns:minmax(0, 1fr)} }
 .steps ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px}
-/* fiche du jeu (comme l'écran d'accueil du jeu) */
 .gamecard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:10px}
 .gamecard .ic{font-size:40px;line-height:1}
 .gamecard .k{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
@@ -66,11 +97,10 @@ header.top{padding-top:28px;display:flex;flex-direction:column;gap:14px}
 .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
 .btn.small{font-size:14px;padding:8px 14px}
 .btn:disabled{opacity:.55;cursor:default}
-.btn:focus-visible,.tabs button:focus-visible,.chip:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,.mvbar button:focus-visible,.bigplay:focus-visible,.drop:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn:focus-visible,.tabs button:focus-visible,.chip:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,.mvbar button:focus-visible,.bigplay:focus-visible,.drop:focus-visible,.game:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .hint{font-size:14px;color:var(--muted)}
 .facts{display:flex;flex-wrap:wrap;gap:8px}
 .facts span{font-size:13px;font-weight:600;background:var(--paper);border:1px solid var(--line);padding:4px 10px;border-radius:999px}
-/* formulaire */
 form{display:flex;flex-direction:column;gap:28px}
 fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;min-width:0}
 legend{padding:0;margin-bottom:4px}
@@ -99,7 +129,7 @@ textarea.mono{font:13px/1.5 ui-monospace, Menlo, monospace;min-height:110px}
 .drop{border:2px dashed var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:8px;align-items:flex-start;background:var(--paper)}
 .drop.over{border-color:var(--accent);background:var(--accent-soft)}
 .shots{display:grid;grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));gap:10px}
-.shot{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.shot{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:0;color:var(--ink);text-decoration:none}
 .shot img{display:block;width:100%;aspect-ratio:4 / 3;object-fit:cover;background:var(--na-soft)}
 .shot .row{display:flex;gap:6px;padding:6px}
 .shot input{font-size:14px;padding:6px 8px}
@@ -110,7 +140,6 @@ textarea.mono{font:13px/1.5 ui-monospace, Menlo, monospace;min-height:110px}
 .status.ok{background:var(--ok-soft);color:var(--ok)}
 .status.ko{background:var(--ko-soft);color:var(--ko)}
 pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px;font:13px/1.5 ui-monospace, Menlo, monospace;max-height:320px;overflow:auto;margin:0;width:100%}
-/* vue des retours */
 .sum{display:flex;flex-wrap:wrap;gap:10px}
 .sum div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 16px;min-width:130px}
 .sum b{display:block;font:700 26px var(--display);font-variant-numeric:tabular-nums}
@@ -131,33 +160,41 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 .bar{display:grid;grid-template-columns:minmax(0, 1fr) auto;gap:4px 12px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .bar .tally{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;font-variant-numeric:tabular-nums}
 .bar .cm{grid-column:1 / -1;font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
-@media (prefers-reduced-motion:no-preference){ .btn,.chip{transition:background .15s, border-color .15s} }
+@media (prefers-reduced-motion:no-preference){ .btn,.chip,.game{transition:background .15s, border-color .15s} }
 </style>
 
 <div class="wrap">
 	<header class="top">
-		<span class="eyebrow">Campus FGES en 3D · Relecture pédagogique</span>
-		<h1 id="h1"></h1>
+		<span class="eyebrow"><a href="#accueil">Campus FGES en 3D · Relecture pédagogique</a></span>
+		<h1 id="h1">Relecture des mini-jeux</h1>
 		<p class="lead" id="lead"></p>
+		<div class="due" id="due"></div>
 		<div class="tabs" id="tabs" hidden>
 			<button type="button" id="tabForm" aria-pressed="true">Présentation et formulaire</button>
 			<button type="button" id="tabRes" aria-pressed="false">Retours reçus <span id="nRes">(0)</span></button>
 		</div>
 	</header>
 
-	<div id="viewForm" class="wrap">
-		<section class="stack" aria-labelledby="t-projet">
-			<h2 id="t-projet">Le projet en 50 secondes</h2>
-			<div class="player">
-				<canvas id="mv" role="img" aria-label="Vidéo de présentation du campus FGES en 3D et de ses mini-jeux"></canvas>
-				<button type="button" class="bigplay" id="mvPlay"><i></i>Lancer la vidéo · 50 s</button>
-			</div>
-			<div class="mvbar">
-				<button type="button" id="mvToggle">Lecture</button>
-				<input type="range" id="mvSeek" min="0" max="50" step="0.1" value="0" aria-label="Position dans la vidéo">
-				<span id="mvTime">0:00 / 0:50</span>
-			</div>
-			<p class="hint">Vidéo sans son, sous-titrée. Les quatre idées à retenir :</p>
+	<section class="stack" id="video" aria-labelledby="t-projet">
+		<h2 id="t-projet">Le projet en 52 secondes</h2>
+		<div class="player">
+			<canvas id="mv" role="img" aria-label="Vidéo de présentation du campus FGES en 3D et de ses mini-jeux, sous-titrée"></canvas>
+			<button type="button" class="bigplay" id="mvPlay"><i></i>Lancer la vidéo · 52 s</button>
+		</div>
+		<audio id="mvAudio" preload="auto"></audio>
+		<div class="mvbar">
+			<button type="button" id="mvToggle">Lecture</button>
+			<input type="range" id="mvSeek" min="0" max="52" step="0.1" value="0" aria-label="Position dans la vidéo">
+			<span id="mvTime">0:00 / 0:52</span>
+			<button type="button" id="mvSound" aria-pressed="true" title="Couper ou remettre le son">🔊 Son</button>
+		</div>
+		<p class="hint">Musique douce et sous-titres : elle se regarde aussi sans le son.</p>
+	</section>
+
+	<!-- accueil -->
+	<div id="viewHome" class="wrap">
+		<section class="stack" aria-labelledby="t-idees">
+			<h2 id="t-idees">Les quatre idées à retenir</h2>
 			<ol class="tour">
 				<li><b>Un vrai campus, dans le navigateur</b><p>Vauban et Euratechnologies (Wenov) reconstitués en 3D, sans rien à installer, sur ordinateur comme sur téléphone.</p></li>
 				<li><b>Chaque formation a sa place</b><p>On clique sur un bâtiment, on découvre les formations qu'il accueille, leurs débouchés et le rythme d'études.</p></li>
@@ -169,7 +206,28 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 				<p>Un lycéen ou un candidat choisit souvent une formation sur un intitulé. Le jeu lui montre concrètement ce qu'il y fera, avant même la journée portes ouvertes. Pour que ce soit utile, il faut que ce soit <b>juste</b> : c'est là que nous avons besoin de vous.</p>
 			</div>
 		</section>
+		<section class="stack" id="dashBox" hidden aria-labelledby="t-dash">
+			<h2 id="t-dash">Tableau de bord des relectures</h2>
+			<p class="hint">Visible par vous seul. Les chiffres se mettent à jour dès qu'un enseignant envoie sa relecture.</p>
+			<div class="dash"><table><thead><tr><th>Jeu</th><th>Relectures</th><th>Avis</th><th>À corriger</th><th>Dernier retour</th></tr></thead><tbody id="dashRows"></tbody></table></div>
+			<form class="settings" id="settings">
+				<b>Date limite et nombre de relectures attendues</b>
+				<div class="row">
+					<label>Date limite<input type="date" id="setDeadline"></label>
+					<span id="setCounts" class="row"></span>
+				</div>
+				<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn small" type="submit">Enregistrer</button><span class="hint" id="setMsg"></span></div>
+			</form>
+		</section>
+		<section class="stack" aria-labelledby="t-jeux">
+			<h2 id="t-jeux">Les jeux à relire</h2>
+			<p class="hint">Choisissez le jeu de votre formation : chaque page explique quoi faire et contient le formulaire.</p>
+			<div class="games" id="games"></div>
+		</section>
+	</div>
 
+	<!-- un jeu -->
+	<div id="viewGame" class="wrap" hidden>
 		<section class="stack" aria-labelledby="t-vous">
 			<h2 id="t-vous">Ce que nous vous demandons</h2>
 			<div class="facts" id="facts"></div>
@@ -177,12 +235,12 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 				<div class="stack">
 					<ol>
 						<li><b>Jouez une partie</b> en entier, comme un candidat. Le bouton ouvre directement le jeu, dans un nouvel onglet.</li>
-						<li><b>Laissez tourner la bannière « Relecture »</b> en bas à gauche du jeu : elle note votre temps et vos erreurs à chaque étape. À la fin, touchez « Copier le journal ».</li>
-						<li><b>Revenez ici</b>, collez le journal, notez ce qui est faux ou mal dit, ajoutez des captures d'écran si besoin, et envoyez.</li>
+						<li><b>Laissez tourner la bannière « Relecture »</b> en bas à gauche du jeu. Elle note votre temps et vos erreurs à chaque étape ; « ✏️ Noter ici » ajoute une remarque sur l'écran en cours ; « Aller à… » permet de rejouer directement une étape.</li>
+						<li><b>À la fin, touchez « Copier le journal »</b>, revenez ici, collez-le, notez ce qui est faux ou mal dit, ajoutez des captures d'écran si besoin, et envoyez.</li>
 					</ol>
 					<div style="display:flex;gap:10px;flex-wrap:wrap">
 						<a class="btn" id="play" target="_blank" rel="noopener">Ouvrir le jeu ↗</a>
-						<a class="btn ghost" href="#formulaire">Aller au formulaire</a>
+						<button type="button" class="btn ghost" id="toForm">Aller au formulaire</button>
 					</div>
 					<p class="hint" id="howto"></p>
 				</div>
@@ -210,7 +268,7 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 				</fieldset>
 				<fieldset>
 					<legend><h3>Votre partie</h3></legend>
-					<label class="f">Journal de partie <span class="hint">Dans le jeu, touchez « Copier le journal » sur la bannière « Relecture », puis collez-le ici. Il indique le temps passé et les erreurs à chaque étape.</span>
+					<label class="f">Journal de partie <span class="hint">Dans le jeu, touchez « Copier le journal » sur la bannière « Relecture », puis collez-le ici. Il indique le temps passé, les erreurs et vos notes à chaque étape.</span>
 						<textarea id="journal" class="mono" placeholder="Journal de partie · …"></textarea></label>
 					<div class="stack">
 						<span style="font-weight:600;font-size:14px">Captures d'écran <span class="hint" style="font-weight:400">· un écran faux, un texte mal dit, un bug</span></span>
@@ -234,6 +292,7 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 				</fieldset>
 				<fieldset id="openBox">
 					<legend><h3>Vos idées</h3></legend>
+					<div class="stack" id="openItems"></div>
 				</fieldset>
 				<fieldset>
 					<legend><h3>Votre avis</h3></legend>
@@ -254,6 +313,7 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 		</section>
 	</div>
 
+	<!-- retours d'un jeu (propriétaire) -->
 	<section id="viewRes" class="stack" hidden aria-labelledby="t-res">
 		<h2 id="t-res">Retours reçus</h2>
 		<div class="sum" id="sum"></div>
@@ -277,56 +337,130 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 <script>__MOTION__</script>
 <script id="cfg" type="application/json">__CONFIG__</script>
 <script>
-const C = JSON.parse(document.getElementById("cfg").textContent);
+const CFG = JSON.parse(document.getElementById("cfg").textContent);
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
-const DRAFT = "relecture:" + C.id;
 const LABEL = { ok:"Juste", ko:"À corriger", na:"Je ne sais pas" };
 const QLABEL = { ok:"Oui", ko:"Non", na:"Sans avis" };
 const PICK = { facile:"Trop facile", adapte:"Adapté", difficile:"Trop difficile", court:"Trop courte", bien:"Bien", long:"Trop longue", valide:"Oui, en l'état", corrections:"Après corrections", non:"Pas en l'état" };
 const store = { get(k){ try { return JSON.parse(localStorage.getItem(k) || "null"); } catch(e){ return null; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} } };
+const IDS = CFG.order;
+let G = null;                       // le jeu affiché (null = accueil)
+let db = null, uid = null, assets = null, sample = null, owner = false, writeBlocked = false;
+const counts = {}, reviewsBy = {};
+let settings = null;                // { deadline:"AAAA-MM-JJ", attendus:{ dmb:2, … } } (base de la page, sinon valeurs par défaut)
+const deadline = () => settings?.deadline || CFG.defaults.deadline;
+const expected = id => +(settings?.attendus?.[id] ?? CFG.defaults.attendus) || 0;
+const fmtDate = d => new Date(d + "T12:00:00").toLocaleDateString("fr-FR", { weekday:"long", day:"numeric", month:"long" });
+function daysLeft(){ const ms = new Date(deadline() + "T23:59:59") - new Date(); return Math.ceil(ms/86400000); }
 
-/* ---------- la vidéo ---------- */
+/* ---------- la vidéo (avec sa bande son) ---------- */
 const img = src => { const i = new Image(); i.src = src; return i; };
 const images = { campus:img("img/campus.jpg"), logo:img("img/logo-fges.png") };
-const mv = createMotion($("mv"), { games:C.games, current:C.id, accent:C.videoAccent, accentInk:C.videoInk, gameTitle:C.short, steps:C.videoSteps, images, poster:2.6 });
+const audio = $("mvAudio");
+let mv = null, soundOn = true, audioOk = true;
 const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
-mv.onTime = t => { $("mvSeek").value = t; $("mvTime").textContent = `${fmt(t)} / ${fmt(mv.duration)}`; };
-mv.onState = on => { $("mvToggle").textContent = on ? "Pause" : (mv.t >= mv.duration - .05 ? "Revoir" : "Lecture"); $("mvPlay").hidden = true; };
-$("mvTime").textContent = `0:00 / ${fmt(mv.duration)}`; $("mvSeek").value = 0;
-$("mvPlay").addEventListener("click", () => mv.play());
-$("mvToggle").addEventListener("click", () => mv.toggle());
-$("mv").addEventListener("click", () => mv.toggle());
-$("mvSeek").addEventListener("input", e => { $("mvPlay").hidden = true; mv.seek(+e.target.value); });
-const redraw = () => { if(!mv.playing) mv.draw(mv.t); };
+audio.addEventListener("error", () => { audioOk = false; $("mvSound").hidden = true; });
+// la bande son (400 Ko) est chargée en mémoire : on peut alors se déplacer librement dans la vidéo
+fetch("media/bande-son.mp4").then(r => r.ok ? r.blob() : Promise.reject()).then(b => { audio.src = URL.createObjectURL(b); }).catch(() => { audioOk = false; $("mvSound").hidden = true; });
+function setupVideo(g){
+	if(mv?.playing) mv.pause();
+	audio.pause();
+	mv = createMotion($("mv"), { games:CFG.videoGames, current:g?.id, accent:g?.videoAccent || "#5fcbe0", accentInk:g?.videoInk || "#0b7a8e", gameTitle:g?.short, steps:g?.videoSteps, images, poster:2.6 });
+	// la vidéo garde sa propre horloge ; la bande son est recalée sur elle si elle s'en écarte
+	mv.onTime = t => {
+		$("mvSeek").value = t; $("mvTime").textContent = `${fmt(t)} / ${fmt(mv.duration)}`;
+		if(mv.playing && soundOn && audioOk && !audio.paused && Math.abs(audio.currentTime - t) > .3){ try { audio.currentTime = t; } catch(e){} }
+	};
+	mv.onState = on => { $("mvToggle").textContent = on ? "Pause" : (mv.t >= mv.duration - .05 ? "Revoir" : "Lecture"); if(on) $("mvPlay").hidden = true; if(!on) audio.pause(); if(mv.t >= mv.duration - .05) audio.pause(); };
+	$("mvTime").textContent = `0:00 / ${fmt(mv.duration)}`; $("mvSeek").max = mv.duration; $("mvSeek").value = 0; $("mvPlay").hidden = false; $("mvToggle").textContent = "Lecture";
+}
+function play(){
+	if(mv.t >= mv.duration - .05) mv.seek(0);
+	if(soundOn && audioOk){ try { audio.currentTime = mv.t; } catch(e){} audio.play().catch(() => { audioOk = false; }); }
+	mv.play();
+}
+$("mvPlay").addEventListener("click", () => { mv.seek(0); play(); });
+$("mvToggle").addEventListener("click", () => mv.playing ? mv.pause() : play());
+$("mv").addEventListener("click", () => mv.playing ? mv.pause() : play());
+$("mvSeek").addEventListener("input", e => { $("mvPlay").hidden = true; mv.seek(+e.target.value); try { audio.currentTime = +e.target.value; } catch(x){} });
+$("mvSound").addEventListener("click", () => {
+	soundOn = !soundOn; $("mvSound").setAttribute("aria-pressed", String(soundOn)); $("mvSound").textContent = soundOn ? "🔊 Son" : "🔇 Son coupé";
+	if(!soundOn) audio.pause(); else if(mv.playing && audioOk){ try { audio.currentTime = mv.t; } catch(e){} audio.play().catch(() => {}); }
+});
+const redraw = () => { if(mv && !mv.playing) mv.draw(mv.t); };
 images.campus.onload = images.logo.onload = redraw;
 document.fonts?.ready.then(redraw);
 
-/* ---------- contenu ---------- */
-$("h1").textContent = C.h1;
-$("lead").textContent = C.lead;
-$("facts").innerHTML = C.facts.map(f => `<span>${esc(f)}</span>`).join("");
-$("play").href = C.url + "&relecture=" + encodeURIComponent(C.pageId || "");
-$("howto").textContent = C.howto;
-$("gamecard").innerHTML = `<span class="ic" aria-hidden="true">${C.card.icon}</span><span class="k">Mini-jeu · ${esc(C.card.formation)}</span><h3>${esc(C.card.title)}</h3><ol>${C.card.steps.map(([y, s]) => `<li><span>${esc(y)}</span>${esc(s)}</li>`).join("")}</ol>`;
-$("publicHint").textContent = C.publicHint;
-$("dureeHint").textContent = C.dureeHint;
-if(C.parcours){
-	$("parcoursBox").hidden = false;
-	$("parcours").innerHTML = C.parcours.map(([k, t]) => `<label><input type="checkbox" value="${k}" id="p-${k}"> ${esc(t)}</label>`).join("");
+/* ---------- accueil ---------- */
+function dueHTML(id){
+	const d = daysLeft(), n = counts[id] || 0, y = expected(id);
+	const when = d < 0 ? `Date limite passée (${fmtDate(deadline())})` : `À rendre avant le ${fmtDate(deadline())}${d <= 7 ? ` · J−${d}` : ""}`;
+	return `<span>${esc(when)}</span>${y ? `<span class="n">${n} relecture${n > 1 ? "s" : ""} sur ${y} attendue${y > 1 ? "s" : ""}</span>` : ""}`;
 }
+function renderHome(){
+	$("games").innerHTML = IDS.map(id => {
+		const g = CFG.games[id], n = counts[id] || 0, y = expected(id);
+		return `<a class="game" href="#${id}" style="--accent-l:${g.accent[0]};--accent-d:${g.accent[2]}"><span class="ic" aria-hidden="true">${g.card.icon}</span><b>${esc(g.card.title)}</b><small>${esc(g.card.formation)}</small>
+			<span class="cnt">${n} relecture${n > 1 ? "s" : ""}${y ? ` sur ${y}` : ""}</span>${y ? `<span class="meter"><i style="width:${Math.min(100, n/y*100)}%"></i></span>` : ""}</a>`;
+	}).join("");
+	if(G) return;
+	const d = daysLeft();
+	$("due").innerHTML = `<span>${esc(d < 0 ? `Date limite passée (${fmtDate(deadline())})` : `Relectures attendues avant le ${fmtDate(deadline())}`)}</span>`;
+	if(owner) renderDash();
+}
+function renderDash(){
+	$("dashBox").hidden = false;
+	$("dashRows").innerHTML = IDS.map(id => {
+		const g = CFG.games[id], rs = reviewsBy[id] || [], n = rs.length, y = expected(id);
+		const v = k => rs.filter(r => r.verdict === k).length;
+		const ko = todoData(g, rs).ko.length + rs.filter(r => r.bugs).length;
+		const last = rs[0]?.envoyeLe ? new Date(rs[0].envoyeLe).toLocaleDateString("fr-FR", { day:"numeric", month:"short" }) : "—";
+		return `<tr><td><a href="#${id}">${g.card.icon} ${esc(g.card.title)}</a></td>
+			<td class="num">${n}${y ? ` / ${y}` : ""}${y ? `<div class="meter" style="width:90px;margin-top:4px"><i style="width:${Math.min(100, n/y*100)}%;background:${g.accent[0]}"></i></div>` : ""}</td>
+			<td><div class="pills">${v("valide") ? `<span class="pill ok">${v("valide")} validé</span>` : ""}${v("corrections") ? `<span class="pill mid">${v("corrections")} après corr.</span>` : ""}${v("non") ? `<span class="pill ko">${v("non")} non</span>` : ""}${!n ? `<span class="pill na">en attente</span>` : ""}</div></td>
+			<td class="num">${n ? ko : "—"}</td><td class="num">${last}</td></tr>`;
+	}).join("");
+	if(document.activeElement?.closest?.("#settings")) return;
+	$("setDeadline").value = deadline();
+	$("setCounts").innerHTML = IDS.map(id => `<label>${esc(CFG.games[id].card.title)}<input type="number" min="0" max="20" data-att="${id}" value="${expected(id)}"></label>`).join("");
+}
+$("settings").addEventListener("submit", async e => {
+	e.preventDefault();
+	const att = {}; document.querySelectorAll("[data-att]").forEach(i => att[i.dataset.att] = Math.max(0, Math.min(20, +i.value || 0)));
+	const next = { deadline:$("setDeadline").value || deadline(), attendus:att };
+	try { await db.doc("reglages/jeux").set(next); $("setMsg").textContent = "Enregistré : les enseignants voient la nouvelle date et le compteur."; }
+	catch(x){ $("setMsg").textContent = "L'enregistrement n'a pas abouti. Réessayez dans un instant."; }
+});
+
+/* ---------- un jeu : contenu ---------- */
+const ALL = () => G.sections.flatMap(s => s.items.map(it => ({ ...it, sec:s.t })));
 const itemHTML = (it, kind) => {
 	const L = kind === "q" ? QLABEL : LABEL;
 	return `<div class="item" data-k="${it.k}" data-kind="${kind}"><span class="q">${esc(it.q)}</span>${it.d ? `<span class="d">${esc(it.d)}</span>` : ""}
 		<div class="chips" role="group" aria-label="${esc(it.q)}">${["ok", "ko", "na"].map(v => `<button type="button" class="chip" data-v="${v}" aria-pressed="false">${L[v]}</button>`).join("")}</div>
 		<textarea id="c-${it.k}" placeholder="${kind === "q" ? "Votre réponse ou précision" : "Ce qu'il faudrait corriger, ou une précision"}" aria-label="Commentaire : ${esc(it.q)}"></textarea></div>`;
 };
-$("sections").innerHTML = C.sections.map(s => `<fieldset><legend><h3>${esc(s.t)}${s.sub ? ` <small>${esc(s.sub)}</small>` : ""}</h3></legend>${s.items.map(it => itemHTML(it, it.kind || "c")).join("")}</fieldset>`).join("");
-$("openBox").insertAdjacentHTML("beforeend", C.open.map(o => `<label class="f">${esc(o.q)}<textarea id="o-${o.k}"></textarea></label>`).join(""));
-document.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", "false"));
+function renderGame(){
+	$("h1").textContent = G.h1; $("lead").textContent = G.lead;
+	$("facts").innerHTML = G.facts.map(f => `<span>${esc(f)}</span>`).join("");
+	$("play").href = G.url + "&relecture=" + encodeURIComponent(CFG.pageId || "");
+	$("howto").textContent = G.howto;
+	$("gamecard").innerHTML = `<span class="ic" aria-hidden="true">${G.card.icon}</span><span class="k">Mini-jeu · ${esc(G.card.formation)}</span><h3>${esc(G.card.title)}</h3><ol>${G.card.steps.map(([y, s]) => `<li><span>${esc(y)}</span>${esc(s)}</li>`).join("")}</ol>`;
+	$("publicHint").textContent = G.publicHint; $("dureeHint").textContent = G.dureeHint;
+	$("parcoursBox").hidden = !G.parcours;
+	$("parcours").innerHTML = (G.parcours || []).map(([k, t]) => `<label><input type="checkbox" value="${k}" id="p-${k}"> ${esc(t)}</label>`).join("");
+	$("sections").innerHTML = G.sections.map(s => `<fieldset><legend><h3>${esc(s.t)}${s.sub ? ` <small>${esc(s.sub)}</small>` : ""}</h3></legend>${s.items.map(it => itemHTML(it, it.kind || "c")).join("")}</fieldset>`).join("");
+	$("openItems").innerHTML = G.open.map(o => `<label class="f">${esc(o.q)}<textarea id="o-${o.k}"></textarea></label>`).join("");
+	clearForm();
+	fillForm(store.get(DRAFT()));
+	loadMine();
+	$("due").innerHTML = dueHTML(G.id);
+	$("sendStatus").hidden = true; $("fallback").hidden = true;
+}
 
-/* ---------- état du formulaire ---------- */
-const ALL = C.sections.flatMap(s => s.items.map(it => ({ ...it, sec:s.t })));
+/* ---------- formulaire ---------- */
+const DRAFT = () => "relecture:" + G.id;
 let captures = [];          // [{ id, url, legende }]
 function readForm(){
 	const items = {};
@@ -335,10 +469,10 @@ function readForm(){
 		if(s || c) items[k] = { s, c };
 	});
 	const pick = k => document.querySelector(`.item[data-k="${k}"]`).dataset.s || "";
-	const open = {}; C.open.forEach(o => { const v = $("o-" + o.k).value.trim(); if(v) open[o.k] = v; });
+	const open = {}; G.open.forEach(o => { const v = $("o-" + o.k).value.trim(); if(v) open[o.k] = v; });
 	return {
 		nom:$("nom").value.trim(), fonction:$("fonction").value.trim(), appareil:$("appareil").value,
-		parcours:C.parcours ? C.parcours.map(p => p[0]).filter(k => $("p-" + k).checked) : [],
+		parcours:G.parcours ? G.parcours.map(p => p[0]).filter(k => $("p-" + k).checked) : [],
 		journal:$("journal").value.trim().slice(0, 20000),
 		captures:captures.map(c => ({ id:c.id, legende:(c.legende || "").slice(0, 300) })),
 		items, niveau:pick("_niveau"), duree:pick("_duree"), bugs:$("bugs").value.trim(), open,
@@ -349,31 +483,42 @@ function setChip(el, s){
 	el.dataset.s = s;
 	el.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.x || b.dataset.v) === s)));
 }
+function clearForm(){
+	for(const id of ["fonction", "appareil", "bugs", "remarques", "journal"]) $(id).value = "";
+	document.querySelectorAll(".item").forEach(el => setChip(el, ""));
+	captures = []; renderShots(); $("dropMsg").textContent = assets ? "" : $("dropMsg").textContent;
+}
 function fillForm(d){
 	if(!d) return;
-	$("nom").value = d.nom || ""; $("fonction").value = d.fonction || ""; $("appareil").value = d.appareil || "";
+	if(d.nom) $("nom").value = d.nom;
+	$("fonction").value = d.fonction || $("fonction").value; $("appareil").value = d.appareil || "";
 	(d.parcours || []).forEach(k => { const c = $("p-" + k); if(c) c.checked = true; });
 	document.querySelectorAll("#sections .item").forEach(el => { const v = (d.items || {})[el.dataset.k]; if(v){ setChip(el, v.s || ""); $("c-" + el.dataset.k).value = v.c || ""; } });
 	for(const k of ["niveau", "duree", "verdict"]) if(d[k]) setChip(document.querySelector(`.item[data-k="_${k}"]`), d[k]);
 	$("bugs").value = d.bugs || ""; $("remarques").value = d.remarques || ""; $("journal").value = d.journal || "";
-	C.open.forEach(o => { $("o-" + o.k).value = (d.open || {})[o.k] || ""; });
+	G.open.forEach(o => { $("o-" + o.k).value = (d.open || {})[o.k] || ""; });
 	captures = (d.captures || []).map(c => ({ id:c.id, url:c.url || "/_blob/" + c.id, legende:c.legende || "" }));
 	renderShots();
 }
-document.querySelectorAll(".item").forEach(el => el.addEventListener("click", e => {
+async function loadMine(){
+	if(!db || !uid || !G) return;
+	const id = G.id;
+	try { const snap = await db.doc(`retours-${id}/${uid}`).get(); if(snap.exists && G?.id === id && !store.get(DRAFT())) fillForm(snap.data()); } catch(e){}
+}
+$("form").addEventListener("click", e => {
 	const b = e.target.closest(".chip"); if(!b) return;
-	const v = b.dataset.x || b.dataset.v;
+	const el = b.closest(".item"), v = b.dataset.x || b.dataset.v;
 	setChip(el, el.dataset.s === v ? "" : v);
 	if(v === "ko" && el.dataset.s === "ko") $("c-" + el.dataset.k)?.focus();
 	saveDraft();
-}));
+});
 let draftT;
-function saveDraft(){ clearTimeout(draftT); draftT = setTimeout(() => store.set(DRAFT, { ...readForm(), captures }), 400); }
+function saveDraft(){ clearTimeout(draftT); const key = DRAFT(); draftT = setTimeout(() => store.set(key, { ...readForm(), captures }), 400); }
 $("form").addEventListener("input", saveDraft);
-fillForm(store.get(DRAFT));
+$("nom").addEventListener("change", () => store.set("relecture:nom", $("nom").value.trim()));
+$("nom").value = store.get("relecture:nom") || "";
 
 /* ---------- captures d'écran ---------- */
-let assets = null;
 function renderShots(){
 	$("shots").innerHTML = captures.map((c, i) => `<div class="shot"><img src="${esc(c.url)}" alt="Capture ${i + 1}"><div class="row"><input type="text" data-leg="${i}" value="${esc(c.legende)}" placeholder="Quel écran, quel problème ?" aria-label="Légende de la capture ${i + 1}"><button type="button" data-del="${i}" aria-label="Retirer la capture ${i + 1}">✕</button></div></div>`).join("");
 }
@@ -395,14 +540,14 @@ $("shotInput").addEventListener("change", e => { addFiles(e.target.files); e.tar
 $("drop").addEventListener("dragover", e => { e.preventDefault(); $("drop").classList.add("over"); });
 $("drop").addEventListener("dragleave", () => $("drop").classList.remove("over"));
 $("drop").addEventListener("drop", e => { e.preventDefault(); $("drop").classList.remove("over"); addFiles(e.dataTransfer.files); });
-document.addEventListener("paste", e => { if(!$("viewForm").hidden && e.clipboardData?.files?.length){ e.preventDefault(); addFiles(e.clipboardData.files); } });
+document.addEventListener("paste", e => { if(G && !$("viewGame").hidden && e.clipboardData?.files?.length){ e.preventDefault(); addFiles(e.clipboardData.files); } });
 
 /* ---------- récapitulatif texte ---------- */
-function recapText(d){
-	const lines = [`Relecture · ${C.game}`, `${d.nom}${d.fonction ? " (" + d.fonction + ")" : ""}${d.appareil ? " · " + d.appareil : ""}`];
-	if(d.parcours?.length) lines.push("Parcours joués : " + d.parcours.map(k => (C.parcours.find(p => p[0] === k) || [k, k])[1]).join(", "));
+function recapText(d, g = G){
+	const lines = [`Relecture · ${g.game}`, `${d.nom}${d.fonction ? " (" + d.fonction + ")" : ""}${d.appareil ? " · " + d.appareil : ""}`];
+	if(d.parcours?.length) lines.push("Parcours joués : " + d.parcours.map(k => (g.parcours.find(p => p[0] === k) || [k, k])[1]).join(", "));
 	lines.push("");
-	for(const s of C.sections){
+	for(const s of g.sections){
 		const rows = s.items.filter(it => d.items?.[it.k]).map(it => {
 			const v = d.items[it.k], L = it.kind === "q" ? QLABEL : LABEL;
 			return `- ${it.q} : ${L[v.s] || "—"}${v.c ? "\n  " + v.c : ""}`;
@@ -411,7 +556,7 @@ function recapText(d){
 	}
 	lines.push(`Niveau : ${PICK[d.niveau] || "—"} · Durée : ${PICK[d.duree] || "—"}`);
 	if(d.bugs) lines.push("Bugs : " + d.bugs);
-	C.open.forEach(o => { if(d.open?.[o.k]) lines.push(`${o.q}\n  ${d.open[o.k]}`); });
+	g.open.forEach(o => { if(d.open?.[o.k]) lines.push(`${o.q}\n  ${d.open[o.k]}`); });
 	lines.push(`Avis : ${PICK[d.verdict] || "—"}`);
 	if(d.remarques) lines.push("Dernier mot : " + d.remarques);
 	if(d.captures?.length) lines.push(`Captures d'écran : ${d.captures.length}${d.captures.some(c => c.legende) ? " (" + d.captures.map(c => c.legende).filter(Boolean).join(" ; ") + ")" : ""}`);
@@ -426,8 +571,7 @@ $("copyBtn").addEventListener("click", async () => {
 	if(!await copyText($("recap").textContent, $("copyBtn"), "Copier le récapitulatif")){ const r = document.createRange(); r.selectNodeContents($("recap")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
 });
 
-/* ---------- enregistrement partagé ---------- */
-let db = null, uid = null, writeBlocked = false;
+/* ---------- envoi ---------- */
 const status = (cls, msg) => { const el = $("sendStatus"); el.className = "status " + cls; el.textContent = msg; el.hidden = false; };
 $("form").addEventListener("submit", async e => {
 	e.preventDefault();
@@ -437,7 +581,10 @@ $("form").addEventListener("submit", async e => {
 	$("submit").disabled = true; $("submit").textContent = "Envoi…";
 	try {
 		if(!db || !uid || writeBlocked) throw new Error("local");
-		await db.doc("retours/" + uid).set({ ...d, jeu:C.id, envoyeLe:new Date().toISOString() });
+		const at = new Date().toISOString();
+		await db.doc(`retours-${G.id}/${uid}`).set({ ...d, jeu:G.id, envoyeLe:at });
+		await db.doc(`envois-${G.id}/${uid}`).set({ at });
+		store.set(DRAFT(), null);
 		status("ok", "Merci ! Votre relecture est enregistrée. Vous pouvez la modifier et la renvoyer à tout moment depuis cette page.");
 		$("fallback").hidden = true;
 	} catch(x){
@@ -447,12 +594,10 @@ $("form").addEventListener("submit", async e => {
 	} finally { $("submit").disabled = false; $("submit").textContent = "Envoyer ma relecture"; }
 });
 
-/* ---------- vue du propriétaire : les retours ---------- */
-let reviews = [];
-const who = list => [...new Set(list)].join(", ");
-function todoData(){
-	const ko = [], answers = [];
-	for(const it of ALL){
+/* ---------- retours (propriétaire) ---------- */
+function todoData(g, reviews){
+	const ko = [], answers = [], all = g.sections.flatMap(s => s.items.map(it => ({ ...it, sec:s.t })));
+	for(const it of all){
 		const got = reviews.map(r => ({ r, v:r.items?.[it.k] })).filter(x => x.v);
 		if(it.kind === "q"){ const a = got.filter(x => x.v.s || x.v.c); if(a.length) answers.push({ it, a }); continue; }
 		const bad = got.filter(x => x.v.s === "ko" || (x.v.s !== "ok" && x.v.c));
@@ -460,45 +605,44 @@ function todoData(){
 	}
 	ko.sort((a, b) => b.n - a.n);
 	const bugs = reviews.filter(r => r.bugs).map(r => ({ nom:r.nom, t:r.bugs }));
-	const ideas = C.open.map(o => ({ o, a:reviews.filter(r => r.open?.[o.k]).map(r => ({ nom:r.nom, t:r.open[o.k] })) })).filter(x => x.a.length);
+	const ideas = g.open.map(o => ({ o, a:reviews.filter(r => r.open?.[o.k]).map(r => ({ nom:r.nom, t:r.open[o.k] })) })).filter(x => x.a.length);
 	const shots = reviews.flatMap(r => (r.captures || []).map(c => ({ nom:r.nom, ...c })));
-	const stuck = reviews.filter(r => r.journal).map(r => ({ nom:r.nom, lines:r.journal.split("\n").filter(l => /erreur/.test(l) && l.startsWith("- ")) })).filter(x => x.lines.length);
+	const stuck = reviews.filter(r => r.journal).map(r => ({ nom:r.nom, lines:r.journal.split("\n").filter(l => (/erreur/.test(l) && l.startsWith("- ")) || l.startsWith("  ✏️")) })).filter(x => x.lines.length);
 	const count = k => Object.entries(reviews.reduce((m, r) => (r[k] && (m[PICK[r[k]]] = (m[PICK[r[k]]] || 0) + 1), m), {})).map(([l, n]) => `${l} ×${n}`).join(", ");
 	return { ko, answers, bugs, ideas, shots, stuck, niveau:count("niveau"), duree:count("duree") };
 }
-function todoMarkdown(){
-	const T = todoData(), L = [];
-	L.push(`# Corrections demandées par les enseignants · ${C.game}`, `${reviews.length} relecture(s) : ${reviews.map(r => `${r.nom} (${PICK[r.verdict] || "sans avis"})`).join(" ; ")}`, "");
+function todoMarkdown(g, reviews){
+	const T = todoData(g, reviews), L = [];
+	L.push(`# Corrections demandées par les enseignants · ${g.game}`, `${reviews.length} relecture(s) : ${reviews.map(r => `${r.nom} (${PICK[r.verdict] || "sans avis"})`).join(" ; ")}`, "");
 	if(T.ko.length){ L.push("## À corriger dans le jeu"); T.ko.forEach(x => L.push(`- [ ] ${x.it.sec} · ${x.it.q} (${x.n}/${reviews.length} à corriger)`, ...x.bad.filter(b => b.v.c).map(b => `  - « ${b.v.c} » (${b.r.nom})`))); L.push(""); }
 	if(T.bugs.length){ L.push("## Bugs et blocages"); T.bugs.forEach(b => L.push(`- [ ] « ${b.t} » (${b.nom})`)); L.push(""); }
-	if(T.stuck.length){ L.push("## Étapes avec des erreurs (journaux de partie)"); T.stuck.forEach(s => L.push(`- ${s.nom}`, ...s.lines.map(l => "  " + l))); L.push(""); }
+	if(T.stuck.length){ L.push("## Erreurs et notes prises pendant la partie (journaux)"); T.stuck.forEach(s => L.push(`- ${s.nom}`, ...s.lines.map(l => "  " + l.trim()))); L.push(""); }
 	if(T.answers.length){ L.push("## Réponses aux questions posées"); T.answers.forEach(x => L.push(`- ${x.it.q}`, ...x.a.map(a => `  - ${QLABEL[a.v.s] || "—"}${a.v.c ? ` : « ${a.v.c} »` : ""} (${a.r.nom})`))); L.push(""); }
 	if(T.ideas.length){ L.push("## Idées"); T.ideas.forEach(x => L.push(`- ${x.o.q}`, ...x.a.map(a => `  - « ${a.t} » (${a.nom})`))); L.push(""); }
 	if(T.niveau || T.duree) L.push(`Niveau : ${T.niveau || "—"} · Durée : ${T.duree || "—"}`);
 	if(T.shots.length) L.push(`Captures d'écran : ${T.shots.length} (${T.shots.map(s => `${s.nom}${s.legende ? " : " + s.legende : ""}`).join(" ; ")})`);
 	return L.join("\n");
 }
-function renderTodo(){
-	const T = todoData();
+function renderReviews(){
+	if(!G || !owner) return;
+	const reviews = reviewsBy[G.id] || [];
+	$("nRes").textContent = `(${reviews.length})`;
+	$("resEmpty").hidden = reviews.length > 0; $("resBody").hidden = !reviews.length;
+	const v = k => reviews.filter(r => r.verdict === k).length;
+	$("sum").innerHTML = [[reviews.length, "relecture" + (reviews.length > 1 ? "s" : "") + (expected(G.id) ? ` sur ${expected(G.id)}` : "")], [v("valide"), "validé en l'état"], [v("corrections"), "après corrections"], [v("non"), "pas en l'état"]]
+		.map(([n, t]) => `<div><b>${n}</b><span>${t}</span></div>`).join("");
+	const T = todoData(G, reviews);
 	const li = (main, sub) => `<li>${main}${sub ? `<br><small>${sub}</small>` : ""}</li>`;
 	const parts = [];
 	if(T.ko.length) parts.push(`<h4>À corriger dans le jeu</h4><ul>${T.ko.map(x => li(`<b>${esc(x.it.q)}</b> <span class="pill ko">${x.n}/${reviews.length}</span>`, esc(x.it.sec) + x.bad.filter(b => b.v.c).map(b => ` · « ${esc(b.v.c)} » (${esc(b.r.nom)})`).join(""))).join("")}</ul>`);
 	if(T.bugs.length) parts.push(`<h4>Bugs et blocages</h4><ul>${T.bugs.map(b => li(`« ${esc(b.t)} »`, esc(b.nom))).join("")}</ul>`);
-	if(T.stuck.length) parts.push(`<h4>Étapes avec des erreurs</h4><ul>${T.stuck.map(s => li(esc(s.nom), s.lines.map(esc).join("<br>"))).join("")}</ul>`);
+	if(T.stuck.length) parts.push(`<h4>Erreurs et notes prises pendant la partie</h4><ul>${T.stuck.map(s => li(esc(s.nom), s.lines.map(l => esc(l.trim())).join("<br>"))).join("")}</ul>`);
 	if(T.answers.length) parts.push(`<h4>Réponses aux questions posées</h4><ul>${T.answers.map(x => li(`<b>${esc(x.it.q)}</b>`, x.a.map(a => `${QLABEL[a.v.s] || "—"}${a.v.c ? ` : « ${esc(a.v.c)} »` : ""} (${esc(a.r.nom)})`).join("<br>"))).join("")}</ul>`);
 	if(T.ideas.length) parts.push(`<h4>Idées</h4><ul>${T.ideas.map(x => li(`<b>${esc(x.o.q)}</b>`, x.a.map(a => `« ${esc(a.t)} » (${esc(a.nom)})`).join("<br>"))).join("")}</ul>`);
 	if(T.shots.length) parts.push(`<h4>Captures d'écran</h4><div class="shots">${T.shots.map(s => `<a class="shot" href="/_blob/${esc(s.id)}" target="_blank" rel="noopener"><img src="/_blob/${esc(s.id)}" alt="Capture de ${esc(s.nom)}"><p>${esc(s.legende || "Sans légende")} · ${esc(s.nom)}</p></a>`).join("")}</div>`);
 	if(T.niveau || T.duree) parts.push(`<p class="hint">Niveau : ${esc(T.niveau || "—")} · Durée : ${esc(T.duree || "—")}</p>`);
 	$("todo").innerHTML = parts.join("") || `<p class="hint">Rien à corriger pour l'instant : tous les points notés sont justes.</p>`;
-}
-function renderReviews(){
-	$("nRes").textContent = `(${reviews.length})`;
-	$("resEmpty").hidden = reviews.length > 0; $("resBody").hidden = !reviews.length;
-	const v = k => reviews.filter(r => r.verdict === k).length;
-	$("sum").innerHTML = [[reviews.length, "relecture" + (reviews.length > 1 ? "s" : "")], [v("valide"), "validé en l'état"], [v("corrections"), "après corrections"], [v("non"), "pas en l'état"]]
-		.map(([n, t]) => `<div><b>${n}</b><span>${t}</span></div>`).join("");
-	renderTodo();
-	const rows = ALL.map(it => {
+	const rows = ALL().map(it => {
 		const got = reviews.map(r => ({ r, v:r.items?.[it.k] })).filter(x => x.v);
 		const n = s => got.filter(x => x.v.s === s).length;
 		return { it, got, ko:n("ko"), ok:n("ok"), na:n("na") };
@@ -510,32 +654,59 @@ function renderReviews(){
 	$("byPerson").innerHTML = reviews.map(r => {
 		const pill = r.verdict === "valide" ? "ok" : r.verdict === "non" ? "ko" : r.verdict ? "mid" : "na";
 		const date = r.envoyeLe ? new Date(r.envoyeLe).toLocaleDateString("fr-FR", { day:"numeric", month:"long", hour:"2-digit", minute:"2-digit" }) : "";
-		const extra = [["Niveau", PICK[r.niveau]], ["Durée", PICK[r.duree]], ["Bugs", r.bugs], ...C.open.map(o => [o.q, r.open?.[o.k]]), ["Dernier mot", r.remarques]].filter(x => x[1]);
+		const extra = [["Niveau", PICK[r.niveau]], ["Durée", PICK[r.duree]], ["Bugs", r.bugs], ...G.open.map(o => [o.q, r.open?.[o.k]]), ["Dernier mot", r.remarques]].filter(x => x[1]);
 		return `<article class="rev"><header><h3>${esc(r.nom)}</h3><span class="pill ${pill}">${esc(PICK[r.verdict] || "Sans avis global")}</span></header>
 			<span class="meta">${esc([r.fonction, r.appareil, date].filter(Boolean).join(" · "))}</span>
 			${extra.length ? `<ul>${extra.map(([k, t]) => `<li><b>${esc(k)}</b> ${esc(t)}</li>`).join("")}</ul>` : ""}
 			${r.journal ? `<pre class="copy">${esc(r.journal)}</pre>` : ""}</article>`;
 	}).join("");
 }
-$("copyTodo").addEventListener("click", () => copyText(todoMarkdown(), $("copyTodo"), "Copier la liste pour Claude"));
-let sample = null, aiBusy = null;
+$("copyTodo").addEventListener("click", () => copyText(todoMarkdown(G, reviewsBy[G.id] || []), $("copyTodo"), "Copier la liste pour Claude"));
+let aiBusy = null;
 $("aiBtn").addEventListener("click", async () => {
 	if(aiBusy){ aiBusy.abort(); return; }
 	aiBusy = new AbortController();
 	$("ai").hidden = false; $("ai").textContent = "Claude lit les retours…"; $("aiBtn").textContent = "Arrêter";
-	const prompt = `Tu aides à corriger un mini-jeu pédagogique (« ${C.game} ») d'un campus 3D destiné à des candidats. Voici les retours des enseignants qui l'ont relu.\n\n${todoMarkdown()}\n\nRédige en français une liste de corrections à faire dans le jeu, classée en trois niveaux : « Bloquant » (faux sur le fond ou bug qui empêche de jouer), « Important » (imprécis, mal dit, mauvais niveau), « Confort » (idées, améliorations). Fusionne les remarques qui disent la même chose, indique qui l'a signalé entre parenthèses, et ne cite que ce qui est dans les retours. Texte brut, une ligne par correction commençant par « - ». Termine par une phrase sur les points où les enseignants ne sont pas d'accord entre eux, s'il y en a.`;
+	const prompt = `Tu aides à corriger un mini-jeu pédagogique (« ${G.game} ») d'un campus 3D destiné à des candidats. Voici les retours des enseignants qui l'ont relu.\n\n${todoMarkdown(G, reviewsBy[G.id] || [])}\n\nRédige en français une liste de corrections à faire dans le jeu, classée en trois niveaux : « Bloquant » (faux sur le fond ou bug qui empêche de jouer), « Important » (imprécis, mal dit, mauvais niveau), « Confort » (idées, améliorations). Fusionne les remarques qui disent la même chose, indique qui l'a signalé entre parenthèses, et ne cite que ce qui est dans les retours. Texte brut, une ligne par correction commençant par « - ». Termine par une phrase sur les points où les enseignants ne sont pas d'accord entre eux, s'il y en a.`;
 	try { await sample(prompt, { signal:aiBusy.signal, modelTier:"default", onText:({ text }) => { $("ai").textContent = text; } }); }
 	catch(x){ if(x?.code !== "cancelled") $("ai").textContent = x?.code === "rate_limited" ? "Trop de demandes pour le moment : réessayez dans quelques minutes." : "Le classement n'a pas pu être fait. La liste ci-dessus reste complète."; }
 	finally { aiBusy = null; $("aiBtn").textContent = "Classer par priorité avec Claude"; }
 });
-function show(view){
-	$("viewForm").hidden = view !== "form"; $("viewRes").hidden = view !== "res";
+function showTab(view){
+	$("viewGame").hidden = view !== "form"; $("viewRes").hidden = view !== "res";
 	$("tabForm").setAttribute("aria-pressed", String(view === "form")); $("tabRes").setAttribute("aria-pressed", String(view === "res"));
 	if(view === "res" && mv.playing) mv.pause();
-	store.set(DRAFT + ":vue", view);
+	store.set("relecture:vue", view);
 }
-$("tabForm").addEventListener("click", () => show("form"));
-$("tabRes").addEventListener("click", () => show("res"));
+$("toForm").addEventListener("click", () => $("formulaire").scrollIntoView({ behavior:matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }));
+$("tabForm").addEventListener("click", () => showTab("form"));
+$("tabRes").addEventListener("click", () => showTab("res"));
+
+/* ---------- navigation : #accueil, #dmb, #sv… ---------- */
+function route(){
+	const id = location.hash.slice(1);
+	G = CFG.games[id] || null;
+	const acc = G ? G.accent : CFG.homeAccent, root = document.documentElement.style;
+	root.setProperty("--accent-l", acc[0]); root.setProperty("--soft-l", acc[1]); root.setProperty("--accent-d", acc[2]); root.setProperty("--soft-d", acc[3]);
+	setupVideo(G);
+	$("viewHome").hidden = !!G;
+	if(G){
+		document.title = `Relecture · ${G.card.title}`;
+		renderGame();
+		$("tabs").hidden = !owner;
+		showTab(owner ? (store.get("relecture:vue") || "form") : "form");
+		renderReviews();
+	} else {
+		document.title = "Relecture des mini-jeux";
+		$("h1").textContent = "Relecture des mini-jeux"; $("lead").textContent = CFG.homeLead;
+		$("tabs").hidden = true; $("viewGame").hidden = true; $("viewRes").hidden = true;
+		renderHome();
+	}
+	window.scrollTo(0, 0);
+}
+addEventListener("hashchange", route);
+renderHome();
+route();
 
 (async () => {
 	if(!window.claude?.use) return;
@@ -545,14 +716,17 @@ $("tabRes").addEventListener("click", () => show("res"));
 	if(user) uid = await user.id();
 	if(!db) return;
 	if(user && await user.can("data.write") === false && !(await user.canEdit())) writeBlocked = true;
-	// le relecteur retrouve sa relecture déjà envoyée
-	if(uid){ try { const snap = await db.doc("retours/" + uid).get(); if(snap.exists) fillForm(snap.data()); } catch(e){} }
-	if(user && await user.isOwner()){
-		$("tabs").hidden = false;
-		show(store.get(DRAFT + ":vue") || "form");
-		db.collection("retours").onSnapshot(s => { reviews = s.docs.map(d => d.data()).sort((a, b) => String(b.envoyeLe).localeCompare(String(a.envoyeLe))); renderReviews(); }, () => {});
+	owner = user ? await user.isOwner() : false;
+	loadMine();
+	const refresh = () => { renderHome(); if(G){ $("due").innerHTML = dueHTML(G.id); renderReviews(); } };
+	db.doc("reglages/jeux").onSnapshot(s => { settings = s.exists ? s.data() : null; refresh(); }, () => {});
+	for(const id of IDS) db.collection(`envois-${id}`).onSnapshot(s => { counts[id] = s.size; refresh(); }, () => {});
+	if(owner){
+		if(G){ $("tabs").hidden = false; showTab(store.get("relecture:vue") || "form"); }
+		for(const id of IDS) db.collection(`retours-${id}`).onSnapshot(s => { reviewsBy[id] = s.docs.map(d => d.data()).sort((a, b) => String(b.envoyeLe).localeCompare(String(a.envoyeLe))); refresh(); }, () => {});
 		sample = await claude.use("sample");
 		$("aiBtn").hidden = !sample;
+		refresh();
 	}
 })();
 </script>
