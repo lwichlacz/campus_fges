@@ -45,6 +45,25 @@ d'après la photo**. Sur Windows ou Linux, il faudrait remplacer `sips` par Pill
 Sources des données : OpenStreetMap (ODbL), IGN BD TOPO et BD ORTHO (Licence Ouverte), Open-Meteo.
 Mention affichée en bas de l'écran.
 
+## Relecture des mini-jeux par les enseignants
+
+Cinq pages de relecture publiées en artefacts claude.ai (privées, à partager depuis leur menu Partager : inviter chaque
+enseignant par e-mail en **Éditeur**, sans lien public, sinon il ne peut pas enregistrer sa réponse). Chacune contient une
+vidéo de présentation en motion design (50 s, `docs/validation-web/motion.js`), les consignes et le formulaire de la fiche
+`docs/validation-*.md` ; l'onglet « Retours reçus » (visible du seul propriétaire) donne la liste des corrections à faire.
+
+| Jeu | Page |
+|---|---|
+| From Blood to Decision (Master DMB) | https://claude.ai/artifact/7b43dbFLMgykBsxSZgrsFX |
+| Mission Jardin Boulay (Licence SV) | https://claude.ai/artifact/B4UETahA9W7RydpHB27jMb |
+| Cellule robotique Wenov (Licence SPI) | https://claude.ai/artifact/2hP2sYbvc43T8PFSwyHWZn |
+| Le Comptoir (Licence Gestion) | https://claude.ai/artifact/UFxH7uEGNyBDrGjP2jZCGb |
+| L'Enquête de l'auditeur (Licence CFA) | https://claude.ai/artifact/BN6ootdbhNhNDrEWL6ETLj |
+
+Côté site : `?jeu=<formation>` ouvre directement un jeu ; `&relecture=<id de la page>` ajoute la bannière « Relecture »
+(chronomètre, erreurs, journal de partie par étape à coller dans le formulaire, lien de retour). Pour modifier les pages :
+`python3 docs/validation-web/build.py`, puis republier chaque `docs/validation-web/<jeu>.html` (ids dans `pages.json`).
+
 ## Points de vigilance
 
 - **Pas encore testé sur un vrai téléphone.** Après l'allègement : environ 850 000 triangles par image en qualité

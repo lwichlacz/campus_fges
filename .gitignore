@@ -12,3 +12,4 @@ _*.html
 .env
 .env.*
 !.env.example
+docs/validation-web/*.html
