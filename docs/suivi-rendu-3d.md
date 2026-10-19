@@ -101,5 +101,6 @@ tricheurs (L3 Data). Épingle dans Wenov, salle de l'École du Numérique.
 nouveau mini-jeu) : `docs/validation-web/voix/voix.sh` (musique), `python3 tools/serve.py`, `python3 tools/film/recepteur.py`,
 ouvrir http://localhost:8765/?debug (onglet au premier plan pendant 100 s), puis dans la console
 `(await import("/tools/film/film.js")).tourner()`. `apercu(n° du plan, seconde)` montre une image sans tourner ;
-`controle()` vérifie que chaque formation apparaît une fois. Ensuite `avconvert -p PresetPassthrough` (MP4 standard)
+`controle()` vérifie que chaque formation apparaît une fois. Le film est rendu en 2560×1440, réduit en 1920×1080 (bords lissés), enregistré à 5 Mb/s (environ 60 Mo) dans
+`campus-3d-brut.mp4`. Ensuite `avconvert -s campus-3d-brut.mp4 -o campus-3d.mp4 -p PresetPassthrough` (MP4 standard)
 et `python3 docs/validation-web/build.py`.

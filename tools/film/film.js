@@ -1,4 +1,6 @@
-/* Tournage du film de présentation (100 s, 1280×720) dans le vrai campus 3D.
+/* Tournage du film de présentation (100 s, Full HD) dans le vrai campus 3D.
+   Les titres sont dessinés en coordonnées 1280×720 puis agrandis ; le campus est rendu en 2560×1440 puis réduit
+   (bords lissés, sans escaliers).
    Le campus est filmé en direct ; les titres et les panneaux de formations sont dessinés par-dessus ;
    la musique (docs/validation-web/voix, mix.py --duree 100) est mêlée à l'enregistrement.
 
@@ -10,7 +12,7 @@
    Toutes les formations du site apparaissent, avec leur mini-jeu s'il existe, sinon « mini-jeu à venir ». */
 import { FORMATIONS, GAMES, GAME_INFO } from "/js/data.js";
 
-const W = 1280, H = 720, FPS = 30;
+const W = 1280, H = 720, FPS = 30, OUT_W = 1920, OUT_H = 1080, RENDU = 2;      // titres en 1280×720 · vidéo en 1920×1080 · rendu 3D en 2560×1440
 const NAVY = "rgba(9,17,38,.82)", CYAN = "#5fd3e6", WHITE = "#ffffff", MUTED = "rgba(235,240,250,.72)", GREEN = "#7ee2a0";
 const DISP = "Fraunces, Georgia, serif", BODY = "Nunito, system-ui, sans-serif";
 const F = Object.fromEntries(FORMATIONS.map(f => [f.id, f]));
@@ -151,18 +153,18 @@ export async function apercu(shot, t){
 	await document.fonts.load(`700 40px ${DISP}`); await document.fonts.load(`800 20px ${BODY}`);
 	const S = SHOTS[shot]; if(S.scene !== "ext"){ await C.loadInterior(S.scene); C.placeIn(S.scene); } else if(C.mode !== "ext") C.placeExt("ha");
 	Object.assign(C.controls, { enableDamping:false, minDistance:0, maxDistance:1e4, minPolarAngle:0, maxPolarAngle:Math.PI, autoRotate:false });
-	const R = C.renderer; R.setPixelRatio(1); R.setSize(W, H, false); C.camera.aspect = W/H; C.camera.updateProjectionMatrix(); C.post?.setSize(W, H, 1);
+	const R = C.renderer; R.setPixelRatio(RENDU); R.setSize(W, H, false); C.camera.aspect = W/H; C.camera.updateProjectionMatrix(); C.post?.setSize(W, H, RENDU);
 	const [p, tg] = S.cam(clamp(t/S.d)); C.view(...p, ...tg);
 	const logo = new Image(); logo.src = "/img/logo-fges.png"; await logo.decode().catch(() => {});
 	let cv = document.getElementById("apercu");
-	if(!cv){ cv = document.createElement("canvas"); cv.id = "apercu"; cv.width = W; cv.height = H; cv.style.cssText = "position:fixed;inset:0;width:100vw;height:auto;z-index:99;background:#000"; document.body.append(cv); }
-	const c = cv.getContext("2d");
+	if(!cv){ cv = document.createElement("canvas"); cv.id = "apercu"; cv.width = OUT_W; cv.height = OUT_H; cv.style.cssText = "position:fixed;inset:0;width:100vw;height:auto;z-index:99;background:#000"; document.body.append(cv); }
+	const c = cv.getContext("2d"); c.setTransform(OUT_W/W, 0, 0, OUT_H/H, 0, 0); c.imageSmoothingQuality = "high";
 	const err = await new Promise(r => { const orig = R.render.bind(R); R.render = (a, b) => { if(b === C.camera) decale(b, shot, t); orig(a, b); if(R.getRenderTarget() === null){ R.render = orig; try { compose(c, R.domElement, shot, t, logo); r(null); } catch(e){ r(String(e.stack || e)); } } }; });
 	return err || SHOTS.map((x, i) => `${i}:${x.d}s`).join(" ");
 }
 
 /* ---------- tournage ---------- */
-export async function tourner({ recepteur = "http://127.0.0.1:8767/film", musique = "/docs/validation-web/voix/musique-film.wav", sortie = "docs/validation-web/media/campus-3d.mp4" } = {}){
+export async function tourner({ recepteur = "http://127.0.0.1:8767/film", musique = "/docs/validation-web/voix/musique-film.wav", sortie = "docs/validation-web/media/campus-3d-brut.mp4" } = {}){
 	const C = window.campus; if(!C) throw new Error("Ouvrir le site avec ?debug");
 	const ctl = controle(); if(ctl.manquantes.length || ctl.inconnues.length || ctl.doublons.length) throw new Error("Formations : " + JSON.stringify(ctl));
 	await document.fonts.load(`700 40px ${DISP}`); await document.fonts.load(`800 20px ${BODY}`);
@@ -171,13 +173,14 @@ export async function tourner({ recepteur = "http://127.0.0.1:8767/film", musiqu
 	C.setQuality("haute"); C.perf.locked = true; C.perf.dyn = 1;
 	C.set("time", "doree");
 	const R = C.renderer, cam = C.camera;
-	R.setPixelRatio(1); R.setSize(W, H, false); cam.aspect = W/H; cam.updateProjectionMatrix(); C.post?.setSize(W, H, 1);
+	R.setPixelRatio(RENDU); R.setSize(W, H, false); cam.aspect = W/H; cam.updateProjectionMatrix(); C.post?.setSize(W, H, RENDU);
 	C.controls.autoRotate = false; C.controls.enableDamping = false;
 	document.querySelectorAll("#welcome, #hud, #pins, #dock, #toast").forEach(e => e && (e.style.visibility = "hidden"));
 	const logo = new Image(); logo.src = "/img/logo-fges.png";
 	// image composée : le rendu 3D + les titres
-	const cv = document.createElement("canvas"); cv.width = W; cv.height = H; const c = cv.getContext("2d");
-	let t0 = 0, shot = 0, shotStart = 0, scene = "ext", done = false;
+	const cv = document.createElement("canvas"); cv.width = OUT_W; cv.height = OUT_H; const c = cv.getContext("2d");
+	c.setTransform(OUT_W/W, 0, 0, OUT_H/H, 0, 0); c.imageSmoothingQuality = "high";
+	let t0 = 0, shot = 0, shotStart = 0, scene = "ext", done = false, frames = 0;
 	const free = () => Object.assign(C.controls, { enableDamping:false, minDistance:0, maxDistance:1e4, minPolarAngle:0, maxPolarAngle:Math.PI });      // plans larges : sans les limites de la visite
 	const place = s => { if(s === scene) return; scene = s; if(s === "ext") C.placeExt("ha"); else C.placeIn(s); free(); };
 	free();
@@ -187,6 +190,7 @@ export async function tourner({ recepteur = "http://127.0.0.1:8767/film", musiqu
 		if(t0 && !done && SHOTS[shot] && ca === cam) decale(ca, shot, now() - shotStart);
 		orig(sc, ca);
 		if(R.getRenderTarget() !== null || !t0 || done) return;
+		frames++;
 		try { compose(c, R.domElement, shot, now() - shotStart, logo); } catch(e){ (window.__filmErr ||= []).push(String(e.stack || e)); }
 	};
 	// caméra : chaque image, avant le rendu suivant
@@ -206,7 +210,7 @@ export async function tourner({ recepteur = "http://127.0.0.1:8767/film", musiqu
 	const src = ac.createBufferSource(); src.buffer = buf; src.connect(dest);
 	const stream = cv.captureStream(FPS); stream.addTrack(dest.stream.getAudioTracks()[0]);
 	const mime = ["video/mp4;codecs=avc1.640028,mp4a.40.2", "video/mp4;codecs=avc1,mp4a.40.2", "video/mp4"].find(m => MediaRecorder.isTypeSupported(m));
-	const rec = new MediaRecorder(stream, { mimeType:mime, videoBitsPerSecond:1_800_000, audioBitsPerSecond:128_000 });
+	const rec = new MediaRecorder(stream, { mimeType:mime, videoBitsPerSecond:5_000_000, audioBitsPerSecond:128_000 });
 	const chunks = []; rec.ondataavailable = e => e.data.size && chunks.push(e.data);
 	// premier lieu installé et rendu une seconde avant de lancer l'enregistrement
 	place("ext"); C.view(...SHOTS[0].cam(0)[0], ...SHOTS[0].cam(0)[1]);
@@ -219,7 +223,7 @@ export async function tourner({ recepteur = "http://127.0.0.1:8767/film", musiqu
 	const blob = new Blob(chunks, { type:mime });
 	window.__film = blob;          // gardé : renvoyer avec envoyer() si le récepteur ne répondait pas
 	const res = await fetch(recepteur + "?sortie=" + encodeURIComponent(sortie), { method:"POST", body:blob });
-	return { mime, taille:blob.size, duree:TOTAL, recu:await res.text() };
+	return { mime, taille:blob.size, duree:TOTAL, imagesParSeconde:+(frames/TOTAL).toFixed(1), recu:await res.text() };
 }
 
 // renvoie la dernière vidéo tournée (si l'envoi a échoué)
