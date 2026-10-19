@@ -2,7 +2,7 @@
    et les lieux réels (boulangeries, cafés, pharmacies…) en petites étiquettes qui apparaissent de près.
    Chaque famille est dessinée en un seul maillage (atlas de textes) pour rester légère. */
 import * as THREE from "three";
-import { std } from "./kit.js?v=d65ff1ac4b";
+import { std } from "./kit.js?v=99af2eabcd";
 
 const FONT = `"Inter", "Helvetica Neue", Arial, sans-serif`;
 

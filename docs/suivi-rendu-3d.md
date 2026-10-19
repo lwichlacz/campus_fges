@@ -47,17 +47,17 @@ Mention affichée en bas de l'écran.
 
 ## Relecture des mini-jeux par les enseignants
 
-Une seule page de relecture, publiée en artefact claude.ai : https://claude.ai/artifact/PeZ2mUoAeCAfXnH6vz3XVF
-(privée : la partager depuis son menu Partager, en invitant chaque enseignant par e-mail en **Éditeur**, sans lien
-public, sinon il ne peut pas enregistrer sa réponse). Un lien par jeu : `#dmb`, `#sv`, `#spi`, `#gestion`, `#cfa`, `#info`.
-L'accueil montre la vidéo (52 s, motion design et musique, sous-titrée), les jeux avec leur compteur de relectures,
-et pour le propriétaire seul le tableau de bord (avancement, avis, corrections ; date limite et nombre attendu
-réglables). Chaque jeu : consignes, formulaire tiré de `docs/validation-*.md`, journal de partie, captures d'écran ;
-onglet « Retours reçus » avec la liste des corrections à faire. E-mail d'invitation : `docs/validation-web/invitation.md`.
+Page de relecture sur le site : https://lwichlacz.github.io/campus_fges/relecture/ (un lien par jeu : `#dmb`, `#sv`, `#spi`, `#gestion`, `#cfa`, `#info` ;
+`#tableau` : tableau de bord, avec la clé du script). Lien public, sans compte. Les réponses vont dans un tableur Google
+via `docs/validation-web/google-apps-script.js` (installation en tête du fichier ; l'URL du script va dans
+`docs/validation-web/pages.json`), les captures dans un dossier Drive. Tant que l'URL n'est pas renseignée, l'enseignant
+obtient un récapitulatif à copier. L'accueil montre la vidéo (52 s, motion design et musique, sous-titrée) et les jeux
+avec leur compteur. E-mail d'invitation : `docs/validation-web/invitation.md`. (Les pages claude.ai faites avant sont
+remplacées par celle-ci.)
 
-Côté site : `?jeu=<formation>` ouvre directement un jeu ; `&relecture=<id de la page>` ajoute la bannière « Relecture »
-(chronomètre, erreurs, « Aller à… » pour sauter à une étape, « ✏️ Noter ici », journal à coller, lien de retour).
-Pour modifier la page : `python3 docs/validation-web/build.py`, puis republier `docs/validation-web/relecture.html`.
+Côté site : `?jeu=<formation>` ouvre directement un jeu ; `&relecture` ajoute la bannière « Relecture » (chronomètre,
+erreurs, « Aller à… » pour sauter à une étape, « ✏️ Noter ici », lien vers le formulaire). Le journal est gardé dans le
+navigateur et repris tout seul par le formulaire. Pour modifier la page : `python3 docs/validation-web/build.py`, puis push.
 
 Nouveau jeu : **Projet Gaming** (Licence Informatique, `js/games/gaming.js`, fiche `docs/validation-licence-info.md`) :
 rebond de balle programmé (L1), podium en SQL (L1), code de César et mots de passe hachés (L2 Cyber), détecteur de

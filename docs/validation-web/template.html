@@ -1,6 +1,11 @@
+<!doctype html>
+<html lang="fr">
+<head>
 <meta charset="utf-8">
-<title>Relecture des mini-jeux</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Relecture des mini-jeux · Campus FGES</title>
+<link rel="icon" href="../img/icone.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&display=swap">
 <style>
@@ -27,7 +32,8 @@
 	--ok:#6fcf92; --ok-soft:#1b3326; --ko:#f08a72; --ko-soft:#3a221c; --na:#a5abb6; --na-soft:#262a32; --warn:#f2c35b; --warn-soft:#3a2f14; color-scheme:dark }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 64px}
+html{color-scheme:light}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 64px}
 .wrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
 h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
 h1{font-size:clamp(30px, 6vw, 44px)} h2{font-size:26px} h3{font-size:19px}
@@ -162,7 +168,8 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 .bar .cm{grid-column:1 / -1;font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
 @media (prefers-reduced-motion:no-preference){ .btn,.chip,.game{transition:background .15s, border-color .15s} }
 </style>
-
+</head>
+<body>
 <div class="wrap">
 	<header class="top">
 		<span class="eyebrow"><a href="#accueil">Campus FGES en 3D · Relecture pédagogique</a></span>
@@ -206,9 +213,14 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 				<p>Un lycéen ou un candidat choisit souvent une formation sur un intitulé. Le jeu lui montre concrètement ce qu'il y fera, avant même la journée portes ouvertes. Pour que ce soit utile, il faut que ce soit <b>juste</b> : c'est là que nous avons besoin de vous.</p>
 			</div>
 		</section>
+		<section class="stack" id="loginBox" hidden aria-labelledby="t-login">
+			<h2 id="t-login">Tableau de bord</h2>
+			<form class="settings" id="login"><label>Clé d'accès (celle du script Google)<input type="password" id="loginKey" autocomplete="current-password" style="width:220px"></label>
+				<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn small" type="submit">Ouvrir le tableau de bord</button><span class="hint" id="loginMsg"></span></div></form>
+		</section>
 		<section class="stack" id="dashBox" hidden aria-labelledby="t-dash">
 			<h2 id="t-dash">Tableau de bord des relectures</h2>
-			<p class="hint">Visible par vous seul. Les chiffres se mettent à jour dès qu'un enseignant envoie sa relecture.</p>
+			<p class="hint">Avec votre clé d'accès uniquement. Toutes les réponses sont aussi dans le tableur Google (feuille « Retours »). <button type="button" class="btn ghost small" id="reload">Actualiser</button> <button type="button" class="btn ghost small" id="logout">Se déconnecter</button></p>
 			<div class="dash"><table><thead><tr><th>Jeu</th><th>Relectures</th><th>Avis</th><th>À corriger</th><th>Dernier retour</th></tr></thead><tbody id="dashRows"></tbody></table></div>
 			<form class="settings" id="settings">
 				<b>Date limite et nombre de relectures attendues</b>
@@ -236,7 +248,7 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 					<ol>
 						<li><b>Jouez une partie</b> en entier, comme un candidat. Le bouton ouvre directement le jeu, dans un nouvel onglet.</li>
 						<li><b>Laissez tourner la bannière « Relecture »</b> en bas à gauche du jeu. Elle note votre temps et vos erreurs à chaque étape ; « ✏️ Noter ici » ajoute une remarque sur l'écran en cours ; « Aller à… » permet de rejouer directement une étape.</li>
-						<li><b>À la fin, touchez « Copier le journal »</b>, revenez ici, collez-le, notez ce qui est faux ou mal dit, ajoutez des captures d'écran si besoin, et envoyez.</li>
+						<li><b>Revenez ici</b> (bouton « Formulaire » de la bannière, ou cet onglet) : le journal de votre partie est déjà rempli. Notez ce qui est faux ou mal dit, ajoutez des captures d'écran si besoin, et envoyez.</li>
 					</ol>
 					<div style="display:flex;gap:10px;flex-wrap:wrap">
 						<a class="btn" id="play" target="_blank" rel="noopener">Ouvrir le jeu ↗</a>
@@ -255,7 +267,7 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 				<fieldset>
 					<legend><h3>Vous</h3></legend>
 					<div class="grid2">
-						<label class="f">Nom et prénom<input type="text" id="nom" autocomplete="name" required></label>
+						<label class="f">Nom et prénom<input type="text" id="nom" autocomplete="name" required><input type="text" id="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px"></label>
 						<label class="f">Fonction ou cours enseignés<input type="text" id="fonction"></label>
 					</div>
 					<label class="f">Appareil utilisé pour jouer
@@ -268,7 +280,7 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 				</fieldset>
 				<fieldset>
 					<legend><h3>Votre partie</h3></legend>
-					<label class="f">Journal de partie <span class="hint">Dans le jeu, touchez « Copier le journal » sur la bannière « Relecture », puis collez-le ici. Il indique le temps passé, les erreurs et vos notes à chaque étape.</span>
+					<label class="f">Journal de partie <span class="hint" id="journalHint">Il se remplit tout seul quand vous jouez depuis le bouton « Ouvrir le jeu » sur cet appareil. Sinon, dans le jeu, touchez « Copier le journal » sur la bannière « Relecture » et collez-le ici.</span>
 						<textarea id="journal" class="mono" placeholder="Journal de partie · …"></textarea></label>
 					<div class="stack">
 						<span style="font-weight:600;font-size:14px">Captures d'écran <span class="hint" style="font-weight:400">· un écran faux, un texte mal dit, un bug</span></span>
@@ -324,9 +336,8 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 				<div class="todo" id="todo"></div>
 				<div style="display:flex;gap:10px;flex-wrap:wrap">
 					<button type="button" class="btn small" id="copyTodo">Copier la liste pour Claude</button>
-					<button type="button" class="btn ghost small" id="aiBtn" hidden>Classer par priorité avec Claude</button>
+					
 				</div>
-				<div class="ai" id="ai" hidden></div>
 			</div>
 			<div class="stack"><h3>Point par point</h3><div class="bysec" id="byPoint"></div></div>
 			<div class="stack"><h3>Par relecteur</h3><div class="stack" id="byPerson"></div></div>
@@ -337,396 +348,7 @@ pre.copy{white-space:pre-wrap;word-break:break-word;background:var(--paper);bord
 <script>__MOTION__</script>
 <script id="cfg" type="application/json">__CONFIG__</script>
 <script>
-const CFG = JSON.parse(document.getElementById("cfg").textContent);
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
-const LABEL = { ok:"Juste", ko:"À corriger", na:"Je ne sais pas" };
-const QLABEL = { ok:"Oui", ko:"Non", na:"Sans avis" };
-const PICK = { facile:"Trop facile", adapte:"Adapté", difficile:"Trop difficile", court:"Trop courte", bien:"Bien", long:"Trop longue", valide:"Oui, en l'état", corrections:"Après corrections", non:"Pas en l'état" };
-const store = { get(k){ try { return JSON.parse(localStorage.getItem(k) || "null"); } catch(e){ return null; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} } };
-const IDS = CFG.order;
-let G = null;                       // le jeu affiché (null = accueil)
-let db = null, uid = null, assets = null, sample = null, owner = false, writeBlocked = false;
-const counts = {}, reviewsBy = {};
-let settings = null;                // { deadline:"AAAA-MM-JJ", attendus:{ dmb:2, … } } (base de la page, sinon valeurs par défaut)
-const deadline = () => settings?.deadline || CFG.defaults.deadline;
-const expected = id => +(settings?.attendus?.[id] ?? CFG.defaults.attendus) || 0;
-const fmtDate = d => new Date(d + "T12:00:00").toLocaleDateString("fr-FR", { weekday:"long", day:"numeric", month:"long" });
-function daysLeft(){ const ms = new Date(deadline() + "T23:59:59") - new Date(); return Math.ceil(ms/86400000); }
-
-/* ---------- la vidéo (avec sa bande son) ---------- */
-const img = src => { const i = new Image(); i.src = src; return i; };
-const images = { campus:img("img/campus.jpg"), logo:img("img/logo-fges.png") };
-const audio = $("mvAudio");
-let mv = null, soundOn = true, audioOk = true;
-const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
-audio.addEventListener("error", () => { audioOk = false; $("mvSound").hidden = true; });
-// la bande son (400 Ko) est chargée en mémoire : on peut alors se déplacer librement dans la vidéo
-fetch("media/bande-son.mp4").then(r => r.ok ? r.blob() : Promise.reject()).then(b => { audio.src = URL.createObjectURL(b); }).catch(() => { audioOk = false; $("mvSound").hidden = true; });
-function setupVideo(g){
-	if(mv?.playing) mv.pause();
-	audio.pause();
-	mv = createMotion($("mv"), { games:CFG.videoGames, current:g?.id, accent:g?.videoAccent || "#5fcbe0", accentInk:g?.videoInk || "#0b7a8e", gameTitle:g?.short, steps:g?.videoSteps, images, poster:2.6 });
-	// la vidéo garde sa propre horloge ; la bande son est recalée sur elle si elle s'en écarte
-	mv.onTime = t => {
-		$("mvSeek").value = t; $("mvTime").textContent = `${fmt(t)} / ${fmt(mv.duration)}`;
-		if(mv.playing && soundOn && audioOk && !audio.paused && Math.abs(audio.currentTime - t) > .3){ try { audio.currentTime = t; } catch(e){} }
-	};
-	mv.onState = on => { $("mvToggle").textContent = on ? "Pause" : (mv.t >= mv.duration - .05 ? "Revoir" : "Lecture"); if(on) $("mvPlay").hidden = true; if(!on) audio.pause(); if(mv.t >= mv.duration - .05) audio.pause(); };
-	$("mvTime").textContent = `0:00 / ${fmt(mv.duration)}`; $("mvSeek").max = mv.duration; $("mvSeek").value = 0; $("mvPlay").hidden = false; $("mvToggle").textContent = "Lecture";
-}
-function play(){
-	if(mv.t >= mv.duration - .05) mv.seek(0);
-	if(soundOn && audioOk){ try { audio.currentTime = mv.t; } catch(e){} audio.play().catch(() => { audioOk = false; }); }
-	mv.play();
-}
-$("mvPlay").addEventListener("click", () => { mv.seek(0); play(); });
-$("mvToggle").addEventListener("click", () => mv.playing ? mv.pause() : play());
-$("mv").addEventListener("click", () => mv.playing ? mv.pause() : play());
-$("mvSeek").addEventListener("input", e => { $("mvPlay").hidden = true; mv.seek(+e.target.value); try { audio.currentTime = +e.target.value; } catch(x){} });
-$("mvSound").addEventListener("click", () => {
-	soundOn = !soundOn; $("mvSound").setAttribute("aria-pressed", String(soundOn)); $("mvSound").textContent = soundOn ? "🔊 Son" : "🔇 Son coupé";
-	if(!soundOn) audio.pause(); else if(mv.playing && audioOk){ try { audio.currentTime = mv.t; } catch(e){} audio.play().catch(() => {}); }
-});
-const redraw = () => { if(mv && !mv.playing) mv.draw(mv.t); };
-images.campus.onload = images.logo.onload = redraw;
-document.fonts?.ready.then(redraw);
-
-/* ---------- accueil ---------- */
-function dueHTML(id){
-	const d = daysLeft(), n = counts[id] || 0, y = expected(id);
-	const when = d < 0 ? `Date limite passée (${fmtDate(deadline())})` : `À rendre avant le ${fmtDate(deadline())}${d <= 7 ? ` · J−${d}` : ""}`;
-	return `<span>${esc(when)}</span>${y ? `<span class="n">${n} relecture${n > 1 ? "s" : ""} sur ${y} attendue${y > 1 ? "s" : ""}</span>` : ""}`;
-}
-function renderHome(){
-	$("games").innerHTML = IDS.map(id => {
-		const g = CFG.games[id], n = counts[id] || 0, y = expected(id);
-		return `<a class="game" href="#${id}" style="--accent-l:${g.accent[0]};--accent-d:${g.accent[2]}"><span class="ic" aria-hidden="true">${g.card.icon}</span><b>${esc(g.card.title)}</b><small>${esc(g.card.formation)}</small>
-			<span class="cnt">${n} relecture${n > 1 ? "s" : ""}${y ? ` sur ${y}` : ""}</span>${y ? `<span class="meter"><i style="width:${Math.min(100, n/y*100)}%"></i></span>` : ""}</a>`;
-	}).join("");
-	if(G) return;
-	const d = daysLeft();
-	$("due").innerHTML = `<span>${esc(d < 0 ? `Date limite passée (${fmtDate(deadline())})` : `Relectures attendues avant le ${fmtDate(deadline())}`)}</span>`;
-	if(owner) renderDash();
-}
-function renderDash(){
-	$("dashBox").hidden = false;
-	$("dashRows").innerHTML = IDS.map(id => {
-		const g = CFG.games[id], rs = reviewsBy[id] || [], n = rs.length, y = expected(id);
-		const v = k => rs.filter(r => r.verdict === k).length;
-		const ko = todoData(g, rs).ko.length + rs.filter(r => r.bugs).length;
-		const last = rs[0]?.envoyeLe ? new Date(rs[0].envoyeLe).toLocaleDateString("fr-FR", { day:"numeric", month:"short" }) : "—";
-		return `<tr><td><a href="#${id}">${g.card.icon} ${esc(g.card.title)}</a></td>
-			<td class="num">${n}${y ? ` / ${y}` : ""}${y ? `<div class="meter" style="width:90px;margin-top:4px"><i style="width:${Math.min(100, n/y*100)}%;background:${g.accent[0]}"></i></div>` : ""}</td>
-			<td><div class="pills">${v("valide") ? `<span class="pill ok">${v("valide")} validé</span>` : ""}${v("corrections") ? `<span class="pill mid">${v("corrections")} après corr.</span>` : ""}${v("non") ? `<span class="pill ko">${v("non")} non</span>` : ""}${!n ? `<span class="pill na">en attente</span>` : ""}</div></td>
-			<td class="num">${n ? ko : "—"}</td><td class="num">${last}</td></tr>`;
-	}).join("");
-	if(document.activeElement?.closest?.("#settings")) return;
-	$("setDeadline").value = deadline();
-	$("setCounts").innerHTML = IDS.map(id => `<label>${esc(CFG.games[id].card.title)}<input type="number" min="0" max="20" data-att="${id}" value="${expected(id)}"></label>`).join("");
-}
-$("settings").addEventListener("submit", async e => {
-	e.preventDefault();
-	const att = {}; document.querySelectorAll("[data-att]").forEach(i => att[i.dataset.att] = Math.max(0, Math.min(20, +i.value || 0)));
-	const next = { deadline:$("setDeadline").value || deadline(), attendus:att };
-	try { await db.doc("reglages/jeux").set(next); $("setMsg").textContent = "Enregistré : les enseignants voient la nouvelle date et le compteur."; }
-	catch(x){ $("setMsg").textContent = "L'enregistrement n'a pas abouti. Réessayez dans un instant."; }
-});
-
-/* ---------- un jeu : contenu ---------- */
-const ALL = () => G.sections.flatMap(s => s.items.map(it => ({ ...it, sec:s.t })));
-const itemHTML = (it, kind) => {
-	const L = kind === "q" ? QLABEL : LABEL;
-	return `<div class="item" data-k="${it.k}" data-kind="${kind}"><span class="q">${esc(it.q)}</span>${it.d ? `<span class="d">${esc(it.d)}</span>` : ""}
-		<div class="chips" role="group" aria-label="${esc(it.q)}">${["ok", "ko", "na"].map(v => `<button type="button" class="chip" data-v="${v}" aria-pressed="false">${L[v]}</button>`).join("")}</div>
-		<textarea id="c-${it.k}" placeholder="${kind === "q" ? "Votre réponse ou précision" : "Ce qu'il faudrait corriger, ou une précision"}" aria-label="Commentaire : ${esc(it.q)}"></textarea></div>`;
-};
-function renderGame(){
-	$("h1").textContent = G.h1; $("lead").textContent = G.lead;
-	$("facts").innerHTML = G.facts.map(f => `<span>${esc(f)}</span>`).join("");
-	$("play").href = G.url + "&relecture=" + encodeURIComponent(CFG.pageId || "");
-	$("howto").textContent = G.howto;
-	$("gamecard").innerHTML = `<span class="ic" aria-hidden="true">${G.card.icon}</span><span class="k">Mini-jeu · ${esc(G.card.formation)}</span><h3>${esc(G.card.title)}</h3><ol>${G.card.steps.map(([y, s]) => `<li><span>${esc(y)}</span>${esc(s)}</li>`).join("")}</ol>`;
-	$("publicHint").textContent = G.publicHint; $("dureeHint").textContent = G.dureeHint;
-	$("parcoursBox").hidden = !G.parcours;
-	$("parcours").innerHTML = (G.parcours || []).map(([k, t]) => `<label><input type="checkbox" value="${k}" id="p-${k}"> ${esc(t)}</label>`).join("");
-	$("sections").innerHTML = G.sections.map(s => `<fieldset><legend><h3>${esc(s.t)}${s.sub ? ` <small>${esc(s.sub)}</small>` : ""}</h3></legend>${s.items.map(it => itemHTML(it, it.kind || "c")).join("")}</fieldset>`).join("");
-	$("openItems").innerHTML = G.open.map(o => `<label class="f">${esc(o.q)}<textarea id="o-${o.k}"></textarea></label>`).join("");
-	clearForm();
-	fillForm(store.get(DRAFT()));
-	loadMine();
-	$("due").innerHTML = dueHTML(G.id);
-	$("sendStatus").hidden = true; $("fallback").hidden = true;
-}
-
-/* ---------- formulaire ---------- */
-const DRAFT = () => "relecture:" + G.id;
-let captures = [];          // [{ id, url, legende }]
-function readForm(){
-	const items = {};
-	document.querySelectorAll("#sections .item").forEach(el => {
-		const k = el.dataset.k, s = el.dataset.s || "", c = $("c-" + k).value.trim();
-		if(s || c) items[k] = { s, c };
-	});
-	const pick = k => document.querySelector(`.item[data-k="${k}"]`).dataset.s || "";
-	const open = {}; G.open.forEach(o => { const v = $("o-" + o.k).value.trim(); if(v) open[o.k] = v; });
-	return {
-		nom:$("nom").value.trim(), fonction:$("fonction").value.trim(), appareil:$("appareil").value,
-		parcours:G.parcours ? G.parcours.map(p => p[0]).filter(k => $("p-" + k).checked) : [],
-		journal:$("journal").value.trim().slice(0, 20000),
-		captures:captures.map(c => ({ id:c.id, legende:(c.legende || "").slice(0, 300) })),
-		items, niveau:pick("_niveau"), duree:pick("_duree"), bugs:$("bugs").value.trim(), open,
-		verdict:pick("_verdict"), remarques:$("remarques").value.trim()
-	};
-}
-function setChip(el, s){
-	el.dataset.s = s;
-	el.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.x || b.dataset.v) === s)));
-}
-function clearForm(){
-	for(const id of ["fonction", "appareil", "bugs", "remarques", "journal"]) $(id).value = "";
-	document.querySelectorAll(".item").forEach(el => setChip(el, ""));
-	captures = []; renderShots(); $("dropMsg").textContent = assets ? "" : $("dropMsg").textContent;
-}
-function fillForm(d){
-	if(!d) return;
-	if(d.nom) $("nom").value = d.nom;
-	$("fonction").value = d.fonction || $("fonction").value; $("appareil").value = d.appareil || "";
-	(d.parcours || []).forEach(k => { const c = $("p-" + k); if(c) c.checked = true; });
-	document.querySelectorAll("#sections .item").forEach(el => { const v = (d.items || {})[el.dataset.k]; if(v){ setChip(el, v.s || ""); $("c-" + el.dataset.k).value = v.c || ""; } });
-	for(const k of ["niveau", "duree", "verdict"]) if(d[k]) setChip(document.querySelector(`.item[data-k="_${k}"]`), d[k]);
-	$("bugs").value = d.bugs || ""; $("remarques").value = d.remarques || ""; $("journal").value = d.journal || "";
-	G.open.forEach(o => { $("o-" + o.k).value = (d.open || {})[o.k] || ""; });
-	captures = (d.captures || []).map(c => ({ id:c.id, url:c.url || "/_blob/" + c.id, legende:c.legende || "" }));
-	renderShots();
-}
-async function loadMine(){
-	if(!db || !uid || !G) return;
-	const id = G.id;
-	try { const snap = await db.doc(`retours-${id}/${uid}`).get(); if(snap.exists && G?.id === id && !store.get(DRAFT())) fillForm(snap.data()); } catch(e){}
-}
-$("form").addEventListener("click", e => {
-	const b = e.target.closest(".chip"); if(!b) return;
-	const el = b.closest(".item"), v = b.dataset.x || b.dataset.v;
-	setChip(el, el.dataset.s === v ? "" : v);
-	if(v === "ko" && el.dataset.s === "ko") $("c-" + el.dataset.k)?.focus();
-	saveDraft();
-});
-let draftT;
-function saveDraft(){ clearTimeout(draftT); const key = DRAFT(); draftT = setTimeout(() => store.set(key, { ...readForm(), captures }), 400); }
-$("form").addEventListener("input", saveDraft);
-$("nom").addEventListener("change", () => store.set("relecture:nom", $("nom").value.trim()));
-$("nom").value = store.get("relecture:nom") || "";
-
-/* ---------- captures d'écran ---------- */
-function renderShots(){
-	$("shots").innerHTML = captures.map((c, i) => `<div class="shot"><img src="${esc(c.url)}" alt="Capture ${i + 1}"><div class="row"><input type="text" data-leg="${i}" value="${esc(c.legende)}" placeholder="Quel écran, quel problème ?" aria-label="Légende de la capture ${i + 1}"><button type="button" data-del="${i}" aria-label="Retirer la capture ${i + 1}">✕</button></div></div>`).join("");
-}
-$("shots").addEventListener("input", e => { const i = e.target.dataset.leg; if(i != null){ captures[i].legende = e.target.value; saveDraft(); } });
-$("shots").addEventListener("click", e => { const i = e.target.dataset.del; if(i != null){ captures.splice(+i, 1); renderShots(); saveDraft(); } });
-async function addFiles(files){
-	const list = [...files].filter(f => /^image\/(png|jpeg|webp|gif)$/.test(f.type));
-	if(!list.length) return;
-	if(!assets){ $("dropMsg").textContent = "Les images ne peuvent pas être jointes depuis ce lien : envoyez-les par e-mail avec le récapitulatif."; return; }
-	if(captures.length + list.length > 8){ $("dropMsg").textContent = "8 captures au plus : retirez-en une pour en ajouter une autre."; return; }
-	for(const f of list){
-		if(f.size > 15*1024*1024){ $("dropMsg").textContent = `${f.name} dépasse 15 Mo : réduisez-la avant de l'ajouter.`; continue; }
-		$("dropMsg").textContent = "Envoi de l'image…";
-		try { const r = await assets.upload(f); captures.push({ id:r.id, url:r.url, legende:"" }); renderShots(); saveDraft(); $("dropMsg").textContent = "Image ajoutée. Ajoutez une légende pour dire ce qui ne va pas."; }
-		catch(x){ $("dropMsg").textContent = "Cette image n'a pas pu être envoyée. Réessayez, ou joignez-la à un e-mail."; }
-	}
-}
-$("shotInput").addEventListener("change", e => { addFiles(e.target.files); e.target.value = ""; });
-$("drop").addEventListener("dragover", e => { e.preventDefault(); $("drop").classList.add("over"); });
-$("drop").addEventListener("dragleave", () => $("drop").classList.remove("over"));
-$("drop").addEventListener("drop", e => { e.preventDefault(); $("drop").classList.remove("over"); addFiles(e.dataTransfer.files); });
-document.addEventListener("paste", e => { if(G && !$("viewGame").hidden && e.clipboardData?.files?.length){ e.preventDefault(); addFiles(e.clipboardData.files); } });
-
-/* ---------- récapitulatif texte ---------- */
-function recapText(d, g = G){
-	const lines = [`Relecture · ${g.game}`, `${d.nom}${d.fonction ? " (" + d.fonction + ")" : ""}${d.appareil ? " · " + d.appareil : ""}`];
-	if(d.parcours?.length) lines.push("Parcours joués : " + d.parcours.map(k => (g.parcours.find(p => p[0] === k) || [k, k])[1]).join(", "));
-	lines.push("");
-	for(const s of g.sections){
-		const rows = s.items.filter(it => d.items?.[it.k]).map(it => {
-			const v = d.items[it.k], L = it.kind === "q" ? QLABEL : LABEL;
-			return `- ${it.q} : ${L[v.s] || "—"}${v.c ? "\n  " + v.c : ""}`;
-		});
-		if(rows.length) lines.push(`## ${s.t}`, ...rows, "");
-	}
-	lines.push(`Niveau : ${PICK[d.niveau] || "—"} · Durée : ${PICK[d.duree] || "—"}`);
-	if(d.bugs) lines.push("Bugs : " + d.bugs);
-	g.open.forEach(o => { if(d.open?.[o.k]) lines.push(`${o.q}\n  ${d.open[o.k]}`); });
-	lines.push(`Avis : ${PICK[d.verdict] || "—"}`);
-	if(d.remarques) lines.push("Dernier mot : " + d.remarques);
-	if(d.captures?.length) lines.push(`Captures d'écran : ${d.captures.length}${d.captures.some(c => c.legende) ? " (" + d.captures.map(c => c.legende).filter(Boolean).join(" ; ") + ")" : ""}`);
-	if(d.journal) lines.push("", d.journal);
-	return lines.join("\n");
-}
-async function copyText(text, btn, label){
-	try { await navigator.clipboard.writeText(text); btn.textContent = "Copié ✓"; setTimeout(() => btn.textContent = label, 1600); return true; }
-	catch(e){ return false; }
-}
-$("copyBtn").addEventListener("click", async () => {
-	if(!await copyText($("recap").textContent, $("copyBtn"), "Copier le récapitulatif")){ const r = document.createRange(); r.selectNodeContents($("recap")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
-});
-
-/* ---------- envoi ---------- */
-const status = (cls, msg) => { const el = $("sendStatus"); el.className = "status " + cls; el.textContent = msg; el.hidden = false; };
-$("form").addEventListener("submit", async e => {
-	e.preventDefault();
-	const d = readForm();
-	if(!d.nom){ $("nom").setAttribute("aria-invalid", "true"); $("nom").focus(); status("ko", "Indiquez votre nom pour que l'on sache qui a relu."); return; }
-	$("nom").removeAttribute("aria-invalid");
-	$("submit").disabled = true; $("submit").textContent = "Envoi…";
-	try {
-		if(!db || !uid || writeBlocked) throw new Error("local");
-		const at = new Date().toISOString();
-		await db.doc(`retours-${G.id}/${uid}`).set({ ...d, jeu:G.id, envoyeLe:at });
-		await db.doc(`envois-${G.id}/${uid}`).set({ at });
-		store.set(DRAFT(), null);
-		status("ok", "Merci ! Votre relecture est enregistrée. Vous pouvez la modifier et la renvoyer à tout moment depuis cette page.");
-		$("fallback").hidden = true;
-	} catch(x){
-		if(x && x.code === "invalid_argument") writeBlocked = true;
-		status("ko", "Votre relecture n'a pas pu être enregistrée en ligne depuis ce lien. Rien n'est perdu : copiez le récapitulatif ci-dessous.");
-		$("recap").textContent = recapText(d); $("fallback").hidden = false;
-	} finally { $("submit").disabled = false; $("submit").textContent = "Envoyer ma relecture"; }
-});
-
-/* ---------- retours (propriétaire) ---------- */
-function todoData(g, reviews){
-	const ko = [], answers = [], all = g.sections.flatMap(s => s.items.map(it => ({ ...it, sec:s.t })));
-	for(const it of all){
-		const got = reviews.map(r => ({ r, v:r.items?.[it.k] })).filter(x => x.v);
-		if(it.kind === "q"){ const a = got.filter(x => x.v.s || x.v.c); if(a.length) answers.push({ it, a }); continue; }
-		const bad = got.filter(x => x.v.s === "ko" || (x.v.s !== "ok" && x.v.c));
-		if(bad.length) ko.push({ it, bad, n:got.filter(x => x.v.s === "ko").length });
-	}
-	ko.sort((a, b) => b.n - a.n);
-	const bugs = reviews.filter(r => r.bugs).map(r => ({ nom:r.nom, t:r.bugs }));
-	const ideas = g.open.map(o => ({ o, a:reviews.filter(r => r.open?.[o.k]).map(r => ({ nom:r.nom, t:r.open[o.k] })) })).filter(x => x.a.length);
-	const shots = reviews.flatMap(r => (r.captures || []).map(c => ({ nom:r.nom, ...c })));
-	const stuck = reviews.filter(r => r.journal).map(r => ({ nom:r.nom, lines:r.journal.split("\n").filter(l => (/erreur/.test(l) && l.startsWith("- ")) || l.startsWith("  ✏️")) })).filter(x => x.lines.length);
-	const count = k => Object.entries(reviews.reduce((m, r) => (r[k] && (m[PICK[r[k]]] = (m[PICK[r[k]]] || 0) + 1), m), {})).map(([l, n]) => `${l} ×${n}`).join(", ");
-	return { ko, answers, bugs, ideas, shots, stuck, niveau:count("niveau"), duree:count("duree") };
-}
-function todoMarkdown(g, reviews){
-	const T = todoData(g, reviews), L = [];
-	L.push(`# Corrections demandées par les enseignants · ${g.game}`, `${reviews.length} relecture(s) : ${reviews.map(r => `${r.nom} (${PICK[r.verdict] || "sans avis"})`).join(" ; ")}`, "");
-	if(T.ko.length){ L.push("## À corriger dans le jeu"); T.ko.forEach(x => L.push(`- [ ] ${x.it.sec} · ${x.it.q} (${x.n}/${reviews.length} à corriger)`, ...x.bad.filter(b => b.v.c).map(b => `  - « ${b.v.c} » (${b.r.nom})`))); L.push(""); }
-	if(T.bugs.length){ L.push("## Bugs et blocages"); T.bugs.forEach(b => L.push(`- [ ] « ${b.t} » (${b.nom})`)); L.push(""); }
-	if(T.stuck.length){ L.push("## Erreurs et notes prises pendant la partie (journaux)"); T.stuck.forEach(s => L.push(`- ${s.nom}`, ...s.lines.map(l => "  " + l.trim()))); L.push(""); }
-	if(T.answers.length){ L.push("## Réponses aux questions posées"); T.answers.forEach(x => L.push(`- ${x.it.q}`, ...x.a.map(a => `  - ${QLABEL[a.v.s] || "—"}${a.v.c ? ` : « ${a.v.c} »` : ""} (${a.r.nom})`))); L.push(""); }
-	if(T.ideas.length){ L.push("## Idées"); T.ideas.forEach(x => L.push(`- ${x.o.q}`, ...x.a.map(a => `  - « ${a.t} » (${a.nom})`))); L.push(""); }
-	if(T.niveau || T.duree) L.push(`Niveau : ${T.niveau || "—"} · Durée : ${T.duree || "—"}`);
-	if(T.shots.length) L.push(`Captures d'écran : ${T.shots.length} (${T.shots.map(s => `${s.nom}${s.legende ? " : " + s.legende : ""}`).join(" ; ")})`);
-	return L.join("\n");
-}
-function renderReviews(){
-	if(!G || !owner) return;
-	const reviews = reviewsBy[G.id] || [];
-	$("nRes").textContent = `(${reviews.length})`;
-	$("resEmpty").hidden = reviews.length > 0; $("resBody").hidden = !reviews.length;
-	const v = k => reviews.filter(r => r.verdict === k).length;
-	$("sum").innerHTML = [[reviews.length, "relecture" + (reviews.length > 1 ? "s" : "") + (expected(G.id) ? ` sur ${expected(G.id)}` : "")], [v("valide"), "validé en l'état"], [v("corrections"), "après corrections"], [v("non"), "pas en l'état"]]
-		.map(([n, t]) => `<div><b>${n}</b><span>${t}</span></div>`).join("");
-	const T = todoData(G, reviews);
-	const li = (main, sub) => `<li>${main}${sub ? `<br><small>${sub}</small>` : ""}</li>`;
-	const parts = [];
-	if(T.ko.length) parts.push(`<h4>À corriger dans le jeu</h4><ul>${T.ko.map(x => li(`<b>${esc(x.it.q)}</b> <span class="pill ko">${x.n}/${reviews.length}</span>`, esc(x.it.sec) + x.bad.filter(b => b.v.c).map(b => ` · « ${esc(b.v.c)} » (${esc(b.r.nom)})`).join(""))).join("")}</ul>`);
-	if(T.bugs.length) parts.push(`<h4>Bugs et blocages</h4><ul>${T.bugs.map(b => li(`« ${esc(b.t)} »`, esc(b.nom))).join("")}</ul>`);
-	if(T.stuck.length) parts.push(`<h4>Erreurs et notes prises pendant la partie</h4><ul>${T.stuck.map(s => li(esc(s.nom), s.lines.map(l => esc(l.trim())).join("<br>"))).join("")}</ul>`);
-	if(T.answers.length) parts.push(`<h4>Réponses aux questions posées</h4><ul>${T.answers.map(x => li(`<b>${esc(x.it.q)}</b>`, x.a.map(a => `${QLABEL[a.v.s] || "—"}${a.v.c ? ` : « ${esc(a.v.c)} »` : ""} (${esc(a.r.nom)})`).join("<br>"))).join("")}</ul>`);
-	if(T.ideas.length) parts.push(`<h4>Idées</h4><ul>${T.ideas.map(x => li(`<b>${esc(x.o.q)}</b>`, x.a.map(a => `« ${esc(a.t)} » (${esc(a.nom)})`).join("<br>"))).join("")}</ul>`);
-	if(T.shots.length) parts.push(`<h4>Captures d'écran</h4><div class="shots">${T.shots.map(s => `<a class="shot" href="/_blob/${esc(s.id)}" target="_blank" rel="noopener"><img src="/_blob/${esc(s.id)}" alt="Capture de ${esc(s.nom)}"><p>${esc(s.legende || "Sans légende")} · ${esc(s.nom)}</p></a>`).join("")}</div>`);
-	if(T.niveau || T.duree) parts.push(`<p class="hint">Niveau : ${esc(T.niveau || "—")} · Durée : ${esc(T.duree || "—")}</p>`);
-	$("todo").innerHTML = parts.join("") || `<p class="hint">Rien à corriger pour l'instant : tous les points notés sont justes.</p>`;
-	const rows = ALL().map(it => {
-		const got = reviews.map(r => ({ r, v:r.items?.[it.k] })).filter(x => x.v);
-		const n = s => got.filter(x => x.v.s === s).length;
-		return { it, got, ko:n("ko"), ok:n("ok"), na:n("na") };
-	}).filter(x => x.got.length).sort((a, b) => b.ko - a.ko);
-	const L = it => it.kind === "q" ? QLABEL : LABEL;
-	$("byPoint").innerHTML = rows.map(x => `<div class="bar"><span><b>${esc(x.it.q)}</b><br><span class="hint">${esc(x.it.sec)}</span></span>
-		<span class="tally">${x.ko ? `<span class="pill ko">${x.ko} ${L(x.it).ko.toLowerCase()}</span>` : ""}${x.ok ? `<span class="pill ok">${x.ok} ${L(x.it).ok.toLowerCase()}</span>` : ""}${x.na ? `<span class="pill na">${x.na} ?</span>` : ""}</span>
-		${x.got.some(g => g.v.c) ? `<div class="cm">${x.got.filter(g => g.v.c).map(g => `<div>« ${esc(g.v.c)} » · ${esc(g.r.nom)}</div>`).join("")}</div>` : ""}</div>`).join("");
-	$("byPerson").innerHTML = reviews.map(r => {
-		const pill = r.verdict === "valide" ? "ok" : r.verdict === "non" ? "ko" : r.verdict ? "mid" : "na";
-		const date = r.envoyeLe ? new Date(r.envoyeLe).toLocaleDateString("fr-FR", { day:"numeric", month:"long", hour:"2-digit", minute:"2-digit" }) : "";
-		const extra = [["Niveau", PICK[r.niveau]], ["Durée", PICK[r.duree]], ["Bugs", r.bugs], ...G.open.map(o => [o.q, r.open?.[o.k]]), ["Dernier mot", r.remarques]].filter(x => x[1]);
-		return `<article class="rev"><header><h3>${esc(r.nom)}</h3><span class="pill ${pill}">${esc(PICK[r.verdict] || "Sans avis global")}</span></header>
-			<span class="meta">${esc([r.fonction, r.appareil, date].filter(Boolean).join(" · "))}</span>
-			${extra.length ? `<ul>${extra.map(([k, t]) => `<li><b>${esc(k)}</b> ${esc(t)}</li>`).join("")}</ul>` : ""}
-			${r.journal ? `<pre class="copy">${esc(r.journal)}</pre>` : ""}</article>`;
-	}).join("");
-}
-$("copyTodo").addEventListener("click", () => copyText(todoMarkdown(G, reviewsBy[G.id] || []), $("copyTodo"), "Copier la liste pour Claude"));
-let aiBusy = null;
-$("aiBtn").addEventListener("click", async () => {
-	if(aiBusy){ aiBusy.abort(); return; }
-	aiBusy = new AbortController();
-	$("ai").hidden = false; $("ai").textContent = "Claude lit les retours…"; $("aiBtn").textContent = "Arrêter";
-	const prompt = `Tu aides à corriger un mini-jeu pédagogique (« ${G.game} ») d'un campus 3D destiné à des candidats. Voici les retours des enseignants qui l'ont relu.\n\n${todoMarkdown(G, reviewsBy[G.id] || [])}\n\nRédige en français une liste de corrections à faire dans le jeu, classée en trois niveaux : « Bloquant » (faux sur le fond ou bug qui empêche de jouer), « Important » (imprécis, mal dit, mauvais niveau), « Confort » (idées, améliorations). Fusionne les remarques qui disent la même chose, indique qui l'a signalé entre parenthèses, et ne cite que ce qui est dans les retours. Texte brut, une ligne par correction commençant par « - ». Termine par une phrase sur les points où les enseignants ne sont pas d'accord entre eux, s'il y en a.`;
-	try { await sample(prompt, { signal:aiBusy.signal, modelTier:"default", onText:({ text }) => { $("ai").textContent = text; } }); }
-	catch(x){ if(x?.code !== "cancelled") $("ai").textContent = x?.code === "rate_limited" ? "Trop de demandes pour le moment : réessayez dans quelques minutes." : "Le classement n'a pas pu être fait. La liste ci-dessus reste complète."; }
-	finally { aiBusy = null; $("aiBtn").textContent = "Classer par priorité avec Claude"; }
-});
-function showTab(view){
-	$("viewGame").hidden = view !== "form"; $("viewRes").hidden = view !== "res";
-	$("tabForm").setAttribute("aria-pressed", String(view === "form")); $("tabRes").setAttribute("aria-pressed", String(view === "res"));
-	if(view === "res" && mv.playing) mv.pause();
-	store.set("relecture:vue", view);
-}
-$("toForm").addEventListener("click", () => $("formulaire").scrollIntoView({ behavior:matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }));
-$("tabForm").addEventListener("click", () => showTab("form"));
-$("tabRes").addEventListener("click", () => showTab("res"));
-
-/* ---------- navigation : #accueil, #dmb, #sv… ---------- */
-function route(){
-	const id = location.hash.slice(1);
-	G = CFG.games[id] || null;
-	const acc = G ? G.accent : CFG.homeAccent, root = document.documentElement.style;
-	root.setProperty("--accent-l", acc[0]); root.setProperty("--soft-l", acc[1]); root.setProperty("--accent-d", acc[2]); root.setProperty("--soft-d", acc[3]);
-	setupVideo(G);
-	$("viewHome").hidden = !!G;
-	if(G){
-		document.title = `Relecture · ${G.card.title}`;
-		renderGame();
-		$("tabs").hidden = !owner;
-		showTab(owner ? (store.get("relecture:vue") || "form") : "form");
-		renderReviews();
-	} else {
-		document.title = "Relecture des mini-jeux";
-		$("h1").textContent = "Relecture des mini-jeux"; $("lead").textContent = CFG.homeLead;
-		$("tabs").hidden = true; $("viewGame").hidden = true; $("viewRes").hidden = true;
-		renderHome();
-	}
-	window.scrollTo(0, 0);
-}
-addEventListener("hashchange", route);
-renderHome();
-route();
-
-(async () => {
-	if(!window.claude?.use) return;
-	const [dbNs, user, assetsNs] = await Promise.all([claude.use("db"), claude.use("user"), claude.use("assets")]);
-	db = dbNs; assets = assetsNs;
-	if(!assets) $("dropMsg").textContent = "Depuis ce lien, les images ne peuvent pas être jointes : envoyez-les par e-mail.";
-	if(user) uid = await user.id();
-	if(!db) return;
-	if(user && await user.can("data.write") === false && !(await user.canEdit())) writeBlocked = true;
-	owner = user ? await user.isOwner() : false;
-	loadMine();
-	const refresh = () => { renderHome(); if(G){ $("due").innerHTML = dueHTML(G.id); renderReviews(); } };
-	db.doc("reglages/jeux").onSnapshot(s => { settings = s.exists ? s.data() : null; refresh(); }, () => {});
-	for(const id of IDS) db.collection(`envois-${id}`).onSnapshot(s => { counts[id] = s.size; refresh(); }, () => {});
-	if(owner){
-		if(G){ $("tabs").hidden = false; showTab(store.get("relecture:vue") || "form"); }
-		for(const id of IDS) db.collection(`retours-${id}`).onSnapshot(s => { reviewsBy[id] = s.docs.map(d => d.data()).sort((a, b) => String(b.envoyeLe).localeCompare(String(a.envoyeLe))); refresh(); }, () => {});
-		sample = await claude.use("sample");
-		$("aiBtn").hidden = !sample;
-		refresh();
-	}
-})();
+__APP__
 </script>
+</body>
+</html>

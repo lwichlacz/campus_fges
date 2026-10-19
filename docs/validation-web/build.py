@@ -1,9 +1,10 @@
 """Pages de relecture des mini-jeux par les enseignants (publiées en artefacts claude.ai).
 
-Usage : python3 docs/validation-web/build.py   → docs/validation-web/relecture.html (une page, un lien par jeu : #dmb, #sv…)
+Usage : python3 docs/validation-web/build.py   → relecture/index.html, en ligne sur https://lwichlacz.github.io/campus_fges/relecture/
+(une page, un lien par jeu : #dmb, #sv… ; #tableau pour le tableau de bord, avec la clé du script Google)
 Le contenu suit les fiches docs/validation-*.md. La vidéo de présentation (motion.js) est intégrée à chaque page.
-pages.json garde l'adresse de la page publiée : le bouton « Ouvrir le jeu » la passe au jeu (&relecture=…),
-pour que la bannière du jeu ramène au bon formulaire (#jeu).
+Les réponses vont dans un tableur Google via google-apps-script.js (installation décrite en tête du fichier) ;
+pages.json garde l'URL du script (« endpoint »).
 Les réponses sont gardées dans la base de l'artefact (collection « retours », une fiche par relecteur).
 """
 import json, pathlib
@@ -304,18 +305,25 @@ GAMES = [
 	{"id": "info", "icon": "🎮", "title": "Projet Gaming", "formation": "Licence Informatique", "dur": "7 min"},
 	{"id": "dmb", "icon": "🧬", "title": "From Blood to Decision", "formation": "Master Data Management in Biosciences", "dur": "12-15 min"},
 ]
-# une seule page pour les cinq jeux : #dmb, #sv… ; l'accueil réunit la vidéo, les jeux et le tableau de bord
-ids_file = HERE / "pages.json"
-PAGE_ID = json.loads(ids_file.read_text()).get("relecture", "") if ids_file.exists() else ""
+# une seule page pour tous les jeux (relecture/#dmb, #sv…), servie par GitHub Pages avec le site ;
+# les réponses partent vers le script Google (pages.json : « endpoint », l'URL …/exec du déploiement)
+import shutil
+conf = json.loads((HERE / "pages.json").read_text()) if (HERE / "pages.json").exists() else {}
 DEFAULTS = {"deadline": "2026-11-06", "attendus": 2}
 games = {}
 for key, p in PAGES.items():
 	a, a_soft, a_dark, a_soft_dark = p["accent"]
 	games[key] = {**p["cfg"], "accent": [a, a_soft, a_dark, a_soft_dark], "videoAccent": a_dark, "videoInk": a}
-cfg = {"games": games, "order": list(PAGES), "videoGames": GAMES, "defaults": DEFAULTS, "pageId": PAGE_ID,
+cfg = {"games": games, "order": list(PAGES), "videoGames": GAMES, "defaults": DEFAULTS, "endpoint": conf.get("endpoint", ""),
 	"homeAccent": ["#0b7a8e", "#e2f3f6", "#5fcbe0", "#17343b"],
 	"homeLead": "Le campus 3D de la FGES propose un mini-jeu par formation. Avant de les montrer aux candidats, nous demandons à chaque équipe pédagogique de relire le sien : environ 15 minutes."}
+OUT = HERE.parent.parent / "relecture"
+(OUT / "img").mkdir(parents=True, exist_ok=True); (OUT / "media").mkdir(exist_ok=True)
+for f in ["img/campus.jpg", "img/logo-fges.png", "media/bande-son.mp4"]: shutil.copyfile(HERE / f, OUT / f)
 tpl = (HERE / "template.html").read_text(encoding="utf-8")
-html = tpl.replace("__MOTION__", (HERE / "motion.js").read_text(encoding="utf-8")).replace("__CONFIG__", json.dumps(cfg, ensure_ascii=False).replace("</", "<\\/"))
-(HERE / "relecture.html").write_text(html, encoding="utf-8")
-print("écrit relecture.html ·", len(games), "jeux · page", PAGE_ID or "pas encore publiée")
+html = (tpl.replace("__MOTION__", (HERE / "motion.js").read_text(encoding="utf-8"))
+	.replace("__APP__", (HERE / "app.js").read_text(encoding="utf-8"))
+	.replace("__CONFIG__", json.dumps(cfg, ensure_ascii=False).replace("</", "<\\/")))
+(OUT / "index.html").write_text(html, encoding="utf-8")
+(HERE / "relecture.html").write_text(html, encoding="utf-8")       # copie locale
+print("écrit relecture/index.html ·", len(games), "jeux · envoi", cfg["endpoint"] or "pas encore branché (récapitulatif à copier)")

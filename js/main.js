@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=d65ff1ac4b";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=d65ff1ac4b";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=d65ff1ac4b";
-import { MAP } from "./vauban.js?v=d65ff1ac4b";
-import { buildLandmarks } from "./landmarks.js?v=d65ff1ac4b";
-import { buildMonuments } from "./monuments.js?v=d65ff1ac4b";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=d65ff1ac4b";
-import { buildStation } from "./station.js?v=d65ff1ac4b";
-import { createRame } from "./rame.js?v=d65ff1ac4b";
-import { Audio } from "./audio.js?v=d65ff1ac4b";
-import { DETAILS } from "./details.js?v=d65ff1ac4b";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=99af2eabcd";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=99af2eabcd";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=99af2eabcd";
+import { MAP } from "./vauban.js?v=99af2eabcd";
+import { buildLandmarks } from "./landmarks.js?v=99af2eabcd";
+import { buildMonuments } from "./monuments.js?v=99af2eabcd";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=99af2eabcd";
+import { buildStation } from "./station.js?v=99af2eabcd";
+import { createRame } from "./rame.js?v=99af2eabcd";
+import { Audio } from "./audio.js?v=99af2eabcd";
+import { DETAILS } from "./details.js?v=99af2eabcd";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -947,7 +947,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=d65ff1ac4b").then(({ FAR }) => {
+	import("./vauban_far.js?v=99af2eabcd").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1451,14 +1451,14 @@ setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night 
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=d65ff1ac4b").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=d65ff1ac4b").then(m => m.createChapelle), eura:() => import("./eura.js?v=d65ff1ac4b").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=d65ff1ac4b").then(m => m.createWenovIn) };
+const MAKERS = { atrium:() => import("./atrium.js?v=99af2eabcd").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=99af2eabcd").then(m => m.createChapelle), eura:() => import("./eura.js?v=99af2eabcd").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=99af2eabcd").then(m => m.createWenovIn) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=d65ff1ac4b").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=d65ff1ac4b").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=d65ff1ac4b").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=d65ff1ac4b").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=d65ff1ac4b").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=d65ff1ac4b").then(m => m.openBiodata)
+	comptoir:() => import("./games/comptoir.js?v=99af2eabcd").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=99af2eabcd").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=99af2eabcd").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=99af2eabcd").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=99af2eabcd").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=99af2eabcd").then(m => m.openBiodata)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2959,7 +2959,7 @@ if(BORNE){
 	lastInput = -1e9;      // la visite démarre dès la fin de l'intro
 }
 // lien direct vers un mini-jeu (?jeu=dmb : l'identifiant de la formation), pour les enseignants qui le valident ;
-// avec &relecture=<page de relecture>, une bannière chronomètre la partie et tient un journal à coller dans le formulaire
+// avec &relecture, une bannière chronomètre la partie et tient un journal, repris tout seul par la page relecture/ (même site)
 const QS = new URLSearchParams(location.search);
 const JEU = QS.get("jeu");
 const relecture = GAMES[JEU] && QS.has("relecture") ? relectureMode(JEU, QS.get("relecture")) : null;
@@ -2988,7 +2988,7 @@ function relectureMode(fid, page){
 	};
 	const el = document.createElement("div");
 	el.id = "relecture";
-	const form = /^[A-Za-z0-9]{8,40}$/.test(page || "") ? `https://claude.ai/artifact/${page}#${fid}` : "";
+	const form = `relecture/#${fid}`;
 	el.innerHTML = `<div data-row><b title="Réduire ou agrandir la bannière">● Relecture</b><span data-t>0:00</span><span data-e>0 erreur</span>
 		<select data-jump aria-label="Aller directement à une étape" hidden><option value="">Aller à…</option></select>
 		<button type="button" data-note>✏️ Noter ici</button><button type="button" data-copy>Copier le journal</button>${form ? `<a data-form href="${form}" target="_blank" rel="noopener">Formulaire ↗</a>` : ""}</div>
@@ -3021,7 +3021,7 @@ function relectureMode(fid, page){
 		e.preventDefault();
 		const n = ta.value.replace(/\s+/g, " ").trim(); if(!n) return;
 		if(!cur()) stage("Accueil du jeu");
-		cur().notes.push(n); ta.value = ""; pad.hidden = true;
+		cur().notes.push(n); ta.value = ""; pad.hidden = true; save();
 		const b = el.querySelector("[data-note]"); b.textContent = "Note ajoutée ✓"; setTimeout(() => b.textContent = "✏️ Noter ici", 1800);
 	});
 	// pas à pas : sauter directement à une étape du jeu
@@ -3032,7 +3032,9 @@ function relectureMode(fid, page){
 		jumped = true;
 		try { j[1](); } catch(x){ console.warn(x); }
 	});
-	const tick = () => { const s = Math.floor((Date.now() - t0)/1000); el.querySelector("[data-t]").textContent = `${Math.floor(s/60)}:${String(s % 60).padStart(2, "0")}`; };
+	// le journal est gardé pour la page de relecture du même site, qui le reprend dans le formulaire
+	const save = () => { try { localStorage.setItem("relecture-journal-" + fid, text()); } catch(e){} };
+	const tick = () => { const s = Math.floor((Date.now() - t0)/1000); el.querySelector("[data-t]").textContent = `${Math.floor(s/60)}:${String(s % 60).padStart(2, "0")}`; if(s % 5 === 0) save(); };
 	setInterval(tick, 1000);
 	return {
 		text,
@@ -3043,6 +3045,7 @@ function relectureMode(fid, page){
 			else if(ev === "win"){ end = `Terminée, mention ${v}`; el.querySelector("[data-copy]").textContent = "Partie finie : copier le journal"; }
 			else if(ev === "close"){ jumps = []; sel.hidden = true; if(end === "Partie non terminée") stage("Jeu fermé, retour au campus"); }
 			el.querySelector("[data-e]").textContent = plural(errors);
+			save();
 		}
 	};
 }

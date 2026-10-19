@@ -1,16 +1,16 @@
 # E-mail d'invitation à la relecture
 
-À envoyer **après** avoir invité l'enseignant sur la page (menu Partager, par e-mail, rôle **Éditeur**, sans lien public).
+Lien public, sans compte à créer : il suffit d'envoyer l'e-mail.
 Remplacer `<jeu>` par le lien du jeu de la formation et ajuster la date limite (réglable aussi dans le tableau de bord).
 
 | Formation | Lien à mettre dans l'e-mail |
 |---|---|
-| Master Data Management in Biosciences | https://claude.ai/artifact/PeZ2mUoAeCAfXnH6vz3XVF#dmb |
-| Licence Sciences de la Vie | https://claude.ai/artifact/PeZ2mUoAeCAfXnH6vz3XVF#sv |
-| Licence Sciences pour l'Ingénieur | https://claude.ai/artifact/PeZ2mUoAeCAfXnH6vz3XVF#spi |
-| Licence Gestion | https://claude.ai/artifact/PeZ2mUoAeCAfXnH6vz3XVF#gestion |
-| Licence Comptabilité-Finance-Audit | https://claude.ai/artifact/PeZ2mUoAeCAfXnH6vz3XVF#cfa |
-| Licence Informatique | https://claude.ai/artifact/PeZ2mUoAeCAfXnH6vz3XVF#info |
+| Master Data Management in Biosciences | https://lwichlacz.github.io/campus_fges/relecture/#dmb |
+| Licence Sciences de la Vie | https://lwichlacz.github.io/campus_fges/relecture/#sv |
+| Licence Sciences pour l'Ingénieur | https://lwichlacz.github.io/campus_fges/relecture/#spi |
+| Licence Gestion | https://lwichlacz.github.io/campus_fges/relecture/#gestion |
+| Licence Comptabilité-Finance-Audit | https://lwichlacz.github.io/campus_fges/relecture/#cfa |
+| Licence Informatique | https://lwichlacz.github.io/campus_fges/relecture/#info |
 
 ---
 
@@ -28,7 +28,7 @@ Tout se passe sur cette page : <jeu>
 2. Jouez une partie : le bouton « Ouvrir le jeu » le lance directement, et une bannière note votre temps et vos erreurs.
 3. Remplissez le formulaire, en joignant si besoin le journal de partie et des captures d'écran.
 
-Comptez environ 15 minutes. La page vous demandera de vous connecter à claude.ai avec l'adresse à laquelle vous avez reçu l'invitation : c'est ce qui permet d'enregistrer votre relecture.
+Comptez environ 15 minutes, sans compte à créer. Faites la relecture sur le même appareil que la partie : le journal de jeu se reporte alors tout seul dans le formulaire.
 
 Merci de nous répondre avant le vendredi 6 novembre. Vos remarques seront toutes reprises dans le jeu.
 
