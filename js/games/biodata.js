@@ -834,5 +834,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	if(PT.alex) $("#bdWho").innerHTML = `<img src="${PT.alex}" alt="Alex"><span style="font-size:12.5px;font-weight:700;color:#5b6b7a">Patient P-0412<br>seen by Dr Lemaire, internal medicine</span>`;
 	intro();
 	onEvent && onEvent("start");
+	// mode relecture : étapes où l'enseignant peut sauter directement
+	onEvent && onEvent("missions", [["Mission 1 · Data governance", mission1], ["Mission 2 · Sequencing QC", mission2], ["Mission 3 · Variant interpretation", mission3], ["Mission 4 · Cohort biostatistics", mission4], ["Mission 5 · Machine learning", mission5], ["Mission 6 · Report & ethics", mission6]]);
 	if(window.campus) window.campus.game = { S, GO, cohort, FIELDS, RUNS, PASS, CAND, VARS, REPORT, get m5(){ return m5; }, fitPredict, rocOf };
 }

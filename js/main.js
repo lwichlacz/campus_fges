@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=e44f1ade8a";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=e44f1ade8a";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=e44f1ade8a";
-import { MAP } from "./vauban.js?v=e44f1ade8a";
-import { buildLandmarks } from "./landmarks.js?v=e44f1ade8a";
-import { buildMonuments } from "./monuments.js?v=e44f1ade8a";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=e44f1ade8a";
-import { buildStation } from "./station.js?v=e44f1ade8a";
-import { createRame } from "./rame.js?v=e44f1ade8a";
-import { Audio } from "./audio.js?v=e44f1ade8a";
-import { DETAILS } from "./details.js?v=e44f1ade8a";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=7ed7e73b0a";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=7ed7e73b0a";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=7ed7e73b0a";
+import { MAP } from "./vauban.js?v=7ed7e73b0a";
+import { buildLandmarks } from "./landmarks.js?v=7ed7e73b0a";
+import { buildMonuments } from "./monuments.js?v=7ed7e73b0a";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=7ed7e73b0a";
+import { buildStation } from "./station.js?v=7ed7e73b0a";
+import { createRame } from "./rame.js?v=7ed7e73b0a";
+import { Audio } from "./audio.js?v=7ed7e73b0a";
+import { DETAILS } from "./details.js?v=7ed7e73b0a";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -947,7 +947,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=e44f1ade8a").then(({ FAR }) => {
+	import("./vauban_far.js?v=7ed7e73b0a").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1451,13 +1451,13 @@ setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night 
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=e44f1ade8a").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=e44f1ade8a").then(m => m.createChapelle), eura:() => import("./eura.js?v=e44f1ade8a").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=e44f1ade8a").then(m => m.createWenovIn) };
+const MAKERS = { atrium:() => import("./atrium.js?v=7ed7e73b0a").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=7ed7e73b0a").then(m => m.createChapelle), eura:() => import("./eura.js?v=7ed7e73b0a").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=7ed7e73b0a").then(m => m.createWenovIn) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=e44f1ade8a").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=e44f1ade8a").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=e44f1ade8a").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=e44f1ade8a").then(m => m.openRobot),
-	biodata:() => import("./games/biodata.js?v=e44f1ade8a").then(m => m.openBiodata)
+	comptoir:() => import("./games/comptoir.js?v=7ed7e73b0a").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=7ed7e73b0a").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=7ed7e73b0a").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=7ed7e73b0a").then(m => m.openRobot),
+	biodata:() => import("./games/biodata.js?v=7ed7e73b0a").then(m => m.openBiodata)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2971,26 +2971,38 @@ if(!BORNE && GAMES[JEU]){
 }
 function relectureMode(fid, page){
 	const info = GAME_INFO[GAMES[fid]], t0 = Date.now(), steps = [];
-	let errors = 0, end = "Partie non terminée";
+	let errors = 0, end = "Partie non terminée", jumps = [], jumped = false;
 	const cur = () => steps[steps.length - 1];
-	const stage = name => { if(cur()?.name === name) return; const now = Date.now(); if(cur()) cur().end = now; steps.push({ name, start:now, err:0, why:[] }); };
+	const stage = name => { if(jumped){ jumped = false; name = `↪ ${name} (saut direct)`; } if(cur()?.name === name) return; const now = Date.now(); if(cur()) cur().end = now; steps.push({ name, start:now, err:0, why:[], notes:[] }); };
 	const dur = ms => { const s = Math.round(ms/1000), m = Math.floor(s/60); return m ? `${m} min ${String(s % 60).padStart(2, "0")} s` : `${s} s`; };
 	const plural = n => `${n} erreur${n > 1 ? "s" : ""}`;
 	const text = () => {
-		const now = Date.now();
+		const now = Date.now(), notes = steps.reduce((n, st) => n + st.notes.length, 0);
 		return [`Journal de partie · ${info.title}`,
-			`${new Date(t0).toLocaleString("fr-FR", { dateStyle:"short", timeStyle:"short" })} · ${dur(now - t0)} · ${plural(errors)} · ${end}`,
+			`${new Date(t0).toLocaleString("fr-FR", { dateStyle:"short", timeStyle:"short" })} · ${dur(now - t0)} · ${plural(errors)}${notes ? ` · ${notes} note${notes > 1 ? "s" : ""}` : ""} · ${end}`,
 			`Écran ${innerWidth}×${innerHeight}${matchMedia("(pointer:coarse)").matches ? ", tactile" : ""}`,
-			...steps.map(st => `- ${st.name} : ${dur((st.end || now) - st.start)}${st.err ? `, ${plural(st.err)}` : ""}${st.why.length ? ` (${st.why.join(" ; ")})` : ""}`)].join("\n");
+			...steps.flatMap(st => [`- ${st.name} : ${dur((st.end || now) - st.start)}${st.err ? `, ${plural(st.err)}` : ""}${st.why.length ? ` (${st.why.join(" ; ")})` : ""}`,
+				...st.notes.map(n => `  ✏️ ${n}`)])].join("\n");
 	};
 	const el = document.createElement("div");
 	el.id = "relecture";
-	el.innerHTML = `<b>● Relecture</b><span data-t>0:00</span><span data-e>0 erreur</span><button type="button" data-copy>Copier le journal</button>${/^[A-Za-z0-9]{8,40}$/.test(page || "") ? `<a data-form href="https://claude.ai/artifact/${page}" target="_blank" rel="noopener">Formulaire ↗</a>` : ""}`;
-	el.style.cssText = "position:fixed;z-index:70;left:max(10px, env(safe-area-inset-left, 0px));bottom:max(10px, env(safe-area-inset-bottom, 0px));display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:calc(100vw - 20px);padding:7px 8px 7px 12px;border-radius:14px;background:rgba(24,28,38,.92);color:#fff;font:600 13px Nunito,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25)";
-	for(const b of el.querySelectorAll("button, a")) b.style.cssText = "font:700 13px Nunito,system-ui,sans-serif;color:#18202c;background:#ffd36b;border:0;border-radius:9px;padding:6px 10px;cursor:pointer;text-decoration:none";
-	el.querySelector("b").style.cssText = "color:#ff8f7a;cursor:pointer";
-	el.querySelector("b").title = "Réduire ou agrandir la bannière";
-	el.querySelector("b").addEventListener("click", () => el.querySelectorAll("[data-e], button, a").forEach(x => x.hidden = !x.hidden));
+	const form = /^[A-Za-z0-9]{8,40}$/.test(page || "") ? `https://claude.ai/artifact/${page}#${fid}` : "";
+	el.innerHTML = `<div data-row><b title="Réduire ou agrandir la bannière">● Relecture</b><span data-t>0:00</span><span data-e>0 erreur</span>
+		<select data-jump aria-label="Aller directement à une étape" hidden><option value="">Aller à…</option></select>
+		<button type="button" data-note>✏️ Noter ici</button><button type="button" data-copy>Copier le journal</button>${form ? `<a data-form href="${form}" target="_blank" rel="noopener">Formulaire ↗</a>` : ""}</div>
+		<form data-pad hidden><textarea rows="3" maxlength="500" placeholder="Ce qui ne va pas sur cet écran (la note est rangée à l'étape en cours)"></textarea><div><button type="submit">Ajouter au journal</button><button type="button" data-cancel>Annuler</button></div></form>`;
+	el.style.cssText = "position:fixed;z-index:70;left:max(10px, env(safe-area-inset-left, 0px));bottom:max(10px, env(safe-area-inset-bottom, 0px));display:flex;flex-direction:column;gap:8px;max-width:min(560px, calc(100vw - 20px));padding:7px 8px 7px 12px;border-radius:14px;background:rgba(24,28,38,.94);color:#fff;font:600 13px Nunito,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25)";
+	el.querySelector("[data-row]").style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:8px";
+	for(const b of el.querySelectorAll("button, a, select")) b.style.cssText = "font:700 13px Nunito,system-ui,sans-serif;color:#18202c;background:#ffd36b;border:0;border-radius:9px;padding:6px 10px;cursor:pointer;text-decoration:none;max-width:100%";
+	el.querySelector("[data-jump]").style.background = "#e8edf5";
+	el.querySelector("[data-cancel]").style.background = "#e8edf5";
+	const pad = el.querySelector("[data-pad]"), ta = pad.querySelector("textarea");
+	pad.style.cssText = "margin:0";          // pas de display ici : l'attribut hidden doit pouvoir la masquer
+	ta.style.cssText = "display:block;box-sizing:border-box;margin-bottom:6px;font:500 14px Nunito,system-ui,sans-serif;border-radius:9px;border:0;padding:8px;width:100%;resize:vertical;color:#18202c";
+	pad.querySelector("div").style.cssText = "display:flex;gap:8px";
+	const tag = el.querySelector("b");
+	tag.style.cssText = "color:#ff8f7a;cursor:pointer";
+	tag.addEventListener("click", () => el.querySelectorAll("[data-e], [data-row] > button, [data-row] > a, [data-jump]").forEach(x => x.hidden = !x.hidden || (x.matches("[data-jump]") && !jumps.length)));
 	document.body.append(el);
 	const copy = async () => {
 		const b = el.querySelector("[data-copy]");
@@ -3000,15 +3012,34 @@ function relectureMode(fid, page){
 	};
 	el.querySelector("[data-copy]").addEventListener("click", copy);
 	el.querySelector("[data-form]")?.addEventListener("click", copy);
+	// note libre, rangée à l'étape en cours
+	el.querySelector("[data-note]").addEventListener("click", () => { pad.hidden = !pad.hidden; if(!pad.hidden) ta.focus(); });
+	pad.querySelector("[data-cancel]").addEventListener("click", () => { pad.hidden = true; ta.value = ""; });
+	pad.addEventListener("submit", e => {
+		e.preventDefault();
+		const n = ta.value.replace(/\s+/g, " ").trim(); if(!n) return;
+		if(!cur()) stage("Accueil du jeu");
+		cur().notes.push(n); ta.value = ""; pad.hidden = true;
+		const b = el.querySelector("[data-note]"); b.textContent = "Note ajoutée ✓"; setTimeout(() => b.textContent = "✏️ Noter ici", 1800);
+	});
+	// pas à pas : sauter directement à une étape du jeu
+	const sel = el.querySelector("[data-jump]");
+	sel.addEventListener("change", () => {
+		const j = jumps[+sel.value]; sel.value = "";
+		if(!j) return;
+		jumped = true;
+		try { j[1](); } catch(x){ console.warn(x); }
+	});
 	const tick = () => { const s = Math.floor((Date.now() - t0)/1000); el.querySelector("[data-t]").textContent = `${Math.floor(s/60)}:${String(s % 60).padStart(2, "0")}`; };
 	setInterval(tick, 1000);
 	return {
 		text,
 		event(ev, v){
 			if(ev === "stage") stage(String(v));
+			else if(ev === "missions"){ jumps = v || []; sel.innerHTML = `<option value="">Aller à…</option>` + jumps.map((j, i) => `<option value="${i}">${j[0]}</option>`).join(""); sel.hidden = !jumps.length; }
 			else if(ev === "err"){ if(!cur()) stage("Accueil du jeu"); errors++; cur().err++; if(typeof v === "string" && v && cur().why.length < 4) cur().why.push(v.replace(/\s+/g, " ").slice(0, 90)); }
 			else if(ev === "win"){ end = `Terminée, mention ${v}`; el.querySelector("[data-copy]").textContent = "Partie finie : copier le journal"; }
-			else if(ev === "close" && end === "Partie non terminée") stage("Jeu fermé, retour au campus");
+			else if(ev === "close"){ jumps = []; sel.hidden = true; if(end === "Partie non terminée") stage("Jeu fermé, retour au campus"); }
 			el.querySelector("[data-e]").textContent = plural(errors);
 		}
 	};

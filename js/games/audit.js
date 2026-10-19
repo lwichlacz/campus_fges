@@ -349,5 +349,7 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 	root.querySelector(".au-x").addEventListener("click", close);
 	intro();
 	onEvent && onEvent("start");
+	// mode relecture : étapes où l'enseignant peut sauter directement
+	onEvent && onEvent("missions", [["L1 · Trier les pièces", sortDocs], ["L1 · La TVA", tva], ["L1 · Rapprochement bancaire", bank], ["L2 · Budget et réel", budget], ["L3 · Tamponner les pièces", audit], ["L3 · Tableau d'enquête", board], ["Rapport d'audit", finale]]);
 	if(window.campus) window.campus.game = { S, card, sort:sortDocs, tva, bank, budget, audit, board, end:finale };
 }

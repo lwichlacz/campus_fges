@@ -7,7 +7,7 @@
    Les contenus sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { std, mesh, box, cyl, cone, mulberry32 } from "../kit.js?v=e44f1ade8a";
+import { std, mesh, box, cyl, cone, mulberry32 } from "../kit.js?v=7ed7e73b0a";
 
 /* ---------- contenus (à valider par l'enseignant) ---------- */
 const COURSES = {
@@ -993,6 +993,9 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 	intro();
 	raf = requestAnimationFrame(loop);
 	onEvent && onEvent("start");
+	// mode relecture : étapes où l'enseignant peut sauter directement
+	onEvent && onEvent("missions", [["L1 · Terrain", startHunt], ["L1 · Réseau trophique", startWeb], ["L2 · Génétique", startGene], ["L3 · Choix du parcours", chooseParcours],
+		["L3 · Écologie opérationnelle", () => startParcours("eco")], ["L3 · Biotechnologies", () => startParcours("biotech")], ["L3 · Ingénieur", () => startParcours("inge")]]);
 	// debug (?debug) : sauter les étapes pendant les tests
 	if(window.campus) window.campus.game = { S, card, get stage(){ return stage; }, find:onFound, draw:drawSpecies, web:startWeb, quad:startQuad, gene:startGene, end:finale,
 		parcours:chooseParcours, start:startParcours, bio:{ dna:bioDNA, gel:bioGel, pip:bioPip, reac:bioReactor, col:bioColonies }, inge:{ size:ingeSize, model:ingeModel, serre:ingeSerre },

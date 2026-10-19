@@ -697,5 +697,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 	}
 	applyJoints(); setGauges(); intro(); loop();
 	onEvent && onEvent("start");
+	// mode relecture : étapes où l'enseignant peut sauter directement
+	onEvent && onEvent("missions", [["L1 · Prends la main", mission1], ["L2 · Programme la cellule", mission2], ["L2 · Règle le moteur", missionServo], ["L3 · Donne-lui des yeux", mission3]]);
 	if(window.campus) window.campus.game = { S, J, tip, ik, mission1, mission2, missionServo, mission3, get ms(){ return ms; }, get m2(){ return m2; }, get m3(){ return m3; } };
 }

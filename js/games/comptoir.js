@@ -5,7 +5,7 @@
      seuil de rentabilité, décision d'investissement) qui révèle le cours de la licence.
    Les chiffres sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
-import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=e44f1ade8a";
+import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=7ed7e73b0a";
 
 /* ---------- Économie du Comptoir (à valider par l'enseignant) ---------- */
 const ECO = { amortVelo:7, cafe:.25, lait:.20, gobelet:.10, tasse:.55, croissantAchat:.45, croissantPrix:1.2, salaire:25,
@@ -912,6 +912,13 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	$(".cz-x").addEventListener("click", close);
 	paintMenu();
 	intro();
+	// mode relecture : étapes où l'enseignant peut sauter directement (le service en cours est arrêté)
+	const stopDay = () => { running = false; tray.hidden = true; root.classList.remove("serving"); $("#czFF").hidden = true; say(null); };
+	const day = n => () => { stopDay(); S.day = n; prep(); };
+	onEvent && onEvent("missions", [["Matinée 1 · L'ouverture", day(0)], ["Matinée 2 · Premier rush", day(1)],
+		["L1 · Compte de résultat", () => { stopDay(); if(S.results.length) exCompte(); else { S.day = 1; prep(); } }],
+		["L2 · Coût de revient", () => { stopDay(); S.day = 2; exCout(); }], ["Matinée 3 · Rentrée de L2", day(2)],
+		["L3 · Investir", () => { stopDay(); S.day = 3; exInvest(); }], ["Matinée 4 · Le Comptoir grandit", day(3)]]);
 	raf = requestAnimationFrame(loop);
 	// debug (?debug) : faire avancer la simulation sans attendre l'affichage
 	if(window.campus) window.campus.game = { S, BOT, P, get D(){ return D; }, get running(){ return running; },
