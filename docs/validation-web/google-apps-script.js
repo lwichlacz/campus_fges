@@ -31,7 +31,7 @@ function reglages_(){
 	if(sh.getLastRow() < 2){ sh.appendRow(["date limite", "2026-11-06"]); JEUX.forEach(j => sh.appendRow(["attendus " + j, 2])); }
 	const out = { deadline:null, attendus:{} };
 	sh.getRange(2, 1, sh.getLastRow() - 1, 2).getValues().forEach(([k, v]) => {
-		if(k === "date limite") out.deadline = v instanceof Date ? Utilities.formatDate(v, "Europe/Paris", "yyyy-MM-dd") : String(v);
+		if(k === "date limite") out.deadline = (v && typeof v.getTime === "function") ? Utilities.formatDate(v, "Europe/Paris", "yyyy-MM-dd") : String(v);
 		else if(String(k).indexOf("attendus ") === 0) out.attendus[String(k).slice(9)] = Number(v) || 0;
 	});
 	return out;

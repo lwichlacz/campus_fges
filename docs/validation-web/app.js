@@ -16,7 +16,9 @@ let counts = {}, reviewsBy = {}, settings = null, ownerKey = store.get("relectur
 // identifiant de ce relecteur sur cet appareil : renvoyer le formulaire met à jour sa ligne au lieu d'en ajouter une
 let rid = store.get("relecture:id");
 if(!rid){ rid = "r" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); store.set("relecture:id", rid); }
-const deadline = () => settings?.deadline || CFG.defaults.deadline;
+// date limite au format AAAA-MM-JJ, même si le tableur la renvoie comme une date complète
+function isoDate(v){ if(!v) return ""; if(/^\d{4}-\d{2}-\d{2}$/.test(v)) return v; const d = new Date(String(v).replace(/\s*\(.*\)$/, "")); return isNaN(d) ? "" : `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
+const deadline = () => isoDate(settings?.deadline) || CFG.defaults.deadline;
 const expected = id => +(settings?.attendus?.[id] ?? CFG.defaults.attendus) || 0;
 const fmtDate = d => new Date(d + "T12:00:00").toLocaleDateString("fr-FR", { weekday:"long", day:"numeric", month:"long" });
 function daysLeft(){ return Math.ceil((new Date(deadline() + "T23:59:59") - new Date())/86400000); }
