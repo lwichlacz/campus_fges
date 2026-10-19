@@ -13,3 +13,4 @@ _*.html
 .env.*
 !.env.example
 docs/validation-web/*.html
+!docs/validation-web/template.html
