@@ -3,8 +3,8 @@
    maillages pour rester léger, sauf les bâtiments « à visiter » (POI) qui
    restent séparés pour être cliquables. */
 import * as THREE from "three";
-import { std, mulberry32 } from "./kit.js?v=f5913cb4c8";
-import { TIME } from "./render.js?v=f5913cb4c8";
+import { std, mulberry32 } from "./kit.js?v=9d334ab44c";
+import { TIME } from "./render.js?v=9d334ab44c";
 
 const FH = 2.3, BAY = 1.4;
 let FHc = FH;          // hauteur d'un étage pour la carte en cours (MAP.fh : à l'échelle de l'Hôtel Académique)
@@ -283,11 +283,24 @@ function insetRing(p, d){
 	}
 	return q;
 }
+/* Emprise poussée vers l'extérieur de quelques centimètres : deux bâtiments dont les emprises se chevauchent
+   (OpenStreetMap et BD TOPO) n'ont plus de murs exactement dans le même plan, qui « scintillaient » en se disputant les pixels. */
+function nudgeRing(p, d){
+	const n = p.length;
+	return p.map((b, i) => {
+		const a = p[(i+n-1)%n], c = p[(i+1)%n];
+		const l1 = Math.hypot(b[0]-a[0], b[1]-a[1]) || 1, l2 = Math.hypot(c[0]-b[0], c[1]-b[1]) || 1;
+		const n1x = (b[1]-a[1])/l1, n1z = -(b[0]-a[0])/l1, n2x = (c[1]-b[1])/l2, n2z = -(c[0]-b[0])/l2;
+		const k = Math.max(.35, 1 + n1x*n2x + n1z*n2z);
+		return [b[0] + d*(n1x + n2x)/k, b[1] + d*(n1z + n2z)/k];
+	});
+}
 function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 	const [kind, lv, , roof, flat] = rec;
 	const rh = rec.length > 5 ? rec[5] : -1;         // hauteur réelle du toit (BD TOPO) ; -1 : inconnue
 	let p = ring(flat);
 	if(signedArea(p) < 0) p = p.reverse();
+	p = nudgeRing(p, .01 + ((i*.618034) % 1)*.04);      // de 1 à 5 cm, différent d'un bâtiment à l'autre
 	// léger décalage par bâtiment : deux toits voisins ne sont jamais au même niveau (pas de clignotement)
 	const k = FHc/FH, H = (kind === 3 ? lv*3.2*k : kind === 6 ? 2.2*k : kind === 4 ? lv*FHc*1.35 : kind === 7 ? lv*FHc*1.25 : lv*FHc) + (i % 7)*.035;
 	let mans = null;

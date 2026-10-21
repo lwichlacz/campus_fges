@@ -34,6 +34,7 @@ d'après la photo**. Sur Windows ou Linux, il faudrait remplacer `sips` par Pill
 | Eau | Péniches, canards, reflets du soleil et de la lune ; quai de la Deûle qui cachait l'eau corrigé. |
 | Rendu et vitesse | Regroupement des objets, ombres à la demande, post-traitement en qualité haute (`js/render.js`), carte de départ 2,5 fois plus légère. |
 | Allègement pour téléphones | Lointain découpé en 139 carreaux de 150 m : ceux qui sont hors du cadre ne sont pas dessinés (environ 70 % dans la vue d'accueil). Dans chaque carreau, les bâtiments sont rangés par volume : la qualité moyenne laisse les plus petits au loin et ne garde qu'une touffe par arbre ; la qualité basse, qui n'avait plus de lointain du tout, montre maintenant les grands volumes. Faces jamais vues retirées (dessous, toits plats invisibles), réverbères et troncs simplifiés. Résultat en vue d'accueil sur iPhone : 850 000 triangles en qualité moyenne au lieu de 1,34 million ; 884 000 au lieu de 1,34 million en haute ; basse inchangée (527 000) malgré le lointain ajouté. |
+| Scintillement (octobre) | Deux bâtiments dont les emprises se chevauchent (OpenStreetMap et BD TOPO) avaient des murs exactement dans le même plan : chaque emprise est maintenant poussée vers l'extérieur de 1 à 5 cm, différemment d'un bâtiment à l'autre (`nudgeRing`, `js/city.js`). Caméra haute : le plan proche recule de 2 à 8 m (`fogFollow`, `js/main.js`), la profondeur gagne jusqu'à 4 fois en précision. Contrôle : `tools/film/pilote.js` (`scintillement`, `clignote`). |
 | Scintillement sur iPhone | Le moteur demande un tampon de stencil : sans lui, Safari peut ne donner que 16 bits de profondeur et les surfaces proches clignotent. `?perf` affiche maintenant la précision obtenue (« profondeur 24 bits »). |
 | Ombres sur téléphone | Hors qualité haute, seuls les bâtiments et les feuillages portent une ombre (passants, troncs, réverbères, cheminées, lucarnes exclus) : chaque mise à jour des ombres coûte 35 % de moins. Une baisse automatique de qualité n'est plus gardée que 3 jours. Testé en bridant le rendu : à 36 i/s la qualité moyenne est gardée, à 26 i/s le site passe en basse en 4 s. |
 | Wenov | L'îlot est coupé derrière la rangée de maisons de l'avenue de Bretagne (OpenStreetMap et BD TOPO concordent) : 13 bâtiments rendus au quartier. Wenov reste en R+4 (20,5 m, Lalou+Lebec, 2021). |
@@ -51,8 +52,9 @@ Page de relecture sur le site : https://lwichlacz.github.io/campus_fges/relectur
 `#tableau` : tableau de bord, avec la clé du script). Lien public, sans compte. Les réponses vont dans un tableur Google
 via `docs/validation-web/google-apps-script.js` (installation en tête du fichier ; l'URL du script va dans
 `docs/validation-web/pages.json`), les captures dans un dossier Drive. Tant que l'URL n'est pas renseignée, l'enseignant
-obtient un récapitulatif à copier. L'accueil montre le film du campus (1 min 40, tourné dans le vrai campus 3D : toutes les formations, mini-jeu
-disponible ou à venir ; `tools/film/film.js`, `docs/validation-web/media/campus-3d.mp4`) et les jeux avec leur compteur. E-mail d'invitation : `docs/validation-web/invitation.md`. (Les anciennes pages claude.ai ont été
+obtient un récapitulatif à copier. L'accueil montre le film du projet (2 min 04, tourné image par image dans le vrai campus 3D : Vauban, Euratechnologies, les
+36 formations avec leur mini-jeu disponible ou à venir, les mini-jeux et la relecture ; `tools/film/film.js` et `tools/film/pilote.js`,
+`docs/validation-web/media/campus-3d.mp4`) et les jeux avec leur compteur. E-mail d'invitation : `docs/validation-web/invitation.md`. (Les anciennes pages claude.ai ont été
 supprimées.)
 
 Côté site : `?jeu=<formation>` ouvre directement un jeu ; `&relecture` ajoute la bannière « Relecture » (chronomètre,
