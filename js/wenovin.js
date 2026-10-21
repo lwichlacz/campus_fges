@@ -3,7 +3,7 @@
    l'espace du Campus Cyber Hauts-de-France, le coworking et son café, le hall et la passerelle de l'étage.
    Les murs côté caméra s'effacent tout seuls. */
 import * as THREE from "three";
-import { std, box, cyl, mesh, beam, makeStudent, makePerson, mulberry32 } from "./kit.js?v=8233004a61";
+import { std, box, cyl, mesh, beam, makeStudent, makePerson, mulberry32 } from "./kit.js?v=554930b2ca";
 
 const W = 44, D = 34, FL = 4.2, WING = 8;
 const HX = W/2, HZ = D/2, PX = HX - WING, PZ = HZ - WING;      // patio : 28 × 18
@@ -246,7 +246,7 @@ export function createWenovIn({ background }){
 		spots:{ salle:spot(-11, zN + 2), cyber:spot(11, zN + 2), hiptown:spot(-HX + 4, 3) },
 		pins:[
 			{ id:"salle", icon:"💻", name:"Salles de l'École du Numérique", pos:[-11, 5.6, zN] },
-			{ id:"gaming", icon:"🎮", name:"Projet Gaming · mini-jeu (Licence Informatique)", pos:[-5, 4.6, zN] },
+			{ id:"gaming", icon:"🎮", name:"Game Jam 48 h · mini-jeu (Licence Informatique)", pos:[-5, 4.6, zN] },
 			{ id:"cyber", icon:"🛡️", name:"Campus Cyber Hauts-de-France", pos:[11, 5.6, zN] },
 			{ id:"hiptown", icon:"☕", name:"Coworking et café", pos:[-HX + 4, 5, 3] },
 			{ id:"robot", icon:"🦾", name:"Plateau robotique · mini-jeu", pos:[HX - 4, 4.6, -4] },

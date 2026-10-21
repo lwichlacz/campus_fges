@@ -64,8 +64,8 @@ export const GAME_INFO = {
 		pitch:"La trésorerie d'une PME fond sans raison : trie les pièces, rapproche la banque, analyse le budget… et démasque le fraudeur." },
 	robot:{ fid:"spi", title:"Cellule robotique Wenov", icon:"🦾", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"7 min",
 		pitch:"Pilote un vrai bras robot en 3D, programme le cycle d'une ligne de production, puis donne-lui des yeux pour trier les pièces." },
-	gaming:{ fid:"info", title:"Projet Gaming", icon:"🎮", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"7 min",
-		pitch:"Le jeu vidéo de ton équipe de L1 bugue : programme le rebond de la balle, affiche les scores en SQL, protège les comptes des joueurs, puis démasque les tricheurs avec les données." },
+	gaming:{ fid:"info", title:"Game Jam 48 h", icon:"🎮", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"10 min",
+		pitch:"Un week-end de game jam avec ton équipe de L1 : dessine un niveau faisable, programme la gravité du héros et joue-le, mets les scores en ligne en SQL, tiens le choc quand 5 000 joueurs débarquent, puis passe devant le jury." },
 	biodata:{ fid:"dmb", title:"From Blood to Decision", icon:"🧬", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12-15 min",
 		pitch:"En anglais, comme le master : du dossier d'un patient fatigué à l'étude d'une cohorte. RGPD, contrôle qualité du séquençage, interprétation d'un variant, biostatistiques, machine learning et compte rendu clinique." }
 };

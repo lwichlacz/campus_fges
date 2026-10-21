@@ -249,47 +249,49 @@ PAGES = {
 		},
 	},
 	"info": {
-		"title": "Relecture Projet Gaming",
+		"title": "Relecture Game Jam 48 h",
 		"accent": ("#5b3fd0", "#ece8fd", "#a996ff", "#2a2350"),
 		"cfg": {
-			"id": "info", "game": "Projet Gaming (Licence Informatique)", "short": "Projet Gaming",
-			"h1": "Projet Gaming : votre relecture",
-			"lead": "Le mini-jeu de la Licence Informatique de l'École du Numérique, dans le campus 3D de la FGES. À partir du Projet Gaming de L1, le joueur programme, interroge une base de données, sécurise des comptes et repère des tricheurs. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux lycéens.",
-			"facts": ["Environ 7 min", "4 missions, de L1 à L3", "Public : lycéens", "Pas besoin de savoir programmer"],
+			"id": "info", "game": "Game Jam 48 h (Licence Informatique)", "short": "Game Jam 48 h",
+			"h1": "Game Jam 48 h : votre relecture",
+			"lead": "Le mini-jeu de la Licence Informatique de l'École du Numérique, dans le campus 3D de la FGES. Un week-end de game jam avec une équipe du Projet Gaming de L1 : le joueur construit un jeu de plateforme en 3D, le programme, y joue, met les scores en ligne, tient le choc quand les joueurs affluent et passe devant un jury. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux lycéens.",
+			"facts": ["Environ 10 min", "5 étapes, de H+0 à H+47", "En 3D, jouable au clavier ou au doigt", "Public : lycéens", "Pas besoin de savoir programmer"],
 			"url": SITE + "?jeu=info",
-			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Projet Gaming. Le jeu est aussi dans Wenov, épingle « Projet Gaming ».",
-			"card": {"icon": "🎮", "title": "Projet Gaming", "formation": "Licence Informatique", "steps": [
-				["L1", "Programmer le rebond de la balle"], ["L1", "Afficher les meilleurs scores en SQL"],
-				["L2", "Protéger les comptes des joueurs (Cyber)"], ["L3", "Repérer les tricheurs avec les données (Data)"]]},
-			"videoSteps": ["L1", "L1", "L2", "L3"],
+			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Game Jam 48 h. Le jeu est aussi dans Wenov, épingle « Game Jam 48 h ».",
+			"videoSteps": ["Niveau", "Physique", "SQL", "Serveur", "Jury"],
+			"card": {"icon": "🎮", "title": "Game Jam 48 h", "formation": "Licence Informatique", "steps": [
+				["H+0", "Dessiner un niveau faisable (parcours en largeur)"], ["H+6", "Programmer gravité et saut, puis jouer"],
+				["H+20", "Le podium des joueurs en SQL"], ["H+36", "5 000 joueurs : serveurs, cache, tricheur"], ["H+47", "La démo devant le jury"]]},
 			"publicHint": "Des lycéens de première et terminale, notamment en spécialité NSI ou maths.",
-			"dureeHint": "Durée prévue : environ 7 minutes.",
+			"dureeHint": "Durée prévue : environ 10 minutes.",
 			"sections": [
 				{"t": "Le déroulé", "items": [
-					c("missions", "Les missions sont-elles représentatives de la licence et du Projet Gaming ?", "Programmer un rebond (L1), une requête SQL (L1), la cryptologie (L2, Cyber), un détecteur de tricheurs (L3, Data)."),
-					c("annees", "Les années et les parcours associés sont-ils justes ?", "Cryptologie en L2 (parcours Cyber), machine learning en L3 (parcours Data) ; parcours Data, Cyber, IoT et réalité virtuelle."),
-					c("cours", "Les intitulés des cours révélés sont-ils exacts ?", "Programmation et Projet Gaming ; Bases de données ; Cryptologie ; Machine learning.")]},
-				{"t": "Mission 1 · La balle traverse la raquette", "sub": "L1", "items": [
-					c("m1", "La fonction de rebond et son test sont-ils justes ?", "if (balle.x <= raquette.x + raquette.largeur && balle.y >= raquette.y && balle.y <= raquette.y + raquette.hauteur) balle.vx = -balle.vx ; testé sur trois tirs (sur la raquette, au-dessus, en dessous)."),
-					q("m1_langage", "La syntaxe proche du JavaScript convient-elle, ou faut-il du Python ?"),
-					c("m1_msgs", "Les messages d'erreur sont-ils pédagogiquement justes ?", "Balle qui s'arrête, qui ralentit, qui rebondit sur du vide au-dessus ou en dessous de la raquette, qui la traverse.")]},
-				{"t": "Mission 2 · Le podium des meilleurs joueurs", "sub": "L1", "items": [
-					c("m2", "La requête et ses pièges sont-ils adaptés ?", "SELECT pseudo, score FROM scores ORDER BY score DESC LIMIT 3 ; pièges : table inexistante, ASC, LIMIT 1 ou 10, colonne niveau seule ; SELECT * accepté avec une remarque.")]},
-				{"t": "Mission 3 · Un message codé dans le chat", "sub": "L2 · Cyber", "items": [
-					c("m3_cesar", "Le code de César est-il bien présenté ?", "« LE TOURNOI COMMENCE A MIDI » décalé de 3, retrouvé avec un curseur ; 25 possibilités, cassé en un instant."),
-					c("m3_hash", "L'explication du stockage des mots de passe est-elle juste ?", "Hacher avec un sel plutôt que stocker en clair ou chiffrer par César ; on compare les empreintes à la connexion."),
-					q("m3_algo", "Faut-il citer un algorithme (bcrypt, Argon2) ?")]},
-				{"t": "Mission 4 · Des tricheurs dans le classement", "sub": "L3 · Data", "items": [
-					c("m4", "Le détecteur et ses données sont-ils crédibles ?", "28 joueurs, 5 tricheurs ; deux seuils (précision des tirs, temps de réaction) ; objectif : 5 tricheurs sur 5 avec un seul innocent au plus."),
-					q("m4_ml", "Deux seuils réglés à la main peuvent-ils être présentés comme du machine learning, ou faut-il ajouter une étape d'apprentissage ?"),
-					c("m4_humain", "La conclusion (faux positifs, vérification humaine avant sanction) est-elle juste ?")]},
-				{"t": "Fin de partie", "items": [
-					c("mention", "Les mentions sont-elles bien calibrées ?", "Très bien : 2 erreurs au plus ; Bien : 6 au plus ; Assez bien au-delà."),
-					c("ton", "Le ton « studio de jeu vidéo » vous convient-il pour présenter la licence ?")]},
+					c("etapes", "Les étapes sont-elles représentatives de la licence et du Projet Gaming ?", "Level design et parcours en largeur ; physique d'un personnage ; SQL et API ; serveurs, cache et sécurité ; présentation devant un jury."),
+					c("cours", "Les intitulés et les années des cours révélés sont-ils exacts ?", "Projet Gaming (L1) ; Structures de données et algorithmique (L1-L2) ; Programmation (L1) ; Bases de données (L1) ; Développement back-end (L2) ; Réseaux et cloud (L1-L3) ; Cybersécurité, parcours Cyber (L2)."),
+					c("jam", "Le cadre « game jam de 48 h » est-il crédible pour le Projet Gaming ?", "Vendredi 18 h → dimanche 17 h, salle de l'École du Numérique à Wenov, deux coéquipiers fictifs.")]},
+				{"t": "H+00 · Le niveau", "sub": "L1 · Projet Gaming, structures de données", "items": [
+					c("bfs", "Le parcours en largeur est-il bien présenté ?", "On part de la colonne 0, on sort une colonne de la file, on ajoute ses voisines atteignables ; le niveau est faisable si le drapeau (colonne 15) est atteint. Le plus court chemin est surligné."),
+					c("bfs_regle", "La règle de saut est-elle claire ?", "Monter d'un bloc au plus, franchir 2 cases vides au plus. Le joueur dispose de 3 blocs ; 2 suffisent."),
+					q("bfs_annee", "Le parcours en largeur est-il vu en L1 (structures de données) ou en L2 (algorithmique avancée) ?")]},
+				{"t": "H+06 · Le héros", "sub": "L1 · programmation", "items": [
+					c("phys", "La fonction de physique est-elle juste et lisible ?", "heros.vy -= 20 * dt ; si saut et au sol, heros.vy = 8 ; heros.y += heros.vy * dt ; si heros.y < sol, heros.y = sol. Elle tourne réellement 60 fois par seconde."),
+					c("phys_bugs", "Les bugs montrés pour chaque erreur sont-ils pédagogiquement justes ?", "Gravité -20 ou 0 : le héros s'envole ; y = 0 : il s'enfonce ; y + 1 : il grimpe par bonds ; élan 3 : il tombe dans le trou ; élan 25 : il sort de l'écran."),
+					q("phys_langage", "Quel langage ou moteur utilisent les L1 pour le Projet Gaming ? La syntaxe proche du JavaScript convient-elle ?")]},
+				{"t": "H+20 · Les scores", "sub": "L1 · bases de données, L2 · back-end", "items": [
+					c("sql", "La requête et ses pièges sont-ils adaptés ?", "SELECT pseudo, MAX(score) AS meilleur FROM parties GROUP BY pseudo ORDER BY meilleur DESC LIMIT 3 ; pièges : doublons sans GROUP BY, MAX sans GROUP BY, colonne non agrégée, SUM, ASC, LIMIT."),
+					c("api", "L'explication de l'API (requête servie en JSON) est-elle juste ?", "GET /api/podium renvoie les trois meilleurs joueurs en JSON.")]},
+				{"t": "H+36 · Le jeu buzze", "sub": "Réseaux et cloud, parcours Cyber", "items": [
+					c("srv", "Le modèle simplifié du serveur est-il acceptable ?", "1 000 demandes/s par serveur, 5 000 demandes/s, cache qui évite 65 % des demandes, latence ≈ 30 ms / (1 − charge), objectif 200 ms, budget 3 serveurs : il faut le cache et 3 serveurs."),
+					c("triche", "La question sur le tricheur est-elle juste ?", "Un score de 999 999 en 3 s : on vérifie sur le serveur (jamais confiance au client), pas dans le jeu ni en chiffrant le score."),
+					q("srv_mots", "Faut-il nommer la répartition de charge (load balancing) et la mise à l'échelle ?")]},
+				{"t": "H+47 · Le jury et la fin de partie", "items": [
+					c("jury", "La démo devant un jury est-elle fidèle au Projet Gaming ?", "Jury fictif : une enseignante, une développeuse de studio lillois, une étudiante de L3 ; notes de gameplay, technique et thème."),
+					c("mention", "Les mentions sont-elles bien calibrées ?", "Très bien : 2 erreurs au plus ; Bien : 6 au plus ; Assez bien au-delà. Les chutes en jouant ne comptent pas."),
+					c("ton", "Le ton « week-end entre étudiants » (pizzas, coéquipier qui s'endort) vous convient-il pour présenter la licence ?")]},
 			],
 			"open": [
-				{"k": "projet", "q": "Le Projet Gaming de L1 : quel moteur ou langage utilisent les étudiants ? Des captures d'un vrai projet seraient utiles."},
-				{"k": "iot", "q": "Faut-il une mission sur le parcours IoT et réalité virtuelle ?"},
+				{"k": "jam", "q": "L'école organise-t-elle une vraie game jam ? Un nom, une date ou des photos rendraient le jeu plus concret."},
+				{"k": "parcours", "q": "Faut-il une étape sur les parcours Data ou IoT et réalité virtuelle ?"},
 				{"k": "manque", "q": "Qu'est-ce qui manque pour donner envie de rejoindre la licence ?"},
 			],
 		},
@@ -302,7 +304,7 @@ GAMES = [
 	{"id": "cfa", "icon": "🕵️", "title": "L'Enquête de l'auditeur", "formation": "Licence Comptabilité-Finance-Audit", "dur": "6 min"},
 	{"id": "sv", "icon": "🔍", "title": "Mission Jardin Boulay", "formation": "Licence Sciences de la Vie", "dur": "7 min"},
 	{"id": "spi", "icon": "🦾", "title": "Cellule robotique Wenov", "formation": "Licence Sciences pour l'Ingénieur", "dur": "9 min"},
-	{"id": "info", "icon": "🎮", "title": "Projet Gaming", "formation": "Licence Informatique", "dur": "7 min"},
+	{"id": "info", "icon": "🎮", "title": "Game Jam 48 h", "formation": "Licence Informatique", "dur": "10 min"},
 	{"id": "dmb", "icon": "🧬", "title": "From Blood to Decision", "formation": "Master Data Management in Biosciences", "dur": "12-15 min"},
 ]
 # une seule page pour tous les jeux (relecture/#dmb, #sv…), servie par GitHub Pages avec le site ;
