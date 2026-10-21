@@ -4,7 +4,7 @@
    - « arrive » : la rame entre en station, les portes s'ouvrent, on descend, fondu, on ressort dans la rue ;
    - « depart » : on descend depuis la rue (fondu), on monte à bord, les portes se ferment, la rame part. */
 import * as THREE from "three";
-import { std, box, beam, makePerson } from "./kit.js?v=554930b2ca";
+import { std, box, beam, makePerson } from "./kit.js?v=f5913cb4c8";
 
 function stationWall(name){
 	const c = document.createElement("canvas"); c.width = 512; c.height = 128; const x = c.getContext("2d");

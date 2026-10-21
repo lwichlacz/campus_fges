@@ -2,33 +2,41 @@
    Un week-end de game jam dans la salle de l'École du Numérique, avec l'équipe du Projet Gaming de L1.
    Sur la table, la maquette 3D du jeu de plateforme de l'équipe : on la construit, on la programme, on y joue.
    - H+0  · L1 Projet Gaming, structures de données : poser les blocs du niveau, prouver qu'il est faisable (parcours en largeur) ;
-   - H+6  · L1 programmation : écrire gravité, saut et sol du héros ; le code choisi tourne vraiment, puis on joue le niveau ;
+   - H+6  · L1 programmation (Python) : écrire gravité, saut et sol du héros ; le code choisi tourne vraiment, puis on joue
+            le niveau, poursuivi par un ennemi qui calcule son chemin avec le même parcours en largeur ;
    - H+20 · L1 bases de données, L2 back-end : la requête SQL du classement, servie par l'API du jeu ;
-   - H+36 · réseaux et cloud, parcours Cyber : le jeu buzze, le serveur sature ; cache, serveurs, puis un tricheur à bloquer ;
+   - H+28 · parcours IoT et réalité virtuelle : lumière, brouillard et caméra, puis un tour en vue subjective ;
+   - H+36 · réseaux et cloud, parcours Cyber : le jeu buzze, le serveur sature ; cache, serveurs, tricheur, scores signés ;
    - H+47 · le jury joue le niveau en direct et note l'équipe.
-   La lumière des fenêtres suit les 48 heures (vendredi 18 h → dimanche 17 h).
+   Bonus : un éditeur de niveau libre, avec un lien à partager (?jeu=info&niveau=…).
+   La lumière des fenêtres suit les 48 heures (vendredi 18 h → dimanche 17 h) ; le style choisi habille toute la salle.
    Équipe, joueurs et scores sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
-import { makePerson } from "../kit.js?v=554930b2ca";
+import { makePerson } from "../kit.js?v=f5913cb4c8";
 
 const COURSES = {
 	gaming: ["L1", "Projet Gaming", "Toute la première année, chaque équipe conçoit et programme son propre jeu vidéo : idée, niveaux, code, tests, présentation devant un jury."],
 	algo:   ["L1-L2", "Structures de données et algorithmique", "Une file d'attente et un parcours en largeur suffisent à prouver qu'un niveau est faisable, ou à trouver le plus court chemin d'un personnage."],
-	prog:   ["L1", "Programmation", "Variables, conditions, fonctions : quelques lignes exécutées 60 fois par seconde font tomber, sauter et atterrir un personnage."],
+	prog:   ["L1", "Programmation (Python)", "Variables, conditions, fonctions : quelques lignes de Python exécutées 60 fois par seconde font tomber, sauter et atterrir un personnage."],
 	bdd:    ["L1", "Bases de données", "Ranger les parties dans une table et l'interroger en SQL : regrouper, calculer, trier, limiter."],
 	back:   ["L2", "Développement back-end", "Le serveur reçoit les demandes du jeu, interroge la base et répond en JSON : c'est une API."],
 	cloud:  ["L1-L3", "Réseaux et cloud", "Quand les joueurs affluent, on répartit la charge sur plusieurs serveurs et on garde en cache ce qui est demandé sans arrêt."],
-	cyber:  ["L2", "Cybersécurité (parcours Cyber)", "Ne jamais faire confiance à ce qu'envoie l'ordinateur du joueur : le serveur vérifie tout ce qui compte."]
+	cyber:  ["L2", "Cybersécurité (parcours Cyber)", "Ne jamais faire confiance à ce qu'envoie l'ordinateur du joueur : le serveur vérifie tout ce qui compte."],
+	crypto: ["L2", "Cryptologie (parcours Cyber)", "Hacher, chiffrer, signer : une signature calculée avec une clé secrète prouve qu'un message n'a pas été modifié en route."],
+	vr:     ["L2-L3", "Réalité virtuelle et 3D (parcours IoT et VR)", "Une scène 3D, ce sont des objets, des lumières, du brouillard et une caméra : on les règle pour créer une ambiance, et pour qu'un casque affiche deux images 90 fois par seconde."]
 };
 const TEAM = { ines:["Inès", "graphisme"], yanis:["Yanis", "son et tests"] };
 const STYLES = {
-	neon:   { name:"Néon", icon:"🌃", side:"#4b34c9", top:"#2de2e6", hero:"#ff4fa3", sky:"#140f33", deco:"#ff4fa3", water:"#1fb8c9", glow:true },
-	lille:  { name:"Briques de Lille", icon:"🧱", side:"#b5523b", top:"#efe6d4", hero:"#2f6f8f", sky:"#bfd9ec", deco:"#ffffff", water:"#4f86a8", glow:false },
-	jungle: { name:"Jungle", icon:"🌴", side:"#7a5230", top:"#57b65a", hero:"#f2c63c", sky:"#c4ecd0", deco:"#2f7d43", water:"#3aa59b", glow:false }
+	neon:   { name:"Néon", icon:"🌃", side:"#4b34c9", top:"#2de2e6", hero:"#ff4fa3", sky:"#140f33", deco:"#ff4fa3", water:"#1fb8c9", glow:true,
+		tex:"grid", floor:"#1c1838", accent:"#ff4fa3", head:"#7c5cff" },
+	lille:  { name:"Briques de Lille", icon:"🧱", side:"#b5523b", top:"#efe6d4", hero:"#2f6f8f", sky:"#bfd9ec", deco:"#ffffff", water:"#4f86a8", glow:false,
+		tex:"brick", floor:"#6e5646", accent:"#ffb36b", head:"#b5523b" },
+	jungle: { name:"Jungle", icon:"🌴", side:"#7a5230", top:"#57b65a", hero:"#f2c63c", sky:"#c4ecd0", deco:"#2f7d43", water:"#3aa59b", glow:false,
+		tex:"leaf", floor:"#4f6b45", accent:"#57b65a", head:"#2f7d43" }
 };
 
 /* ---------- le niveau (unités : 1 bloc) ---------- */
-const N = 16, FLAG = 15, BUDGET = 3;
+const N = 16, FLAG = 15, BUDGET = 3, MAXH = 6;
 const BASE = [2,2,2,0,0,0,0,2,2,4,2,2,0,0,2,2];           // un trou de 4 cases, un mur de 2 blocs, un trou de 2 cases
 const SOLUTION = { 5:1, 8:1 };                             // blocs posés d'office si l'on saute directement à une étape
 const COINS = [[1.5, 3.4], [9.5, 5.5], [12.5, 3.6]];
@@ -41,17 +49,17 @@ function canHop(H, a, b){
 	for(let c = Math.min(a, b) + 1; c < Math.max(a, b); c++) if(H[c] > Math.min(ha, hb)) return false;
 	return true;
 }
-function bfs(H){
-	const prev = Array(N).fill(-2), steps = [], q = [0];
-	prev[0] = -1;
+function bfs(H, from = 0, to = FLAG){
+	const prev = Array(N).fill(-2), steps = [], q = [from];
+	prev[from] = -1;
 	while(q.length){
 		const a = q.shift(), found = [];
 		for(let b = Math.max(0, a - 3); b <= Math.min(N - 1, a + 3); b++) if(prev[b] === -2 && canHop(H, a, b)){ prev[b] = a; q.push(b); found.push(b); }
 		steps.push({ c:a, found, q:[...q] });
 	}
 	const path = [];
-	if(prev[FLAG] !== -2) for(let c = FLAG; c !== -1; c = prev[c]) path.unshift(c);
-	return { steps, path, ok:prev[FLAG] !== -2 };
+	if(prev[to] !== -2) for(let c = to; c !== -1; c = prev[c]) path.unshift(c);
+	return { steps, path, ok:prev[to] !== -2 };
 }
 const airtime = d => (V_OK + Math.sqrt(Math.max(0, V_OK*V_OK - 2*G_OK*d)))/G_OK;
 
@@ -81,6 +89,10 @@ const REQ = 5000, CAP = 1000, CACHE_HIT = .65, MAX_SRV = 3;
 const loadOf = st => REQ*(st.cache ? 1 - CACHE_HIT : 1);
 const utilOf = st => loadOf(st)/(st.servers*CAP);
 const latencyOf = u => u >= 1 ? Infinity : Math.round(30/(1 - u));
+// signature d'un score : empreinte (FNV-1a) de la clé secrète du serveur, du pseudo et du score
+const KEY = "wenov-jam-2026";
+function sign(pseudo, score){ let h = 0x811c9dc5; for(const ch of `${KEY}|${pseudo}|${score}`){ h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; } return h.toString(16).padStart(8, "0").toUpperCase().replace(/(....)(....)/, "$1·$2"); }
+const SIGNED = [["Lou_42", 2310, 2310], ["xX_Max_Xx", 2990, 1990], ["Zoé.dev", 2480, 2480]];     // pseudo, score reçu, score réellement signé
 
 /* ---------- l'heure de la jam (H+0 = vendredi 18 h) ---------- */
 const DAYS = ["vendredi", "samedi", "dimanche"];
@@ -161,6 +173,22 @@ const CSS = `
 .gj-course .tag{display:inline-block;background:#efeaff;color:#4b35b8;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px;margin-bottom:6px}
 .gj-course b{display:block;font:700 17px Fraunces,Georgia,serif;margin-bottom:3px}
 .gj-course span{font-size:14px;color:#4f4a65}
+.gj-seg{display:flex;gap:6px;flex-wrap:wrap}
+.gj-seg button{flex:1;min-width:84px;border:2px solid #d8d2f2;border-radius:10px;background:#fff;padding:8px 6px;font:800 13px Nunito,sans-serif;color:#1d2238;cursor:pointer}
+.gj-seg button.on{border-color:#7c5cff;background:#efeaff}
+.gj-seg button:disabled,.gj-srv input:disabled{opacity:.6;cursor:default}
+.gj-brief{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
+.gj-brief li{background:#fff;border-radius:8px;padding:8px 10px;font-size:13.5px;font-weight:700;display:flex;gap:8px;align-items:center}
+.gj-brief li b{margin-left:auto;font-size:16px}
+.gj-pk{display:grid;gap:8px;margin-top:8px}
+.gj-pk>div{background:#161a33;color:#e6e8ff;border-radius:10px;padding:10px 12px;font:13px/1.6 ui-monospace,Menlo,monospace}
+.gj-pk em{color:#ffd166;font-style:normal}
+.gj-pk .row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center}
+.gj-pk button{border:0;border-radius:8px;padding:7px 10px;font:800 13px Nunito,sans-serif;cursor:pointer;background:#3a4180;color:#fff}
+.gj-pk button.ok{background:#2f8a4f}.gj-pk button.ko{background:#c0392b}.gj-pk button:disabled{cursor:default}
+.gj-pk .st{font-weight:700;color:#9dfcb4}.gj-pk .st.bad{color:#ff8a8a}
+.gj-link{width:100%;box-sizing:border-box;border:1.5px solid #d8d2f2;border-radius:10px;padding:10px;font:12.5px ui-monospace,Menlo,monospace;margin-top:8px;background:#fff;color:#1d2238}
+.gj-shared{background:#fff4d6;border:2px solid #ffd166;border-radius:12px;padding:10px 12px;margin:8px 0;font-weight:800;font-size:14px}
 .gj-notes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
 .gj-notes div{background:#fff;border-radius:10px;padding:10px 6px;text-align:center;font-size:12px;font-weight:800;color:#5d5978}
 .gj-notes b{display:block;font:700 26px Fraunces,Georgia,serif;color:#4b35b8}
@@ -190,10 +218,11 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 	document.body.appendChild(root);
 	const $ = s => root.querySelector(s);
 	const card = $("#gjCard"), pan = $(".gj-pan");
-	const S = { errors:0, learned:new Set(), style:"neon", extra:Array(N).fill(0), levelOk:false, phys:null, physOk:false, servers:1, cache:false, coins:0, falls:0, hour:0, hourShown:0, mode:"idle" };
+	const S = { errors:0, learned:new Set(), style:"neon", extra:Array(N).fill(0), custom:null, levelOk:false, phys:null, physOk:false, servers:1, cache:false, coins:0, falls:0, stomps:0,
+		vr:{ el:60, col:"neutre", fog:0, cam:"table" }, vrActive:false, hour:0, hourShown:0, mode:"idle" };
 	let closed = false;
 	const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
-	const heights = () => BASE.map((h, i) => h + S.extra[i]);
+	const heights = () => S.custom ? S.custom.slice() : BASE.map((h, i) => h + S.extra[i]);      // S.custom : niveau de l'éditeur libre
 	const used = () => S.extra.reduce((a, b) => a + b, 0);
 
 	/* ---------- scène ---------- */
@@ -212,22 +241,46 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 	const add = (geo, mat, parent, x = 0, y = 0, z = 0, cast = true) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = cast; m.receiveShadow = true; (parent || scene).add(m); return m; };
 	const boxG = (w, h, d) => new THREE.BoxGeometry(w, h, d);
 	function canvasTex(w, h){ const c = document.createElement("canvas"); c.width = w; c.height = h; const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return { c, x:c.getContext("2d"), t }; }
+	function fitText(x, text){
+		let fs = 34; x.font = `800 ${fs}px Nunito, sans-serif`;
+		while(x.measureText(text).width > 228 && fs > 14){ fs -= 2; x.font = `800 ${fs}px Nunito, sans-serif`; }
+		x.fillStyle = "#fff"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(text, 128, 38);
+	}
 	function label(text, color = "#7c5cff", w = 1.3){
 		const { c, x, t } = canvasTex(256, 72);
 		x.fillStyle = color; x.beginPath(); x.roundRect(4, 4, 248, 64, 32); x.fill();
-		x.fillStyle = "#fff"; x.font = "800 34px Nunito, sans-serif"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(text, 128, 38);
+		fitText(x, text);
 		const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:t })); s.scale.set(w, w*72/256, 1); s.renderOrder = 5; s.userData.canvas = c;
 		return s;
 	}
 
 	// la salle
-	const floorMat = M("#454a6b", { roughness:.95 }), wallMat = M("#e9e6f2", { roughness:.9 });
+	const floorMat = M("#454a6b", { roughness:.95 }), wallMat = M("#ffffff", { roughness:.9 }), stripMat = M("#7c5cff", { emissive:"#7c5cff", emissiveIntensity:1.4 });
+	// motif des murs selon le style : grille néon, briques, feuillage
+	const wallTex = {};
+	function wallTexture(kind){
+		const { x, t } = canvasTex(256, 256);
+		if(kind === "brick"){
+			x.fillStyle = "#d8c6ae"; x.fillRect(0, 0, 256, 256);
+			for(let r = 0; r < 8; r++) for(let i = -1; i < 5; i++){ x.fillStyle = ["#b5523b", "#a6463a", "#c0603f", "#9e4332"][(r*7 + i*3) & 3]; x.fillRect(i*64 + (r % 2 ? 32 : 0) + 2, r*32 + 2, 60, 28); }
+		} else if(kind === "grid"){
+			x.fillStyle = "#1e1a3d"; x.fillRect(0, 0, 256, 256);
+			x.strokeStyle = "#3b2f86"; x.lineWidth = 2;
+			for(let i = 0; i <= 256; i += 32){ x.beginPath(); x.moveTo(i, 0); x.lineTo(i, 256); x.moveTo(0, i); x.lineTo(256, i); x.stroke(); }
+			x.fillStyle = "#ff4fa3"; for(let i = 0; i < 6; i++) x.fillRect(((i*3) % 8)*32 - 3, ((i*5) % 8)*32 - 3, 6, 6);
+		} else {
+			x.fillStyle = "#dcefd6"; x.fillRect(0, 0, 256, 256);
+			for(let i = 0; i < 28; i++){ x.fillStyle = i % 3 ? "#b6dcab" : "#9ccc8f"; x.beginPath(); x.ellipse((i*97) % 256, (i*61) % 256, 22, 8, (i % 5)*.7, 0, 7); x.fill(); }
+		}
+		t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(5, 2);
+		return t;
+	}
 	add(new THREE.PlaneGeometry(17, 13).rotateX(-Math.PI/2), floorMat, scene, 0, 0, 0, false);
 	add(new THREE.PlaneGeometry(17, 5), wallMat, scene, 0, 2.5, -6, false);
 	add(new THREE.PlaneGeometry(13, 5).rotateY(Math.PI/2), wallMat, scene, -8.5, 2.5, .5, false);
 	add(new THREE.PlaneGeometry(13, 5).rotateY(-Math.PI/2), wallMat, scene, 8.5, 2.5, .5, false);
 	add(new THREE.PlaneGeometry(17, 5).rotateY(Math.PI), wallMat, scene, 0, 2.5, 6.9, false);       // mur du fond, invisible depuis la vue d'ensemble (vu de dos)
-	add(boxG(17, .08, .06), M("#7c5cff", { emissive:"#7c5cff", emissiveIntensity:1.4 }), scene, 0, .1, -5.96, false);      // bandeau lumineux
+	add(boxG(17, .08, .06), stripMat, scene, 0, .1, -5.96, false);      // bandeau lumineux
 	const winMat = new THREE.MeshBasicMaterial({ color:"#a9d6f5" });
 	for(const z of [-3.6, -.2, 3.2]){
 		add(new THREE.PlaneGeometry(2.4, 2.3).rotateY(Math.PI/2), winMat, scene, -8.47, 2.3, z, false);
@@ -287,14 +340,19 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		const H = heights();
 		for(let c = 0; c < N; c++){
 			for(let y = 0; y < H[c]; y++){
-				const mine = y >= BASE[c];
+				const mine = !S.custom && y >= BASE[c];
 				const b = add(BLOCK, mine ? matExtra : matSide, blocks, c + .5, y + .5, 0);
 				b.userData = { col:c, mine };
 			}
-			if(H[c] && !S.extra[c]) add(TOP, matTop, blocks, c + .5, H[c] - .08, 0);
+			if(H[c] && (S.custom || !S.extra[c])) add(TOP, matTop, blocks, c + .5, H[c] - .08, 0).userData = { col:c };
 			tiles[c].position.y = H[c] + .06;
 		}
 		flag.position.set(FLAG + .5, H[FLAG], 0);
+		// pièces : fixes dans le niveau de la jam, posées au-dessus des colonnes 3, 8 et 12 dans un niveau libre
+		if(S.custom) [3, 8, 12].forEach((c, i) => { coins[i].x = c + .5; coins[i].y = (H[c] || Math.max(H[c - 1] || 0, H[c + 1] || 0)) + 1.5; });
+		else COINS.forEach(([x, y], i) => { coins[i].x = x; coins[i].y = y; });
+		coins.forEach(c => c.m.position.set(c.x, c.y, 0));
+		lv.updateMatrixWorld(true);      // les nouveaux blocs sont cliquables tout de suite, sans attendre l'affichage
 	}
 	for(let c = 0; c < N; c++){ const t = add(boxG(.9, .1, 1.46), new THREE.MeshBasicMaterial({ color:"#7dff9a", transparent:true, opacity:.9, toneMapped:false }), lv, c + .5, 0, 0, false); t.visible = false; tiles.push(t); }
 	const flag = new THREE.Group(); lv.add(flag);
@@ -307,11 +365,21 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 	const heroBody = add(boxG(.62, .62, .55), heroMat, heroG, 0, .36, 0);
 	for(const s of [-1, 1]){ add(boxG(.13, .16, .04), M("#ffffff"), heroBody, s*.13, .07, .29, false); add(boxG(.07, .09, .03), M("#141a33"), heroBody, s*.13 + .02, .06, .31, false); }
 	add(boxG(.06, .22, .06), M("#141a33"), heroBody, 0, .41, 0, false); add(new THREE.SphereGeometry(.08, 8, 6), M("#ffd166", { emissive:"#ffb703" }), heroBody, 0, .55, 0, false);
+	// l'ennemi : un bug rouge qui calcule son chemin vers le héros par parcours en largeur
+	const FOE_START = 9;
+	const foe = { on:false, c:FOE_START, x:FOE_START + .5, y:4, from:FOE_START, to:FOE_START, hop:0, wait:1, dead:0 };
+	const foeG = new THREE.Group(); foeG.visible = false; lv.add(foeG);
+	const foeBody = add(boxG(.7, .5, .6), M("#e63946", { emissive:"#7a0d16", emissiveIntensity:.4 }), foeG, 0, .25, 0);
+	for(const s of [-1, 1]){ add(boxG(.16, .1, .04), M("#ffffff"), foeBody, s*.15, .04, .31, false); add(boxG(.2, .045, .04), M("#141a33"), foeBody, s*.15, .13, .32, false).rotation.z = s*.45; }
+	for(const s of [-.22, 0, .22]) add(new THREE.ConeGeometry(.08, .2, 4), M("#ffd166"), foeBody, s, .33, 0, false);
+	for(const s of [-1, 1]) for(const z of [-.18, .18]) add(boxG(.06, .14, .06), M("#141a33"), foeG, s*.28, .02, z, false);
 	function applyStyle(){
 		const st = STYLES[S.style];
 		matSide.color.set(st.side); matTop.color.set(st.top); heroMat.color.set(st.hero); skyMat.color.set(st.sky); decoMat.color.set(st.deco); waterMat.color.set(st.water);
 		matTop.emissive.set(st.glow ? st.top : "#000"); matTop.emissiveIntensity = st.glow ? .45 : 0;
 		heroMat.emissive.set(st.glow ? st.hero : "#000"); heroMat.emissiveIntensity = st.glow ? .3 : 0;
+		wallMat.map = wallTex[st.tex] || (wallTex[st.tex] = wallTexture(st.tex)); wallMat.needsUpdate = true;
+		floorMat.color.set(st.floor); stripMat.color.set(st.accent); stripMat.emissive.set(st.accent);
 		drawScreen();
 	}
 
@@ -360,7 +428,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 	function drawScreen(){
 		const { x } = scr, W = 1024, H = 576, st = STYLES[S.style];
 		x.fillStyle = "#0f1226"; x.fillRect(0, 0, W, H);
-		x.fillStyle = "#7c5cff"; x.fillRect(0, 0, W, 64);
+		x.fillStyle = st.head; x.fillRect(0, 0, W, 64);
 		x.fillStyle = "#fff"; x.font = "800 30px Nunito, sans-serif"; x.textBaseline = "middle"; x.textAlign = "left";
 		x.fillText("GAME JAM 48 h · École du Numérique", 28, 33);
 		x.textAlign = "right"; x.fillText(`Style : ${st.name}`, W - 28, 33);
@@ -374,7 +442,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		} else if(k === "code"){
 			x.textAlign = "left"; x.font = "26px ui-monospace, Menlo, Consolas, monospace";
 			const p = S.phys || {};
-			const lines = [["function mettreAJour(heros, dt) {", "#c792ea"], [`  heros.vy -= ${p.g ?? "?"} * dt;`, "#e6e8ff"], ["  if (toucheSaut && heros.auSol)", "#e6e8ff"], [`    heros.vy = ${p.v ?? "?"};`, "#e6e8ff"], ["  heros.y += heros.vy * dt;", "#e6e8ff"], ["  if (heros.y < sol) {", "#e6e8ff"], [`    heros.y = ${p.sol ?? "?"};`, "#e6e8ff"], ["    heros.vy = 0; heros.auSol = true;", "#e6e8ff"], ["  }", "#e6e8ff"], ["}", "#c792ea"]];
+			const lines = [["def mettre_a_jour(heros, dt):", "#c792ea"], [`    heros.vy = heros.vy - ${p.g ?? "?"} * dt`, "#e6e8ff"], ["    if touche_saut and heros.au_sol:", "#e6e8ff"], [`        heros.vy = ${p.v ?? "?"}`, "#e6e8ff"], ["    heros.y = heros.y + heros.vy * dt", "#e6e8ff"], ["    if heros.y < sol:", "#e6e8ff"], [`        heros.y = ${p.sol ?? "?"}`, "#e6e8ff"], ["        heros.vy = 0", "#e6e8ff"], ["        heros.au_sol = True", "#e6e8ff"]];
 			lines.forEach(([t, c], i) => { x.fillStyle = c; x.fillText(t, 60, 110 + i*42); });
 			if(screenState.status){ x.textAlign = "center"; x.fillStyle = screenState.ok ? "#9dfcb4" : "#ff8a8a"; x.font = "800 34px Nunito, sans-serif"; x.fillText(screenState.status, W/2, 540); }
 		} else if(k === "sql"){
@@ -420,6 +488,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		winMat.color.copy(sky);
 		hemi.intensity = .55 + .6*day; sun.intensity = .35 + 1.1*day; sun.color.copy(sky).lerp(new THREE.Color("#ffffff"), .6);
 		lamp.intensity = 10 + 12*(1 - day);
+		if(S.vrActive){ hemi.intensity *= .3; sun.intensity *= .15; lamp.intensity *= .2; }      // pénombre : seule la lumière réglée éclaire la maquette
 		pizzas.visible = S.hourShown >= 18;
 		zzz.visible = S.hour === 36;
 		yanis.p.g.rotation.x = S.hour === 36 ? .35 : 0;
@@ -434,15 +503,19 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		rack:  () => [[2, 3.3, 3.8], [5.6, 1.6, -2.6]],
 		jury:  () => [[-2.7, 3.1, -1], [0, 1.3, 4.4]],
 		table: () => { const d = Math.min(7, (N*B/2 + .25)/(Math.tan(camera.fov*Math.PI/360)*camera.aspect)); return [[0, Y0 + 1.05 + d*.12, d], [0, Y0 + .55, 0]]; },
+		top:   () => [[0, Y0 + 2.9, 2.3], [0, Y0 + .3, -.3]],
+		fps:   () => { const hx = toWorldX(hero.x), hy = Y0 + Math.max(0, hero.y)*B; return [[hx - 3.2*B, hy + 2.3*B, .6*B], [hx + 4.5*B, hy + .3*B, 0]]; },      // à hauteur du héros, juste derrière lui
 		follow:() => { const hx = Math.max(-1.25, Math.min(1.25, toWorldX(hero.x))), hy = Y0 + Math.max(0, hero.y)*B; const d = 2.5*Math.max(1, 1.45/camera.aspect); return [[hx, hy + .3 + d*.16, d], [hx, hy + .25, 0]]; }
 	};
 	function tickCamera(dt, t){
 		const [p, tg] = VIEWS[view]();
 		goalP.set(...p); goalT.set(...tg);
 		if(view === "room"){ goalP.x += Math.sin(t*.15)*1.2; }
-		const k = 1 - Math.exp(-dt*(view === "follow" ? 5 : 2.6));
+		const k = 1 - Math.exp(-dt*(view === "follow" || view === "fps" ? 5 : 2.6));
 		camP.lerp(goalP, k); camT.lerp(goalT, k);
 		camera.position.copy(camP); camera.lookAt(camT);
+		const fov = view === "fps" ? 62 : 45;
+		if(Math.abs(camera.fov - fov) > .05){ camera.fov += (fov - camera.fov)*Math.min(1, dt*4); camera.updateProjectionMatrix(); }
 	}
 
 	/* ---------- le moteur du jeu de plateforme ---------- */
@@ -466,7 +539,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		moveX(vx*dt);
 		// le code écrit par le joueur, tel quel
 		hero.vy = hero.vy - P.g*dt;
-		if(jump && hero.ground){ hero.vy = P.v; hero.ground = false; if(run && run.mode !== "test") play("pop"); }
+		if(jump && hero.ground){ hero.vy = P.v; hero.ground = false; if(run && run.mode !== "test") play("jump"); }
 		hero.y = hero.y + hero.vy*dt;
 		const sol = groundUnder(hero.x), wasGround = hero.ground;
 		hero.ground = false;
@@ -488,13 +561,14 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 	function startRun(mode, onEnd){
 		H = heights(); respawn(); resetCoins();
 		const P = S.phys && S.phys.g != null ? { g:+S.phys.g, v:+S.phys.v, sol:S.phys.sol } : { g:G_OK, v:V_OK, sol:"sol" };
-		run = { mode, P, t:0, path:bfs(H).path, airVx:0, onEnd, fallsRun:0 };
+		run = { mode, P, t:0, path:bfs(H).path, airVx:0, onEnd, fallsRun:0, stomps:0, lastCol:0 };
 		view = "follow";
+		foe.on = mode === "play" && !S.custom; if(foe.on) foeReset();
 		$("#gjPad").hidden = mode !== "play";
 		hint(mode === "play" ? (matchMedia("(pointer:coarse)").matches ? "◀ ▶ pour avancer, Sauter pour sauter" : "← → pour avancer · Espace pour sauter") : null);
 		if(mode === "play") canvas.focus({ preventScroll:true });
 	}
-	function stopRun(){ run = null; $("#gjPad").hidden = true; hint(null); Object.keys(input).forEach(k => input[k] = false); root.querySelectorAll(".gj-pad .on").forEach(b => b.classList.remove("on")); }
+	function stopRun(){ run = null; if(foe.on){ foe.on = false; clearTiles(); } foeG.visible = false; $("#gjPad").hidden = true; hint(null); Object.keys(input).forEach(k => input[k] = false); root.querySelectorAll(".gj-pad .on").forEach(b => b.classList.remove("on")); }
 	function endRun(outcome){ const r = run; stopRun(); r.onEnd && r.onEnd(outcome, r); }
 	function tickRun(dt){
 		if(!run) return;
@@ -505,7 +579,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 			const inp = auto ? botInput() : { vx:(input.r ? SPEED : 0) - (input.l ? SPEED : 0), j:input.j };
 			physStep(h, inp.vx, inp.j, run.P);
 			if(!auto && !hero.ground && !input.j && hero.vy > 3) hero.vy -= 30*h;      // saut plus court si l'on relâche
-			for(const c of coins) if(!c.got && Math.abs(hero.x - c.x) < .6 && Math.abs(hero.y + .4 - c.y) < .7){ c.got = true; c.m.visible = false; if(run.mode !== "test"){ S.coins++; play("good"); } }
+			for(const c of coins) if(!c.got && Math.abs(hero.x - c.x) < .6 && Math.abs(hero.y + .4 - c.y) < .7){ c.got = true; c.m.visible = false; if(run.mode !== "test"){ S.coins++; play("coin"); } }
 			if(colOf(hero.x) === FLAG && hero.ground && Math.abs(hero.y - H[FLAG]) < .05){ play("win"); return endRun("win"); }
 			if(hero.y < -2.5){
 				if(run.mode === "test") return endRun("fell");
@@ -513,7 +587,33 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 			}
 			if(hero.y > 15) return endRun("flew");
 		}
+		if(!run) return;
+		if(hero.ground && H[colOf(hero.x)]) run.lastCol = colOf(hero.x);
+		tickFoe(dt);
 		if(run && run.mode === "test" && run.t > 6.5) endRun("timeout");
+	}
+	function foeReset(){ foe.c = FOE_START; foe.x = FOE_START + .5; foe.y = H[FOE_START]; foe.hop = 0; foe.wait = 1.2; foe.dead = 0; foeG.scale.setScalar(1); }
+	// le chemin calculé par l'ennemi s'allume en rouge sur la maquette
+	function trail(path){ clearTiles(); path.slice(1).forEach(c => { const t = tiles[c]; t.visible = true; t.material.color.set("#ff5a5a"); t.material.opacity = .55; }); }
+	function tickFoe(dt){
+		if(!foe.on || !run) return;
+		if(foe.dead > 0){ foe.dead -= dt; foeG.scale.setScalar(Math.max(.01, foe.dead/.6)); if(foe.dead <= 0) foeReset(); return; }
+		if(foe.hop > 0){
+			foe.hop = Math.max(0, foe.hop - dt/.45);
+			const k = 1 - foe.hop;
+			foe.x = foe.from + .5 + (foe.to - foe.from)*k; foe.y = H[foe.from] + (H[foe.to] - H[foe.from])*k + Math.sin(k*Math.PI)*1.1;
+			if(!foe.hop){ foe.c = foe.to; foe.y = H[foe.c]; }
+		} else if((foe.wait -= dt) <= 0){
+			foe.wait = .5;
+			const p = bfs(H, foe.c, run.lastCol).path;      // même règle de saut que le héros
+			trail(p);
+			if(p.length > 1){ foe.from = foe.c; foe.to = p[1]; foe.hop = 1; }
+		}
+		// contact : lui sauter dessus l'assomme, le toucher de côté renvoie au départ
+		if(Math.abs(hero.x - foe.x) < .62 && hero.y < foe.y + .5 && hero.y + HH > foe.y){
+			if(hero.vy < 0 && hero.y > foe.y + .22){ foe.dead = .6; foe.hop = 0; hero.vy = 7; S.stomps++; run.stomps++; play("stomp"); clearTiles(); }
+			else { play("hurt"); S.falls++; run.fallsRun++; respawn(); resetCoins(); foeReset(); clearTiles(); }
+		}
 	}
 	function drawHero(dt, t){
 		heroG.position.set(hero.x, hero.y, 0);
@@ -523,6 +623,8 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		heroBody.scale.set(1 + (1 - sq)*.8, sq, 1);
 		heroBody.position.y = .36*sq + (hero.ground && !run ? Math.abs(Math.sin(t*3))*.06 : 0);
 		cloth.rotation.y = Math.sin(t*3)*.25;
+		foeG.visible = foe.on && !!run;
+		if(foeG.visible){ foeG.position.set(foe.x, foe.y, 0); foeBody.position.y = .25 + (foe.hop || foe.dead ? 0 : Math.abs(Math.sin(t*6))*.05); foeG.rotation.y = Math.sign(hero.x - foe.x)*.4; }
 		coins.forEach((c, i) => c.m.rotation.y = t*2.4 + i);
 	}
 
@@ -532,29 +634,40 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		const r = canvas.getBoundingClientRect();
 		ndc.set(((e.clientX - r.left)/r.width)*2 - 1, -((e.clientY - r.top)/r.height)*2 + 1);
 		ray.setFromCamera(ndc, camera);
-		const mine = ray.intersectObjects(blocks.children.filter(b => b.userData.mine), false)[0];
-		if(mine) return { remove:mine.object.userData.col };
+		const b = ray.intersectObjects(blocks.children, false)[0];
+		if(b) return { col:b.object.userData.col, block:b.object };
 		const h = ray.intersectObjects(hit, false)[0];
-		return h ? { add:h.object.userData.col } : null;
+		return h ? { col:h.object.userData.col } : null;
 	}
+	const editing = () => S.mode === "edit" || S.mode === "free";
+	// un clic ajoute un bloc sur la colonne ; sur un bloc jaune (H+00) ou n'importe quel bloc (éditeur libre), il en retire un
+	const removes = p => p.block && (S.mode === "free" || p.block.userData.mine);
 	let down = null;
 	canvas.addEventListener("pointerdown", e => { down = { x:e.clientX, y:e.clientY }; });
 	canvas.addEventListener("pointermove", e => {
-		if(S.mode !== "edit" || e.pointerType === "touch"){ ghost.visible = false; return; }
+		if(!editing() || e.pointerType === "touch"){ ghost.visible = false; return; }
 		const p = pick(e), Hh = heights();
-		ghost.visible = !!(p && p.add != null && used() < BUDGET && Hh[p.add] < 6);
-		if(ghost.visible) ghost.position.set(p.add + .5, Hh[p.add] + .5, 0);
+		ghost.visible = !!(p && !removes(p) && Hh[p.col] < MAXH && (S.mode === "free" || used() < BUDGET));
+		if(ghost.visible) ghost.position.set(p.col + .5, Hh[p.col] + .5, 0);
 		canvas.style.cursor = p ? "pointer" : "";
 	});
 	canvas.addEventListener("pointerup", e => {
 		if(!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 8) return;
 		down = null;
-		if(S.mode !== "edit") return;
+		if(!editing()) return;
 		const p = pick(e); if(!p) return;
-		if(p.remove != null){ S.extra[p.remove]--; play("pop"); }
+		if(S.mode === "free"){
+			const Hc = S.custom;
+			if(removes(p)){ if(Hc[p.col] <= (p.col === 0 || p.col === FLAG ? 1 : 0)){ play("bad"); return; } Hc[p.col]--; }
+			else if(Hc[p.col] >= MAXH) return;
+			else Hc[p.col]++;
+			play("pop"); buildLevel(); clearTiles(); respawn(); ghost.visible = false;
+			return;
+		}
+		if(removes(p)){ S.extra[p.col]--; play("pop"); }
 		else if(used() >= BUDGET){ play("bad"); return editMsg("in", `Tu as posé tes ${BUDGET} blocs. Touche un bloc jaune pour le reprendre.`); }
-		else if(heights()[p.add] >= 6) return;
-		else { S.extra[p.add]++; play("pop"); }
+		else if(heights()[p.col] >= MAXH) return;
+		else { S.extra[p.col]++; play("pop"); }
 		buildLevel(); clearTiles(); refreshBudget(); ghost.visible = false;
 	});
 
@@ -575,28 +688,29 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 			b.classList.add("ok"); play("good"); el.querySelector(".gj-msg").hidden = true; onOk(el.querySelector("[data-after]"));
 		}));
 	}
-	function setMode(m){ S.mode = m; if(m !== "edit") ghost.visible = false; canvas.style.cursor = ""; }
-	function scene0(){ stopRun(); clearTiles(); podium.visible = false; portal.visible = false; pkMesh.visible = false; cheatPk.visible = false; cheatTag.visible = false; alarm.visible = false; jury.visible = false; jurors.forEach(j => j.note.visible = false); }
+	function setMode(m){ S.mode = m; if(m !== "edit" && m !== "free") ghost.visible = false; canvas.style.cursor = ""; }
+	function scene0(){ stopRun(); clearTiles(); S.vrActive = false; scene.fog = null; dioSun.intensity = 0; podium.visible = false; portal.visible = false; pkMesh.visible = false; cheatPk.visible = false; cheatTag.visible = false; alarm.visible = false; jury.visible = false; jurors.forEach(j => j.note.visible = false); }
 
 	/* ---------- intro ---------- */
 	function intro(){
 		scene0(); setMode("idle"); stage("Game Jam 48 h"); S.hour = 0; S.hourShown = 0; drawLed(0); view = "room"; respawn(); setScreen({ kind:"title" });
 		show(`<div class="gj-k">Mini-jeu · ${formation.name}</div><h2 class="gj-h">Game Jam 48 h</h2>
+			${SHARED ? `<div class="gj-shared">🎁 Quelqu'un t'a envoyé son niveau !<button class="gj-go" data-a="shared" style="margin-top:8px">🎮 Jouer à ce niveau</button></div>` : ""}
 			<p class="gj-p">Vendredi 18 h, salle de l'École du Numérique à Wenov. Comme toutes les équipes de L1 du <b>Projet Gaming</b>, la tienne a <b>48 heures</b> pour créer un jeu vidéo et le présenter au jury.</p>
 			${say("ines", "Le thème est tombé : <b>« Rentrer à temps »</b>. Un petit héros doit atteindre le drapeau. J'ai déjà posé la maquette du niveau sur la table. Tu choisis le style ?")}
 			<div class="gj-styles">${Object.entries(STYLES).map(([k, s]) => `<button data-style="${k}" class="${k === S.style ? "on" : ""}"><i>${s.icon}</i>${s.name}</button>`).join("")}</div>
-			<ul class="gj-list"><li><span>H+00</span>Dessiner un niveau faisable</li><li><span>H+06</span>Programmer gravité et saut</li><li><span>H+20</span>Mettre les scores en ligne</li><li><span>H+36</span>Tenir quand le jeu buzze</li><li><span>H+47</span>Passer devant le jury</li></ul>
+			<ul class="gj-list"><li><span>H+00</span>Dessiner un niveau faisable</li><li><span>H+06</span>Programmer le héros en Python</li><li><span>H+20</span>Mettre les scores en ligne</li><li><span>H+28</span>Créer l'ambiance en réalité virtuelle</li><li><span>H+36</span>Tenir quand le jeu buzze</li><li><span>H+47</span>Passer devant le jury</li></ul>
 			<p class="gj-p" style="font-size:13px;color:#5d5978">Pas besoin de savoir programmer : tout s'apprend en licence.</p>
 			<button class="gj-go" data-a="m1">C'est parti ⏱</button>`);
 	}
 
 	/* ---------- H+0 · le niveau (structures de données, parcours en largeur) ---------- */
 	let bfsAnim = null;
-	function clearTiles(){ tiles.forEach(t => { t.visible = false; t.scale.set(1, 1, 1); }); }
+	function clearTiles(){ tiles.forEach(t => { t.visible = false; t.scale.set(1, 1, 1); t.material.opacity = .9; }); }
 	function refreshBudget(){ const b = card.querySelector("#gjBud"); if(b) b.textContent = `${BUDGET - used()} / ${BUDGET}`; }
 	function editMsg(cls, t){ const m = card.querySelector("[data-live]"); if(m) msg(m, cls, t); }
 	function mission1(){
-		scene0(); setHour(0); stage("H+00 · Le niveau"); setMode("edit"); view = "table"; S.levelOk = false;
+		scene0(); setHour(0); stage("H+00 · Le niveau"); setMode("edit"); view = "table"; S.levelOk = false; S.custom = null;
 		buildLevel(); respawn(); setScreen({ kind:"title" });
 		show(`<div class="gj-k">H+00 · Projet Gaming · level design</div><h2 class="gj-h">Ce niveau est-il faisable ?</h2>
 			${say("ines", "J'ai dessiné le niveau, mais je crois qu'il y a un trou trop large… et un mur trop haut. Tu as <b>3 blocs</b> pour arranger ça.")}
@@ -638,20 +752,22 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		const live = card.querySelector("[data-live]"); if(!live) return;
 		if(!res.ok){
 			setMode("edit"); card.querySelector("[data-a=bfs]").disabled = false;
-			const far = Math.max(...res.steps.map(s => s.c));
 			err("niveau impossible");
-			// l'obstacle qui bloque : la première colonne pleine après la plus lointaine atteinte
-			const Hh = heights(); let n = far + 1; while(n < N && !Hh[n]) n++;
-			const holes = n - far - 1, up = Hh[n] - Hh[far];
-			const why = holes > 2 ? `après la colonne ${far}, il y a ${holes} cases vides : le héros n'en franchit que 2.` : `la colonne ${n} fait ${up} blocs de plus que la colonne ${far} : le héros ne monte qu'un bloc à la fois.`;
+			const { far, why } = obstacle(heights(), res);
 			return msg(live, "ko", `La file s'est vidée sans atteindre le drapeau : le héros ne dépasse pas la colonne ${far}. Ici, ${why} Déplace tes blocs et relance.`);
 		}
 		setMode("idle"); S.levelOk = true; play("good");
 		msg(live, "ok", `✓ Le drapeau est atteignable ! En jaune : le plus court chemin trouvé, ${res.path.length - 1} sauts. ${used() < BUDGET ? `Et il te reste ${BUDGET - used()} bloc${BUDGET - used() > 1 ? "s" : ""} : niveau économe.` : ""}`);
 		card.querySelector("[data-a=reset]").hidden = true; card.querySelector("[data-a=bfs]").hidden = true;
-		card.querySelector("[data-end]").innerHTML = `${say("ines", "Parfait. Un parcours en largeur, c'est aussi ce qui fera courir les ennemis vers le héros dans la prochaine version.")}${course("gaming")}${course("algo")}<button class="gj-go" data-a="m2">⏩ H+06 · Coder le héros</button>`;
+		card.querySelector("[data-end]").innerHTML = `${say("ines", "Parfait. Et Yanis a une idée : se servir du même parcours en largeur pour faire courir un ennemi vers le héros…")}${course("gaming")}${course("algo")}<button class="gj-go" data-a="m2">⏩ H+06 · Coder le héros</button>`;
 	}
-	function ensureLevel(){ if(!S.levelOk){ S.extra = Array(N).fill(0); for(const c in SOLUTION) S.extra[c] = SOLUTION[c]; S.levelOk = true; } buildLevel(); clearTiles(); }
+	// l'obstacle qui bloque : la première colonne pleine après la plus lointaine atteinte
+	function obstacle(Hh, res){
+		const far = Math.max(...res.steps.map(s => s.c)); let n = far + 1; while(n < N && !Hh[n]) n++;
+		const holes = n - far - 1, up = Hh[n] - Hh[far];
+		return { far, why:holes > 2 ? `après la colonne ${far}, il y a ${holes} cases vides : le héros n'en franchit que 2.` : `la colonne ${n} fait ${up} blocs de plus que la colonne ${far} : le héros ne monte qu'un bloc à la fois.` };
+	}
+	function ensureLevel(){ S.custom = null; if(!S.levelOk){ S.extra = Array(N).fill(0); for(const c in SOLUTION) S.extra[c] = SOLUTION[c]; S.levelOk = true; } buildLevel(); clearTiles(); }
 
 	/* ---------- H+6 · la physique (programmation) ---------- */
 	const PH = {
@@ -664,22 +780,20 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		S.phys = { g:null, v:null, sol:null }; S.physOk = false; setScreen({ kind:"code" });
 		const sel = k => `<select data-p="${k}" aria-label="Valeur ${k}"><option value="">?</option>${shuffle(PH[k]).map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select>`;
 		show(`<div class="gj-k">H+06 · L1 programmation</div><h2 class="gj-h">Minuit : le héros ne tient pas debout</h2>
-			${say("yanis", "Il est minuit, j'ai fini les bruitages. Mais le héros n'a pas encore de physique : il faut écrire la fonction qui tourne <b>60 fois par seconde</b>.")}
-			<div class="gj-code"><span class="kw">function</span> mettreAJour(heros, dt) {
-  heros.vy = heros.vy - ${sel("g")} * dt; <span class="cm">// gravité</span>
-  <span class="kw">if</span> (toucheSaut &amp;&amp; heros.auSol) {
-    heros.vy = ${sel("v")};             <span class="cm">// élan du saut</span>
-  }
-  heros.y = heros.y + heros.vy * dt;
-  <span class="kw">if</span> (heros.y &lt; sol) {           <span class="cm">// sous le sol ?</span>
-    heros.y = ${sel("sol")};
-    heros.vy = 0; heros.auSol = true;
-  }
-}</div>
+			${say("yanis", "Il est minuit, j'ai fini les bruitages. Mais le héros n'a pas encore de physique : il faut écrire la fonction qui tourne <b>60 fois par seconde</b>. En L1, on programme en <b>Python</b>.")}
+			<div class="gj-code"><span class="kw">def</span> mettre_a_jour(heros, dt):
+    heros.vy = heros.vy - ${sel("g")} * dt  <span class="cm"># gravité</span>
+    <span class="kw">if</span> touche_saut <span class="kw">and</span> heros.au_sol:
+        heros.vy = ${sel("v")}           <span class="cm"># élan du saut</span>
+    heros.y = heros.y + heros.vy * dt
+    <span class="kw">if</span> heros.y &lt; sol:               <span class="cm"># sous le sol ?</span>
+        heros.y = ${sel("sol")}
+        heros.vy = 0
+        heros.au_sol = <span class="kw">True</span></div>
 			<p class="gj-p" style="font-size:13px;color:#5d5978"><b>vy</b> : vitesse verticale (positive vers le haut) · <b>sol</b> : hauteur du bloc sous ses pieds · en blocs par seconde.</p>
 			<div class="gj-msg in" data-live>Choisis les trois valeurs, puis Yanis teste le niveau avec ton code.</div>
 			<button class="gj-go" data-a="test">▶ Tester avec ce code</button><div data-end></div>`);
-		card.querySelectorAll("select[data-p]").forEach(s => s.addEventListener("change", () => { S.phys[s.dataset.p] = s.value || null; s.classList.remove("ko"); drawScreen(); }));
+		card.querySelectorAll("select[data-p]").forEach(s => s.addEventListener("change", () => { S.phys[s.dataset.p] = s.value || null; s.classList.remove("ko"); play("keys"); drawScreen(); }));
 	}
 	function diagnose(P){
 		if(P.g === "-20") return ["g", "Le héros s'envole et ne redescend jamais : avec -20, on <b>ajoute</b> de la vitesse vers le haut à chaque image. La gravité doit faire <b>diminuer</b> vy."];
@@ -705,7 +819,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 				S.physOk = true; setScreen({ kind:"code", status:"✓ Test réussi", ok:true });
 				msg(live, "ok", "✓ Le héros tombe, saute, atterrit… et atteint le drapeau. Ton code tourne pour de vrai !");
 				btn.hidden = true;
-				card.querySelector("[data-end]").innerHTML = `${say("yanis", "Trop bien ! À toi de jouer maintenant : si tu bloques, je peux finir le niveau.")}<button class="gj-go" data-a="play">🎮 Jouer au niveau</button><button class="gj-alt" data-a="auto">🎧 Laisser Yanis jouer</button>`;
+				card.querySelector("[data-end]").innerHTML = `${say("yanis", "Trop bien ! J'ai lâché un <b>bug rouge</b> dans le niveau : il calcule son chemin vers toi avec le même <b>parcours en largeur</b> qu'à H+00 (ses cases s'allument en rouge). Saute-lui dessus ! Si tu bloques, je finis le niveau.")}<button class="gj-go" data-a="play">🎮 Jouer au niveau</button><button class="gj-alt" data-a="auto">🎧 Laisser Yanis jouer</button>`;
 				return;
 			}
 			setScreen({ kind:"code", status:"✗ Bug !" });
@@ -717,7 +831,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 	}
 	function playLevel(mode, after){
 		const end = card.querySelector("[data-end]");
-		end.innerHTML = `<div class="gj-msg in" data-play>${mode === "play" ? "Atteins le drapeau ! Ramasse les pièces si tu peux." : "Yanis joue…"}</div>${mode === "play" ? `<button class="gj-alt" data-a="auto">🎧 Laisser Yanis finir</button>` : ""}`;
+		end.innerHTML = `<div class="gj-msg in" data-play>${mode === "play" ? "Atteins le drapeau ! Ramasse les pièces, et saute sur le bug rouge." : "Yanis joue (il a mis le bug en pause)…"}</div>${mode === "play" ? `<button class="gj-alt" data-a="auto">🎧 Laisser Yanis finir</button>` : ""}`;
 		const coinsBefore = S.coins;
 		startRun(mode, (o, r) => {
 			const got = S.coins - coinsBefore;
@@ -727,7 +841,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 	}
 	function afterPlay2(o, got, r){
 		view = "table";
-		card.querySelector("[data-end]").innerHTML = `<div class="gj-msg ok">🏁 Drapeau atteint${r.mode === "play" ? ` : ${got} pièce${got > 1 ? "s" : ""} sur 3${r.fallsRun ? `, ${r.fallsRun} chute${r.fallsRun > 1 ? "s" : ""}` : ", sans tomber"}` : " par Yanis"}.</div>
+		card.querySelector("[data-end]").innerHTML = `<div class="gj-msg ok">🏁 Drapeau atteint${r.mode === "play" ? ` : ${got} pièce${got > 1 ? "s" : ""} sur 3${r.stomps ? `, ${r.stomps} bug${r.stomps > 1 ? "s" : ""} écrasé${r.stomps > 1 ? "s" : ""}` : ""}${r.fallsRun ? `, ${r.fallsRun} retour${r.fallsRun > 1 ? "s" : ""} au départ` : ", sans tomber"}` : " par Yanis"}.</div>
 			${course("prog")}<button class="gj-go" data-a="m3">⏩ H+20 · Les scores en ligne</button>`;
 	}
 	function ensurePhys(){ if(!S.physOk){ S.phys = { g:"20", v:"8", sol:"sol" }; S.physOk = true; } }
@@ -764,7 +878,7 @@ LIMIT ${sel("lim")};</div>
 → [ { "pseudo": "${r.rows[0][0]}", "meilleur": ${r.rows[0][1]} },
     { "pseudo": "${r.rows[1][0]}", "meilleur": ${r.rows[1][1]} },
     { "pseudo": "${r.rows[2][0]}", "meilleur": ${r.rows[2][1]} } ]</div>
-				${course("bdd")}${course("back")}<button class="gj-go" data-a="m4">⏩ H+36 · Le jeu buzze</button>`;
+				${course("bdd")}${course("back")}<button class="gj-go" data-a="mvr">⏩ H+28 · L'ambiance en VR</button>`;
 			return;
 		}
 		err("sql");
@@ -775,7 +889,7 @@ LIMIT ${sel("lim")};</div>
 			: "Un podium, c'est 3 joueurs : regarde la ligne LIMIT.";
 		msg(live, "ko", why);
 	}
-	function setLabel(s, text){ const c = s.userData.canvas, x = c.getContext("2d"); x.clearRect(0, 0, 256, 72); x.fillStyle = "#7c5cff"; x.beginPath(); x.roundRect(4, 4, 248, 64, 32); x.fill(); x.fillStyle = "#fff"; x.font = "800 34px Nunito, sans-serif"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(text, 128, 38); s.material.map.needsUpdate = true; }
+	function setLabel(s, text, color = "#7c5cff"){ const c = s.userData.canvas, x = c.getContext("2d"); x.clearRect(0, 0, 256, 72); x.fillStyle = color; x.beginPath(); x.roundRect(4, 4, 248, 64, 32); x.fill(); fitText(x, text); s.material.map.needsUpdate = true; }
 
 	/* ---------- H+36 · le serveur tombe (réseaux, cloud, cyber) ---------- */
 	let srv = null;
@@ -812,7 +926,7 @@ LIMIT ${sel("lim")};</div>
 		play("good"); srv.phase = "cheat";
 		card.querySelector("[data-a=deploy]").hidden = true; $("#gjSrv").disabled = true; $("#gjCache").disabled = true;
 		msg(live, "ok", `✓ ${latencyOf(u)} ms, ${S.servers} serveurs : le <b>cache</b> évite de recalculer le podium 3 250 fois par seconde, et la charge est <b>répartie</b> entre les serveurs.`);
-		cheatPk.visible = true; cheatTag.visible = true; srv.cheatT = 0;
+		launchCheat("score : 999 999 en 3 s", "#ff3b3b");
 		const end = card.querySelector("[data-end]");
 		end.innerHTML = `${say("ines", "Attends… un paquet rouge : <b>« xX_Max_Xx : 999 999 points en 3 secondes »</b>. Le niveau rapporte au plus 3 pièces ! Il a modifié le jeu sur son ordinateur.")}<p class="gj-p"><b>Où faut-il vérifier les scores ?</b></p><div data-q></div>`;
 		qcm(end.querySelector("[data-q]"), shuffle([
@@ -821,7 +935,43 @@ LIMIT ${sel("lim")};</div>
 			["chiffre", "On chiffre le score pour qu'il ne puisse pas le lire", "Chiffrer protège un message des regards, mais n'empêche pas d'envoyer un faux score… chiffré."]
 		]), "srv", x => {
 			srv.phase = "blocked";
-			x.innerHTML = `<p class="gj-p" style="margin-top:8px">🛡️ Le serveur rejette le paquet : <b>jamais confiance au client</b>. C'est la première règle des parcours Cyber, et du back-end.</p>${course("cloud")}${course("cyber")}<button class="gj-go" data-a="m5">⏩ H+47 · Le jury</button>`;
+			x.innerHTML = `<p class="gj-p" style="margin-top:8px">🛡️ Le serveur rejette le paquet : <b>jamais confiance au client</b>. C'est la première règle des parcours Cyber, et du back-end.</p>
+				${say("ines", "Max ne lâche pas : il prend une vraie partie à <b>1 990</b> points et change juste le chiffre en route. Le serveur ne peut pas deviner que c'est faux… sauf si chaque score est <b>signé</b>.")}
+				<p class="gj-p">À la fin d'une partie, le serveur calcule une <b>signature</b> : l'empreinte de <i>clé secrète + pseudo + score</i>. Changer un seul chiffre change toute l'empreinte. Vérifie les trois scores qui arrivent :</p>
+				<div class="gj-pk">${SIGNED.map(([p, s, real], i) => `<div data-i="${i}">${p} · <em>${s.toLocaleString("fr-FR")}</em> pts<br>signature reçue <em>${sign(p, real)}</em><div class="row"><button data-sig="check">🔏 Recalculer la signature</button></div></div>`).join("")}</div>
+				<div class="gj-msg" hidden data-sigmsg></div><div data-sigend></div>`;
+			setTimeout(() => { if(!closed && srv && !srv.maxDone) launchCheat("xX_Max_Xx : 2 990 pts", "#d9822b"); }, 1300);
+			const done = new Set();
+			x.querySelector(".gj-pk").addEventListener("click", e => {
+				const b = e.target.closest("[data-sig]"); if(!b || b.disabled) return;
+				const row = b.closest("[data-i]"), i = +row.dataset.i, [p, s, real] = SIGNED[i], good = s === real;
+				if(b.dataset.sig === "check"){
+					play("keys");
+					const mine = sign(p, s);
+					row.querySelector(".row").innerHTML = `<span class="st ${good ? "" : "bad"}">recalculée ${mine} ${good ? "= ✓" : "≠ ✗"}</span><button data-sig="ok">Accepter</button><button data-sig="no">Rejeter</button>`;
+					return;
+				}
+				if(done.has(i)) return;
+				const accept = b.dataset.sig === "ok", m = x.querySelector("[data-sigmsg]");
+				if(accept !== good){ err("signature"); b.classList.add("ko"); return msg(m, "ko", accept ? "Les deux signatures ne correspondent pas : le score a été modifié après la partie. Il faut le rejeter." : "Les signatures sont identiques : ce score n'a pas été touché. Le rejeter, c'est punir un joueur honnête."); }
+				done.add(i); b.classList.add("ok"); play("good"); m.hidden = true;
+				row.querySelectorAll("button").forEach(z => z.disabled = true);
+				if(!good){ srv.maxDone = true; srv.phase = "blocked"; }
+				if(done.size === SIGNED.length) sigQuiz(x.querySelector("[data-sigend]"));
+			});
+		});
+		pan.scrollTo({ top:pan.scrollHeight, behavior:"smooth" });
+	}
+	function launchCheat(text, color){ cheatPk.visible = true; cheatPk.scale.setScalar(1); cheatPk.material.color.set(color); setLabel(cheatTag, text, color); cheatTag.visible = true; srv.cheatT = 0; srv.phase = "cheat"; }
+	function sigQuiz(el){
+		el.innerHTML = `<p class="gj-p" style="margin-top:10px"><b>Pourquoi Max ne peut-il pas fabriquer la bonne signature pour 2 990 ?</b></p><div data-q></div>`;
+		qcm(el.querySelector("[data-q]"), shuffle([
+			["cle", "Il ne connaît pas la clé secrète : elle ne quitte jamais le serveur"],
+			["long", "La signature est trop longue à recopier", "Recopier 8 caractères, c'est facile. Ce qui manque à Max, c'est de quoi les calculer."],
+			["cesar", "Elle est protégée par un code de César", "Un code de César se casse en 25 essais. Ici, sans la clé secrète, impossible de calculer l'empreinte."]
+		]), "cle", y => {
+			y.innerHTML = `<p class="gj-p" style="margin-top:8px">🔏 C'est le principe d'une signature : sans la clé, impossible de produire une empreinte valide, et la moindre modification se voit. On en trouve partout : paiements, mises à jour, connexions sécurisées.</p>${course("cloud")}${course("cyber")}${course("crypto")}<button class="gj-go" data-a="m5">⏩ H+47 · Le jury</button>`;
+			pan.scrollTo({ top:pan.scrollHeight, behavior:"smooth" });
 		});
 		pan.scrollTo({ top:pan.scrollHeight, behavior:"smooth" });
 	}
@@ -846,6 +996,8 @@ LIMIT ${sel("lim")};</div>
 		pkMesh.instanceMatrix.needsUpdate = true; pkMesh.instanceColor.needsUpdate = true;
 		ledMat.color.set(u >= 1 ? (Math.sin(t*14) > 0 ? "#ff3b3b" : "#5a1010") : u > .85 ? "#ffb066" : "#3bd16f");
 		alarm.visible = u >= 1 && Math.sin(t*8) > 0;
+		srv.al = (srv.al || 0) + dt;
+		if(u >= 1 && srv.al > 1.5){ srv.al = 0; play("alarm"); }
 		srv.t += dt;
 		if(srv.t > .25){ srv.t = 0; const l = latencyOf(u); srv.hist.push(l === Infinity ? 1000 : l); if(srv.hist.length > 60) srv.hist.shift(); setScreen({ kind:"srv", hist:srv.hist }); }
 		if(cheatPk.visible){
@@ -872,7 +1024,7 @@ LIMIT ${sel("lim")};</div>
 		card.querySelector("[data-a=jplay]").hidden = true; card.querySelector("[data-a=jauto]").hidden = true;
 		playLevel(mode, (o, got, r) => {
 			view = "jury";
-			const gp = Math.max(10, Math.min(20, 13 + got*2 - Math.min(3, r.fallsRun) + (r.mode === "play" ? 1 : 0)));
+			const gp = Math.max(10, Math.min(20, 13 + got*2 + Math.min(2, r.stomps) - Math.min(3, r.fallsRun) + (r.mode === "play" ? 1 : 0)));
 			const tech = Math.max(10, Math.min(20, 19 - Math.ceil(S.errors/2)));
 			const notes = [["Gameplay", gp], ["Technique", tech], ["Thème", 17]];
 			setScreen({ kind:"jury", notes });
@@ -886,21 +1038,130 @@ LIMIT ${sel("lim")};</div>
 	}
 
 	/* ---------- bilan ---------- */
-	function finale(){
-		scene0(); setMode("idle"); setHour(47); stage("Bilan de la jam"); view = "room"; jury.visible = true;
-		const e = S.errors, mention = e <= 2 ? "Très bien" : e <= 6 ? "Bien" : "Assez bien";
-		onEvent && onEvent("win", mention);
-		play("win");
-		const order = ["gaming", "algo", "prog", "bdd", "back", "cloud", "cyber"].filter(k => S.learned.has(k));
+	function finale(quiet){
+		scene0(); setMode("idle"); setHour(47); stage("Bilan de la jam"); view = "room";
+		const e = S.errors, mention = e <= 2 ? "Très bien" : e <= 7 ? "Bien" : "Assez bien";
+		if(quiet !== true){ onEvent && onEvent("win", mention); play("win"); }
+		const order = ["gaming", "algo", "prog", "bdd", "back", "vr", "cloud", "cyber", "crypto"].filter(k => S.learned.has(k));
 		show(`<div class="gj-k">Licence Informatique · bilan</div><h2 class="gj-h">48 heures, un jeu en ligne</h2>
 			<p class="gj-p" style="text-align:center;font-size:40px;margin:4px 0">🏆🎮</p>
 			<p class="gj-p" style="text-align:center">Jam réussie, mention <b>${mention}</b> (${e} erreur${e > 1 ? "s" : ""} en chemin).</p>
-			<p class="gj-p">Niveau, physique, base de données, API, serveurs, sécurité : en un week-end, tu as touché à ${order.length} cours de la licence. En L2, on choisit son parcours (Data, Cyber, ou IoT et réalité virtuelle) ; la L3 peut se faire en alternance.</p>
+			<p class="gj-p">Niveau, physique, base de données, API, 3D, serveurs, sécurité : en un week-end, tu as touché à ${order.length} cours de la licence. En L2, on choisit son parcours (Data, Cyber, ou IoT et réalité virtuelle) ; la L3 peut se faire en alternance.</p>
 			<ul class="gj-list">${order.map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
 			${openLead ? `<button class="gj-go" data-a="lead">📄 Recevoir la plaquette de la licence</button>` : ""}
 			<a class="gj-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir la Licence Informatique ↗</a>
+			<button class="gj-alt" data-a="free">🛠️ Bonus : créer mon propre niveau</button>
 			<button class="gj-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
 			<button class="gj-alt" data-a="replay">Rejouer</button>`);
+	}
+
+	/* ---------- H+28 · l'ambiance en réalité virtuelle (parcours IoT et réalité virtuelle) ---------- */
+	const dioSun = new THREE.DirectionalLight("#ffffff", 0); dioSun.target.position.set(0, Y0 + .4, 0); scene.add(dioSun, dioSun.target);
+	const LIGHTS = { chaude:["Chaude", "#ffad66"], neutre:["Neutre", "#ffffff"], froide:["Froide", "#9cc3ff"] };
+	const CAMS = { table:"De côté", top:"Plongée", fps:"Vue du héros" };
+	function vrChecks(){
+		const v = S.vr;
+		return [["🌅", "Soleil couchant : lumière chaude et rasante", v.col === "chaude" && v.el <= 25],
+			["🌫️", "Brume légère, mais le drapeau reste visible", v.fog >= 25 && v.fog <= 65],
+			["🥽", "Caméra à hauteur du héros, comme dans un casque", v.cam === "fps"]];
+	}
+	function applyVr(){
+		const v = S.vr, el = v.el*Math.PI/180;
+		dioSun.intensity = S.vrActive ? 2.6 : 0; dioSun.color.set(LIGHTS[v.col][1]);
+		dioSun.position.set(-Math.cos(el)*6, Y0 + .4 + Math.sin(el)*6, 2.2);
+		scene.fog = S.vrActive && v.fog > 0 ? new THREE.FogExp2(new THREE.Color(LIGHTS[v.col][1]).lerp(new THREE.Color(STYLES[S.style].sky), .5), v.fog/100*.5) : null;
+		if(!run) view = v.cam;
+	}
+	function brief(){ const el = $("#gjBrief"); if(el) el.innerHTML = vrChecks().map(([i, t, ok]) => `<li>${i} ${t}<b>${ok ? "✅" : "⬜"}</b></li>`).join(""); }
+	function missionVR(){
+		scene0(); ensureLevel(); ensurePhys(); setHour(28); stage("H+28 · L'ambiance VR"); setMode("idle"); respawn();
+		S.vr = { el:60, col:"neutre", fog:0, cam:"table" }; S.vrActive = true; applyVr(); setScreen({ kind:"title" });
+		show(`<div class="gj-k">H+28 · parcours IoT et réalité virtuelle</div><h2 class="gj-h">Samedi 22 h : le jeu est tout plat</h2>
+			${say("ines", "Le jeu marche, mais il n'a aucune ambiance. Le jury note aussi l'image… et Yanis a apporté son <b>casque de réalité virtuelle</b> ! Voilà ce que je veux :")}
+			<ul class="gj-brief" id="gjBrief"></ul>
+			<div class="gj-srv">
+				<label>☀️ Hauteur du soleil<b id="gjElv">60°</b></label><input type="range" min="5" max="85" value="60" id="gjEl" aria-label="Hauteur du soleil">
+				<label>🎨 Couleur de la lumière</label><div class="gj-seg" data-g="col">${Object.entries(LIGHTS).map(([k, [n]]) => `<button data-v="${k}" class="${k === "neutre" ? "on" : ""}">${n}</button>`).join("")}</div>
+				<label>🌫️ Brouillard<b id="gjFogv">0 %</b></label><input type="range" min="0" max="100" value="0" id="gjFog" aria-label="Densité du brouillard">
+				<label>🎥 Caméra</label><div class="gj-seg" data-g="cam">${Object.entries(CAMS).map(([k, n]) => `<button data-v="${k}" class="${k === "table" ? "on" : ""}">${n}</button>`).join("")}</div>
+			</div>
+			<div class="gj-msg in" data-live>Règle la scène : la maquette change en direct.</div>
+			<button class="gj-go" data-a="vrok">✅ Valider l'ambiance</button><div data-end></div>`);
+		const upd = () => { S.vr.el = +$("#gjEl").value; S.vr.fog = +$("#gjFog").value; $("#gjElv").textContent = S.vr.el + "°"; $("#gjFogv").textContent = S.vr.fog + " %"; applyVr(); brief(); };
+		$("#gjEl").addEventListener("input", upd); $("#gjFog").addEventListener("input", upd);
+		card.querySelectorAll(".gj-seg").forEach(g => g.addEventListener("click", e => { const b = e.target.closest("[data-v]"); if(!b || b.disabled) return; g.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); S.vr[g.dataset.g] = b.dataset.v; play("pop"); upd(); }));
+		brief();
+	}
+	function vrValidate(){
+		const live = card.querySelector("[data-live]"), v = S.vr, why = [];
+		if(v.col !== "chaude") why.push(v.col === "froide" ? "Une lumière froide (bleutée) évoque la nuit ou l'aube, pas un coucher de soleil : choisis une lumière chaude." : "Une lumière neutre (blanche) n'a pas d'ambiance : un soleil couchant est orangé.");
+		if(v.el > 25) why.push(`Un soleil à ${v.el}° est un soleil de midi, avec des ombres courtes. Rasant, c'est sous 25°.`);
+		if(v.fog < 25) why.push(v.fog ? "Le brouillard est trop léger pour faire de la brume." : "Sans brouillard, pas de brume.");
+		if(v.fog > 65) why.push(`À ${v.fog} %, le brouillard cache le drapeau : le joueur ne sait plus où aller.`);
+		if(v.cam !== "fps") why.push("Dans un casque VR, on est dans la scène, à hauteur du personnage : choisis la vue du héros.");
+		if(why.length){ err("vr"); return msg(live, "ko", why.join("<br>")); }
+		play("good");
+		msg(live, "ok", "✓ Coucher de soleil, brume et caméra à hauteur du héros : la scène a enfin une ambiance.");
+		card.querySelector("[data-a=vrok]").hidden = true; card.querySelectorAll(".gj-srv input, .gj-seg button").forEach(i => i.disabled = true);
+		card.querySelector("[data-end]").innerHTML = `${say("yanis", "Je mets le casque… Un casque VR calcule <b>deux images</b>, une par œil, <b>90 fois par seconde</b>. Le brouillard aide aussi : ce qui est caché n'a pas besoin d'être dessiné en détail.")}<button class="gj-go" data-a="vrtour">🥽 Faire un tour en VR avec Yanis</button>`;
+	}
+	function vrTour(){
+		const end = card.querySelector("[data-end]"), b = card.querySelector("[data-a=vrtour]");
+		if(!b || b.disabled) return;
+		b.disabled = true;
+		startRun("auto", () => { view = "fps"; end.insertAdjacentHTML("beforeend", `${course("vr")}<button class="gj-go" data-a="m4">⏩ H+36 · Le jeu buzze</button>`); pan.scrollTo({ top:pan.scrollHeight, behavior:"smooth" }); });
+		view = "fps";
+	}
+
+	/* ---------- bonus · éditeur de niveau libre, à partager ---------- */
+	const SHARED = (() => { const v = new URLSearchParams(location.search).get("niveau"); return v && /^[0-6]{16}$/.test(v) && +v[0] && +v[FLAG] ? [...v].map(Number) : null; })();
+	const shareUrl = () => `${location.origin}${location.pathname}?jeu=info&niveau=${heights().join("")}`;
+	function freeEditor(){
+		scene0(); setMode("free"); stage("Bonus · Mon niveau"); view = "table"; ensurePhys();
+		if(!S.custom) S.custom = heights();      // on part du niveau de la jam
+		buildLevel(); respawn();
+		show(`<div class="gj-k">Bonus · éditeur de niveau</div><h2 class="gj-h">À toi de créer</h2>
+			<p class="gj-p"><b>Touche au-dessus d'une colonne</b> pour ajouter un bloc, <b>touche un bloc</b> pour enlever le plus haut. Le départ et le drapeau gardent au moins un bloc.</p>
+			<div class="gj-rule"><span>⬆️ monte 1 bloc au plus</span><span>↔️ saute 2 trous au plus</span></div>
+			<div class="gj-msg in" data-live>Avant de partager, le parcours en largeur vérifie que ton niveau est faisable.</div>
+			<button class="gj-go" data-a="ftest">▶ Tester mon niveau</button>
+			<button class="gj-alt" data-a="flink">🔗 Obtenir le lien de mon niveau</button>
+			<button class="gj-alt" data-a="freset">↺ Repartir du niveau de la jam</button>
+			<button class="gj-alt" data-a="bilan">← Retour au bilan</button><div data-end></div>`);
+	}
+	function freeCheck(){
+		const Hh = heights(), res = bfs(Hh);
+		clearTiles();
+		if(res.ok){ res.path.forEach(c => { tiles[c].visible = true; tiles[c].material.color.set("#ffd166"); }); return true; }
+		const { far, why } = obstacle(Hh, res); play("bad");
+		msg(card.querySelector("[data-live]"), "ko", `Niveau impossible : le héros ne dépasse pas la colonne ${far}. Ici, ${why}`);
+		return false;
+	}
+	function freeTest(){
+		if(S.mode !== "free" || !freeCheck()) return;
+		setMode("idle"); clearTiles();
+		msg(card.querySelector("[data-live]"), "in", "À toi de jouer ton niveau !");
+		startRun("play", (o, r) => { setMode("free"); view = "table"; msg(card.querySelector("[data-live]"), "ok", `🏁 Niveau réussi${r.fallsRun ? ` (${r.fallsRun} chute${r.fallsRun > 1 ? "s" : ""})` : ""} ! Tu peux le partager.`); });
+	}
+	function freeLink(){
+		if(S.mode !== "free" || !freeCheck()) return;
+		const url = shareUrl(), end = card.querySelector("[data-end]"), live = card.querySelector("[data-live]");
+		end.innerHTML = `<input class="gj-link" readonly value="${url}" aria-label="Lien de ton niveau">${navigator.share ? `<button class="gj-alt" data-a="fshare">📤 Partager</button>` : ""}`;
+		const inp = end.querySelector("input"); inp.addEventListener("focus", () => inp.select());
+		(navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => msg(live, "ok", "✓ Lien copié ! Envoie-le : ton niveau s'ouvrira directement dans le campus."), () => msg(live, "in", "Copie le lien ci-dessous pour partager ton niveau."));
+	}
+	function sharedPlay(){
+		scene0(); setMode("idle"); stage("Niveau partagé"); ensurePhys();
+		S.custom = SHARED.slice(); buildLevel(); respawn();
+		show(`<div class="gj-k">Game Jam 48 h · niveau partagé</div><h2 class="gj-h">Un niveau rien que pour toi</h2>
+			<p class="gj-p">Quelqu'un a créé ce niveau dans l'éditeur du jeu de la Licence Informatique. Atteins le drapeau !</p>
+			<div class="gj-msg in" data-live>Avance et saute de colonne en colonne jusqu'au drapeau.</div>
+			<div data-end><button class="gj-alt" data-a="m1">Passer : faire la game jam en entier</button></div>`);
+		startRun("play", (o, r) => {
+			view = "table";
+			msg(card.querySelector("[data-live]"), "ok", `🏁 Bravo, niveau terminé${r.fallsRun ? ` après ${r.fallsRun} chute${r.fallsRun > 1 ? "s" : ""}` : " sans tomber"} !`);
+			card.querySelector("[data-end]").innerHTML = `<button class="gj-go" data-a="m1">🎮 Faire la game jam en entier</button><button class="gj-alt" data-a="free">🛠️ Créer mon propre niveau</button>`;
+		});
 	}
 
 	/* ---------- actions ---------- */
@@ -908,7 +1169,11 @@ LIMIT ${sel("lim")};</div>
 		m1:mission1, m2:mission2, m3:mission3, m4:mission4, m5:mission5, end:finale,
 		bfs:startBfs, reset:() => { if(S.mode !== "edit") return; S.extra = Array(N).fill(0); buildLevel(); clearTiles(); refreshBudget(); },
 		test:testPhys, play:() => playLevel("play", afterPlay2), auto:() => { if(run && run.mode === "play"){ stopRun(); } playLevel("auto", afterPlay2); },
-		sql:runSql, deploy, jplay:() => juryRun("play"), jauto:() => juryRun("auto")
+		sql:runSql, deploy, jplay:() => juryRun("play"), jauto:() => juryRun("auto"),
+		mvr:missionVR, vrok:vrValidate, vrtour:vrTour,
+		free:freeEditor, ftest:freeTest, flink:freeLink, bilan:() => finale(true), shared:sharedPlay,
+		fshare:() => navigator.share?.({ title:"Mon niveau · Game Jam 48 h", text:"Essaie de finir mon niveau dans le campus 3D de la FGES !", url:shareUrl() }).catch(() => {}),
+		freset:() => { if(S.mode !== "free") return; S.custom = BASE.map((h, i) => h + S.extra[i]); buildLevel(); clearTiles(); respawn(); }
 	};
 	root.addEventListener("click", e => {
 		const st = e.target.closest("[data-style]");
@@ -919,7 +1184,7 @@ LIMIT ${sel("lim")};</div>
 		if(GO[k]) return GO[k]();
 		if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
 		if(k === "lead"){ close(); return openLead(); }
-		if(k === "replay"){ Object.assign(S, { errors:0, learned:new Set(), extra:Array(N).fill(0), levelOk:false, phys:null, physOk:false, coins:0, falls:0 }); $("#gjErr").textContent = "🐞 0 erreur"; buildLevel(); return intro(); }
+		if(k === "replay"){ Object.assign(S, { errors:0, learned:new Set(), extra:Array(N).fill(0), custom:null, levelOk:false, phys:null, physOk:false, coins:0, falls:0, stomps:0 }); $("#gjErr").textContent = "🐞 0 erreur"; buildLevel(); return intro(); }
 	});
 	// pendant la démo devant le jury, « Laisser Yanis finir » reprend la même fin de partie
 	function juryAuto(){ const cb = run && run.onEnd; stopRun(); startRun("auto", cb); card.querySelector("[data-a=auto]")?.remove(); }
@@ -969,7 +1234,7 @@ LIMIT ${sel("lim")};</div>
 	applyStyle(); buildLevel(); respawn(); drawLed(0); resize(); intro(); loop();
 	onEvent && onEvent("start");
 	// mode relecture : étapes où l'enseignant peut sauter directement
-	onEvent && onEvent("missions", [["H+00 · Le niveau (algorithmique)", mission1], ["H+06 · Le héros (programmation)", mission2], ["H+20 · Les scores (SQL, API)", mission3], ["H+36 · Le serveur (réseau, cyber)", mission4], ["H+47 · Le jury", mission5], ["Bilan", finale]]);
-	if(window.campus) window.campus.game = { S, hero, get run(){ return run; }, mission1, mission2, mission3, mission4, mission5, finale, bfs:() => bfs(heights()), startRun, scene, camera,
+	onEvent && onEvent("missions", [["H+00 · Le niveau (algorithmique)", mission1], ["H+06 · Le héros (Python)", mission2], ["H+20 · Les scores (SQL, API)", mission3], ["H+28 · L'ambiance (réalité virtuelle)", missionVR], ["H+36 · Le serveur (réseau, cyber)", mission4], ["H+47 · Le jury", mission5], ["Bilan", finale], ["Bonus · Éditeur de niveau", freeEditor]]);
+	if(window.campus) window.campus.game = { S, hero, foe, get run(){ return run; }, mission1, mission2, mission3, missionVR, mission4, mission5, finale, freeEditor, sharedPlay, bfs:(...a) => bfs(heights(), ...a), startRun, scene, camera, get view(){ return view; },
 		advance(sec){ for(let i = 0; i < sec*60; i++){ tickBfs(1/60); tickRun(1/60); tickSrv(1/60, i/60); tickCamera(1/60, 0); } } };      // essais : faire avancer la simulation sans attendre l'affichage
 }

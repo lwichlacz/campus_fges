@@ -197,6 +197,13 @@ function bell(m, t, dur=3.2, vol=.35){
 		o.connect(g).connect(sfx); o.start(t); o.stop(t + dur);
 	});
 }
+// petit son synthétique : une note qui glisse d'une fréquence à l'autre
+function blip(type, f0, f1, dur, vol){
+	const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+	o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+	g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0005, t + dur);
+	o.connect(g).connect(sfx); o.start(t); o.stop(t + dur + .02);
+}
 const SFX = {
 	chime(){ const t = ctx.currentTime + .05; [68,66,64,59].forEach((m,i) => bell(m, t + i*.62)); [52,52].forEach((m,i) => bell(m, t + 3 + i*1.4, 4, .45)); },
 	pop(){ const t = ctx.currentTime; const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(520, t); o.frequency.exponentialRampToValueAtTime(880, t + .08); g.gain.setValueAtTime(.12, t); g.gain.exponentialRampToValueAtTime(.001, t + .15); o.connect(g).connect(sfx); o.start(t); o.stop(t + .16); },
@@ -205,6 +212,13 @@ const SFX = {
 	good(){ const t = ctx.currentTime; [72,76,79].forEach((m,i) => bell(m, t + i*.08, 1.2, .18)); },
 	bad(){ const t = ctx.currentTime; [64,61].forEach((m,i) => bell(m, t + i*.14, 1, .16)); },
 	win(){ const t = ctx.currentTime; [72,76,79,84,88].forEach((m,i) => bell(m, t + i*.11, 2, .2)); },
+	// Game Jam 48 h : bruitages du jeu de plateforme et du serveur
+	jump(){ blip("square", 260, 720, .13, .05); },
+	coin(){ const t = ctx.currentTime; [88, 93].forEach((m,i) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "square"; o.frequency.value = mtof(m); g.gain.setValueAtTime(.04, t + i*.07); g.gain.exponentialRampToValueAtTime(.0005, t + i*.07 + .18); o.connect(g).connect(sfx); o.start(t + i*.07); o.stop(t + i*.07 + .2); }); },
+	stomp(){ blip("sine", 180, 50, .18, .2); const t = ctx.currentTime, n = ctx.createBufferSource(); n.buffer = noise(); const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 600; const g = ctx.createGain(); g.gain.setValueAtTime(.12, t); g.gain.exponentialRampToValueAtTime(.001, t + .12); n.connect(lp).connect(g).connect(sfx); n.start(t); n.stop(t + .15); },
+	hurt(){ blip("square", 420, 110, .32, .05); },
+	alarm(){ const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain(); o.type = "triangle"; [0, .25, .5].forEach((d, i) => o.frequency.setValueAtTime(i % 2 ? 660 : 880, t + d)); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.06, t + .03); g.gain.setValueAtTime(.06, t + .7); g.gain.exponentialRampToValueAtTime(.0005, t + .8); o.connect(g).connect(sfx); o.start(t); o.stop(t + .82); },
+	keys(){ const t = ctx.currentTime; for(let i = 0; i < 4; i++){ const n = ctx.createBufferSource(); n.buffer = noise(); const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 2400 + Math.random()*1200; const g = ctx.createGain(), s = t + i*(.06 + Math.random()*.05); g.gain.setValueAtTime(.05, s); g.gain.exponentialRampToValueAtTime(.0005, s + .03); n.connect(bp).connect(g).connect(sfx); n.start(s); n.stop(s + .04); } },
 	// rame de métro : carillon de fermeture des portes, puis roulement qui accélère et ralentit
 	metro(){
 		const t = ctx.currentTime;
