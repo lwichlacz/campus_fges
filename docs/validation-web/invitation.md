@@ -14,7 +14,7 @@ Remplacer `<jeu>` par le lien du jeu de la formation et ajuster la date limite (
 
 ---
 
-**Objet :** 15 minutes pour relire le mini-jeu de la <formation> (avant le vendredi 6 novembre)
+**Objet :** 15 minutes pour relire le mini-jeu de la <formation> (avant le samedi 14 novembre)
 
 Bonjour <Prénom>,
 
@@ -30,7 +30,7 @@ Tout se passe sur cette page : <jeu>
 
 Comptez environ 15 minutes, sans compte à créer. Faites la relecture sur le même appareil que la partie : le journal de jeu se reporte alors tout seul dans le formulaire.
 
-Merci de nous répondre avant le vendredi 6 novembre. Vos remarques seront toutes reprises dans le jeu.
+Merci de nous répondre avant le samedi 14 novembre. Vos remarques seront toutes reprises dans le jeu.
 
 Bien cordialement,
 <Signature>

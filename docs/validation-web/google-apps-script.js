@@ -28,7 +28,7 @@ function json_(o){ return ContentService.createTextOutput(JSON.stringify(o)).set
 function cle_(){ return PropertiesService.getScriptProperties().getProperty("CLE") || ""; }
 function reglages_(){
 	const sh = feuille_("Réglages", ["Réglage", "Valeur"]);
-	if(sh.getLastRow() < 2){ sh.appendRow(["date limite", "2026-11-06"]); JEUX.forEach(j => sh.appendRow(["attendus " + j, 2])); }
+	if(sh.getLastRow() < 2){ sh.appendRow(["date limite", "2026-11-14"]); JEUX.forEach(j => sh.appendRow(["attendus " + j, 2])); }
 	const out = { deadline:null, attendus:{} };
 	sh.getRange(2, 1, sh.getLastRow() - 1, 2).getValues().forEach(([k, v]) => {
 		if(k === "date limite") out.deadline = (v && typeof v.getTime === "function") ? Utilities.formatDate(v, "Europe/Paris", "yyyy-MM-dd") : String(v);

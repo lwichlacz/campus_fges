@@ -309,7 +309,7 @@ GAMES = [
 # les réponses partent vers le script Google (pages.json : « endpoint », l'URL …/exec du déploiement)
 import shutil
 conf = json.loads((HERE / "pages.json").read_text()) if (HERE / "pages.json").exists() else {}
-DEFAULTS = {"deadline": "2026-11-06", "attendus": 2}
+DEFAULTS = {"deadline": "2026-11-14", "attendus": 2}
 games = {}
 for key, p in PAGES.items():
 	a, a_soft, a_dark, a_soft_dark = p["accent"]
