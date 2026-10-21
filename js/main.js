@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=c52a6e663b";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=c52a6e663b";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=c52a6e663b";
-import { MAP } from "./vauban.js?v=c52a6e663b";
-import { buildLandmarks } from "./landmarks.js?v=c52a6e663b";
-import { buildMonuments } from "./monuments.js?v=c52a6e663b";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=c52a6e663b";
-import { buildStation } from "./station.js?v=c52a6e663b";
-import { createRame } from "./rame.js?v=c52a6e663b";
-import { Audio } from "./audio.js?v=c52a6e663b";
-import { DETAILS } from "./details.js?v=c52a6e663b";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=8233004a61";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=8233004a61";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=8233004a61";
+import { MAP } from "./vauban.js?v=8233004a61";
+import { buildLandmarks } from "./landmarks.js?v=8233004a61";
+import { buildMonuments } from "./monuments.js?v=8233004a61";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=8233004a61";
+import { buildStation } from "./station.js?v=8233004a61";
+import { createRame } from "./rame.js?v=8233004a61";
+import { Audio } from "./audio.js?v=8233004a61";
+import { DETAILS } from "./details.js?v=8233004a61";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -221,7 +221,7 @@ function flagTexture(kind){
 	const x = c.getContext("2d");
 	if(kind === "fr"){ x.fillStyle="#1f3f8f"; x.fillRect(0,0,32,64); x.fillStyle="#f4f1ea"; x.fillRect(32,0,32,64); x.fillStyle="#d1343b"; x.fillRect(64,0,32,64); }
 	else if(kind === "eu"){ x.fillStyle="#1f3f9a"; x.fillRect(0,0,96,64); x.fillStyle="#f6cf3a"; for(let i=0;i<12;i++){ const a=i/12*Math.PI*2; x.beginPath(); x.arc(48+Math.cos(a)*19, 32+Math.sin(a)*19, 2.6, 0, 7); x.fill(); } }
-	else { x.fillStyle="#8a2b4e"; x.fillRect(0,0,96,64); x.fillStyle="#f4e6c8"; x.fillRect(0,26,96,12); }
+	else { x.fillStyle="#1f5fbf"; x.fillRect(0,0,96,32); x.fillStyle="#f6cf3a"; x.fillRect(0,32,96,32); }   // Ukraine, en signe de soutien
 	const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 function signTexture(lines){
@@ -324,7 +324,7 @@ function buildHA(){
 		const c = mesh(cached(`cd${r}`, () => new THREE.ConeGeometry(r, 3, 9).translate(0,1.5,0)), cedarMat, HAG, cs*8 + R(-.4,.4), 3.2 + y, 5 + R(-.4,.4), R(0,3));
 		c.scale.y = .8;
 	});
-	[["fr",-cs*3.6],["eu",-cs*6.4],["bx",-cs*9.2]].forEach(([k, x]) => {
+	[["fr",-cs*3.6],["eu",-cs*6.4],["ua",-cs*9.2]].forEach(([k, x]) => {
 		cyl(HAG, .07, .09, 11, std("#e8e4dc"), x, 0, -2.4);
 		const geo = new THREE.PlaneGeometry(2.2, 1.45, 10, 1).translate(1.1, 0, 0);
 		const f = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map:flagTexture(k), side:THREE.DoubleSide, roughness:.9 }));
@@ -947,7 +947,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=c52a6e663b").then(({ FAR }) => {
+	import("./vauban_far.js?v=8233004a61").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1451,14 +1451,14 @@ setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night 
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=c52a6e663b").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=c52a6e663b").then(m => m.createChapelle), eura:() => import("./eura.js?v=c52a6e663b").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=c52a6e663b").then(m => m.createWenovIn) };
+const MAKERS = { atrium:() => import("./atrium.js?v=8233004a61").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=8233004a61").then(m => m.createChapelle), eura:() => import("./eura.js?v=8233004a61").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=8233004a61").then(m => m.createWenovIn) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=c52a6e663b").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=c52a6e663b").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=c52a6e663b").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=c52a6e663b").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=c52a6e663b").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=c52a6e663b").then(m => m.openBiodata)
+	comptoir:() => import("./games/comptoir.js?v=8233004a61").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=8233004a61").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=8233004a61").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=8233004a61").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=8233004a61").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=8233004a61").then(m => m.openBiodata)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
