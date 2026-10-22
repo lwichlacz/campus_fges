@@ -1118,15 +1118,15 @@ function buildRizomm(){
 		for(const px of [30, 158]){ const g = x.createLinearGradient(0, 16, 0, h); g.addColorStop(0, "#8ea3b2"); g.addColorStop(1, "#3f4f5c"); x.fillStyle = g; x.fillRect(px, 16, 90, h - 24); x.fillStyle = "#1c1f24"; x.fillRect(px + 44, 16, 3, h - 24); }
 		x.fillStyle = "#c9a640"; x.fillRect(0, 0, w, 4);
 	});
-	// toit : panneaux solaires bleus en rangées, cadres d'aluminium, cellules visibles ; quelques fenêtres de toit
+	// toit : panneaux solaires noirs (comme en vrai) en rangées, cadres anthracite, cellules à peine visibles ; quelques fenêtres de toit
 	const pv = (x, px, py, pw, ph) => {
-		x.fillStyle = "#c9ced6"; x.fillRect(px, py, pw, ph);
-		const g = x.createLinearGradient(px, py, px + pw, py + ph); g.addColorStop(0, "#2d5a9a"); g.addColorStop(.55, "#1d3f78"); g.addColorStop(1, "#16305e");
+		x.fillStyle = "#3a3e45"; x.fillRect(px, py, pw, ph);
+		const g = x.createLinearGradient(px, py, px + pw, py + ph); g.addColorStop(0, "#262a31"); g.addColorStop(.55, "#15181d"); g.addColorStop(1, "#0f1115");
 		x.fillStyle = g; x.fillRect(px + 2, py + 2, pw - 4, ph - 4);
-		x.fillStyle = "rgba(170,200,240,.35)";
+		x.fillStyle = "rgba(200,210,225,.08)";
 		for(let k = 1; k < 4; k++) x.fillRect(px + 2 + k*(pw - 4)/4, py + 2, 1, ph - 4);
 		for(let k = 1; k < 6; k++) x.fillRect(px + 2, py + 2 + k*(ph - 4)/6, pw - 4, 1);
-		x.fillStyle = "rgba(255,255,255,.10)"; x.beginPath(); x.moveTo(px + 2, py + 2); x.lineTo(px + pw*.6, py + 2); x.lineTo(px + 2, py + ph*.5); x.fill();
+		x.fillStyle = "rgba(255,255,255,.07)"; x.beginPath(); x.moveTo(px + 2, py + 2); x.lineTo(px + pw*.6, py + 2); x.lineTo(px + 2, py + ph*.5); x.fill();
 	};
 	const solar = tex(256, 256, (x, w, h) => {
 		x.fillStyle = "#3c4048"; x.fillRect(0, 0, w, h);
