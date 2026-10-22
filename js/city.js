@@ -300,7 +300,7 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 	const rh = rec.length > 5 ? rec[5] : -1;         // hauteur réelle du toit (BD TOPO) ; -1 : inconnue
 	let p = ring(flat);
 	if(signedArea(p) < 0) p = p.reverse();
-	p = nudgeRing(p, .01 + ((i*.618034) % 1)*.04);      // de 1 à 5 cm, différent d'un bâtiment à l'autre
+	p = nudgeRing(p, rec.inset ? -.15 : .01 + ((i*.618034) % 1)*.04);      // de 1 à 5 cm, différent d'un bâtiment à l'autre (15 cm en retrait : voir overlapFix)
 	// léger décalage par bâtiment : deux toits voisins ne sont jamais au même niveau (pas de clignotement)
 	const k = FHc/FH, H = (kind === 3 ? lv*3.2*k : kind === 6 ? 2.2*k : kind === 4 ? lv*FHc*1.35 : kind === 7 ? lv*FHc*1.25 : lv*FHc) + (i % 7)*.035;
 	let mans = null;
@@ -432,11 +432,35 @@ export function buildCity(scene, MAP, opts={}){
 	const groups = new Map();   // clé matériau -> { w, r, f }
 	const get = (key) => { if(!groups.has(key)) groups.set(key, { w:bucket(), r:bucket(), f:bucket() }); return groups.get(key); };
 	const spires = [], oldRoofs = [];
-	const S = site(MAP); let flattened = 0; out.inBuilding = S.inBuilding; out.roadGap = S.roadGap; out.stats = { get flattened(){ return flattened; } };
+	const S = site(MAP); let flattened = 0; out.inBuilding = S.inBuilding; out.inHand = S.inHand; out.roadGap = S.roadGap; out.stats = { get flattened(){ return flattened; } };
+	// deux emprises superposées pour un même immeuble (OpenStreetMap et BD TOPO) : murs et toits confondus, qui clignotent.
+	// La plus petite disparaît si elle ne dépasse pas l'autre en hauteur ; plus haute, elle rentre de 15 cm.
+	const overlapFix = new Map();
+	{
+		const P = MAP.buildings.map(r => { const f = r[4], p = []; for(let k=0;k<f.length;k+=2) p.push([f[k], f[k+1]]); const xs = p.map(q => q[0]), zs = p.map(q => q[1]); return { p, A:Math.abs(signedArea(p)), bb:[Math.min(...xs), Math.min(...zs), Math.max(...xs), Math.max(...zs)] }; });
+		const G = 12, grid = new Map();
+		P.forEach((o, k) => { for(let a = Math.floor(o.bb[0]/G); a <= Math.floor(o.bb[2]/G); a++) for(let b = Math.floor(o.bb[1]/G); b <= Math.floor(o.bb[3]/G); b++){ const kk = a*100003 + b; if(!grid.has(kk)) grid.set(kk, []); grid.get(kk).push(k); } });
+		const pairs = new Set();
+		for(const list of grid.values()) for(const i of list) for(const j of list){
+			if(j <= i || pairs.has(i*4096 + j)) continue; pairs.add(i*4096 + j);
+			const A = P[i], B = P[j], x0 = Math.max(A.bb[0], B.bb[0]), x1 = Math.min(A.bb[2], B.bb[2]), z0 = Math.max(A.bb[1], B.bb[1]), z1 = Math.min(A.bb[3], B.bb[3]);
+			if(x1 <= x0 || z1 <= z0) continue;
+			const small = A.A < B.A ? i : j, big = small === i ? j : i;
+			if(poiIndex.has(small)) continue;
+			const st = Math.max(.25, Math.sqrt((x1 - x0)*(z1 - z0)/400)); let n = 0;
+			for(let x = x0 + st/2; x < x1; x += st) for(let z = z0 + st/2; z < z1; z += st) if(pointInPoly(x, z, A.p) && pointInPoly(x, z, B.p)) n++;
+			if(n*st*st < .6*P[small].A) continue;
+			overlapFix.set(small, MAP.buildings[small][1] <= MAP.buildings[big][1] ? "drop" : "inset");
+		}
+		out.stats.overlaps = overlapFix.size;
+	}
 	MAP.buildings.forEach((rec, i) => {
+		const fix = overlapFix.get(i);
+		if(fix === "drop") return;
+		if(fix === "inset"){ rec = rec.slice(); rec.inset = true; }
 		// un toit à deux pentes ne doit ni mordre sur le voisin, ni laisser l'emprise à découvert
 		// (sans place pour deux pentes, un toit de hauteur connue devient un toit à pans brisés)
-		if(rec[3] && rec[0] !== 4){ const fit = S.roofFit(rec, i); if(!fit) flattened++; rec = rec.slice(); rec[3] = fit || 0; }
+		if(rec[3] && rec[0] !== 4){ const fit = S.roofFit(rec, i); if(!fit) flattened++; const inset = rec.inset; rec = rec.slice(); rec[3] = fit || 0; rec.inset = inset; }
 		const [kind, , col] = rec, style = rec[6] || 0;
 		if(opts.exclude){ const f = rec[4]; let cx = 0, cz = 0; for(let k=0;k<f.length;k+=2){ cx += f[k]; cz += f[k+1]; } if(opts.exclude(cx/(f.length/2), cz/(f.length/2))) return; }
 		let wm;
@@ -454,8 +478,9 @@ export function buildCity(scene, MAP, opts={}){
 		if(poi === "rizomm") wm = campusMats[0];
 		if(poi){
 			const G = { w:bucket(), r:bucket(), f:bucket() };
-			const H = addBuilding(G.w, G.r, G.f, rec, i, extras);
+			const ex = [], H = addBuilding(G.w, G.r, G.f, rec, i, ex);
 			const grp = new THREE.Group(); scene.add(grp);
+			if(ex.length) roofKit(ex, grp);          // ses blocs techniques disparaissent avec lui s'il est remplacé
 			const w2 = wm.clone(), r2 = rm.clone(), f2 = kind === 5 ? glassRoof : flatMat.clone();
 			softenFar(w2, out.nightU);
 			out.walls.push(w2); out.roofs.push(r2); if(f2 !== glassRoof) out.flats.push(f2);
@@ -513,7 +538,8 @@ export function buildCity(scene, MAP, opts={}){
 		inst(new THREE.BoxGeometry(.7, .12, 1.1).translate(0, 1.3, 0), std("#cfc5b5"), chim, [1, 1, 1]);
 		out.stats.dormers = lucBody.length; out.stats.chimneys = chim.length;
 	}
-	{
+	roofKit(extras, scene);
+	function roofKit(extras, parent){
 		// blocs techniques et petites verrières, instanciés
 		const unit = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1).translate(0,.5,0), std("#b9b6b0"), extras.length);
 		const sky = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1).translate(0,.5,0), std("#9fc3cf", { roughness:.2, metalness:.3 }), extras.length);
@@ -525,7 +551,7 @@ export function buildCity(scene, MAP, opts={}){
 		}
 		unit.count = nu; sky.count = ns;
 		unit.castShadow = true; unit.receiveShadow = true;
-		scene.add(unit, sky);
+		parent.add(unit, sky);
 	}
 	// ces formes n'ont pas de teinte par sommet : on leur en donne une neutre (matériaux en vertexColors)
 	const white = g => { g.setAttribute("color", new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count*3).fill(1), 3)); return g; };

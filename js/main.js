@@ -140,12 +140,10 @@ function wing(parent, o){
 		let zf, y;
 		if(o.roof === "mansard"){ const hw = (D+.6)/2; zf = hw - 1.15; y = top + rh*.8*(1.15/1.3) - .55; }
 		else { const hw = (D+1)/2; zf = D/2*.55; y = top + rh*(1 - zf/hw) - .6; }
-		const span = L - 5;
-		for(let i=0;i<n;i++){
-			const x = n === 1 ? 0 : -span/2 + span*i/(n-1);
-			dormer(g, x, y, zf, 0, o.dstyle, M);
-			if(!o.oneSide) dormer(g, x, y, -zf, Math.PI, o.dstyle, M);
-		}
+		const at = (n, span) => Array.from({ length:n }, (_, i) => n === 1 ? 0 : -span/2 + span*i/(n-1));
+		for(const x of o.front || at(n, L - 5)) dormer(g, x, y, zf, 0, o.dstyle, M);
+		// côté cour d'un bâtiment en carré (o.front ou o.inner : positions données), les lucarnes s'arrêtent avant les ailes en retour (sinon elles traversent leur toit)
+		if(!o.oneSide) for(const x of o.inner || at(n, L - 5)) dormer(g, x, y, -zf, Math.PI, o.dstyle, M);
 	}
 	return g;
 }
@@ -215,7 +213,7 @@ function bench(parent, x, z, ry){
 const pickables = [];
 function register(root, id){ root.traverse(o => { if(o.isMesh){ o.userData.place = id; if(!pickables.includes(o)) pickables.push(o); } }); }
 const ball = () => cached("ball", () => new THREE.SphereGeometry(.2, 8, 6));
-let cedarMat, flags = [], clockHands;
+let cedarMat, courtFlowers, flags = [], clockHands;
 function flagTexture(kind){
 	const c = document.createElement("canvas"); c.width = 96; c.height = 64;
 	const x = c.getContext("2d");
@@ -239,7 +237,7 @@ function buildHA(){
 	const root = new THREE.Group(); root.position.set(0,0,-6); HAG.add(root);
 	const M = mats("#a9533c"); PLACES.ha.mats = M;
 	M.base = std("#56606b");          // de bas en haut : pierre bleue, brique, pierre blanche, ardoise (Louis Dutouquet, 1879-1881)
-	wing(root, { x:0, z:-9, L:46, D:11, floors:3, roof:"gable", rh:6.5, dormers:8, dstyle:"slate", m:M, faces:"fbs", sp:3.3 });
+	wing(root, { x:0, z:-9, L:46, D:11, floors:3, roof:"gable", rh:6.5, dormers:8, front:[-12.2, -9.3, 9.3, 12.2], dstyle:"slate", m:M, faces:"fbs", sp:3.3 });
 	for(const x of [-16,-5.3,10.5,16]) box(root, 1, 3.2, 1.3, M.brick, x, 12.5, -12.4);
 	// pinacles de pierre aux angles de la grande aile
 	for(const x of [-23.2, 23.2]) for(const z of [-3.6, -14.4]){ box(root, .7, 1.6, .7, M.stone, x, 10.6, z); cone(root, .5, 2.4, M.stone, x, 12.2, z, 4, Math.PI/4); }
@@ -306,8 +304,18 @@ function buildHA(){
 	register(chapel, "chapelle");
 	LIFE.chapelle.anchor = chapel;
 
-	// cour d'honneur
-	flat(HAG, 27.6, 20, lawnMat, 0, 0, .05);
+	// cour d'honneur, comme sur les photos : esplanade pavée de briques, pelouses bordées de buis, massifs fleuris
+	// et le grand cèdre ; rien ne touche les ailes (cour : x de -13,8 à 13,8, z de -9,5 à 10,3)
+	const pave = (() => { const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
+		x.fillStyle = "#7c665d"; x.fillRect(0, 0, 128, 128);
+		const tones = ["#a07462", "#ad8270", "#93685a", "#b58f7c", "#9a7a6c", "#a8705c"];
+		for(let r = 0; r < 16; r++) for(let k = -1; k < 8; k++){ x.fillStyle = tones[(r*5 + k*3 + (r*k & 3)) % tones.length]; x.fillRect(k*16 + (r % 2)*8 + 1, r*8 + 1, 14, 6); }
+		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; })();
+	{
+		const g = new THREE.PlaneGeometry(27.6, 19.8).rotateX(-Math.PI/2), uv = g.attributes.uv;
+		for(let k = 0; k < uv.count; k++) uv.setXY(k, uv.getX(k)*27.6/1.6, uv.getY(k)*19.8/1.6);
+		const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map:pave, roughness:.85 })); m.position.set(0, .06, .4); m.receiveShadow = true; HAG.add(m);
+	}
 	const wallM = std("#d9cbb2"), iron = std("#2c2a30");
 	for(const s of [-1,1]){
 		box(HAG, 11, .7, .5, wallM, s*8.5, 0, 10.3);
@@ -316,13 +324,38 @@ function buildHA(){
 		box(HAG, .8, 2.6, .8, wallM, s*3, 0, 10.3);
 		cone(HAG, .55, .7, wallM, s*3, 2.6, 10.3, 4, Math.PI/4);
 	}
-	flat(HAG, 2.8, 15, std("#dec59c", { flatShading:false }), 0, 3, .07);
-	flat(HAG, 18, 2.4, std("#dec59c", { flatShading:false }), 0, 0, .07);
-	cyl(HAG, .45, .6, 4, std("#6b4a35"), cs*8, 0, 5);
+	const buis = std("#2f5a35"), soil = std("#5b4334"), flowers = [];
+	const bloom = ["#d8344a", "#e8577a", "#f2a2b8", "#f4f0e8", "#c9243c", "#f0c24a", "#b8325a"];
+	// une pelouse : gazon, bordure de buis (ouverte côté allée), massif fleuri le long de l'allée et au bout
+	const lawn = (x0, x1, z0, z1, side) => {
+		const cx = (x0 + x1)/2, cz = (z0 + z1)/2, w = x1 - x0, d = z1 - z0;
+		flat(HAG, w, d, lawnMat, cx, cz, .1);
+		const ex = side > 0 ? x0 : x1, far = side > 0 ? x1 : x0;          // ex : bord côté allée centrale
+		box(HAG, .3, .32, d, buis, far, .1, cz);
+		box(HAG, w, .32, .3, buis, cx, .1, z0);
+		box(HAG, w, .32, .3, buis, cx, .1, z1);
+		for(const [za, zb] of [[z0, cz - .9], [cz + .9, z1]]) box(HAG, .3, .32, zb - za, buis, ex, .1, (za + zb)/2);
+		const beds = [[ex + side*.85, cz - .9 - (cz - .9 - z0 - .5)/2, .9, cz - .9 - z0 - .5], [ex + side*.85, cz + .9 + (z1 - .5 - cz - .9)/2, .9, z1 - .5 - cz - .9], [cx, z1 - .8, w - 1.2, .9]];
+		for(const [bx, bz, bw, bd] of beds){
+			box(HAG, bw, .14, bd, soil, bx, .1, bz);
+			for(let k = 0; k < bw*bd*9; k++) flowers.push([bx + (R(0, 1) - .5)*(bw - .2), bz + (R(0, 1) - .5)*(bd - .2), bloom[Math.floor(R(0, bloom.length))]]);
+		}
+	};
+	lawn(-12.6, -3.3, -1.2, 8.4, -1);
+	lawn(3.3, 12.6, -3, 8.4, 1);
+	{
+		const fm = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.13, 0), std("#ffffff"), flowers.length), d = new THREE.Object3D(), c = new THREE.Color();
+		flowers.forEach(([x, z, col], k) => { d.position.set(x, .3 + R(0, .1), z); d.scale.setScalar(R(.7, 1.2)); d.updateMatrix(); fm.setMatrixAt(k, d.matrix); fm.setColorAt(k, c.set(col)); });
+		HAG.add(fm); courtFlowers = fm;
+	}
+	// bornes noires de l'esplanade
+	for(const x of [-2.7, 2.7]) for(const z of [5.2, 9.2]){ cyl(HAG, .09, .1, .85, iron, x, 0, z, 8); mesh(ball(), iron, HAG, x, .88, z).scale.setScalar(.6); }
+	// le cèdre du Liban : tronc apparent, grandes nappes horizontales étagées, un peu de travers
+	cyl(HAG, .35, .55, 5.2, std("#5e4433"), -7.6, 0, 3.4, 7);
 	cedarMat = std("#3e5a3c");
-	[[5.2,0],[4.4,2.2],[3.6,4.3],[2.7,6.3],[1.7,8.2]].forEach(([r,y]) => {
-		const c = mesh(cached(`cd${r}`, () => new THREE.ConeGeometry(r, 3, 9).translate(0,1.5,0)), cedarMat, HAG, cs*8 + R(-.4,.4), 3.2 + y, 5 + R(-.4,.4), R(0,3));
-		c.scale.y = .8;
+	[[4.1, 3.2, .2, .1], [3.6, 4.6, -.3, .3], [3.1, 6, .3, -.2], [2.4, 7.3, -.1, .1], [1.5, 8.4, .1, 0]].forEach(([r, y, ox, oz]) => {
+		const c = mesh(cached(`cd${r}`, () => new THREE.CylinderGeometry(r*.55, r, 1.3, 10)), cedarMat, HAG, -7.6 + ox, y, 3.4 + oz, R(0, 3));
+		c.scale.set(1, 1, .85);
 	});
 	[["fr",-cs*3.6],["eu",-cs*6.4],["ua",-cs*9.2]].forEach(([k, x]) => {
 		cyl(HAG, .07, .09, 11, std("#e8e4dc"), x, 0, -2.4);
@@ -331,7 +364,7 @@ function buildHA(){
 		f.position.set(x+.05, 10.1, -2.4); f.userData.dynamic = true; HAG.add(f);
 		flags.push({ mesh:f, base:geo.attributes.position.array.slice(), ph:R(0,6) });
 	});
-	for(const [x,z,r] of [[-5,8.4,0],[5,8.4,0],[cs*12,-1,-cs*Math.PI/2]]) bench(HAG, x, z, r);
+	for(const [x,z,r] of [[-7.5,9.3,Math.PI],[7.5,9.3,Math.PI],[-11.5,-4.2,0],[11.5,-4.2,0]]) bench(HAG, x, z, r);
 	// pancarte et station de vélos sur le trottoir du boulevard
 	const sg = new THREE.Group(); sg.position.set(-cs*10, 0, 11.3); HAG.add(sg);
 	for(const s of [-1,1]) box(sg, .2, 2.4, .2, woodMat, s*1.8, 0, 0);
@@ -362,8 +395,9 @@ function buildFalise(){
 	const L = Fm.L, D = Fm.D - .8, wd = 6.4, H = 3*3.4;
 	// 18,5 m à la gouttière (BD TOPO) : cinq niveaux sous le comble à lucarnes
 	const common = { floors:5, fh:3*3.4/5, roof:"mansard", rh:4, m:M, arch:true, ww:1.15, wh:1.25, sp:2.9, bands:false, dstyle:"brickTall" };
-	wing(root, { ...common, x:0, z:D/2 - wd/2, L, D:wd, faces:"fb", dormers:5 });
-	wing(root, { ...common, x:0, z:-(D/2 - wd/2), ry:Math.PI, L, D:wd, faces:"fb", dormers:5 });
+	const inner = [-(L/2 - wd - 1.3), L/2 - wd - 1.3];
+	wing(root, { ...common, x:0, z:D/2 - wd/2, L, D:wd, faces:"fb", dormers:5, inner });
+	wing(root, { ...common, x:0, z:-(D/2 - wd/2), ry:Math.PI, L, D:wd, faces:"fb", dormers:5, inner });
 	wing(root, { ...common, rh:3.85, x:L/2 - wd/2, z:0, ry:Math.PI/2, L:D - 2*wd, D:wd, faces:"fb", dormers:1 });
 	wing(root, { ...common, rh:3.85, x:-(L/2 - wd/2), z:0, ry:-Math.PI/2, L:D - 2*wd, D:wd, faces:"fb", dormers:1 });
 	// l'atrium et sa verrière, visibles depuis le ciel
@@ -626,7 +660,10 @@ function buildHorizon(F){
 		return false;
 	};
 	// valeurs entières du fichier : positions et tailles au dixième, angle au centième, hauteur du toit au dixième
-	const spots = F.map(([x, z, a, w, dp, lv, rh, col, rm]) => [x/10, z/10, a/100, w/10, dp/10, lv, rh/10, col, rm])
+	// le fichier contient certains bâtiments deux fois : un seul exemplaire, sinon leurs faces confondues clignotent
+	const twice = new Set();
+	const spots = F.filter(([x, z, a]) => { const k = x + "," + z + "," + a; if(twice.has(k)) return false; twice.add(k); return true; })
+		.map(([x, z, a, w, dp, lv, rh, col, rm]) => [x/10, z/10, a/100, w/10, dp/10, lv, rh/10, col, rm])
 		.filter(([x, z]) => !blockedFar(x, z) && !monuments.covers(x, z) && !(ZONE && pointInPoly(x, z, ZONE)));
 	spots.forEach((s, i) => s.push(i));          // la teinte du toit dépend du rang d'origine
 	const H0 = (MAP.fh || 2.3)*.85;
@@ -643,13 +680,18 @@ function buildHorizon(F){
 		const body = new THREE.InstancedMesh(bodyGeo, wallMat, list.length);
 		const roof = new THREE.InstancedMesh(roofGeo, roofMat, Math.max(1, roofed.length));
 		const base = [];
+		// chaque bloc a sa hauteur et sa largeur légèrement à lui (de 0 à 3 %, quelques centimètres) : deux voisins
+		// mitoyens n'ont jamais de façade ni de toit dans le même plan
+		const jit = s => ((s[9]*.618034) % 1)*.03;
 		list.forEach(([x, z, ang, w, dp, lv, rh, col], j) => {
-			d.position.set(x, 0, z); d.rotation.set(0, -ang, 0); d.scale.set(Math.max(.8, w), lv*H0, Math.max(.8, dp)); d.updateMatrix(); body.setMatrixAt(j, d.matrix);
+			const e = jit(list[j]);
+			d.position.set(x, 0, z); d.rotation.set(0, -ang, 0); d.scale.set(Math.max(.8, w)*(1 + e*.5) + e, lv*H0*(1 + e), Math.max(.8, dp)*(1 - e*.5) + e); d.updateMatrix(); body.setMatrixAt(j, d.matrix);
 			c.set(walls[col % walls.length]); body.setColorAt(j, c);
 		});
 		roofed.forEach(([x, z, ang, w, dp, lv, rh, col, rm, i], j) => {
 			const r = (i*.618) % 1, rc = roofs[rm] || roofs[0];
-			d.position.set(x, lv*H0, z); d.rotation.set(0, -ang, 0); d.scale.set(Math.max(.8, w) + .3, Math.min(rh, dp*.6), Math.max(.8, dp) + .3); d.updateMatrix(); roof.setMatrixAt(j, d.matrix);
+			const e = jit(roofed[j]);
+			d.position.set(x, lv*H0*(1 + e), z); d.rotation.set(0, -ang, 0); d.scale.set(Math.max(.8, w)*(1 + e*.5) + e + .3, Math.min(rh, dp*.6), Math.max(.8, dp)*(1 - e*.5) + e + .3); d.updateMatrix(); roof.setMatrixAt(j, d.matrix);
 			base.push(rc[Math.floor(r*rc.length)]); c.set(base[j]); roof.setColorAt(j, c);
 		});
 		roof.count = roofed.length;
@@ -829,11 +871,16 @@ function buildBU(){
 		x.fillStyle = "#3d5c58"; x.fillRect(0, h - 22, w, 22);
 		x.fillStyle = "#d6dbdb"; for(const px of [0, 64]) x.fillRect(px, 0, 5, h); x.fillRect(0, h - 24, w, 3); x.fillRect(0, 0, w, 3); x.fillRect(0, 54, w, 2);
 	});
-	// verre sombre de la lanterne et du rez-de-chaussée : cadres noirs, quelques reflets
+	// verre fumé de la lanterne et du rez-de-chaussée : reflets du ciel en haut, salle de lecture visible derrière
+	// (plafond éclairé, rayonnages, lecteurs), cadres gris anthracite
 	const darkGlass = tex(128, 128, (x, w, h) => {
-		const g = x.createLinearGradient(0, 0, w, h); g.addColorStop(0, "#2c3646"); g.addColorStop(1, "#141a24"); x.fillStyle = g; x.fillRect(0, 0, w, h);
-		x.fillStyle = "rgba(170,200,230,.12)"; x.fillRect(8, 8, 50, 100); x.fillStyle = "rgba(255,230,180,.08)"; x.fillRect(70, 30, 50, 70);
-		x.fillStyle = "#0b0d12"; for(const px of [0, 64]) x.fillRect(px, 0, 6, h); x.fillRect(0, 0, w, 6); x.fillRect(0, h - 10, w, 10);
+		const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#8ea4b6"); g.addColorStop(.45, "#5f7486"); g.addColorStop(1, "#46576a"); x.fillStyle = g; x.fillRect(0, 0, w, h);
+		x.fillStyle = "rgba(255,244,214,.55)"; x.fillRect(0, 14, w, 3);                       // ligne de luminaires
+		const books = ["#b0624a", "#d6b46a", "#6d8c6a", "#8f5a6e", "#c98f4f", "#5d7da0"];
+		for(let px = 6; px < w - 6; px += 4){ x.fillStyle = books[(px*7 + (px >> 3)) % books.length]; x.globalAlpha = .55; x.fillRect(px, 70, 3, 22); x.fillRect(px, 96, 3, 18); }
+		x.globalAlpha = 1; x.fillStyle = "rgba(60,48,40,.5)"; x.fillRect(4, 92, w - 8, 3); x.fillRect(4, 114, w - 8, 3);
+		x.fillStyle = "rgba(255,255,255,.18)"; x.beginPath(); x.moveTo(14, h); x.lineTo(56, 0); x.lineTo(74, 0); x.lineTo(32, h); x.fill();
+		x.fillStyle = "#2f343c"; for(const px of [0, 64]) x.fillRect(px, 0, 5, h); x.fillRect(0, 0, w, 5); x.fillRect(0, h - 8, w, 8);
 	});
 	// aile de bureaux : vitrage cadré de gris
 	const wingGlass = tex(128, 128, (x, w, h) => {
@@ -849,7 +896,7 @@ function buildBU(){
 	});
 	// bardage gris foncé (arrière et volume d'entrée), joints de panneaux
 	const cladding = tex(128, 128, (x, w, h) => {
-		x.fillStyle = "#555a64"; x.fillRect(0, 0, w, h); x.fillStyle = "#484c55"; x.fillRect(0, 63, w, 2); x.fillRect(63, 0, 2, h);
+		x.fillStyle = "#7d838c"; x.fillRect(0, 0, w, h); x.fillStyle = "#6a7079"; x.fillRect(0, 63, w, 2); x.fillRect(63, 0, 2, h);
 		x.fillStyle = "rgba(255,255,255,.04)"; x.fillRect(0, 0, w, 30);
 	});
 	// granité rouge du grand mur courbe, percé de hublots en quinconce
@@ -865,10 +912,10 @@ function buildBU(){
 	function mulberryLocal(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0)/4294967296; }; }
 	const M = (map, o = {}) => new THREE.MeshStandardMaterial({ map, roughness:.55, metalness:0, ...o });
 	const mGreen = M(greenGlass, { roughness:.18, metalness:.35, emissive:"#ffd9a0", emissiveIntensity:0, emissiveMap:greenGlass });
-	const mDark = M(darkGlass, { roughness:.15, metalness:.4, emissive:"#ffd391", emissiveIntensity:0, emissiveMap:darkGlass });
+	const mDark = M(darkGlass, { roughness:.22, metalness:.1, emissive:"#ffd391", emissiveIntensity:0, emissiveMap:darkGlass });
 	const mWing = M(wingGlass, { roughness:.25, metalness:.25, emissive:"#ffe2b0", emissiveIntensity:0, emissiveMap:wingGlass });
 	const mLouvre = M(louvres, { roughness:.8 }), mClad = M(cladding, { roughness:.75 }), mRed = M(terrazzo, { roughness:.7 });
-	const cornice = std("#dfe2e3", { flatShading:false }), roofM = std("#a8a49c"), black = std("#16181d", { roughness:.5 });
+	const cornice = std("#dfe2e3", { flatShading:false }), roofM = std("#8e9195"), black = std("#16181d", { roughness:.5 });
 
 	// ---------- les façades, côté par côté ----------
 	// rue = côté le plus à l'est, tourné vers l'est ; square = côtés tournés vers -z (vers l'Hôtel Académique) ; le reste : bardage
@@ -1049,17 +1096,26 @@ function buildRizomm(){
 		for(const px of [30, 158]){ const g = x.createLinearGradient(0, 16, 0, h); g.addColorStop(0, "#8ea3b2"); g.addColorStop(1, "#3f4f5c"); x.fillStyle = g; x.fillRect(px, 16, 90, h - 24); x.fillStyle = "#1c1f24"; x.fillRect(px + 44, 16, 3, h - 24); }
 		x.fillStyle = "#c9a640"; x.fillRect(0, 0, w, 4);
 	});
-	// toit : verre noir des panneaux solaires, joints argentés, fenêtres de toit plus claires
+	// toit : panneaux solaires bleus en rangées, cadres d'aluminium, cellules visibles ; quelques fenêtres de toit
+	const pv = (x, px, py, pw, ph) => {
+		x.fillStyle = "#c9ced6"; x.fillRect(px, py, pw, ph);
+		const g = x.createLinearGradient(px, py, px + pw, py + ph); g.addColorStop(0, "#2d5a9a"); g.addColorStop(.55, "#1d3f78"); g.addColorStop(1, "#16305e");
+		x.fillStyle = g; x.fillRect(px + 2, py + 2, pw - 4, ph - 4);
+		x.fillStyle = "rgba(170,200,240,.35)";
+		for(let k = 1; k < 4; k++) x.fillRect(px + 2 + k*(pw - 4)/4, py + 2, 1, ph - 4);
+		for(let k = 1; k < 6; k++) x.fillRect(px + 2, py + 2 + k*(ph - 4)/6, pw - 4, 1);
+		x.fillStyle = "rgba(255,255,255,.10)"; x.beginPath(); x.moveTo(px + 2, py + 2); x.lineTo(px + pw*.6, py + 2); x.lineTo(px + 2, py + ph*.5); x.fill();
+	};
 	const solar = tex(256, 256, (x, w, h) => {
-		x.fillStyle = "#151b26"; x.fillRect(0, 0, w, h);
-		x.fillStyle = "#2a3445"; for(let px = 0; px < w; px += 32) for(let y = 0; y < h; y += 48) x.fillRect(px + 1, y + 1, 30, 46);
-		x.fillStyle = "rgba(140,170,210,.12)"; for(let px = 0; px < w; px += 32) x.fillRect(px + 4, 0, 6, h);
-		x.fillStyle = "#8d96a2"; for(let px = 0; px < w; px += 32) x.fillRect(px, 0, 1, h);
-		for(const [px, y] of [[40, 70], [168, 70], [104, 182], [232, 182]]){ x.fillStyle = "#c8d3dc"; x.fillRect(px - 12, y - 16, 24, 32); x.fillStyle = "#4d6074"; x.fillRect(px - 9, y - 13, 18, 26); }
+		x.fillStyle = "#3c4048"; x.fillRect(0, 0, w, h);
+		for(let px = 0; px < w; px += 32) for(let y = 0; y < h; y += 52) pv(x, px + 1, y + 1, 30, 49);
+		for(const [px, y] of [[48, 78], [176, 78], [112, 182]]){ x.fillStyle = "#d5dbe1"; x.fillRect(px - 13, y - 18, 26, 36); x.fillStyle = "#6f8aa3"; x.fillRect(px - 10, y - 15, 20, 30); }
 	});
+	const pvTex = tex(64, 104, (x, w, h) => pv(x, 0, 0, w, h));
+	const gravel = tex(128, 128, (x, w, h) => { x.fillStyle = "#b9b7b1"; x.fillRect(0, 0, w, h); for(let k = 0; k < 900; k++){ const v = 150 + rnd()*80 | 0; x.fillStyle = `rgb(${v},${v - 2},${v - 6})`; x.fillRect(rnd()*w, rnd()*h, 2, 2); } });
 	const mSlats = new THREE.MeshStandardMaterial({ map:slats, roughness:.55, metalness:.25, emissive:"#ffd9a0", emissiveIntensity:0, emissiveMap:slats });
 	const mBase = new THREE.MeshStandardMaterial({ map:base, roughness:.7, emissive:"#ffe0b0", emissiveIntensity:0, emissiveMap:base });
-	const mRoof = new THREE.MeshStandardMaterial({ map:solar, roughness:.2, metalness:.55 });
+	const mRoof = new THREE.MeshStandardMaterial({ map:solar, roughness:.3, metalness:.2, envMapIntensity:1.2 });
 	const zinc = std("#9aa2ab", { metalness:.45, roughness:.4, flatShading:false });
 
 	// ---------- côtés de l'emprise, normales vers l'extérieur ----------
@@ -1106,12 +1162,21 @@ function buildRizomm(){
 		g.setAttribute("position", new THREE.Float32BufferAttribute(B.pos, 3)); g.setAttribute("normal", new THREE.Float32BufferAttribute(B.nor, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(B.uv, 2));
 		const me = new THREE.Mesh(g, m); me.castShadow = me.receiveShadow = true; root.add(me);
 	}
-	// le haut du toit, plat, et ses édicules techniques
+	// le haut du toit, plat (gravier clair), couvert de rangées de panneaux solaires inclinés vers le sud
 	{
 		const g = new THREE.ShapeGeometry(new THREE.Shape(inner.map(p => new THREE.Vector2(p[0], -p[1])))).rotateX(-Math.PI/2);
-		const top = new THREE.Mesh(g, std("#2b2f36", { roughness:.6 })); top.position.y = H + RH; top.receiveShadow = true; root.add(top);
-		const cx = inner.reduce((a, p) => a + p[0], 0)/inner.length, cz = inner.reduce((a, p) => a + p[1], 0)/inner.length;
-		for(const [dx, dz] of [[0, 0], [3, -4], [-2, 5]]) if(pointInPoly(cx + dx, cz + dz, inner)) box(root, 1.4, .6, 1.2, std("#7c838c"), cx + dx, H + RH, cz + dz);
+		const uv = g.attributes.uv; for(let k = 0; k < uv.count; k++) uv.setXY(k, uv.getX(k)/3, uv.getY(k)/3);
+		const top = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map:gravel, roughness:.95 })); top.position.y = H + RH; top.receiveShadow = true; root.add(top);
+		const xs = inner.map(p => p[0]), zs = inner.map(p => p[1]), list = [];
+		for(let z = Math.min(...zs) + 1; z < Math.max(...zs) - .6; z += 1.5) for(let x = Math.min(...xs) + .7; x < Math.max(...xs) - .5; x += .62)
+			if([[-.35, -.5], [.35, -.5], [-.35, .5], [.35, .5]].every(([a, b]) => pointInPoly(x + a, z + b, inner))) list.push([x, z]);
+		const panel = new THREE.InstancedMesh(new THREE.BoxGeometry(.58, .04, 1, 1, 1, 1).rotateX(.3).translate(0, .3, 0), new THREE.MeshStandardMaterial({ map:pvTex, roughness:.3, metalness:.2 }), Math.max(1, list.length));
+		const d = new THREE.Object3D();
+		list.forEach(([x, z], k) => { d.position.set(x, H + RH, z); d.updateMatrix(); panel.setMatrixAt(k, d.matrix); });
+		panel.count = list.length; panel.castShadow = true; panel.receiveShadow = true; root.add(panel);
+		const legs = new THREE.InstancedMesh(new THREE.BoxGeometry(.5, .3, .06).translate(0, .15, -.42), std("#9aa2ab", { metalness:.5 }), Math.max(1, list.length));
+		list.forEach(([x, z], k) => { d.position.set(x, H + RH, z); d.updateMatrix(); legs.setMatrixAt(k, d.matrix); });
+		legs.count = list.length; root.add(legs);
 	}
 	rizommGlass = [mSlats, mBase];
 	// l'ancien bloc générique d'OpenStreetMap laisse la place
@@ -1123,7 +1188,7 @@ function buildRizomm(){
 
 buildHA(); buildFalise(); buildWenov(); buildCitadelle(); buildKiosque(); buildRameau(); buildBU(); buildRizomm();
 const monuments = buildMonuments(scene, MAP);
-const landmarks = buildLandmarks(scene, MAP, { inBuilding:city.inBuilding, roadGap:city.roadGap, home:[0, 14] });
+const landmarks = buildLandmarks(scene, MAP, { inBuilding:city.inBuilding, inHand:city.inHand, roadGap:city.roadGap, home:[0, 14] });
 let horizon = null, farWood = null;          // le lointain arrive après le campus (js/vauban_far.js), voir loadFar
 WB.build(scene, glassLit, glassDark, frameMat);
 scene.updateMatrixWorld(true);
@@ -1165,9 +1230,16 @@ scene.updateMatrixWorld(true);
    ===================================================================== */
 // un arbre du jardin ne pousse jamais dans un bâtiment voisin (emprises OpenStreetMap)
 const inOsmBuilding = (x, z) => MAP.buildings.some(r => { const f = r[4], p = []; for(let k=0;k<f.length;k+=2) p.push([f[k], f[k+1]]); return pointInPoly(x, z, p); });
-const trees = [...city.trees, ...city.parkTrees, ...gardenTrees.filter(t => !inOsmBuilding(t.x, t.z))];
-const hp0 = HAG.localToWorld(V(0,0,0));
-for(const [x,z] of [[-12,-14],[12,-14],[-20,-10]]) { const p = HAG.localToWorld(V(x,0,z)); trees.push({ x:p.x, z:p.z, k:"d", s:1 }); }
+// aucun feuillage ne traverse un mur : un arbre trop près d'une façade est réduit, collé à elle il est retiré ;
+// la cour d'honneur et le jardin de Michel Falise ont leurs propres plantations
+const trees = [...city.trees, ...city.parkTrees, ...gardenTrees.filter(t => !inOsmBuilding(t.x, t.z))].filter(t => {
+	if(city.inHand(t.x, t.z)) return false;
+	const r = 2.3*t.s; let d = 0;
+	while(d < r && !city.inBuilding(t.x, t.z, d + .25)) d += .25;
+	if(d >= r) return true;
+	if(d < .75) return false;
+	t.s = Math.min(t.s, (d + .35)/2.3); return t.s >= .5;
+});
 const decid = trees.filter(t => t.k === "d"), conif = trees.filter(t => t.k === "c");
 trees.forEach(t => { t.c = rng(); });
 const trunkIM = new THREE.InstancedMesh(cached("trunk", () => new THREE.CylinderGeometry(.22,.34,2.4,6,1,true).translate(0,1.2,0)), std("#6b4a35"), trees.length);
@@ -1261,9 +1333,10 @@ function loadFar(){
 		shadowDirty = true;
 	}).catch(() => { farLoading = false; });
 }
+// boules de buis aux angles des pelouses de la cour d'honneur, et un massif d'arbustes près des drapeaux
 const bushes = [];
-for(const [lx, lz, n, rad] of [[-10,-3,6,2.2],[10,6,6,2.2],[-4,6,5,1.6],[6,-1,4,1.4],[-11,8,4,1.5]]){
-	for(let i=0;i<n;i++){ const p = HAG.localToWorld(V(lx + R(-rad,rad), 0, lz + R(-rad,rad))); bushes.push({ x:p.x, z:p.z, s:R(.5,.85), c:rng() }); }
+for(const [lx, lz, s] of [[-11.9,-.5,.5],[-4,-.5,.5],[-11.9,7.7,.5],[4,-2.3,.5],[11.9,-2.3,.5],[11.9,7.7,.5],[10.6,2.2,.75],[9.4,3.2,.6],[10.9,3.6,.55]]){
+	const p = HAG.localToWorld(V(lx, 0, lz)); bushes.push({ x:p.x, z:p.z, s, c:rng() });
 }
 const bushIM = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), std("#ffffff"), bushes.length);
 {
@@ -1704,6 +1777,7 @@ function applyAmbiance(instant, dur = 1.8){
 	slateMats.forEach(m => m.color.set(S.slate));
 	zincMats.forEach(m => m.color.set(S.snowy ? "#dfe6ee" : "#9aa5b1"));
 	cedarMat.color.set(S.conifer); pineMats.forEach(m => m.color.set(S.conifer));
+	courtFlowers.visible = !S.snowy;          // massifs de la cour : pas de fleurs sous la neige
 	city.setSeason(S);
 	const c = new THREE.Color();
 	decid.forEach((t,i) => {

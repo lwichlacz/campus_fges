@@ -45,7 +45,7 @@ function toMesh(B, mat){
 	return new THREE.Mesh(g, mat);
 }
 
-export function buildLandmarks(scene, MAP, { inBuilding = () => false, roadGap = () => ({ g:9 }), home = [0, 6] } = {}){
+export function buildLandmarks(scene, MAP, { inBuilding = () => false, inHand = () => false, roadGap = () => ({ g:9 }), home = [0, 6] } = {}){
 	const free = (x, z, m) => !inBuilding(x, z, m) && roadGap(x, z).g > .25;          // sur un trottoir, ni dans un mur ni sur une chaussée
 	const out = { group:new THREE.Group(), mats:[] };
 	scene.add(out.group);
@@ -170,7 +170,17 @@ export function buildLandmarks(scene, MAP, { inBuilding = () => false, roadGap =
 		const quad = new THREE.PlaneGeometry(1, 1).translate(0, .5, 0);
 		const geo = new THREE.InstancedBufferGeometry().copy(quad);
 		const off = new Float32Array(P.length*4), pos = new Float32Array(P.length*3);
-		P.forEach(([x, z], i) => { off.set(A.uv(i), i*4); pos.set([x, 4.2, z], i*3); });
+		// un commerce d'OpenStreetMap est souvent pointé au milieu de son immeuble : l'étiquette sort sur le trottoir le plus proche
+		const walled = (x, z, m) => inBuilding(x, z, m) || inHand(x, z);
+		const outside = (x, z) => {
+			if(!walled(x, z, .5)) return [x, z];
+			for(let r = 1; r <= 30; r += .75) for(let k = 0; k < 24; k++){
+				const a = k/24*Math.PI*2, px = x + Math.cos(a)*r, pz = z + Math.sin(a)*r;
+				if(!walled(px, pz, 1.2)) return [px, pz];
+			}
+			return [x, z];
+		};
+		P.forEach(([x, z], i) => { const [lx, lz] = outside(x, z); off.set(A.uv(i), i*4); pos.set([lx, 3.4, lz], i*3); });
 		geo.setAttribute("aUV", new THREE.InstancedBufferAttribute(off, 4));
 		geo.setAttribute("aPos", new THREE.InstancedBufferAttribute(pos, 3));
 		geo.instanceCount = P.length;
@@ -195,7 +205,8 @@ export function buildLandmarks(scene, MAP, { inBuilding = () => false, roadGap =
 					gl_FragColor = c;
 					#include <colorspace_fragment>
 				}`,
-			transparent:true, depthWrite:false
+			// toujours lisibles de près, même derrière un toit ou une lucarne (elles s'effacent au-delà de 85 m)
+			transparent:true, depthWrite:false, depthTest:false
 		});
 		const me = new THREE.Mesh(geo, m); me.frustumCulled = false; me.renderOrder = 5;
 		out.group.add(me); out.labels = m; out.nPlaces = P.length;
