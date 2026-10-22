@@ -1,11 +1,11 @@
 /* « Le Comptoir » — mini-jeu de la Licence Gestion.
    Piloter une entreprise pour de vrai : le café de l'atrium, en 3D.
    - Chaque journée : on décide (prix, stock, équipe), puis on gère le service en direct.
-   - Chaque année : un exercice concret avec SES chiffres (compte de résultat, coût de revient,
+   - Chaque année : un exercice concret avec SES chiffres (compte de résultat, coût variable,
      seuil de rentabilité, décision d'investissement) qui révèle le cours de la licence.
    Les chiffres sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
-import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=4ff2e5806d";
+import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=4e01d065bb";
 
 /* ---------- Économie du Comptoir (à valider par l'enseignant) ---------- */
 const ECO = { amortVelo:7, cafe:.25, lait:.20, gobelet:.10, tasse:.55, croissantAchat:.45, croissantPrix:1.2, salaire:25,
@@ -29,7 +29,7 @@ const COURSES = {
 	stock:  ["L2", "Logistique", "Commander juste assez : la rupture fait fuir les clients, le surplus part à la poubelle."],
 	rh:     ["L1", "Gestion des ressources humaines", "Dimensionner l'équipe selon l'activité : le rush de 10 h ne se gère pas seul."],
 	compte: ["L1", "Comptabilité financière", "Le compte de résultat récapitule les produits et les charges : leur différence, c'est le résultat."],
-	cout:   ["L2", "Gestion des coûts", "Le coût de revient additionne tout ce que coûte un produit. Le seuil de rentabilité dit combien en vendre pour couvrir les charges fixes."],
+	cout:   ["L2", "Gestion des coûts", "Le coût variable, c'est ce que coûte chaque produit vendu en plus (ici les matières). La marge sur coût variable sert à couvrir les charges fixes : le seuil de rentabilité dit combien en vendre pour y arriver."],
 	invest: ["L3", "Décision d'investissement", "Un investissement se juge sur ce qu'il rapporte dans le temps : le délai de récupération en est la mesure la plus simple."]
 };
 const euro = v => (Math.round(v*100)/100).toLocaleString("fr-FR", { minimumFractionDigits:2, maximumFractionDigits:2 }) + " €";
@@ -643,7 +643,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		show(`<div class="cz-k">Mini-jeu · ${formation.name}</div><h2 class="cz-h">Le Comptoir</h2>
 			<div class="cz-big">☕</div>
 			<p class="cz-p">Tu reprends le café de l'atrium pendant ta licence. Chaque matin, tu fixes le prix, tu commandes les croissants et tu organises ton équipe. Puis c'est le service : ${MODE === "caisse" ? "tu tiens toi-même la caisse, tu composes les commandes au plus vite" : "tu pilotes en direct (prix, happy hour, renfort, réassort, gestes commerciaux)"} et tu réagis aux imprévus… pour prouver que tu sais piloter une entreprise.</p>
-			<ul class="cz-list"><li><span>L1</span>Prix, équipe et compte de résultat</li><li><span>L2</span>Coût de revient et seuil de rentabilité</li><li><span>L3</span>Investir pour grandir</li></ul>
+			<ul class="cz-list"><li><span>L1</span>Prix, équipe et compte de résultat</li><li><span>L2</span>Coût variable et seuil de rentabilité</li><li><span>L3</span>Investir pour grandir</li></ul>
 			<button class="cz-go" data-a="prep">Ouvrir le Comptoir</button>`);
 	}
 	function prep(){
@@ -675,7 +675,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 				<small>${euro(ECO.croissantAchat)} pièce, revendus ${euro(ECO.croissantPrix)}. Environ un client sur deux en prend un. Les invendus sont perdus.</small></div>
 			<div class="cz-row"><div class="t">👩‍🍳 Baristas</div>
 				<div class="cz-seg" style="margin-top:8px">${[1,2,3].map(n => `<button data-staff="${n}">${n}</button>`).join("")}</div>
-				<small>${euro0(ECO.salaire)} de salaire chacun pour la matinée.</small><div class="cz-hint" data-cap></div></div>
+				<small>${euro0(ECO.salaire)} chacun pour le service de la matinée (2 h au SMIC, cotisations comprises).</small><div class="cz-hint" data-cap></div></div>
 			<button class="cz-go" data-a="open">Ouvrir les portes ▶</button>`);
 		card.querySelector("input[type=range]").addEventListener("input", e => { S.price = +e.target.value; render(); });
 		render();
@@ -765,12 +765,12 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		});
 	}
 
-	/* ---------- exercice L2 : coût de revient et seuil de rentabilité ---------- */
+	/* ---------- exercice L2 : coût variable et seuil de rentabilité ---------- */
 	function exCout(){
-		onEvent && onEvent("stage", "L2 · Coût de revient");
+		onEvent && onEvent("stage", "L2 · Coût variable et seuil");
 		const fixe = S.staff*ECO.salaire;
 		show(`<div class="cz-k">L2 · exercice</div><h2 class="cz-h">Combien te coûte un cappuccino ?</h2>
-			<p class="cz-p">Pour fixer un bon prix, il faut d'abord connaître son <b>coût de revient</b>. Voici ce que contient chaque tasse :</p>
+			<p class="cz-p">Pour fixer un bon prix, il faut d'abord connaître son <b>coût variable</b> : ce que coûte chaque tasse vendue en plus, en matières (les salaires, eux, sont fixes). Voici ce qu'elle contient :</p>
 			<table class="cz-tbl">${COMPO.map(([n, v]) => `<tr><td>${n}</td><td>${euro(v)}</td></tr>`).join("")}</table>
 			<div class="cz-opts" data-s1>${[.45, .55, .65].map(v => `<button class="cz-opt" data-c="${v}">${euro(v)}</button>`).join("")}</div>
 			<div data-s2></div>`);
@@ -792,8 +792,8 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 			S.seuil = marge > 0 ? Math.ceil(fixe/marge) : 999;
 			const opts = [S.seuil, Math.ceil(fixe/S.price), Math.ceil(fixe/ECO.tasse)].filter((v, i, a) => a.indexOf(v) === i);
 			while(opts.length < 3) opts.push(S.seuil + 9*opts.length);
-			card.querySelector("[data-s2]").innerHTML = `<p class="cz-p" style="margin-top:12px">Exact, <b>${euro(ECO.tasse)}</b> la tasse. Avec un prix de ${euro(S.price)}, chaque café te laisse <b>${euro(marge)}</b> de marge.</p>
-				<p class="cz-p">Ton équipe te coûte <b>${euro0(fixe)}</b> par matinée, quoi qu'il arrive. <b>Combien de cafés vendre pour payer les salaires ?</b></p>
+			card.querySelector("[data-s2]").innerHTML = `<p class="cz-p" style="margin-top:12px">Exact, <b>${euro(ECO.tasse)}</b> la tasse. Avec un prix de ${euro(S.price)}, chaque café te laisse <b>${euro(marge)}</b> de <b>marge sur coût variable</b>.</p>
+				<p class="cz-p">Ton équipe te coûte <b>${euro0(fixe)}</b> par matinée, quoi qu'il arrive : c'est une <b>charge fixe</b>. <b>Combien de cafés vendre pour payer les salaires ?</b></p>
 				<canvas class="cz-chart" width="560" height="190"></canvas>
 				<div class="cz-opts">${opts.sort((a,b) => a-b).map(v => `<button class="cz-opt" data-seuilopt="${v}">${v} cafés</button>`).join("")}</div><div data-end></div>`;
 			drawChart(card.querySelector("canvas"), marge, fixe);
@@ -917,7 +917,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	const day = n => () => { stopDay(); S.day = n; prep(); };
 	onEvent && onEvent("missions", [["Matinée 1 · L'ouverture", day(0)], ["Matinée 2 · Premier rush", day(1)],
 		["L1 · Compte de résultat", () => { stopDay(); if(S.results.length) exCompte(); else { S.day = 1; prep(); } }],
-		["L2 · Coût de revient", () => { stopDay(); S.day = 2; exCout(); }], ["Matinée 3 · Rentrée de L2", day(2)],
+		["L2 · Coût variable et seuil", () => { stopDay(); S.day = 2; exCout(); }], ["Matinée 3 · Rentrée de L2", day(2)],
 		["L3 · Investir", () => { stopDay(); S.day = 3; exInvest(); }], ["Matinée 4 · Le Comptoir grandit", day(3)]]);
 	raf = requestAnimationFrame(loop);
 	// debug (?debug) : faire avancer la simulation sans attendre l'affichage

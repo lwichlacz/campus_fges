@@ -41,10 +41,10 @@ PAGES = {
 					c("m1_chaine", "L'ordre de la chaîne est-il juste ?", "Consentement, prélèvement, pseudonymisation, séquençage, stockage sur hébergeur HDS, contrôle qualité, interprétation, compte rendu. La pseudonymisation est acceptée au prélèvement ou juste après le séquençage, toujours avant le stockage.")]},
 				{"t": "Mission 2 · Sequencing QC", "items": [
 					c("m2_coupe", "La coupe des lectures est-elle réaliste ?", "Lectures de 150 bases, garder Phred ≥ 25 en conservant au moins 80 % des bases."),
-					c("m2_seuils", "Les seuils de contrôle sont-ils réalistes pour un panel clinique ?", "Qualité moyenne ≥ 30, alignement ≥ 90 %, contamination ≤ 2 %, profondeur ≥ 30×, concordance < 99 %."),
+					c("m2_seuils", "Les seuils de contrôle sont-ils réalistes pour un séquençage clinique (exome) ?", "Qualité moyenne ≥ 30, alignement ≥ 90 %, contamination ≤ 2 %, profondeur ≥ 30×, concordance < 99 %."),
 					c("m2_pieges", "Les pièges sont-ils crédibles ?", "Inversion d'échantillons (femme déclarée avec des lectures du chromosome Y), doublon à 99,8 % de concordance.")]},
 				{"t": "Mission 3 · Variant interpretation", "items": [
-					c("m3_vaf", "Le calcul de la fréquence allélique (VAF) est-il bien présenté ?", "Artefact (1/12 lecture, faible qualité), hétérozygote (6/12), homozygote (12/12)."),
+					c("m3_vaf", "Le calcul de la fréquence allélique (VAF) est-il bien présenté ?", "12 lectures montrées sur 45 (profondeur 45×, au-dessus du seuil de 30×) : artefact (1/12, faible qualité), hétérozygote (6/12), homozygote (12/12)."),
 					c("m3_acmg", "Le classement des variants et ses preuves sont-ils exacts ?", "C282Y pathogène (fréquence ~6 % en Europe du Nord-Ouest, ClinVar, études fonctionnelles), synonyme fréquent bénin, faux-sens rare sans données = VUS."),
 					q("m3_seq", "Faut-il afficher la vraie séquence de HFE plutôt qu'une séquence illustrative ?")]},
 				{"t": "Mission 4 · Cohort biostatistics", "items": [
@@ -98,14 +98,14 @@ PAGES = {
 					q("detritivore", "Mettre les « feuilles mortes » dans le réseau est-il acceptable, ou faut-il parler de réseau détritivore ?"),
 					c("insecticide", "Le scénario de l'insecticide est-il correct ?", "Un insecticide non sélectif tue pucerons et coccinelles ; les pucerons reviennent plus vite que leurs prédateurs ; conclusion sur la lutte biologique.")]},
 				{"t": "Génétique", "sub": "L2", "items": [
-					c("mendel", "Le croisement de Mendel est-il juste ?", "Pois violet (V, dominant) × blanc (b, récessif) en lignées pures ; F1 toute violette ; échiquier Vb × Vb ; 1/4 de blanches attendu ; 40 graines semées."),
-					q("notation", "La notation des allèles (V / b) convient-elle, ou préférez-vous celle utilisée en cours ?"),
+					c("mendel", "Le croisement de Mendel est-il juste ?", "Pois violet (V, dominant) × blanc (v, récessif) en lignées pures ; F1 toute violette (Vv) ; échiquier Vv × Vv ; 1/4 de blanches attendu ; 40 graines semées."),
+					q("notation", "La notation des allèles (V / v) convient-elle, ou préférez-vous celle utilisée en cours (par exemple entre crochets) ?"),
 					q("chi2", "Citer le test du χ² est-il pertinent à ce niveau ?")]},
 				{"t": "Parcours Écologie opérationnelle", "sub": "L3", "items": [
 					c("quadrats", "Le vocabulaire et la méthode des quadrats sont-ils justes ?", "100 quadrats d'1 m², 4 choisis ou tirés au hasard, estimation = moyenne × 100, explication du biais d'échantillonnage."),
 					q("ic", "Faut-il évoquer l'intervalle de confiance, ou est-ce trop pour des lycéens ?")]},
 				{"t": "Parcours Biotechnologies", "sub": "L3", "items": [
-					c("pcr", "La simplification de l'amorce de PCR est-elle acceptable ?", "Brin complémentaire de ATGCGTAC → TACGCATG, écrit dans le même sens (sans orientation 5'→3')."),
+					c("pcr", "L'étape de l'amorce de PCR est-elle juste ?", "Face au brin 3'-ATGCGTAC-5', le joueur construit base par base l'amorce antiparallèle 5'-TACGCATG-3', que l'ADN polymérase allonge par son extrémité 3'."),
 					c("valeurs", "Les valeurs sont-elles crédibles ?", "Bande à 750 pb, pipetage de 100 µL, dilution finale 1/1 000, bioréacteur à 37 °C et pH 7."),
 					q("ufc", "Faut-il parler d'UFC plutôt que de « bactéries par mL » ?")]},
 				{"t": "Parcours Ingénieur", "sub": "L3", "items": [
@@ -153,7 +153,7 @@ PAGES = {
 					q("m3_annee", "Le correcteur PD est-il vu en L2 ? Faut-il parler de PID ?"),
 					q("m3_mots", "Les mots « gain » et « amortissement » conviennent-ils pour des lycéens ?")]},
 				{"t": "Mission 4 · Donne-lui des yeux", "sub": "L3", "items": [
-					c("m4", "La classification est-elle bien présentée ?", "10 exemples étiquetés (teinte mesurée par la caméra), un seuil entre pièces orange et bleues, puis le tri automatique de 8 pièces (7 bien triées au moins)."),
+					c("m4", "La classification est-elle bien présentée ?", "10 exemples étiquetés (teinte mesurée par la caméra), un seuil entre pièces orange et bleues, puis le tri automatique de 8 pièces (7 bien triées au moins). Deux cas limites dus à la lampe jaune de la cellule : une pièce orange qui paraît jaune (58°), une bleue qui tire sur le vert (165°)."),
 					q("m4_ia", "« IA embarquée » est-il juste pour un seuil appris sur des exemples, ou faut-il dire « apprentissage » ou « classification » ?")]},
 				{"t": "Fin de partie", "items": [
 					c("mention", "Les mentions sont-elles bien calibrées ?", "Très bien : 3 erreurs au plus ; Bien : 8 au plus ; Assez bien au-delà. Une erreur : collision, pièce lâchée hors du bac, cycle qui échoue, réglage raté, pièce mal triée."),
@@ -177,7 +177,7 @@ PAGES = {
 			"url": SITE + "?jeu=gestion",
 			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Le Comptoir. Le jeu est aussi dans l'atrium de Michel Falise.",
 			"card": {"icon": "☕", "title": "Le Comptoir", "formation": "Licence Gestion", "steps": [
-				["L1", "Prix, équipe et compte de résultat"], ["L2", "Coût de revient et seuil de rentabilité"], ["L3", "Investir pour grandir"]]},
+				["L1", "Prix, équipe et compte de résultat"], ["L2", "Coût variable et seuil de rentabilité"], ["L3", "Investir pour grandir"]]},
 			"publicHint": "Des lycéens de première et terminale qui hésitent entre plusieurs licences.",
 			"dureeHint": "Durée prévue : environ 6 minutes.",
 			"sections": [
@@ -185,15 +185,15 @@ PAGES = {
 					c("progression", "Le déroulé et la progression L1 → L2 → L3 sont-ils fidèles à la maquette ?", "Chaque matinée : prix, croissants et baristas, puis le service en direct avec des leviers (prix, happy hour, renfort, réassort, geste commercial)."),
 					c("cours", "Les cours associés sont-ils placés dans la bonne année ?", "Comptabilité financière (L1), Gestion des coûts (L2), Décision d'investissement (L3), plus Marketing, GRH et Logistique.")]},
 				{"t": "Hypothèses économiques", "sub": "volontairement simplifiées", "items": [
-					c("chiffres", "Les ordres de grandeur sont-ils crédibles pour des lycéens ?", "Cappuccino à 0,55 € de coût, vendu 1 à 3,50 € ; croissant acheté 0,45 €, revendu 1,20 € ; barista à 25 € la matinée ; vélo cargo à 3 000 €."),
-					c("vocab", "Le vocabulaire est-il juste ?", "Achats consommés, charges, résultat, coût de revient, seuil de rentabilité, délai de récupération, amortissement, coût d'acquisition client."),
+					c("chiffres", "Les ordres de grandeur sont-ils crédibles pour des lycéens ?", "Cappuccino à 0,55 € de coût, vendu 1 à 3,50 € ; croissant acheté 0,45 €, revendu 1,20 € ; barista à 25 € le service (2 h au SMIC, cotisations comprises) ; vélo cargo à 3 000 €."),
+					c("vocab", "Le vocabulaire est-il juste ?", "Achats consommés, charges, résultat, coût variable, marge sur coût variable, charge fixe, seuil de rentabilité, délai de récupération, amortissement, coût d'acquisition client."),
 					q("fixes", "Faut-il parler explicitement de « charges fixes » et de « charges variables » ?")]},
 				{"t": "Les imprévus", "items": [
 					c("imprevus", "Les situations sont-elles réalistes ?", "Commande groupée avec 20 % de remise ; rupture de lait ; barista malade (intérim à 38 €) ; story Instagram contre 10 cappuccinos offerts."),
 					q("malade", "Barista malade : le raccourci « salaire non versé pendant l'absence » est-il acceptable, ou faut-il évoquer les indemnités journalières ?")]},
 				{"t": "Les exercices", "items": [
 					c("ex1", "Exercice 1 · Le compte de résultat est-il correct ?", "Le joueur classe ses propres montants (chiffre d'affaires, achats, salaires) puis calcule le résultat."),
-					c("ex2", "Exercice 2 · Le raccourci « seuil de rentabilité = couvrir les salaires du jour » est-il acceptable à ce niveau ?", "Coût de revient 0,25 + 0,20 + 0,10 = 0,55 € ; cafés à vendre = salaires ÷ (prix − 0,55)."),
+					c("ex2", "Exercice 2 · Le raccourci « seuil de rentabilité = couvrir les salaires du jour » est-il acceptable à ce niveau ?", "Coût variable (matières) 0,25 + 0,20 + 0,10 = 0,55 € ; marge sur coût variable = prix − 0,55 ; cafés à vendre = salaires (charge fixe) ÷ marge sur coût variable."),
 					q("ex3", "Exercice 3 · Faut-il ajouter une notion (VAN, trésorerie, financement) au délai de récupération ?", "3 000 € ÷ (30 × 1,50 €) ≈ 67 semaines ; investir ou non sont deux choix défendables.")]},
 				{"t": "Fin de partie", "items": [
 					c("analyse", "Les messages d'analyse en fin de matinée sont-ils justes ?", "Rupture, invendus, clients partis, gaspillage, prix trop haut ou trop bas."),
@@ -223,14 +223,14 @@ PAGES = {
 			"sections": [
 				{"t": "Le déroulé", "items": [
 					c("progression", "La progression L1 → L2 → L3 est-elle fidèle à la maquette ?", "Tri des pièces, TVA et rapprochement bancaire (L1) ; budget et réel (L2) ; audit des pièces, tableau d'enquête et déontologie (L3)."),
-					c("cours", "Les intitulés des cours sont-ils les bons ?", "Comptabilité financière, Fiscalité, Rapprochement bancaire, Contrôle de gestion, Audit et expertise comptable (alternance).")]},
+					c("cours", "Les intitulés des cours sont-ils les bons ?", "Comptabilité financière, Fiscalité, Rapprochement bancaire, Contrôle de gestion, Pratique de l'expertise comptable (L3 en alternance).")]},
 				{"t": "Trier les pièces et la TVA", "sub": "L1", "items": [
 					c("tri", "Le classement des 6 pièces est-il juste ?", "Farine et électricité : charges ; ventes à l'hôtel et ticket Z : produits ; four et camionnette : investissements."),
 					q("immo", "Faut-il dire « immobilisation » plutôt qu'« investissement » ?"),
-					q("tva", "Toutes les factures sont à 20 % de TVA (la farine relève normalement du taux réduit). Faut-il corriger ?")]},
+					c("tva", "Les taux de TVA sont-ils justes ?", "Farine (achat) et gaufres (vente) au taux réduit de 5,5 % ; emballages, électricité, four, camionnette, flyers et conseil à 20 %. Le joueur calcule la TVA à 20 % sur les emballages ; le jeu signale ensuite le taux réduit de l'alimentaire.")]},
 				{"t": "Rapprochement et budget", "sub": "L1 · L2", "items": [
-					c("rappro", "Le rapprochement bancaire est-il juste ?", "Montants TTC = HT × 1,2 (984 €, 1 380 €, 480 €, 7 680 €) et un virement de 2 940 € sans justificatif."),
-					c("budget", "L'analyse budget / réel est-elle juste ?", "Prestations de services : 500 € prévus, 3 440 € réels, soit un écart de 2 940 €."),
+					c("rappro", "Le rapprochement bancaire est-il juste ?", "Montants TTC : farine et gaufres à 5,5 % (865,10 €, 1 213,25 €), emballages et four à 20 % (480 €, 7 680 €), et un virement de 2 940 € sans justificatif."),
+					c("budget", "L'analyse budget / réel est-elle juste ?", "Budget hors taxe. Prestations de services : 500 € prévus, 2 950 € réels, soit un écart de 2 450 € HT (la facture Dupont, payée 2 940 € TTC)."),
 					q("ecart", "La notion d'écart « favorable / défavorable » doit-elle apparaître ?")]},
 				{"t": "L'audit", "sub": "L3", "items": [
 					c("anomalies", "Les anomalies sont-elles représentatives du travail d'un auditeur junior ?", "TVA fausse (66 € au lieu de 60 € sur 300 € HT) ; « mission de conseil » de 2 450 € HT sans détail ni bon de commande."),
@@ -274,7 +274,7 @@ PAGES = {
 					c("bfs_regle", "La règle de saut est-elle claire ?", "Monter d'un bloc au plus, franchir 2 cases vides au plus. Le joueur dispose de 3 blocs ; 2 suffisent."),
 					q("bfs_annee", "Le parcours en largeur est-il vu en L1 (structures de données) ou en L2 (algorithmique avancée) ?")]},
 				{"t": "H+06 · Le héros", "sub": "L1 · programmation en Python", "items": [
-					c("phys", "La fonction de physique en Python est-elle juste et lisible ?", "def mettre_a_jour(heros, dt): heros.vy = heros.vy - 20 * dt ; if touche_saut and heros.au_sol: heros.vy = 8 ; heros.y = heros.y + heros.vy * dt ; if heros.y < sol: heros.y = sol. Elle tourne réellement 60 fois par seconde."),
+					c("phys", "La fonction de physique en Python est-elle juste et lisible ?", "def mettre_a_jour(heros, dt): heros.vy = heros.vy - 20 * dt ; if touche_saut and heros.au_sol: heros.vy = 8 ; heros.au_sol = False ; heros.y = heros.y + heros.vy * dt ; if heros.y < sol: heros.y = sol ; heros.vy = 0 ; heros.au_sol = True. Elle tourne réellement 60 fois par seconde."),
 					c("ennemi", "L'ennemi illustre-t-il bien le parcours en largeur ?", "Un bug rouge part de la tour et recalcule toutes les demi-secondes le plus court chemin vers le héros, avec la même règle de saut ; son chemin s'allume en rouge. On l'écrase en lui sautant dessus."),
 					c("phys_bugs", "Les bugs montrés pour chaque erreur sont-ils pédagogiquement justes ?", "Gravité -20 ou 0 : le héros s'envole ; y = 0 : il s'enfonce ; y + 1 : il grimpe par bonds ; élan 3 : il tombe dans le trou ; élan 25 : il sort de l'écran."),
 					q("phys_langage", "Quel moteur ou langage utilisent les L1 pour le Projet Gaming ?")]},

@@ -11,7 +11,7 @@ const COURSES = {
 	fisca:  ["L1", "Fiscalité", "TVA collectée, TVA déductible, hors taxe et toutes taxes comprises : le quotidien d'un comptable."],
 	banque: ["L1", "Rapprochement bancaire", "Chaque mouvement du compte doit correspondre à une pièce justificative. Sinon, on cherche pourquoi."],
 	cdg:    ["L2", "Contrôle de gestion", "Comparer le budget au réel, analyser les écarts et alerter la direction à temps."],
-	audit:  ["L3", "Audit et expertise comptable (en alternance)", "Vérifier les comptes d'une entreprise, collecter des preuves et rendre une opinion indépendante."]
+	audit:  ["L3", "Pratique de l'expertise comptable (en alternance)", "Contrôler les pièces, collecter des preuves et alerter : la démarche de l'auditeur, que l'on approfondit ensuite en master Comptabilité-Contrôle-Audit."]
 };
 const euro = v => v.toLocaleString("fr-FR", { minimumFractionDigits:2, maximumFractionDigits:2 }) + " €";
 const euro0 = v => v.toLocaleString("fr-FR") + " €";
@@ -166,7 +166,7 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 			<div class="au-doc"><div class="hd"><span>Pièce d'achat</span><span>n° E-2207</span></div><div class="tt">Cartonnages de Flandre</div><small>1 000 boîtes à gaufres</small><div class="ln"><span>Total HT</span><b>400,00 €</b></div><div class="ln"><span>TVA 20 %</span><b>?</b></div><div class="ln"><span>Total TTC</span><b>?</b></div></div>
 			<div data-q></div>`);
 		qcm(card.querySelector("[data-q]"), shuffle([["480", "480 €"], ["420", "420 €"], ["320", "320 €"]]), "480", a => {
-			a.innerHTML = `<p class="au-p" style="margin-top:8px">400 × 20 % = 80 € de TVA, soit <b>480 € TTC</b>. Ces 80 € ne sont pas une charge : l'entreprise les récupère auprès de l'État (TVA déductible).</p>${course("compta")}${course("fisca")}<button class="au-go" data-a="bank">Passer au relevé bancaire →</button>`;
+			a.innerHTML = `<p class="au-p" style="margin-top:8px">400 × 20 % = 80 € de TVA, soit <b>480 € TTC</b>. Ces 80 € ne sont pas une charge : l'entreprise les récupère auprès de l'État (TVA déductible). Attention, le taux dépend du produit : la farine et les gaufres, produits alimentaires, sont au taux réduit de <b>5,5 %</b>.</p>${course("compta")}${course("fisca")}<button class="au-go" data-a="bank">Passer au relevé bancaire →</button>`;
 		});
 	}
 
@@ -174,15 +174,15 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 	function bank(){
 		stage("L1 · Banque");
 		const lines = shuffle([
-			{ id:"a", l:"PRLV MOULINS DU NORD", m:-984 },
-			{ id:"b", l:"VIR HOTEL BELLEVUE", m:1380 },
+			{ id:"a", l:"PRLV MOULINS DU NORD", m:-865.1 },
+			{ id:"b", l:"VIR HOTEL BELLEVUE", m:1213.25 },
 			{ id:"c", l:"PRLV CARTONNAGES FLANDRE", m:-480 },
 			{ id:"d", l:"VIR FOURS PRO EQUIPEMENT", m:-7680 },
 			{ id:"x", l:"VIR DUPONT CONSEIL SERVICES", m:-2940 }
 		]);
 		const invoices = shuffle([
-			{ id:"a", l:"Moulins du Nord", s:"820,00 € HT · 984,00 € TTC" },
-			{ id:"b", l:"Hôtel Bellevue (vente)", s:"1 150,00 € HT · 1 380,00 € TTC" },
+			{ id:"a", l:"Moulins du Nord", s:"820,00 € HT · 865,10 € TTC" },
+			{ id:"b", l:"Hôtel Bellevue (vente)", s:"1 150,00 € HT · 1 213,25 € TTC" },
 			{ id:"c", l:"Cartonnages de Flandre", s:"400,00 € HT · 480,00 € TTC" },
 			{ id:"d", l:"Fours Pro Équipement", s:"6 400,00 € HT · 7 680,00 € TTC" }
 		]);
@@ -220,9 +220,9 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 	function budget(){
 		stage("L2 · Contrôle de gestion");
 		card.onclick = null;
-		const rows = [["Farine et matières", 3000, 3150], ["Électricité", 1200, 1260], ["Emballages", 900, 880], ["Prestations de services", 500, 3440], ["Salaires", 21000, 21000]];
+		const rows = [["Farine et matières", 3000, 3150], ["Électricité", 1200, 1260], ["Emballages", 900, 880], ["Prestations de services", 500, 2950], ["Salaires", 21000, 21000]];
 		show(`<div class="au-k">L2 · contrôle de gestion</div><h2 class="au-h">Le budget dérape</h2>
-			<p class="au-p">Voici le budget du trimestre et les dépenses réelles. <b>Touche la ligne dont l'écart est anormal.</b></p>
+			<p class="au-p">Voici le budget du trimestre et les dépenses réelles, <b>hors taxe</b> comme toujours en gestion (la TVA est récupérée). <b>Touche la ligne dont l'écart est anormal.</b></p>
 			<table class="au-tbl"><tr><th>Poste</th><th>Budget</th><th>Réel</th></tr>${rows.map((r, k) => `<tr class="pick" data-r="${k}"><td>${r[0]}</td><td>${euro0(r[1])}</td><td>${euro0(r[2])}</td></tr>`).join("")}</table>
 			<div class="au-msg"></div><div data-end></div>`);
 		card.onclick = e => {
@@ -231,8 +231,8 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 			tr.classList.add("ok"); play("good"); card.onclick = null;
 			card.querySelector(".au-msg").textContent = "";
 			card.querySelector("[data-end]").innerHTML = `<p class="au-p" style="margin-top:6px"><b>De combien les prestations de services dépassent-elles le budget ?</b> (écart = réel − budget)</p><div data-q></div>`;
-			qcm(card.querySelector("[data-end] [data-q]"), shuffle([["2940", "2 940 €"], ["3940", "3 940 €"], ["688", "688 €"]]), "2940", a => {
-				a.innerHTML = `<p class="au-p" style="margin-top:8px">3 440 − 500 = <b>2 940 €</b>… <b>exactement le virement sans justificatif</b> vers Dupont Conseil Services ! Le contrôleur de gestion a repéré le problème grâce au budget.</p>${course("cdg")}<button class="au-go" data-a="audit">Passer en L3 : l'audit →</button>`;
+			qcm(card.querySelector("[data-end] [data-q]"), shuffle([["2450", "2 450 €"], ["2940", "2 940 €"], ["3450", "3 450 €"]]), "2450", a => {
+				a.innerHTML = `<p class="au-p" style="margin-top:8px">2 950 − 500 = <b>2 450 € hors taxe</b>… soit, avec 20 % de TVA, <b>2 940 € : exactement le virement sans justificatif</b> vers Dupont Conseil Services ! Le contrôleur de gestion a repéré le problème grâce au budget.</p>${course("cdg")}<button class="au-go" data-a="audit">Passer en L3 : l'audit →</button>`;
 			});
 		};
 	}
@@ -244,7 +244,7 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 		const docs = shuffle([
 			{ id:"dupont", hd:"Facture n° 118", t:"Dupont Conseil Services", d:"« Mission de conseil » · aucun détail, aucun bon de commande signé", lines:[["Total HT", "2 450,00 €"], ["TVA 20 %", "490,00 €"], ["Total TTC", "2 940,00 €"]], ok:false, r:"just" },
 			{ id:"impr", hd:"Facture n° 5531", t:"Imprimerie Lilloise", d:"500 flyers pour le salon", lines:[["Total HT", "300,00 €"], ["TVA 20 %", "66,00 €"], ["Total TTC", "366,00 €"]], ok:false, r:"tva" },
-			{ id:"moulins", hd:"Facture n° 2024-77", t:"Moulins du Nord", d:"600 kg de farine · bon de commande n° 41 signé", lines:[["Total HT", "820,00 €"], ["TVA 20 %", "164,00 €"], ["Total TTC", "984,00 €"]], ok:true },
+			{ id:"moulins", hd:"Facture n° 2024-77", t:"Moulins du Nord", d:"600 kg de farine · bon de commande n° 41 signé", lines:[["Total HT", "820,00 €"], ["TVA 5,5 %", "45,10 €"], ["Total TTC", "865,10 €"]], ok:true },
 			{ id:"frais", hd:"Note de frais", t:"Inès Benali, commerciale", d:"Déjeuner avec l'acheteur de l'Hôtel Bellevue · mardi 12 mars · ticket joint", lines:[["Montant", "64,00 €"]], ok:true }
 		]);
 		const st = {}; let first = true;

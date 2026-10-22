@@ -33,7 +33,7 @@ Chaque matinée a deux temps :
 | Matinée 1 · L'ouverture (tutoriel) | L1 | Réglages, puis service à sa caisse. Imprévu : commande groupée avec remise | — |
 | Matinée 2 · Premier vrai rush | L1 | Idem. Imprévu : rupture de lait | — |
 | **Exercice 1** · Le compte de résultat | L1 | Classe ses propres montants de la matinée 2 (chiffre d'affaires, achats consommés, salaires), puis calcule le résultat | Comptabilité financière |
-| **Exercice 2** · Coût de revient et seuil de rentabilité | L2 | Calcule le coût d'un cappuccino, puis le nombre de cafés à vendre pour payer l'équipe (avec un graphique) | Gestion des coûts |
+| **Exercice 2** · Coût variable et seuil de rentabilité | L2 | Calcule le coût variable d'un cappuccino (les matières), puis le nombre de cafés à vendre pour payer l'équipe (avec un graphique) | Gestion des coûts |
 | Matinée 3 · La rentrée de L2 | L2 | Le seuil de rentabilité s'affiche quand il fixe son prix. Imprévu : barista malade | — |
 | **Exercice 3** · Investir dans un vélo cargo | L3 | Calcule le délai de récupération, puis décide d'investir ou non | Décision d'investissement |
 | Matinée 4 · Le Comptoir grandit | L3 | En cas d'investissement : livraisons en plus et amortissement déduit. Imprévu : story Instagram | — |
@@ -46,10 +46,10 @@ Chaque matinée a deux temps :
 
 | Paramètre | Valeur | Commentaire |
 |---|---|---|
-| Coût d'un cappuccino | 0,55 € (café 0,25 + lait 0,20 + gobelet 0,10) | Un expresso coûte 0,35 € (sans lait). Hors main-d'œuvre |
+| Coût variable d'un cappuccino | 0,55 € (café 0,25 + lait 0,20 + gobelet 0,10) | Un expresso coûte 0,35 € (sans lait). Les salaires sont une charge fixe, à part |
 | Prix de vente | Choisi par le joueur, de 1,00 € à 3,50 € (2,00 € par défaut) | Même prix pour l'expresso et le cappuccino |
 | Croissant | Acheté 0,45 €, revendu 1,20 € ; les invendus sont perdus | Environ 45 % des clients en prennent un |
-| Salaire d'un barista | 25 € par matinée | Charge fixe de la matinée |
+| Salaire d'un barista | 25 € pour le service de la matinée | 2 h de rush au SMIC, cotisations comprises (affiché dans le jeu). Charge fixe |
 | Affluence | Baisse quand le prix monte ; dépend aussi de la réputation | Pic d'affluence vers 10 h |
 | Au-delà de 2,60 € | Les clients trouvent ça cher : la satisfaction et la réputation baissent | |
 | Leviers du gérant | Renfort 15 €, réassort 0,80 € le croissant, geste commercial 0,30 €, happy hour à −30 % | Comptés dans les salaires ou les achats |
@@ -57,8 +57,8 @@ Chaque matinée a deux temps :
 | Amortissement du vélo | 7 € par matinée (3 000 € sur 3 ans) | Apparaît dans le compte de la matinée 4 |
 
 - [ ] Les ordres de grandeur sont-ils crédibles pour des lycéens ?
-- [ ] Le vocabulaire est-il juste (« achats consommés », « charges », « résultat », « coût de revient », « seuil de rentabilité », « délai de récupération », « amortissement », « coût d'acquisition client ») ?
-- [ ] Faut-il parler explicitement de « charges fixes » et de « charges variables » ?
+- [ ] Le vocabulaire est-il juste (« achats consommés », « charges », « résultat », « coût variable », « marge sur coût variable », « charge fixe », « seuil de rentabilité », « délai de récupération », « amortissement », « coût d'acquisition client ») ?
+- [ ] Le couple « charge fixe » / « coût variable » est-il présenté au bon niveau ?
 
 ## 3. Les imprévus (une décision en plein service, le jeu se met en pause)
 
@@ -80,9 +80,9 @@ Après chaque choix, un message explique le calcul. La décision apparaît ensui
 Le joueur reçoit trois montants issus de **sa** matinée et les place sur les bonnes lignes. Il choisit ensuite le résultat parmi trois propositions. La bonne réponse est : chiffre d'affaires − achats − salaires.
 - [ ] La formulation et la présentation sont-elles correctes ?
 
-**Exercice 2 – Coût de revient et seuil de rentabilité**
-1. Coût de revient d'un cappuccino : 0,25 + 0,20 + 0,10 = 0,55 €.
-2. « Combien de cafés vendre pour payer les salaires ? » : salaires ÷ (prix − 0,55), arrondi au supérieur. Un graphique montre la marge cumulée qui croise la droite des salaires.
+**Exercice 2 – Coût variable et seuil de rentabilité**
+1. Coût variable (matières) d'un cappuccino : 0,25 + 0,20 + 0,10 = 0,55 €. Le jeu précise que les salaires, eux, sont fixes.
+2. « Combien de cafés vendre pour payer les salaires ? » : salaires (charge fixe) ÷ marge sur coût variable (prix − 0,55), arrondi au supérieur. Un graphique montre la marge cumulée qui croise la droite des salaires.
 - [ ] Le raccourci « seuil de rentabilité = couvrir les salaires du jour » est-il acceptable à ce niveau ?
 
 **Exercice 3 – Décision d'investissement**

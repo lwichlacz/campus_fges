@@ -39,6 +39,7 @@ def mettre_a_jour(heros, dt):
     heros.vy = heros.vy - 20 * dt   # gravité
     if touche_saut and heros.au_sol:
         heros.vy = 8                # élan du saut
+        heros.au_sol = False        # en l'air : pas de second saut
     heros.y = heros.y + heros.vy * dt
     if heros.y < sol:
         heros.y = sol

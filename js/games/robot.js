@@ -517,18 +517,19 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 	}
 
 	/* ===================== MISSION 4 · L3 · Vision ===================== */
-	// teintes mesurées par la caméra (degrés) ; « orange » vs « bleu », avec deux cas limites
-	const TRAIN = [[14, "orange"], [22, "orange"], [30, "orange"], [41, "orange"], [75, "orange"], [178, "bleu"], [190, "bleu"], [203, "bleu"], [212, "bleu"], [120, "bleu"]];
-	const TEST = [33, 196, 70, 125, 18, 208, 47, 184];
-	const truth = h => h < 100 ? "orange" : "bleu";
+	// teintes mesurées par la caméra (degrés) ; « orange » vs « bleu », avec deux cas limites dus à la lampe jaune de la cellule
+	// (une pièce orange qui paraît jaune, une bleue qui tire sur le vert) : la couleur affichée est celle que voit la caméra
+	const TRAIN = [[14, "orange"], [22, "orange"], [30, "orange"], [41, "orange"], [58, "orange"], [178, "bleu"], [190, "bleu"], [203, "bleu"], [212, "bleu"], [165, "bleu"]];
+	const TEST = [33, 196, 55, 170, 18, 208, 47, 184];
+	const truth = h => h < 110 ? "orange" : "bleu";
 	let m3 = null;
 	function mission3(){
 		S.mission = 3; stage("Mission 4 · L3"); sys("Vision");
 		uncard(); clearParts(); m2 = null; conv.visible = true; gripOpen = true;
 		J.splice(0, 3, 40, 80, 110);
-		m3 = { th:160, running:false, i:0, ok:0, done:false };
+		m3 = { th:200, running:false, i:0, ok:0, done:false };
 		mis.innerHTML = `<span class="k">Mission 4 · L3 · vision et IA embarquée</span><b class="t">Donne-lui des yeux</b>
-			<p>La caméra mesure la <b>teinte</b> de chaque pièce. Voici 10 exemples déjà étiquetés : règle la <b>frontière</b> qui sépare les pièces <b>orange</b> des <b>bleues</b>, puis lance le tri automatique.</p>
+			<p>La caméra mesure la <b>teinte</b> de chaque pièce. Voici 10 exemples déjà étiquetés : règle la <b>frontière</b> qui sépare les pièces <b>orange</b> des <b>bleues</b>. Attention : sous la lampe jaune de la cellule, une pièce orange peut paraître jaune, et une bleue tirer sur le vert. Puis lance le tri automatique.</p>
 			<p class="live" id="m3live">Objectif : au moins 7 pièces sur 8 bien triées</p>`;
 		ctl.innerHTML = `<h4>Entraînement : exemples étiquetés</h4>
 			<div class="rb-hue" id="m3hue"></div>

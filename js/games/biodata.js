@@ -311,7 +311,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 					<div class="bd-who" id="bdWho"></div>
 					<p><b>Alex, 27</b>, student. Unusually tired for months, joint pain. Rest and vitamins have not helped.</p>
 					<p>First blood tests: <b>ferritin 1,140 µg/L</b>, <b>transferrin saturation 78 %</b> (both high).</p>
-					<p>A targeted gene panel is ordered. In the lab, Alex becomes <b>P-0412</b>.</p></div>
+					<p>An <b>exome</b> is sequenced, then analysed first on the genes of iron overload (a virtual gene panel). In the lab, Alex becomes <b>P-0412</b>.</p></div>
 				<div class="bd-pan" id="bdSkills"><h4>Master skills unlocked</h4><div class="bd-skills" id="bdSk"><em>None yet</em></div></div>
 			</div>
 			<div class="bd-col">
@@ -406,7 +406,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 		{ id:"consent", i:"✍️", t:"Informed consent signed (diagnosis, research, secondary findings)", ph:"Ethics" },
 		{ id:"sample",  i:"🩸", t:"Blood sample collected", ph:"Biological sample" },
 		{ id:"pseudo",  i:"🔒", t:"Pseudonymise: Alex becomes P-0412", ph:"Data protection" },
-		{ id:"seq",     i:"🧬", t:"DNA sequencing of the gene panel", ph:"Data generation" },
+		{ id:"seq",     i:"🧬", t:"DNA sequencing of the exome", ph:"Data generation" },
 		{ id:"hds",     i:"🏛️", t:"Store raw data on a certified health-data host (HDS)", ph:"Data storage" },
 		{ id:"qc",      i:"🧹", t:"Quality control and preprocessing of the reads", ph:"Data preprocessing" },
 		{ id:"call",    i:"🖥️", t:"Variant calling and interpretation", ph:"Data analysis" },
@@ -564,10 +564,10 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	let m3 = null;
 	function mission3(){
 		begin(3, "Variant interpretation", "bioinformatics",
-			`<span class="bd-step">Step 1 of 2 · zygosity from the reads</span><p>Alex's reads are aligned on gene HFE (reference in blue; a dot = same base as the reference). For each candidate position, compute the <b>variant allele fraction</b> (VAF = reads with the change ÷ all reads) and decide: <b>artefact</b>, <b>heterozygous</b> (~50 %) or <b>homozygous</b> (~100 %). <small>(Illustrative sequence.)</small></p><p class="bd-live" id="m3live"></p>`);
+			`<span class="bd-step">Step 1 of 2 · zygosity from the reads</span><p>Alex's reads are aligned on gene HFE (reference in blue; a dot = same base as the reference). For each candidate position, compute the <b>variant allele fraction</b> (VAF = reads with the change ÷ all reads). This window shows <b>12 of the 45 reads</b> covering these positions (depth 45×, above the 30× QC threshold); the full set gives the same picture. Decide: <b>artefact</b>, <b>heterozygous</b> (~50 %) or <b>homozygous</b> (~100 %). <small>(Illustrative sequence.)</small></p><p class="bd-live" id="m3live"></p>`);
 		m3 = { z:{}, cls:{} };
 		renderZyg();
-		log("Mission 3: 12 reads over HFE exon 4 (chromosome 6)", "inf");
+		log("Mission 3: HFE exon 4 (chromosome 6), depth 45×, 12 reads shown", "inf");
 	}
 	function renderZyg(bad = []){
 		work.innerHTML = `<h4>Read alignment · HFE</h4><div class="bd-pile"><span class="ref">${REF}</span>  reference\n${READS.join("\n")}</div>
@@ -752,7 +752,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 
 	/* ===================== MISSION 6 · report & ethics ===================== */
 	const REPORT = [
-		{ t:"Finding", o:[["ok", "Homozygous HFE c.845G>A p.(Cys282Tyr) detected (12/12 reads, VAF 100 %)."], ["over", "C282Y found: the patient has haemochromatosis."], ["vague", "Three HFE mutations found, including position A."]] },
+		{ t:"Finding", o:[["ok", "Homozygous HFE c.845G>A p.(Cys282Tyr) detected (VAF 100 %, depth 45×)."], ["over", "C282Y found: the patient has haemochromatosis."], ["vague", "Three HFE mutations found, including position A."]] },
 		{ t:"Interpretation", o:[["ok", "Genotype consistent with HFE haemochromatosis; penetrance is incomplete, iron studies are needed to confirm iron overload."], ["cert", "Penetrance is complete: severe disease is certain."], ["vus", "Result of uncertain significance."]] },
 		{ t:"Recommendation", o:[["ok", "Repeat transferrin saturation and ferritin, specialist referral; offer cascade testing to first-degree relatives with genetic counselling."], ["mail", "Start phlebotomies today and inform the family by e-mail."], ["none", "No follow-up needed."]] }
 	];

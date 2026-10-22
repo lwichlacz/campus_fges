@@ -74,11 +74,11 @@ Question finale : un insecticide non sélectif tue pucerons et coccinelles ; les
 
 ## 5. Génétique (tronc commun, L2)
 
-- Pois à fleurs violettes (allèle V, dominant) × pois à fleurs blanches (allèle b, récessif), lignées pures. F1 : tous Vb, donc violets. Le jeu signale que « mauve » est faux : les caractères ne se mélangent pas dans ce cas.
-- Échiquier de croisement Vb × Vb : VV, Vb, Vb, bb. Proportion de blanches attendue : 1/4.
+- Pois à fleurs violettes (allèle V, dominant) × pois à fleurs blanches (allèle v, récessif), lignées pures. F1 : tous Vv, donc violets. Le jeu signale que « mauve » est faux : les caractères ne se mélangent pas dans ce cas.
+- Échiquier de croisement Vv × Vv : VV, Vv, Vv, vv. Proportion de blanches attendue : 1/4.
 - Le joueur sème 40 graines : tirage aléatoire à 25 % de blanches. Le jeu compare à l'attendu (30 / 10), explique que l'écart vient du hasard, et cite le **test du χ²**.
 
-- [ ] La notation des allèles (V / b) convient-elle, ou préférez-vous la notation utilisée en cours ?
+- [ ] La notation des allèles (V / v, même lettre, majuscule pour le dominant) convient-elle, ou préférez-vous celle utilisée en cours (par exemple entre crochets) ?
 - [ ] Le test du χ² est-il bien enseigné en L3 (ou plus tôt) ?
 
 ## 6. Parcours Biotechnologies : le labo de bioproduction
@@ -87,13 +87,13 @@ Scénario : faire produire une enzyme par des bactéries.
 
 | Étape | Exercice | Bonne réponse / réussite |
 |---|---|---|
-| 1. Amorce de PCR | Construire le brin complémentaire de ATGCGTAC, base par base (A–T, G–C) | TACGCATG |
+| 1. Amorce de PCR | Face au brin 3'-ATGCGTAC-5', construire base par base (A–T, G–C) l'amorce antiparallèle, écrite de 5' vers 3' | 5'-TACGCATG-3' |
 | 2. Gel d'électrophorèse | Trouver le puits dont la bande est à 750 pb, face à une échelle 1000 / 750 / 500 / 250 pb | Le puits à la hauteur du repère 750 |
 | 3. Dilutions en série | Geste de pipette : maintenir le doigt appuyé et relâcher à 100 µL (tolérance 85 à 115 µL), trois fois ; puis calculer la dilution finale | 1/1 000 |
 | 4. Bioréacteur en direct (24 s) | Garder 37 °C et pH 7 malgré deux imprévus (chauffage qui s'emballe, acidification du milieu) ; la croissance suit une courbe logistique | Score = densité atteinte / objectif |
 | 5. Comptage de colonies | Compter N colonies sur une boîte de Petri (0,1 mL de la dilution au 1/1 000), puis calculer la concentration | N × 10 000 bactéries par mL |
 
-- [ ] Simplification à valider : l'amorce est écrite dans le même sens que le brin (on ne parle pas de l'orientation 5'→3').
+- [ ] L'orientation des brins (antiparallèles, amorce allongée par son extrémité 3') est-elle bien présentée ?
 - [ ] Les valeurs (37 °C, pH 7, 750 pb, volumes) sont-elles crédibles ?
 - [ ] Le terme « bactéries par mL » convient-il, ou faut-il introduire les UFC ?
 

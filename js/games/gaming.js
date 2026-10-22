@@ -12,7 +12,7 @@
    La lumière des fenêtres suit les 48 heures (vendredi 18 h → dimanche 17 h) ; le style choisi habille toute la salle.
    Équipe, joueurs et scores sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
-import { makePerson } from "../kit.js?v=4ff2e5806d";
+import { makePerson } from "../kit.js?v=4e01d065bb";
 
 const COURSES = {
 	gaming: ["L1", "Projet Gaming", "Toute la première année, chaque équipe conçoit et programme son propre jeu vidéo : idée, niveaux, code, tests, présentation devant un jury."],
@@ -442,7 +442,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		} else if(k === "code"){
 			x.textAlign = "left"; x.font = "26px ui-monospace, Menlo, Consolas, monospace";
 			const p = S.phys || {};
-			const lines = [["def mettre_a_jour(heros, dt):", "#c792ea"], [`    heros.vy = heros.vy - ${p.g ?? "?"} * dt`, "#e6e8ff"], ["    if touche_saut and heros.au_sol:", "#e6e8ff"], [`        heros.vy = ${p.v ?? "?"}`, "#e6e8ff"], ["    heros.y = heros.y + heros.vy * dt", "#e6e8ff"], ["    if heros.y < sol:", "#e6e8ff"], [`        heros.y = ${p.sol ?? "?"}`, "#e6e8ff"], ["        heros.vy = 0", "#e6e8ff"], ["        heros.au_sol = True", "#e6e8ff"]];
+			const lines = [["def mettre_a_jour(heros, dt):", "#c792ea"], [`    heros.vy = heros.vy - ${p.g ?? "?"} * dt`, "#e6e8ff"], ["    if touche_saut and heros.au_sol:", "#e6e8ff"], [`        heros.vy = ${p.v ?? "?"}`, "#e6e8ff"], ["        heros.au_sol = False", "#e6e8ff"], ["    heros.y = heros.y + heros.vy * dt", "#e6e8ff"], ["    if heros.y < sol:", "#e6e8ff"], [`        heros.y = ${p.sol ?? "?"}`, "#e6e8ff"], ["        heros.vy = 0", "#e6e8ff"], ["        heros.au_sol = True", "#e6e8ff"]];
 			lines.forEach(([t, c], i) => { x.fillStyle = c; x.fillText(t, 60, 110 + i*42); });
 			if(screenState.status){ x.textAlign = "center"; x.fillStyle = screenState.ok ? "#9dfcb4" : "#ff8a8a"; x.font = "800 34px Nunito, sans-serif"; x.fillText(screenState.status, W/2, 540); }
 		} else if(k === "sql"){
@@ -785,6 +785,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
     heros.vy = heros.vy - ${sel("g")} * dt  <span class="cm"># gravité</span>
     <span class="kw">if</span> touche_saut <span class="kw">and</span> heros.au_sol:
         heros.vy = ${sel("v")}           <span class="cm"># élan du saut</span>
+        heros.au_sol = <span class="kw">False</span>     <span class="cm"># en l'air : pas de second saut</span>
     heros.y = heros.y + heros.vy * dt
     <span class="kw">if</span> heros.y &lt; sol:               <span class="cm"># sous le sol ?</span>
         heros.y = ${sel("sol")}

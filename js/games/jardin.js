@@ -7,7 +7,7 @@
    Les contenus sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { std, mesh, box, cyl, cone, mulberry32 } from "../kit.js?v=4ff2e5806d";
+import { std, mesh, box, cyl, cone, mulberry32 } from "../kit.js?v=4e01d065bb";
 
 /* ---------- contenus (à valider par l'enseignant) ---------- */
 const COURSES = {
@@ -128,7 +128,8 @@ const CSS = `
 .jd-found{display:flex;gap:4px;font-size:18px}
 .jd-found i{font-style:normal;opacity:.25;filter:grayscale(1)}
 .jd-found i.on{opacity:1;filter:none}
-.jd-dna{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:4px 0}
+.jd-dna{display:grid;grid-template-columns:24px repeat(8,1fr) 24px;gap:4px;margin:4px 0}
+.jd-dna i{display:grid;place-items:center;font:800 13px Nunito,sans-serif;font-style:normal;color:#4f5a48}
 .jd-dna span{display:grid;place-items:center;height:34px;border-radius:9px;font:800 16px Nunito,sans-serif;color:#fff}
 .jd-dna span.t{background:#fff;border:2px dashed #b9cfa4;color:#22301f}
 .jd-dna span.cur{border:2px solid #2f6b45;box-shadow:0 0 0 3px rgba(47,107,69,.2)}
@@ -427,7 +428,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		}
 	}
 
-	/* ---------- L2 · quadrats ---------- */
+	/* ---------- L3 · parcours Écologie opérationnelle : quadrats ---------- */
 	function startQuad(){
 		stage = "quad"; setStage("L3 · Écologie opérationnelle"); flyTo("prairie");
 		// la prairie : 10 × 10 quadrats d'un mètre carré, plus fleurie côté soleil (en bas à droite)
@@ -441,7 +442,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		}
 		const total = cells.reduce((a, c) => a + c.n, 0);
 		const chosen = [];
-		show(`<div class="jd-k">L2 · écologie quantitative</div><h2 class="jd-h">Combien de pâquerettes ?</h2>
+		show(`<div class="jd-k">L3 · écologie opérationnelle</div><h2 class="jd-h">Combien de pâquerettes ?</h2>
 			<p class="jd-p">La prairie fait <b>100 m²</b>. Impossible de tout compter : on va <b>échantillonner</b>. Choisis <b>4 quadrats</b> d'un mètre carré (touche la carte), puis compte les fleurs dedans.</p>
 			<canvas class="jd-cv" width="400" height="400" aria-label="Carte de la prairie"></canvas>
 			<div class="jd-row"><button class="jd-alt" data-r>🎲 Au hasard</button><button class="jd-go" data-c disabled>Compter (0/4)</button></div>`);
@@ -471,7 +472,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		const counts = [];
 		function count(q){
 			const c = chosen[q], tapped = new Set();
-			show(`<div class="jd-k">L2 · quadrat ${q + 1}/4</div><h2 class="jd-h">Compte les pâquerettes</h2>
+			show(`<div class="jd-k">L3 · quadrat ${q + 1}/4</div><h2 class="jd-h">Compte les pâquerettes</h2>
 				<p class="jd-p">Touche chaque fleur du quadrat pour la compter.</p>
 				<canvas class="jd-cv" width="400" height="400" aria-label="Quadrat à compter"></canvas>
 				<div class="jd-msg">Compté : <b data-n>0</b></div>
@@ -504,7 +505,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 			const sum = counts.reduce((a, b) => a + b, 0), m = sum/4, est = Math.round(m*100);
 			const opts = [...new Set([est, sum, Math.round(m*10)])];
 			while(opts.length < 3) opts.push(est + 37*opts.length);
-			show(`<div class="jd-k">L2 · estimation</div><h2 class="jd-h">Ta population estimée</h2>
+			show(`<div class="jd-k">L3 · estimation</div><h2 class="jd-h">Ta population estimée</h2>
 				<table class="jd-tbl"><tr><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Moyenne</th></tr><tr>${counts.map(n => `<td style="text-align:center">${n}</td>`).join("")}<td style="text-align:center">${m.toLocaleString("fr-FR")}</td></tr></table>
 				<p class="jd-p">En moyenne <b>${m.toLocaleString("fr-FR")} fleurs par m²</b>. La prairie fait 100 m². <b>Combien de pâquerettes au total ?</b></p>
 				<div class="jd-opts">${opts.sort((a, b) => a - b).map(v => `<button class="jd-opt" data-e="${v}">≈ ${v.toLocaleString("fr-FR")} pâquerettes</button>`).join("")}</div><div data-fin></div>`);
@@ -523,13 +524,13 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		}
 	}
 
-	/* ---------- L3 · génétique : le croisement de Mendel ---------- */
+	/* ---------- L2 · génétique : le croisement de Mendel ---------- */
 	const pots = [];
 	function startGene(){
 		stage = "gene"; setStage("L2 · Génétique"); flyTo("serre");
-		show(`<div class="jd-k">L3 · génétique</div><h2 class="jd-h">Le pari de Mendel</h2>
-			<p class="jd-p">Dans la serre, des pois. En 1865, Gregor Mendel croise des pois à <b>fleurs violettes</b> et des pois à <b>fleurs blanches</b> (lignées pures). L'allèle <b>V</b> (violet) est <b>dominant</b>, l'allèle <b>b</b> (blanc) est <b>récessif</b>.</p>
-			<p class="jd-p"><b>Les enfants (génération F1) sont tous Vb. De quelle couleur sont leurs fleurs ?</b></p>
+		show(`<div class="jd-k">L2 · génétique</div><h2 class="jd-h">Le pari de Mendel</h2>
+			<p class="jd-p">Dans la serre, des pois. En 1865, Gregor Mendel croise des pois à <b>fleurs violettes</b> et des pois à <b>fleurs blanches</b> (lignées pures). Le gène de la couleur a deux allèles : <b>V</b> (violet), <b>dominant</b>, et <b>v</b> (blanc), <b>récessif</b>. Par convention, ils portent la même lettre : majuscule pour le dominant.</p>
+			<p class="jd-p"><b>Les enfants (génération F1) sont tous Vv. De quelle couleur sont leurs fleurs ?</b></p>
 			<div class="jd-opts">${[["v", "💜 Violettes"], ["b", "🤍 Blanches"], ["m", "🩷 Mauves, un mélange des deux"]].map(([v, t]) => `<button class="jd-opt" data-f1="${v}">${t}</button>`).join("")}</div><div data-s2></div>`);
 		card.onclick = e => {
 			const o = e.target.closest("[data-f1]"); if(!o || card.querySelector("[data-f1].ok")) return;
@@ -538,14 +539,14 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		};
 	}
 	function punnett(){
-		const want = { "0,0":"VV", "0,1":"Vb", "1,0":"Vb", "1,1":"bb" }, got = {};
+		const want = { "0,0":"VV", "0,1":"Vv", "1,0":"Vv", "1,1":"vv" }, got = {};
 		let sel = null;
-		show(`<div class="jd-k">L3 · génétique</div><h2 class="jd-h">L'échiquier de croisement</h2>
-			<p class="jd-p">On croise deux plantes F1 (<b>Vb × Vb</b>). Chaque parent donne un seul allèle. Remplis l'échiquier : choisis un génotype, puis touche une case.</p>
-			<div class="jd-toks">${["VV", "Vb", "bb"].map(t => `<button class="jd-tok" data-t="${t}">${t}</button>`).join("")}</div>
-			<table class="jd-pun"><tr><th>♀ \\ ♂</th><th>V</th><th>b</th></tr>
+		show(`<div class="jd-k">L2 · génétique</div><h2 class="jd-h">L'échiquier de croisement</h2>
+			<p class="jd-p">On croise deux plantes F1 (<b>Vv × Vv</b>). Chaque parent donne un seul allèle. Remplis l'échiquier : choisis un génotype, puis touche une case.</p>
+			<div class="jd-toks">${["VV", "Vv", "vv"].map(t => `<button class="jd-tok" data-t="${t}">${t}</button>`).join("")}</div>
+			<table class="jd-pun"><tr><th>♀ \\ ♂</th><th>V</th><th>v</th></tr>
 				<tr><th>V</th><td data-c="0,0"></td><td data-c="0,1"></td></tr>
-				<tr><th>b</th><td data-c="1,0"></td><td data-c="1,1"></td></tr></table>
+				<tr><th>v</th><td data-c="1,0"></td><td data-c="1,1"></td></tr></table>
 			<div data-s3></div>`);
 		card.onclick = e => {
 			const t = e.target.closest("[data-t]"), c = e.target.closest("[data-c]");
@@ -560,7 +561,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		};
 	}
 	function ratio(){
-		card.querySelector("[data-s3]").innerHTML = `<p class="jd-p"><b>Quelle proportion de fleurs blanches attends-tu ?</b> (une fleur est blanche seulement si elle est bb)</p>
+		card.querySelector("[data-s3]").innerHTML = `<p class="jd-p"><b>Quelle proportion de fleurs blanches attends-tu ?</b> (une fleur est blanche seulement si elle est vv)</p>
 			<div class="jd-opts">${["1/4", "1/2", "3/4", "Aucune"].map(v => `<button class="jd-opt" data-p="${v}">${v}</button>`).join("")}</div><div data-s4></div>`;
 		card.onclick = e => {
 			const o = e.target.closest("[data-p]"); if(!o || card.querySelector("[data-p].ok")) return;
@@ -586,7 +587,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 	}
 	function geneResult(){
 		const w = S.geneObs, v = 40 - w;
-		show(`<div class="jd-k">L3 · résultats</div><h2 class="jd-h">${v} violettes, ${w} blanches</h2>
+		show(`<div class="jd-k">L2 · résultats</div><h2 class="jd-h">${v} violettes, ${w} blanches</h2>
 			<table class="jd-tbl"><tr><th></th><th>Violettes</th><th>Blanches</th></tr><tr><td>Observé</td><td style="text-align:center">${v}</td><td style="text-align:center">${w}</td></tr><tr><td>Attendu (3/4 · 1/4)</td><td style="text-align:center">30</td><td style="text-align:center">10</td></tr></table>
 			<p class="jd-p"><b>${w === 10 ? "Pile la proportion attendue ! Mais si on recommence…" : `Tu n'as pas exactement 10 blanches. L'hypothèse de Mendel est-elle fausse ?`}</b></p>
 			<div class="jd-opts">${[["ok", "Non : sur 40 graines, le hasard crée de petits écarts"], ["no", "Oui : Mendel s'est trompé"]].map(([k, t]) => `<button class="jd-opt" data-g="${k}">${t}</button>`).join("")}</div><div data-fin></div>`);
@@ -645,9 +646,9 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		const tpl = "ATGCGTAC".split(""), comp = { A:"T", T:"A", G:"C", C:"G" }, got = [];
 		const render = msg => {
 			show(`<div class="jd-k">L3 · biotech · étape 1/5</div><h2 class="jd-h">Copier le gène de l'enzyme</h2>
-				<p class="jd-p">Pour copier un gène par <b>PCR</b>, il faut une <b>amorce</b> : le brin complémentaire du début du gène. A s'apparie avec T, G avec C.</p>
-				<div class="jd-dna">${tpl.map(b => `<span class="b-${b}">${b}</span>`).join("")}</div>
-				<div class="jd-dna">${tpl.map((b, i) => `<span class="t ${i < got.length ? "b-" + got[i] : i === got.length ? "cur" : ""}">${got[i] || ""}</span>`).join("")}</div>
+				<p class="jd-p">Pour copier un gène par <b>PCR</b>, il faut des <b>amorces</b> : de courts brins d'ADN qui s'apparient au brin à copier, là où la copie commence. A s'apparie avec T, G avec C, et les deux brins sont <b>antiparallèles</b> : face au brin lu de 3' vers 5', l'amorce s'écrit de 5' vers 3'.</p>
+				<div class="jd-dna"><i>3'</i>${tpl.map(b => `<span class="b-${b}">${b}</span>`).join("")}<i>5'</i></div>
+				<div class="jd-dna"><i>5'</i>${tpl.map((b, i) => `<span class="t ${i < got.length ? "b-" + got[i] : i === got.length ? "cur" : ""}">${got[i] || ""}</span>`).join("")}<i>3'</i></div>
 				<div class="jd-msg ${msg ? "ko" : ""}">${msg || "Touche les bases dans l'ordre pour construire l'amorce."}</div>
 				${got.length < tpl.length ? `<div class="jd-keys4">${["A", "T", "G", "C"].map(b => `<button data-b="${b}" class="b-${b}">${b}</button>`).join("")}</div>` : ""}<div data-fin></div>`);
 		};
@@ -659,7 +660,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 			got.push(want); play("pop"); render();
 			if(got.length === tpl.length){
 				card.onclick = null; play("good");
-				card.querySelector("[data-fin]").innerHTML = `<p class="jd-p" style="margin-top:8px">Amorce prête : <b>${got.join("")}</b>. La PCR va copier le gène des millions de fois en quelques heures.</p><button class="jd-go" data-a="bio-gel">Vérifier sur gel →</button>`;
+				card.querySelector("[data-fin]").innerHTML = `<p class="jd-p" style="margin-top:8px">Amorce prête : <b>5'-${got.join("")}-3'</b>. L'ADN polymérase l'allonge par son extrémité 3' : la PCR va copier le gène des millions de fois en quelques heures.</p><button class="jd-go" data-a="bio-gel">Vérifier sur gel →</button>`;
 			}
 		};
 	}

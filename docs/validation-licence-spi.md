@@ -35,7 +35,7 @@ Merci de cocher, corriger ou commenter chaque point.
 - [ ] Le correcteur PD est-il vu en L2, ou plutôt en L3 ? Faut-il parler de PID ?
 - [ ] Les mots « gain » et « amortissement » conviennent-ils pour des lycéens ?
 
-**Mission 4** : classification sur une seule caractéristique (la teinte, de 0 à 240°) avec un seuil. Deux exemples limites (75° orange, 120° bleu) obligent à placer le seuil entre les deux.
+**Mission 4** : classification sur une seule caractéristique (la teinte, de 0 à 240°) avec un seuil. Deux exemples limites, dus à la lampe jaune de la cellule (une pièce orange qui paraît jaune à 58°, une bleue qui tire sur le vert à 165°), obligent à placer le seuil entre les deux. La couleur affichée est celle que mesure la caméra.
 - [ ] Le terme « IA embarquée » est-il juste pour un seuil appris sur des exemples, ou faut-il dire « apprentissage » ou « classification » ?
 
 ## 3. Mention
