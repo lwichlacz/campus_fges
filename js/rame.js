@@ -3,7 +3,7 @@
    et la vitre frontale (le VAL roule sans conducteur) sur le tunnel. La rame marque l'arrêt à chaque station :
    sa vitesse s'annule pile au moment où le quai défile le long des vitres. */
 import * as THREE from "three";
-import { std, box, cyl, makePerson, mulberry32 } from "./kit.js?v=e911c80652";
+import { std, box, cyl, makePerson, mulberry32 } from "./kit.js?v=41e8df04fe";
 
 const LEN = 16, HW = 1.8, H = 3.1, GAP = 90;          // voiture : 16 × 3,6 ; 90 unités entre deux stations
 

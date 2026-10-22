@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=e911c80652";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=e911c80652";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=e911c80652";
-import { MAP } from "./vauban.js?v=e911c80652";
-import { buildLandmarks } from "./landmarks.js?v=e911c80652";
-import { buildMonuments } from "./monuments.js?v=e911c80652";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=e911c80652";
-import { buildStation } from "./station.js?v=e911c80652";
-import { createRame } from "./rame.js?v=e911c80652";
-import { Audio } from "./audio.js?v=e911c80652";
-import { DETAILS } from "./details.js?v=e911c80652";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=41e8df04fe";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=41e8df04fe";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=41e8df04fe";
+import { MAP } from "./vauban.js?v=41e8df04fe";
+import { buildLandmarks } from "./landmarks.js?v=41e8df04fe";
+import { buildMonuments } from "./monuments.js?v=41e8df04fe";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=41e8df04fe";
+import { buildStation } from "./station.js?v=41e8df04fe";
+import { createRame } from "./rame.js?v=41e8df04fe";
+import { Audio } from "./audio.js?v=41e8df04fe";
+import { DETAILS } from "./details.js?v=41e8df04fe";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -1002,26 +1002,131 @@ function buildBU(){
 	register(root, "bu");
 }
 
-buildHA(); buildFalise(); buildWenov(); buildCitadelle(); buildKiosque(); buildRameau(); buildBU();
+/* =====================================================================
+   Bâtiment Rizomm (41 rue du Port), d'après les photos : rénové de 2016 à 2018.
+   Socle sombre (brique noire, piliers de pierre claire, grandes vitrines), quatre étages habillés de lames
+   horizontales de toutes les teintes (gris, argent, beige, brun, blanc) où s'ouvrent des fenêtres, certaines
+   cadrées de jaune d'or ; au-dessus, le grand toit brisé noir entièrement couvert de panneaux solaires,
+   percé de deux rangs de fenêtres de toit. Emprise réelle (OpenStreetMap), hauteurs de l'IGN (15,8 m + 7,3 m).
+   ===================================================================== */
+let rizommGlass = null;
+function buildRizomm(){
+	const P = MAP.pois.rizomm, rec = P && MAP.buildings[P.i];
+	if(!rec || !city.pois.rizomm) return;
+	const f = rec[4]; let pts = []; for(let k=0;k<f.length;k+=2) pts.push([f[k], f[k+1]]);
+	const FHm = MAP.fh || 1.64, GF = FHm*1.15, H = GF + 4*FHm, RH = 3.9, IN = 2.1;       // socle un peu plus haut, 4 étages, toit de 7,3 m
+	const root = new THREE.Group(); scene.add(root);
+	const rnd = (a => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0)/4294967296; })(41);
+	const tex = (w, h, draw) => { const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h);
+		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
+
+	// lames horizontales : deux étages de haut, huit modules de large ; fenêtres sombres, quelques cadres jaune d'or
+	// teintes tirées au sort, les claires (argent, gris perle, beige) bien plus fréquentes que les foncées
+	const LAMES = [["#e4e2dd", 5], ["#cfcdc8", 5], ["#b9b8b5", 4], ["#a19f9b", 3], ["#c8bba8", 3], ["#9c8f80", 2], ["#7a7d82", 2], ["#5a5d63", 2], ["#3e4146", 1], ["#f2f1ee", 2]];
+	const tot = LAMES.reduce((s, [, w]) => s + w, 0), lame = () => { let r = rnd()*tot; for(const [c, w] of LAMES){ r -= w; if(r < 0) return c; } return LAMES[0][0]; };
+	const slats = tex(512, 256, (x, w, h) => {
+		x.fillStyle = "#3a3c41"; x.fillRect(0, 0, w, h);
+		const row = 10;
+		for(let y = 0; y < h; y += row){ let px = -rnd()*60; while(px < w){ const L = 40 + rnd()*130; x.fillStyle = lame(); x.fillRect(Math.max(0, px), y + 2, Math.min(L, w - px) - 3, row - 4); px += L; } }
+		// montants verticaux fins
+		x.fillStyle = "rgba(30,32,36,.55)"; for(let px = 0; px < w; px += 64) x.fillRect(px, 0, 2, h);
+		// fenêtres : une par module et par étage, pas partout
+		for(let fl = 0; fl < 2; fl++) for(let m = 0; m < 8; m++){
+			if(rnd() < .42) continue;
+			const wx = m*64 + 14, wy = fl*128 + 30, ww = 34 + rnd()*12, wh = 66;
+			const gold = rnd() < .22;
+			if(gold){ x.fillStyle = "#d9a83a"; x.fillRect(wx - 7, wy - 7, ww + 14, wh + 14); }
+			const g = x.createLinearGradient(wx, wy, wx + ww, wy + wh); g.addColorStop(0, "#5d7288"); g.addColorStop(1, "#1f2a36"); x.fillStyle = g; x.fillRect(wx, wy, ww, wh);
+			x.fillStyle = "rgba(255,255,255,.18)"; x.fillRect(wx + 3, wy + 3, 6, wh - 6);
+			x.fillStyle = "#25282d"; x.fillRect(wx + ww/2 - 1, wy, 2, wh);
+		}
+	});
+	// socle : brique sombre, piliers de pierre claire, vitrines
+	const base = tex(256, 128, (x, w, h) => {
+		x.fillStyle = "#2b2a2e"; x.fillRect(0, 0, w, h);
+		x.fillStyle = "#34333a"; for(let y = 0; y < h; y += 8) for(let px = (y/8 % 2)*10; px < w; px += 20) x.fillRect(px, y, 18, 6);
+		for(const px of [0, 128]){ x.fillStyle = "#cfc6b4"; x.fillRect(px, 0, 22, h); x.fillStyle = "rgba(0,0,0,.12)"; x.fillRect(px + 18, 0, 4, h); }
+		for(const px of [30, 158]){ const g = x.createLinearGradient(0, 16, 0, h); g.addColorStop(0, "#8ea3b2"); g.addColorStop(1, "#3f4f5c"); x.fillStyle = g; x.fillRect(px, 16, 90, h - 24); x.fillStyle = "#1c1f24"; x.fillRect(px + 44, 16, 3, h - 24); }
+		x.fillStyle = "#c9a640"; x.fillRect(0, 0, w, 4);
+	});
+	// toit : verre noir des panneaux solaires, joints argentés, fenêtres de toit plus claires
+	const solar = tex(256, 256, (x, w, h) => {
+		x.fillStyle = "#151b26"; x.fillRect(0, 0, w, h);
+		x.fillStyle = "#2a3445"; for(let px = 0; px < w; px += 32) for(let y = 0; y < h; y += 48) x.fillRect(px + 1, y + 1, 30, 46);
+		x.fillStyle = "rgba(140,170,210,.12)"; for(let px = 0; px < w; px += 32) x.fillRect(px + 4, 0, 6, h);
+		x.fillStyle = "#8d96a2"; for(let px = 0; px < w; px += 32) x.fillRect(px, 0, 1, h);
+		for(const [px, y] of [[40, 70], [168, 70], [104, 182], [232, 182]]){ x.fillStyle = "#c8d3dc"; x.fillRect(px - 12, y - 16, 24, 32); x.fillStyle = "#4d6074"; x.fillRect(px - 9, y - 13, 18, 26); }
+	});
+	const mSlats = new THREE.MeshStandardMaterial({ map:slats, roughness:.55, metalness:.25, emissive:"#ffd9a0", emissiveIntensity:0, emissiveMap:slats });
+	const mBase = new THREE.MeshStandardMaterial({ map:base, roughness:.7, emissive:"#ffe0b0", emissiveIntensity:0, emissiveMap:base });
+	const mRoof = new THREE.MeshStandardMaterial({ map:solar, roughness:.2, metalness:.55 });
+	const zinc = std("#9aa2ab", { metalness:.45, roughness:.4, flatShading:false });
+
+	// ---------- côtés de l'emprise, normales vers l'extérieur ----------
+	const edges = pts.map((a, i) => { const b = pts[(i+1)%pts.length], dx = b[0]-a[0], dz = b[1]-a[1], len = Math.hypot(dx, dz); return { a, b, len, n:[dz/len, -dx/len] }; }).filter(e => e.len > .05);
+	const flip = edges.filter(e => e.len > 1).reduce((s, e) => { const mx = (e.a[0] + e.b[0])/2, mz = (e.a[1] + e.b[1])/2; return s + (pointInPoly(mx + e.n[0]*.15, mz + e.n[1]*.15, pts) ? 1 : -1); }, 0) > 0;
+	if(flip) edges.forEach(e => { e.n = [-e.n[0], -e.n[1]]; });
+	const buckets = new Map(), bucket = m => { if(!buckets.has(m)) buckets.set(m, { pos:[], nor:[], uv:[] }); return buckets.get(m); };
+	// quadrilatère quelconque (a0, b0 en bas ; b1, a1 en haut), face avant vers n
+	const quad4 = (m, A0, B0, B1, A1, n, uv) => {
+		const B = bucket(m); let v = [[A0, uv[0]], [B0, uv[1]], [B1, uv[2]], [A0, uv[0]], [B1, uv[2]], [A1, uv[3]]];
+		const e1 = [B0[0]-A0[0], B0[1]-A0[1], B0[2]-A0[2]], e2 = [B1[0]-A0[0], B1[1]-A0[1], B1[2]-A0[2]];
+		const cr = [e1[1]*e2[2] - e1[2]*e2[1], e1[2]*e2[0] - e1[0]*e2[2], e1[0]*e2[1] - e1[1]*e2[0]];
+		if(cr[0]*n[0] + cr[1]*n[1] + cr[2]*n[2] < 0) v = [v[0], v[2], v[1], v[3], v[5], v[4]];
+		for(const [p, t] of v){ B.pos.push(...p); B.nor.push(...n); B.uv.push(...t); }
+	};
+	const MOD = 8*1.35*.4;                 // largeur de la texture des lames : huit modules de 1,35 m réels
+	let run = 0;
+	for(const e of edges){
+		const [ax, az] = e.a, [bx, bz] = e.b, n3 = [e.n[0], 0, e.n[1]], u0 = run/MOD, u1 = (run + e.len)/MOD;
+		quad4(mBase, [ax - e.n[0]*.12, 0, az - e.n[1]*.12], [bx - e.n[0]*.12, 0, bz - e.n[1]*.12], [bx - e.n[0]*.12, GF, bz - e.n[1]*.12], [ax - e.n[0]*.12, GF, az - e.n[1]*.12], n3, [[u0*2, 0], [u1*2, 0], [u1*2, 1], [u0*2, 1]]);
+		quad4(mSlats, [ax, GF, az], [bx, GF, bz], [bx, H, bz], [ax, H, az], n3, [[u0, 0], [u1, 0], [u1, 2], [u0, 2]]);
+		// bandeau de zinc entre façade et toit
+		quad4(zinc, [ax + e.n[0]*.06, H - .05, az + e.n[1]*.06], [bx + e.n[0]*.06, H - .05, bz + e.n[1]*.06], [bx + e.n[0]*.06, H + .25, bz + e.n[1]*.06], [ax + e.n[0]*.06, H + .25, az + e.n[1]*.06], n3, [[0, 0], [1, 0], [1, 1], [0, 1]]);
+		run += e.len;
+	}
+	// ---------- toit brisé : chaque pente monte du bord de la façade vers le contour rentré ----------
+	const inner = pts.map((b, i) => {
+		const n = pts.length, a = pts[(i+n-1)%n], c = pts[(i+1)%n];
+		const l1 = Math.hypot(b[0]-a[0], b[1]-a[1]) || 1, l2 = Math.hypot(c[0]-b[0], c[1]-b[1]) || 1;
+		let n1 = [(b[1]-a[1])/l1, -(b[0]-a[0])/l1], n2 = [(c[1]-b[1])/l2, -(c[0]-b[0])/l2];
+		if(flip){ n1 = [-n1[0], -n1[1]]; n2 = [-n2[0], -n2[1]]; }
+		const k = Math.max(.45, 1 + n1[0]*n2[0] + n1[1]*n2[1]);
+		return [b[0] - IN*(n1[0] + n2[0])/k, b[1] - IN*(n1[1] + n2[1])/k];
+	});
+	const idx = new Map(pts.map((p, i) => [p, i]));
+	for(const e of edges){
+		const ia = idx.get(e.a), ib = idx.get(e.b), A1 = inner[ia], B1 = inner[ib];
+		const nr = [e.n[0]*RH, IN, e.n[1]*RH], L = Math.hypot(...nr), n3 = [nr[0]/L, nr[1]/L, nr[2]/L];
+		const s = Math.hypot(IN, RH)/(8*.4*1.35/2), u = e.len/(4*.4*1.35);
+		quad4(mRoof, [e.a[0], H + .25, e.a[1]], [e.b[0], H + .25, e.b[1]], [B1[0], H + RH, B1[1]], [A1[0], H + RH, A1[1]], n3, [[0, 0], [u, 0], [u, s], [0, s]]);
+	}
+	for(const [m, B] of buckets){
+		const g = new THREE.BufferGeometry();
+		g.setAttribute("position", new THREE.Float32BufferAttribute(B.pos, 3)); g.setAttribute("normal", new THREE.Float32BufferAttribute(B.nor, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(B.uv, 2));
+		const me = new THREE.Mesh(g, m); me.castShadow = me.receiveShadow = true; root.add(me);
+	}
+	// le haut du toit, plat, et ses édicules techniques
+	{
+		const g = new THREE.ShapeGeometry(new THREE.Shape(inner.map(p => new THREE.Vector2(p[0], -p[1])))).rotateX(-Math.PI/2);
+		const top = new THREE.Mesh(g, std("#2b2f36", { roughness:.6 })); top.position.y = H + RH; top.receiveShadow = true; root.add(top);
+		const cx = inner.reduce((a, p) => a + p[0], 0)/inner.length, cz = inner.reduce((a, p) => a + p[1], 0)/inner.length;
+		for(const [dx, dz] of [[0, 0], [3, -4], [-2, 5]]) if(pointInPoly(cx + dx, cz + dz, inner)) box(root, 1.4, .6, 1.2, std("#7c838c"), cx + dx, H + RH, cz + dz);
+	}
+	rizommGlass = [mSlats, mBase];
+	// l'ancien bloc générique d'OpenStreetMap laisse la place
+	city.pois.rizomm.group.visible = false;
+	city.pois.rizomm.H = H + RH;
+	city.pois.rizomm.mats = [mSlats, mBase, mRoof];
+	register(root, "rizomm");
+}
+
+buildHA(); buildFalise(); buildWenov(); buildCitadelle(); buildKiosque(); buildRameau(); buildBU(); buildRizomm();
 const monuments = buildMonuments(scene, MAP);
 const landmarks = buildLandmarks(scene, MAP, { inBuilding:city.inBuilding, roadGap:city.roadGap, home:[0, 14] });
 let horizon = null, farWood = null;          // le lointain arrive après le campus (js/vauban_far.js), voir loadFar
 WB.build(scene, glassLit, glassDark, frameMat);
 scene.updateMatrixWorld(true);
-
-/* Le Rizomm : toiture couverte de panneaux solaires */
-if(city.pois.rizomm){
-	const P = MAP.buildings[MAP.pois.rizomm.i][4], q = [];
-	for(let i=0;i<P.length;i+=2) q.push([P[i], P[i+1]]);
-	const xs = q.map(v => v[0]), zs = q.map(v => v[1]), H = city.pois.rizomm.H, spots = [];
-	for(let x = Math.min(...xs) + 1.2; x < Math.max(...xs) - 1; x += 1.9) for(let z = Math.min(...zs) + 1.2; z < Math.max(...zs) - 1; z += 1.5)
-		if(pointInPoly(x, z, q) && pointInPoly(x + .9, z, q) && pointInPoly(x - .9, z, q) && pointInPoly(x, z + .8, q) && pointInPoly(x, z - .8, q)) spots.push([x, z]);
-	const panel = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, .06, 1.05), std("#24365a", { roughness:.3, metalness:.4, flatShading:false }), spots.length);
-	const d = new THREE.Object3D();
-	spots.forEach(([x,z],i) => { d.position.set(x, H + .45, z); d.rotation.set(-.32, 0, 0); d.updateMatrix(); panel.setMatrixAt(i, d.matrix); });
-	panel.castShadow = true; scene.add(panel);
-	city.pois.rizomm.group.add(panel);
-}
 
 /* repères des lieux (épingles, cibles, caméras) */
 {
@@ -1148,7 +1253,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=e911c80652").then(({ FAR }) => {
+	import("./vauban_far.js?v=41e8df04fe").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1565,6 +1670,7 @@ function showLight(){
 	faliseGlass.emissiveIntensity = .9*k;
 	if(rameauGlass) rameauGlass.forEach(m => m.emissiveIntensity = .8*k);
 	if(buGlass) buGlass.forEach(m => m.emissiveIntensity = .7*k);
+	if(rizommGlass) rizommGlass.forEach(m => m.emissiveIntensity = .6*k);
 	atriumRoof.emissiveIntensity = .55*k;
 	atriumGlow.emissiveIntensity = .4 + 1.6*k;
 	wenovGlass.emissiveIntensity = .28*k;
@@ -1653,14 +1759,14 @@ setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night 
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=e911c80652").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=e911c80652").then(m => m.createChapelle), eura:() => import("./eura.js?v=e911c80652").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=e911c80652").then(m => m.createWenovIn) };
+const MAKERS = { atrium:() => import("./atrium.js?v=41e8df04fe").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=41e8df04fe").then(m => m.createChapelle), eura:() => import("./eura.js?v=41e8df04fe").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=41e8df04fe").then(m => m.createWenovIn) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=e911c80652").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=e911c80652").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=e911c80652").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=e911c80652").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=e911c80652").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=e911c80652").then(m => m.openBiodata)
+	comptoir:() => import("./games/comptoir.js?v=41e8df04fe").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=41e8df04fe").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=41e8df04fe").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=41e8df04fe").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=41e8df04fe").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=41e8df04fe").then(m => m.openBiodata)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
