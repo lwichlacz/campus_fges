@@ -159,17 +159,6 @@ export function buildLandmarks(scene, MAP, { inBuilding = () => false, inHand = 
 	/* ---------- lieux réels : étiquettes toujours face à la caméra, visibles de près ---------- */
 	const P = MAP.places || [];
 	if(P.length){
-		const A = atlas(P.length, 512, 96, (x, i, a, b, w, h) => {
-			const [, , icon, name] = P[i];
-			x.fillStyle = "rgba(255,252,246,.94)"; rrect(x, a + 4, b + 8, w - 8, h - 16, (h - 16)/2); x.fill();
-			x.strokeStyle = "rgba(30,36,48,.18)"; x.lineWidth = 3; x.stroke();
-			x.font = `44px ${FONT}`; x.textBaseline = "middle"; x.textAlign = "left"; x.fillText(icon, a + 22, b + h/2 + 2);
-			x.fillStyle = "#1e2430";
-			const t = fit(x, name, w - 110, 34, 700); x.fillText(t, a + 84, b + h/2 + 2);
-		});
-		const quad = new THREE.PlaneGeometry(1, 1).translate(0, .5, 0);
-		const geo = new THREE.InstancedBufferGeometry().copy(quad);
-		const off = new Float32Array(P.length*4), pos = new Float32Array(P.length*3);
 		// un commerce d'OpenStreetMap est souvent pointé au milieu de son immeuble : l'étiquette sort sur le trottoir le plus proche
 		const walled = (x, z, m) => inBuilding(x, z, m) || inHand(x, z);
 		const outside = (x, z) => {
@@ -180,27 +169,72 @@ export function buildLandmarks(scene, MAP, { inBuilding = () => false, inHand = 
 			}
 			return [x, z];
 		};
-		P.forEach(([x, z], i) => { const [lx, lz] = outside(x, z); off.set(A.uv(i), i*4); pos.set([lx, 3.4, lz], i*3); });
+		const spots = P.map(([x, z]) => outside(x, z));
+
+		// rues commerçantes : quatre lieux ou plus à moins de 9 m forment une bulle « 6 commerces »,
+		// qui se déplie en étiquettes séparées quand on s'approche (moins de 34 m)
+		const groups = [], inGroup = new Array(P.length).fill(-1);
+		P.forEach((_, i) => {
+			if(inGroup[i] >= 0) return;
+			const near = P.map((_, j) => j).filter(j => inGroup[j] < 0 && Math.hypot(spots[j][0] - spots[i][0], spots[j][1] - spots[i][1]) < 9);
+			if(near.length < 4) return;
+			near.forEach(j => inGroup[j] = groups.length);
+			groups.push(near);
+		});
+		const labels = [
+			...P.map((p, i) => ({ draw:"place", i, x:spots[i][0], y:3.4, z:spots[i][1], mode:inGroup[i] >= 0 ? 1 : 0 })),
+			...groups.map(g => ({ draw:"group", g, x:g.reduce((s, j) => s + spots[j][0], 0)/g.length, y:4.2, z:g.reduce((s, j) => s + spots[j][1], 0)/g.length, mode:2 }))
+		];
+		// deux étiquettes voisines (bulle dépliée comprise) s'empilent au lieu de se recouvrir
+		const placed = [];
+		for(const l of labels.filter(l => l.mode < 2)){
+			while(placed.some(o => Math.hypot(o.x - l.x, o.z - l.z) < 7 && Math.abs(o.y - l.y) < 1.1)) l.y += 1.15;
+			placed.push(l);
+		}
+		const A = atlas(labels.length, 512, 96, (x, k, a, b, w, h) => {
+			const L = labels[k];
+			x.fillStyle = L.draw === "group" ? "rgba(30,48,94,.94)" : "rgba(255,252,246,.94)"; rrect(x, a + 4, b + 8, w - 8, h - 16, (h - 16)/2); x.fill();
+			x.strokeStyle = "rgba(30,36,48,.18)"; x.lineWidth = 3; x.stroke();
+			x.textBaseline = "middle"; x.textAlign = "left";
+			if(L.draw === "group"){
+				const icons = [...new Set(L.g.map(j => P[j][2]))].slice(0, 4);
+				x.font = `38px ${FONT}`; icons.forEach((ic, n) => x.fillText(ic, a + 20 + n*44, b + h/2 + 2));
+				x.fillStyle = "#fff8ec"; x.font = `800 34px ${FONT}`;
+				x.fillText(`${L.g.length} commerces`, a + 32 + icons.length*44, b + h/2 + 2);
+			} else {
+				const [, , icon, name] = P[L.i];
+				x.font = `44px ${FONT}`; x.fillText(icon, a + 22, b + h/2 + 2);
+				x.fillStyle = "#1e2430";
+				const t = fit(x, name, w - 110, 34, 700); x.fillText(t, a + 84, b + h/2 + 2);
+			}
+		});
+		const quad = new THREE.PlaneGeometry(1, 1).translate(0, .5, 0);
+		const geo = new THREE.InstancedBufferGeometry().copy(quad);
+		const off = new Float32Array(labels.length*4), pos = new Float32Array(labels.length*3), mode = new Float32Array(labels.length);
+		labels.forEach((l, k) => { off.set(A.uv(k), k*4); pos.set([l.x, l.y, l.z], k*3); mode[k] = l.mode; });
 		geo.setAttribute("aUV", new THREE.InstancedBufferAttribute(off, 4));
 		geo.setAttribute("aPos", new THREE.InstancedBufferAttribute(pos, 3));
-		geo.instanceCount = P.length;
+		geo.setAttribute("aMode", new THREE.InstancedBufferAttribute(mode, 1));
+		geo.instanceCount = labels.length;
 		const m = new THREE.ShaderMaterial({
-			uniforms:{ uMap:{ value:A.tex }, uNear:{ value:55 }, uFar:{ value:85 }, uDim:{ value:1 } },
+			uniforms:{ uMap:{ value:A.tex }, uNear:{ value:55 }, uFar:{ value:85 }, uDim:{ value:1 }, uSplit:{ value:34 }, uLum:{ value:1 } },
 			vertexShader:`
-				attribute vec4 aUV; attribute vec3 aPos; varying vec2 vUv; varying float vA;
-				uniform float uNear, uFar;
+				attribute vec4 aUV; attribute vec3 aPos; attribute float aMode; varying vec2 vUv; varying float vA;
+				uniform float uNear, uFar, uSplit;
 				void main(){
 					vec4 mv = modelViewMatrix*vec4(aPos, 1.0);
 					float d = -mv.z, s = clamp(d*.03, .55, 2.6);
 					mv.xy += vec2((position.x)*s*5.3, position.y*s);
 					vA = (1.0 - smoothstep(uNear, uFar, d))*smoothstep(4.0, 9.0, d);
+					if(aMode > 1.5) vA *= smoothstep(uSplit - 2.0, uSplit + 3.0, d);          // la bulle, de loin
+					else if(aMode > .5) vA *= 1.0 - smoothstep(uSplit - 3.0, uSplit + 2.0, d);  // ses étiquettes, de près
 					vUv = vec2(mix(aUV.x, aUV.z, uv.x), mix(aUV.y, aUV.w, uv.y));
 					gl_Position = projectionMatrix*mv;
 				}`,
 			fragmentShader:`
-				uniform sampler2D uMap; uniform float uDim; varying vec2 vUv; varying float vA;
+				uniform sampler2D uMap; uniform float uDim, uLum; varying vec2 vUv; varying float vA;
 				void main(){
-					vec4 c = texture2D(uMap, vUv);
+					vec4 c = texture2D(uMap, vUv); c.rgb *= uLum;
 					c.a *= vA*uDim; if(c.a < .02) discard;
 					gl_FragColor = c;
 					#include <colorspace_fragment>
@@ -209,9 +243,44 @@ export function buildLandmarks(scene, MAP, { inBuilding = () => false, inHand = 
 			transparent:true, depthWrite:false, depthTest:false
 		});
 		const me = new THREE.Mesh(geo, m); me.frustumCulled = false; me.renderOrder = 5;
-		out.group.add(me); out.labels = m; out.nPlaces = P.length;
+		out.group.add(me); out.labels = m; out.nPlaces = P.length; out.nGroups = groups.length;
+
+		// vitrines : sur la façade derrière chaque étiquette, éclairées la nuit
+		const shops = [];
+		P.forEach(([x0, z0], i) => {
+			const [x, z] = spots[i];
+			let dx = x0 - x, dz = z0 - z, l = Math.hypot(dx, dz);
+			if(l < .3){          // lieu déjà sur le trottoir : la façade la plus proche, s'il y en a une à moins de 6 m
+				let best = null;
+				for(let k = 0; k < 16 && !best; k++) for(let r = .5; r <= 6; r += .5){ const a = k/16*Math.PI*2; if(walled(x + Math.cos(a)*r, z + Math.sin(a)*r, 0)){ if(!best || r < best[2]) best = [Math.cos(a), Math.sin(a), r]; break; } }
+				if(!best) return; dx = best[0]; dz = best[1]; l = 1;
+			}
+			dx /= l; dz /= l;
+			let r = 0; while(r < 12 && !walled(x + dx*r, z + dz*r, 0)) r += .1;
+			if(r >= 12) return;
+			while(r > 0 && walled(x + dx*(r - .01), z + dz*(r - .01), 0)) r -= .01;          // au centimètre près
+			shops.push([x + dx*(r - .05), z + dz*(r - .05), Math.atan2(-dx, -dz)]);
+		});
+		if(shops.length){
+			const vt = (() => { const c = document.createElement("canvas"); c.width = 128; c.height = 96; const x = c.getContext("2d");
+				x.fillStyle = "#2a2e35"; x.fillRect(0, 0, 128, 96);
+				const g = x.createLinearGradient(0, 8, 0, 92); g.addColorStop(0, "#ffe2a8"); g.addColorStop(1, "#d98f4e"); x.fillStyle = g; x.fillRect(6, 8, 116, 84);
+				x.fillStyle = "rgba(90,60,40,.55)"; for(const y of [34, 60]) x.fillRect(10, y, 108, 4);
+				for(let k = 0; k < 14; k++){ x.fillStyle = ["#b0624a", "#6d8c6a", "#5d7da0", "#c9a640"][k % 4]; x.fillRect(12 + k*7.6, 22, 5, 12); x.fillRect(14 + k*7.6, 48, 4, 12); }
+				x.fillStyle = "#2a2e35"; x.fillRect(62, 8, 4, 84);
+				const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+			const sm = new THREE.MeshStandardMaterial({ map:vt, emissive:"#ffffff", emissiveMap:vt, emissiveIntensity:.05, roughness:.3, color:"#8a8f96" });
+			const vit = new THREE.InstancedMesh(new THREE.PlaneGeometry(2.4, 1.7).translate(0, 1.15, 0), sm, shops.length), d = new THREE.Object3D();
+			shops.forEach(([x, z, a], k) => { d.position.set(x, 0, z); d.rotation.set(0, a, 0); d.updateMatrix(); vit.setMatrixAt(k, d.matrix); });
+			vit.receiveShadow = true; out.group.add(vit); out.shops = sm; out.nShops = shops.length;
+		}
 	}
 	/* de nuit, plaques et panneaux restent lisibles (éclairage public) */
-	out.setNight = k => { if(out.plates) out.plates.emissiveIntensity = .08 + .5*k; if(out.signs) out.signs.emissiveIntensity = .1 + .6*k; };
+	out.setNight = k => {
+		if(out.plates) out.plates.emissiveIntensity = .08 + .5*k;
+		if(out.signs) out.signs.emissiveIntensity = .1 + .6*k;
+		if(out.labels) out.labels.uniforms.uLum.value = 1 - .4*k;          // de nuit, pas d'étiquette éblouissante
+		if(out.shops){ out.shops.emissiveIntensity = .05 + 1.3*k; out.shops.color.setScalar(.55 + .45*k); }          // vitrines allumées
+	};
 	return out;
 }

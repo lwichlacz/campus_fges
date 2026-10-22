@@ -5,6 +5,7 @@
 import * as THREE from "three";
 import { std, mulberry32 } from "./kit.js?v=41e8df04fe";
 import { TIME } from "./render.js?v=41e8df04fe";
+import { HAUTEURS } from "./hauteurs.js";
 
 const FH = 2.3, BAY = 1.4;
 let FHc = FH;          // hauteur d'un étage pour la carte en cours (MAP.fh : à l'échelle de l'Hôtel Académique)
@@ -388,6 +389,12 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 
 export function buildCity(scene, MAP, opts={}){
 	FHc = MAP.fh || FH;
+	// niveaux corrigés d'après les hauteurs de l'IGN (js/hauteurs.js), seulement si le bâtiment est bien celui attendu
+	if(MAP.ha) for(const [i, cx, cz, lv] of HAUTEURS){
+		const f = MAP.buildings[i] && MAP.buildings[i][4]; if(!f) continue;
+		let x = 0, z = 0; for(let k=0;k<f.length;k+=2){ x += f[k]; z += f[k+1]; }
+		if(Math.hypot(x/(f.length/2) - cx, z/(f.length/2) - cz) < .05) MAP.buildings[i][1] = lv;
+	}
 	const out = { walls:[], roofs:[], flats:[], pois:{}, poiMats:{}, lampSpots:[], trees:[], parkTrees:[], ground:{}, nightU:{ value:0 } };
 	const poiIndex = new Map(Object.entries(MAP.pois).filter(([,v]) => v && v.i !== undefined).map(([k,v]) => [v.i, k]));
 

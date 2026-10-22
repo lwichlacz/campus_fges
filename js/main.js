@@ -214,6 +214,7 @@ const pickables = [];
 function register(root, id){ root.traverse(o => { if(o.isMesh){ o.userData.place = id; if(!pickables.includes(o)) pickables.push(o); } }); }
 const ball = () => cached("ball", () => new THREE.SphereGeometry(.2, 8, 6));
 let cedarMat, courtFlowers, flags = [], clockHands;
+const snowRoofs = [];          // toits plats faits main (BU, Rizomm) : blancs sous la neige
 function flagTexture(kind){
 	const c = document.createElement("canvas"); c.width = 96; c.height = 64;
 	const x = c.getContext("2d");
@@ -317,12 +318,32 @@ function buildHA(){
 		const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map:pave, roughness:.85 })); m.position.set(0, .06, .4); m.receiveShadow = true; HAG.add(m);
 	}
 	const wallM = std("#d9cbb2"), iron = std("#2c2a30");
+	// grille en fer forgé sur muret, barreaux à pointes de lance, et portail à deux battants (ouverts vers la cour)
+	const bars = [], tips = [], rails = [], scrolls = [];
 	for(const s of [-1,1]){
 		box(HAG, 11, .7, .5, wallM, s*8.5, 0, 10.3);
-		box(HAG, 11, .08, .08, iron, s*8.5, 1.7, 10.3);
-		for(let x=3.4; x<=14; x+=.8) box(HAG, .07, 1.1, .07, iron, s*x, .7, 10.3);
+		box(HAG, 11.2, .12, .6, wallM, s*8.5, .7, 10.3);
+		rails.push([s*8.5, 1.05, 10.3, 11, 0], [s*8.5, 1.82, 10.3, 11, 0]);
+		for(let x=3.5; x<=13.9; x+=.26){ bars.push([s*x, .82, 10.3, 1.18, 0]); tips.push([s*x, 2, 10.3, 0]); }
+		for(let x=4.2; x<=13.6; x+=1.3) scrolls.push([s*x, 1.43, 10.3, 0]);
 		box(HAG, .8, 2.6, .8, wallM, s*3, 0, 10.3);
-		cone(HAG, .55, .7, wallM, s*3, 2.6, 10.3, 4, Math.PI/4);
+		box(HAG, .95, .18, .95, wallM, s*3, 2.6, 10.3);
+		cone(HAG, .55, .7, wallM, s*3, 2.78, 10.3, 4, Math.PI/4);
+		// un battant : charnière contre le pilier, arc qui monte vers le milieu du portail
+		const leaf = new THREE.Group(); leaf.position.set(s*2.58, 0, 10.3); leaf.rotation.y = -s*1.15; HAG.add(leaf);
+		const W = 2.55, top = t => 2.15 + .55*Math.sin(Math.PI/2*t);          // t : 0 au pilier, 1 au milieu
+		for(let k = 0; k <= 12; k++){ const t = k/12, h = top(t) - .12; box(leaf, .05, h, .05, iron, -s*t*W, .12, 0); cone(leaf, .05, .16, iron, -s*t*W, h + .12, 0, 4); }
+		for(const y of [.12, .9, 1.6]) box(leaf, W, .06, .06, iron, -s*W/2, y, 0);
+		for(let k = 0; k < 6; k++){ const t0 = k/6, t1 = (k + 1)/6; const a = top(t0) - .3, b = top(t1) - .3, m = (a + b)/2; const r = box(leaf, W/6 + .02, .06, .06, iron, -s*(t0 + t1)/2*W, m, 0); r.rotation.z = s*Math.atan2(b - a, W/6); }
+		for(let k = 0; k < 4; k++) mesh(cached("gateScroll", () => new THREE.TorusGeometry(.16, .025, 4, 14)), iron, leaf, -s*(.35 + k*.6), 1.25, 0);
+		mesh(cached("gateDisc", () => new THREE.CylinderGeometry(.22, .22, .05, 16).rotateX(Math.PI/2)), std("#c9a640", { metalness:.6, roughness:.35 }), leaf, -s*(W - .25), 1.25, 0);
+	}
+	{
+		const d = new THREE.Object3D(), put = (geo, list, f) => { const m = new THREE.InstancedMesh(geo, iron, list.length); list.forEach((v, k) => { f(v); d.updateMatrix(); m.setMatrixAt(k, d.matrix); }); m.castShadow = true; HAG.add(m); };
+		put(BOX, bars, ([x, y, z, h]) => { d.position.set(x, y, z); d.scale.set(.045, h, .045); d.rotation.set(0, 0, 0); });
+		put(BOX, rails, ([x, y, z, w]) => { d.position.set(x, y, z); d.scale.set(w, .05, .06); d.rotation.set(0, 0, 0); });
+		put(cached("k.05,.16,4", () => new THREE.ConeGeometry(.05, .16, 4).translate(0, .08, 0)), tips, ([x, y, z]) => { d.position.set(x, y, z); d.scale.set(1, 1, 1); d.rotation.set(0, 0, 0); });
+		put(cached("gateScroll", () => new THREE.TorusGeometry(.16, .025, 4, 14)), scrolls, ([x, y, z]) => { d.position.set(x, y, z); d.scale.set(1, 1, 1); d.rotation.set(0, 0, 0); });
 	}
 	const buis = std("#2f5a35"), soil = std("#5b4334"), flowers = [];
 	const bloom = ["#d8344a", "#e8577a", "#f2a2b8", "#f4f0e8", "#c9243c", "#f0c24a", "#b8325a"];
@@ -981,6 +1002,7 @@ function buildBU(){
 		const shape = new THREE.Shape(pts.map(p => new THREE.Vector2(p[0], -p[1])));
 		const g = new THREE.ShapeGeometry(shape).rotateX(-Math.PI/2);
 		const roof = new THREE.Mesh(g, roofM); roof.position.y = H + .02; roof.receiveShadow = true; root.add(roof);
+		snowRoofs.push(roofM);
 		const cx = pts.reduce((a, p) => a + p[0], 0)/pts.length, cz = pts.reduce((a, p) => a + p[1], 0)/pts.length;
 		for(const [dx, dz, w, d] of [[-6, 1, 2.2, 1.4], [4, -1, 1.6, 1.2], [-14, 2, 1.8, 1.8]]){
 			if(!pointInPoly(cx + dx, cz + dz, pts)) continue;
@@ -1167,6 +1189,7 @@ function buildRizomm(){
 		const g = new THREE.ShapeGeometry(new THREE.Shape(inner.map(p => new THREE.Vector2(p[0], -p[1])))).rotateX(-Math.PI/2);
 		const uv = g.attributes.uv; for(let k = 0; k < uv.count; k++) uv.setXY(k, uv.getX(k)/3, uv.getY(k)/3);
 		const top = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map:gravel, roughness:.95 })); top.position.y = H + RH; top.receiveShadow = true; root.add(top);
+		snowRoofs.push(top.material);
 		const xs = inner.map(p => p[0]), zs = inner.map(p => p[1]), list = [];
 		for(let z = Math.min(...zs) + 1; z < Math.max(...zs) - .6; z += 1.5) for(let x = Math.min(...xs) + .7; x < Math.max(...xs) - .5; x += .62)
 			if([[-.35, -.5], [.35, -.5], [-.35, .5], [.35, .5]].every(([a, b]) => pointInPoly(x + a, z + b, inner))) list.push([x, z]);
@@ -1778,6 +1801,10 @@ function applyAmbiance(instant, dur = 1.8){
 	zincMats.forEach(m => m.color.set(S.snowy ? "#dfe6ee" : "#9aa5b1"));
 	cedarMat.color.set(S.conifer); pineMats.forEach(m => m.color.set(S.conifer));
 	courtFlowers.visible = !S.snowy;          // massifs de la cour : pas de fleurs sous la neige
+	for(const m of snowRoofs){
+		if(!m.userData.base) m.userData.base = { c:m.color.clone(), map:m.map };
+		m.color.copy(S.snowy ? new THREE.Color("#e4eaf1") : m.userData.base.c); m.map = S.snowy ? null : m.userData.base.map; m.needsUpdate = true;
+	}
 	city.setSeason(S);
 	const c = new THREE.Color();
 	decid.forEach((t,i) => {
@@ -1831,9 +1858,9 @@ setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night 
 /* =====================================================================
    Intérieurs : atrium (Falise) et chapelle (Hôtel Académique)
    ===================================================================== */
-const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null };
+const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=41e8df04fe").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=41e8df04fe").then(m => m.createChapelle), eura:() => import("./eura.js?v=41e8df04fe").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=41e8df04fe").then(m => m.createWenovIn) };
+const MAKERS = { atrium:() => import("./atrium.js?v=41e8df04fe").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=41e8df04fe").then(m => m.createChapelle), eura:() => import("./eura.js?v=41e8df04fe").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=41e8df04fe").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=41e8df04fe").then(m => m.createBU) };
 const GAME_LOADERS = {
 	comptoir:() => import("./games/comptoir.js?v=41e8df04fe").then(m => m.openComptoir),
 	jardin:() => import("./games/jardin.js?v=41e8df04fe").then(m => m.openJardin),
@@ -1856,7 +1883,7 @@ function prefetchLater(){
 	};
 	("requestIdleCallback" in window) ? requestIdleCallback(go, { timeout:8000 }) : setTimeout(go, 4000);
 }
-const RETURN = { atrium:"falise", chapelle:"chapelle", eura:"cormontaigne", wenovin:"wenov" };
+const RETURN = { atrium:"falise", chapelle:"chapelle", eura:"cormontaigne", wenovin:"wenov", bibli:"bu" };
 let mode = "ext";
 function fade(mid){
 	const f = $("fade"); f.classList.add("on");
@@ -1890,6 +1917,7 @@ function placeExt(back){
 const WELCOME = {
 	atrium:"Bienvenue dans l'atrium de Michel Falise ✨ Passe au Comptoir pour jouer !",
 	chapelle:"Bienvenue dans la chapelle universitaire ✨",
+	bibli:"Bienvenue à la BU Vauban 📚 338 places pour travailler au calme",
 	eura:"Bienvenue à Euratechnologies 💡 le quartier de l'École du Numérique",
 	wenovin:"Bienvenue dans Wenov 💡 salles de l'École du Numérique, Campus Cyber et coworking"
 };
@@ -2328,6 +2356,15 @@ function interiorAction(id){
 		else { const I = interiors.wenovin, p = I.spots[id]; if(p) flyTo(V(...p.cam), V(...p.target), 1.2); openPanel(id === "salle" ? "wenov" : id); Audio.play("pop"); }
 		return;
 	}
+	if(mode === "bibli"){
+		const T = { accueil:"🛎️ L'accueil : prêt, retour et réservation des salles. Ouvert du lundi au vendredi de 8 h 30 à 20 h, le samedi de 8 h 30 à 17 h.",
+			lecture:"💡 La salle de lecture : 338 places au calme, des prises à chaque table et le wifi.",
+			rayons:"📚 Environ 300 000 ouvrages et 3 300 revues imprimées, en plus des ressources en ligne.",
+			groupes:"👥 Les salles de travail en groupe se réservent à l'accueil ou en ligne, avec un écran pour présenter.",
+			mezzanine:"🪜 À l'étage, la mezzanine : d'autres rayonnages et des tables face à la salle." };
+		if(id === "sortir") exitInterior(); else { toast(T[id], 4200); Audio.play("pop"); }
+		return;
+	}
 	if(id === "comptoir") openGame("gestion");
 	else if(id === "salles") openPanel("falise");
 	else if(id === "sortir") exitInterior();
@@ -2558,6 +2595,7 @@ function lieuxView(){
 		`<h3>À visiter à l'intérieur</h3>
 		<button class="lieu" data-go="atrium"><span class="ic">✨</span><span><b>L'atrium de Michel Falise</b><small>Le Comptoir et son mini-jeu</small></span></button>
 		<button class="lieu" data-go="chapelle"><span class="ic">⛪</span><span><b>La chapelle universitaire</b><small>Voûtes, vitraux et cloches</small></span></button>
+		<button class="lieu" data-go="bibli"><span class="ic">📚</span><span><b>La BU Vauban</b><small>Salle de lecture, rayonnages, salles de groupe</small></span></button>
 		<h3>Quartier Euratechnologies · École du Numérique</h3>
 		<button class="lieu" data-go="eura"><span class="ic">🏙️</span><span><b>Explorer le quartier en 3D</b><small>Wenov, le Blan-Lafont, la Deûle, le métro ligne 2</small></span></button>` +
 		Object.entries(LIFE).filter(([,p]) => p.zone === "eura").map(([id,p]) => row(id, p, p.kicker, false)).join("") +

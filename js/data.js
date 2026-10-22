@@ -169,7 +169,7 @@ export const LIFE = {
 		icon:"📚", name:"BU Vauban", kicker:"Bâtiment Robert Schuman · rue du Port",
 		links:[{ label:"Portail des bibliothèques", url:"https://bibliotheque.univ-catholille.fr/" }],
 		text:"La bibliothèque universitaire du campus : environ 300 000 ouvrages, 3 300 revues imprimées et 338 places pour travailler au calme.",
-		facts:["338 places","300 000 ouvrages","Lun-ven 8 h 30-20 h · sam 8 h 30-17 h"]
+		facts:["338 places","300 000 ouvrages","Lun-ven 8 h 30-20 h · sam 8 h 30-17 h"], action:{ label:"📖 Entrer dans la BU", go:"bibli" }
 	},
 	resto: {
 		icon:"🍽️", name:"Restaurant universitaire", kicker:"All Resto · boulevard Vauban",
