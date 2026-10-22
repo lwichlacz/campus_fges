@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=9d334ab44c";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=9d334ab44c";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=9d334ab44c";
-import { MAP } from "./vauban.js?v=9d334ab44c";
-import { buildLandmarks } from "./landmarks.js?v=9d334ab44c";
-import { buildMonuments } from "./monuments.js?v=9d334ab44c";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=9d334ab44c";
-import { buildStation } from "./station.js?v=9d334ab44c";
-import { createRame } from "./rame.js?v=9d334ab44c";
-import { Audio } from "./audio.js?v=9d334ab44c";
-import { DETAILS } from "./details.js?v=9d334ab44c";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=e911c80652";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=e911c80652";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=e911c80652";
+import { MAP } from "./vauban.js?v=e911c80652";
+import { buildLandmarks } from "./landmarks.js?v=e911c80652";
+import { buildMonuments } from "./monuments.js?v=e911c80652";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=e911c80652";
+import { buildStation } from "./station.js?v=e911c80652";
+import { createRame } from "./rame.js?v=e911c80652";
+import { Audio } from "./audio.js?v=e911c80652";
+import { DETAILS } from "./details.js?v=e911c80652";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -801,7 +801,208 @@ function buildRameau(){
 	register(root, "rameau");
 }
 
-buildHA(); buildFalise(); buildWenov(); buildCitadelle(); buildKiosque(); buildRameau();
+/* =====================================================================
+   BU Vauban (bâtiment Robert Schuman), d'après les photos de la façade.
+   Le long de la rue, une façade entièrement vitrée (verre vert d'eau, montants gris, corniche claire) ;
+   à l'angle, le grand mur rouge courbe, plus haut que le bâtiment, granité et percé de hublots, avec le
+   totem noir « Bibliothèque Universitaire Vauban » à son pied ; puis la lanterne de verre sombre au-dessus
+   de l'entrée, un volume gris foncé, et l'aile de bureaux grise : vitrée en bas, brise-soleil bruns en haut.
+   Tout est posé sur l'emprise réelle (OpenStreetMap), hauteur d'après l'IGN (12,6 m).
+   ===================================================================== */
+let buGlass = null;
+function buildBU(){
+	const P = MAP.pois.bu, rec = P && MAP.buildings[P.i];
+	if(!rec || !city.pois.bu) return;
+	const f = rec[4]; let pts = []; for(let k=0;k<f.length;k+=2) pts.push([f[k], f[k+1]]);
+	let sa = 0; for(let i=0;i<pts.length;i++){ const a = pts[i], b = pts[(i+1)%pts.length]; sa += a[0]*b[1] - b[0]*a[1]; }
+	if(sa < 0) pts = pts.reverse();
+	const FHm = MAP.fh || 1.64, H = 4*FHm + .1, GF = FHm;          // 4 niveaux (12,6 m), rez-de-chaussée d'un étage
+	const root = new THREE.Group(); scene.add(root);
+
+	// ---------- textures dessinées (un étage de haut) ----------
+	const tex = (w, h, draw, rx = 1, ry = 1) => { const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h);
+		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.repeat.set(rx, ry); return t; };
+	// verre vert d'eau de la façade sur rue : deux modules, montants gris clairs, allège sombre
+	const greenGlass = tex(128, 128, (x, w, h) => {
+		const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#9cc8bd"); g.addColorStop(.55, "#6f9f95"); g.addColorStop(1, "#4f7c74"); x.fillStyle = g; x.fillRect(0, 0, w, h);
+		x.fillStyle = "rgba(255,255,255,.16)"; x.beginPath(); x.moveTo(10, h); x.lineTo(50, 0); x.lineTo(70, 0); x.lineTo(30, h); x.fill();
+		x.fillStyle = "#3d5c58"; x.fillRect(0, h - 22, w, 22);
+		x.fillStyle = "#d6dbdb"; for(const px of [0, 64]) x.fillRect(px, 0, 5, h); x.fillRect(0, h - 24, w, 3); x.fillRect(0, 0, w, 3); x.fillRect(0, 54, w, 2);
+	});
+	// verre sombre de la lanterne et du rez-de-chaussée : cadres noirs, quelques reflets
+	const darkGlass = tex(128, 128, (x, w, h) => {
+		const g = x.createLinearGradient(0, 0, w, h); g.addColorStop(0, "#2c3646"); g.addColorStop(1, "#141a24"); x.fillStyle = g; x.fillRect(0, 0, w, h);
+		x.fillStyle = "rgba(170,200,230,.12)"; x.fillRect(8, 8, 50, 100); x.fillStyle = "rgba(255,230,180,.08)"; x.fillRect(70, 30, 50, 70);
+		x.fillStyle = "#0b0d12"; for(const px of [0, 64]) x.fillRect(px, 0, 6, h); x.fillRect(0, 0, w, 6); x.fillRect(0, h - 10, w, 10);
+	});
+	// aile de bureaux : vitrage cadré de gris
+	const wingGlass = tex(128, 128, (x, w, h) => {
+		x.fillStyle = "#5d6d78"; x.fillRect(0, 0, w, h);
+		const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#a9c2cf"); g.addColorStop(1, "#6b8796"); x.fillStyle = g; x.fillRect(6, 8, w - 12, h - 30);
+		x.fillStyle = "#4b5660"; x.fillRect(62, 8, 4, h - 30); x.fillRect(0, h - 22, w, 22);
+	});
+	// brise-soleil bruns des deux derniers étages de l'aile
+	const louvres = tex(128, 128, (x, w, h) => {
+		x.fillStyle = "#3c3f45"; x.fillRect(0, 0, w, h);
+		for(let y = 4; y < h - 14; y += 9){ x.fillStyle = "#8c6c52"; x.fillRect(0, y, w, 5); x.fillStyle = "#6e523d"; x.fillRect(0, y + 5, w, 1); }
+		x.fillStyle = "#4a4d55"; x.fillRect(0, h - 14, w, 14); x.fillStyle = "#30333a"; for(const px of [0, 64]) x.fillRect(px, 0, 3, h);
+	});
+	// bardage gris foncé (arrière et volume d'entrée), joints de panneaux
+	const cladding = tex(128, 128, (x, w, h) => {
+		x.fillStyle = "#555a64"; x.fillRect(0, 0, w, h); x.fillStyle = "#484c55"; x.fillRect(0, 63, w, 2); x.fillRect(63, 0, 2, h);
+		x.fillStyle = "rgba(255,255,255,.04)"; x.fillRect(0, 0, w, 30);
+	});
+	// granité rouge du grand mur courbe, percé de hublots en quinconce
+	// une seule image pour tout le mur (de bas en haut) : hublots en quinconce irrégulière, plus serrés vers le haut, comme sur les photos
+	const terrazzo = tex(384, 1024, (x, w, h) => {
+		x.fillStyle = "#8a2a2c"; x.fillRect(0, 0, w, h);
+		const r = mulberryLocal(7);
+		for(let i = 0; i < 16000; i++){ x.fillStyle = ["#a63c3a", "#6d1d20", "#b9574c", "#d9a59a", "#5a1618", "#c46a5a"][Math.floor(r()*6)]; const s = 1 + r()*2.6; x.fillRect(r()*w, r()*h, s, s); }
+		for(let j = 0; j < 13; j++){ const y = 50 + j*68 + (r() - .5)*16; if(y > h - 150) break;
+			for(let i = 0; i < 5; i++){ if(r() < .18) continue; const cx = 34 + i*76 + (j % 2)*38 + (r() - .5)*14, rad = 13 + r()*4;
+				x.fillStyle = "#2a1416"; x.beginPath(); x.arc(cx, y, rad, 0, 7); x.fill(); x.fillStyle = "rgba(0,0,0,.4)"; x.beginPath(); x.arc(cx + 2, y + 3, rad*.85, 0, 7); x.fill(); } }
+	});
+	function mulberryLocal(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0)/4294967296; }; }
+	const M = (map, o = {}) => new THREE.MeshStandardMaterial({ map, roughness:.55, metalness:0, ...o });
+	const mGreen = M(greenGlass, { roughness:.18, metalness:.35, emissive:"#ffd9a0", emissiveIntensity:0, emissiveMap:greenGlass });
+	const mDark = M(darkGlass, { roughness:.15, metalness:.4, emissive:"#ffd391", emissiveIntensity:0, emissiveMap:darkGlass });
+	const mWing = M(wingGlass, { roughness:.25, metalness:.25, emissive:"#ffe2b0", emissiveIntensity:0, emissiveMap:wingGlass });
+	const mLouvre = M(louvres, { roughness:.8 }), mClad = M(cladding, { roughness:.75 }), mRed = M(terrazzo, { roughness:.7 });
+	const cornice = std("#dfe2e3", { flatShading:false }), roofM = std("#a8a49c"), black = std("#16181d", { roughness:.5 });
+
+	// ---------- les façades, côté par côté ----------
+	// rue = côté le plus à l'est, tourné vers l'est ; square = côtés tournés vers -z (vers l'Hôtel Académique) ; le reste : bardage
+	// normale vers l'extérieur : vérifiée en sortant un peu du milieu de chaque côté (l'emprise peut tourner dans un sens ou l'autre)
+	const edges = pts.map((a, i) => { const b = pts[(i+1)%pts.length], dx = b[0]-a[0], dz = b[1]-a[1], len = Math.hypot(dx, dz); return { a, b, len, n:[dz/len, -dx/len], m:[(a[0]+b[0])/2, (a[1]+b[1])/2] }; }).filter(e => e.len > .05);
+	const flip = edges.filter(e => e.len > 1).reduce((s, e) => s + (pointInPoly(e.m[0] + e.n[0]*.15, e.m[1] + e.n[1]*.15, pts) ? 1 : -1), 0) > 0;
+	if(flip) edges.forEach(e => { e.n = [-e.n[0], -e.n[1]]; });
+	const xMax = Math.max(...pts.map(p => p[0]));
+	// façade sur rue : la plus longue arête tournée vers l'est, et les arêtes alignées sur elle (pas les petits décrochements)
+	const main = edges.filter(e => e.n[0] > .75 && e.m[0] > xMax - 9).reduce((s, e) => e.len > s.len ? e : s, { len:0 });
+	const lineDist = e => Math.abs((e.m[0] - main.a[0])*main.n[0] + (e.m[1] - main.a[1])*main.n[1]);
+	const street = edges.filter(e => e.n[0]*main.n[0] + e.n[1]*main.n[1] > .97 && lineDist(e) < .6);
+	const cz = pts.reduce((s, p) => s + p[1], 0)/pts.length;
+	const se = street.reduce((s, e) => [e.a, e.b].reduce((q, p) => p[1] < q[1] ? p : q, s), [0, 1e9]);       // l'angle de la rue côté square
+	// l'arrondi de l'angle : trois points de l'emprise pour le cercle du mur rouge
+	const arc = pts.filter(p => Math.hypot(p[0] - se[0], p[1] - se[1]) < 5.2 && p[1] <= se[1] + 1.4);
+	const circle = (A, B, C) => { const d = 2*(A[0]*(B[1]-C[1]) + B[0]*(C[1]-A[1]) + C[0]*(A[1]-B[1])); if(Math.abs(d) < 1e-6) return null;
+		const ux = ((A[0]**2 + A[1]**2)*(B[1]-C[1]) + (B[0]**2 + B[1]**2)*(C[1]-A[1]) + (C[0]**2 + C[1]**2)*(A[1]-B[1]))/d;
+		const uz = ((A[0]**2 + A[1]**2)*(C[0]-B[0]) + (B[0]**2 + B[1]**2)*(A[0]-C[0]) + (C[0]**2 + C[1]**2)*(B[0]-A[0]))/d; return [ux, uz, Math.hypot(A[0]-ux, A[1]-uz)]; };
+	arc.sort((p, q) => q[0] - p[0]);
+	let C0 = arc.length >= 3 ? circle(arc[0], arc[Math.floor(arc.length/2)], arc[arc.length - 1]) : null;
+	if(!C0 || C0[2] > 9 || C0[2] < 1.2) C0 = [se[0] - 2.4, se[1] + 2.4, 3.2];
+	const arcEndX = arc.length ? Math.min(...arc.map(p => p[0])) : se[0] - 4;
+	const kindOf = e => {
+		if(street.includes(e)) return "rue";
+		if(Math.hypot(e.m[0] - C0[0], e.m[1] - C0[1]) < C0[2] + .6) return "angle";
+		const square = e.m[1] < cz;                     // côté du square Robert Schuman (vers l'Hôtel Académique)
+		if(square && e.n[1] < -.55 && e.m[0] > arcEndX - 8.5) return "lanterne";
+		if(square && e.n[1] < -.55 && e.m[0] > arcEndX - 12) return "entree";
+		if(square && e.n[1] < -.4) return "aile";
+		return "dos";
+	};
+	const buckets = new Map();
+	const bucket = m => { if(!buckets.has(m)) buckets.set(m, { pos:[], nor:[], uv:[] }); return buckets.get(m); };
+	const quad = (m, e, y0, y1, u0, modW, floorH, off = 0) => {
+		const B = bucket(m), [ax, az] = [e.a[0] + e.n[0]*off, e.a[1] + e.n[1]*off], [bx, bz] = [e.b[0] + e.n[0]*off, e.b[1] + e.n[1]*off];
+		const U0 = u0/modW, U1 = (u0 + e.len)/modW, V0 = y0/floorH, V1 = y1/floorH;
+		let v = [[ax, y0, az, U0, V0], [bx, y0, bz, U1, V0], [bx, y1, bz, U1, V1], [ax, y0, az, U0, V0], [bx, y1, bz, U1, V1], [ax, y1, az, U0, V1]];
+		if(-(bz - az)*e.n[0] + (bx - ax)*e.n[1] < 0) v = [v[0], v[2], v[1], v[3], v[5], v[4]];      // face avant tournée vers l'extérieur
+		for(const [x, y, z, u, w] of v){ B.pos.push(x, y, z); B.nor.push(e.n[0], 0, e.n[1]); B.uv.push(u, w); }
+	};
+	let run = 0;
+	for(const e of edges){
+		const k = kindOf(e), mod = 1.5*.4;            // module de façade : 1,5 m réel à l'échelle de la carte
+		if(k === "rue"){ quad(mDark, e, 0, GF, run, mod*2, FHm, -.12); quad(mGreen, e, GF, H, run, mod*2, FHm); }
+		else if(k === "lanterne"){ quad(mDark, e, 0, H + .5, run, mod*2, FHm); }
+		else if(k === "entree"){ quad(mDark, e, 0, GF, run, mod*2, FHm, -.1); quad(mClad, e, GF, H + .5, run, mod*3, FHm); }
+		else if(k === "aile"){ quad(mWing, e, 0, H - 2*FHm, run, mod*2, FHm); quad(mLouvre, e, H - 2*FHm, H, run, mod*2, FHm); }
+		else if(k === "angle"){ quad(mDark, e, 0, H, run, mod*2, FHm, -.05); }
+		else { quad(mClad, e, 0, H, run, mod*3, FHm); }
+		// corniche claire au sommet (la lanterne et le volume d'entrée montent un peu plus haut)
+		const top = k === "lanterne" || k === "entree" ? H + .5 : H;
+		quad(cornice, e, top, top + .22, 0, 1, 1, .02);
+		run += e.len;
+	}
+	for(const [m, B] of buckets){
+		const g = new THREE.BufferGeometry();
+		g.setAttribute("position", new THREE.Float32BufferAttribute(B.pos, 3)); g.setAttribute("normal", new THREE.Float32BufferAttribute(B.nor, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(B.uv, 2));
+		const me = new THREE.Mesh(g, m); me.castShadow = me.receiveShadow = true; root.add(me);
+	}
+	// toit plat gravillonné, édicules techniques
+	{
+		const shape = new THREE.Shape(pts.map(p => new THREE.Vector2(p[0], -p[1])));
+		const g = new THREE.ShapeGeometry(shape).rotateX(-Math.PI/2);
+		const roof = new THREE.Mesh(g, roofM); roof.position.y = H + .02; roof.receiveShadow = true; root.add(roof);
+		const cx = pts.reduce((a, p) => a + p[0], 0)/pts.length, cz = pts.reduce((a, p) => a + p[1], 0)/pts.length;
+		for(const [dx, dz, w, d] of [[-6, 1, 2.2, 1.4], [4, -1, 1.6, 1.2], [-14, 2, 1.8, 1.8]]){
+			if(!pointInPoly(cx + dx, cz + dz, pts)) continue;
+			box(root, w, .7, d, std("#c9c7c1"), cx + dx, H, cz + dz);
+		}
+	}
+
+	// ---------- le grand mur rouge courbe ----------
+	{
+		const [ox, oz, r0] = C0, th = .28, N = 18;
+		// ouverture de l'arc : du bout de la façade sur rue au départ du square, vue depuis le centre du cercle
+		const angOf = p => Math.atan2(p[1] - oz, p[0] - ox);
+		let a0 = angOf(se), a1 = angOf(arc.length ? arc[arc.length - 1] : [se[0] - 4, se[1]]);
+		while(a1 - a0 > Math.PI) a1 -= 2*Math.PI; while(a0 - a1 > Math.PI) a1 += 2*Math.PI;
+		// le mur déborde un peu de chaque côté de l'arrondi, comme sur les photos
+		// une voile étroite, centrée sur l'angle (environ les deux tiers de l'arrondi), qui dépasse nettement du toit
+		const mid = (a0 + a1)/2, half = .36*(a1 - a0); a0 = mid - half; a1 = mid + half;
+		const Htop = H + 3.1, Hlow = H + 1.5;               // sommet arrondi, plus haut côté rue
+		const pos = [], uv = [], idx = [];
+		const ring = (r, out) => { const base = pos.length/3;
+			for(let i = 0; i <= N; i++){ const t = i/N, a = a0 + (a1 - a0)*t, x = ox + Math.cos(a)*r, z = oz + Math.sin(a)*r, ht = Hlow + (Htop - Hlow)*Math.sin(t*Math.PI*.5 + Math.PI*.15)*1.05;
+				pos.push(x, 0, z, x, ht, z); uv.push(t, 0, t, ht/Htop); }
+			for(let i = 0; i < N; i++){ const p = base + i*2; out ? idx.push(p, p + 2, p + 1, p + 1, p + 2, p + 3) : idx.push(p, p + 1, p + 2, p + 1, p + 3, p + 2); }
+			return base; };
+		const bo = ring(r0 + th, true), bi = ring(r0, false);
+		// dessus et chants
+		for(let i = 0; i < N; i++){ const po = bo + i*2 + 1, pi = bi + i*2 + 1; idx.push(po, pi, po + 2, pi, pi + 2, po + 2); }
+		for(const [o, ii] of [[bo, bi], [bo + N*2, bi + N*2]]) idx.push(o, ii, o + 1, ii, ii + 1, o + 1);
+		const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
+		const wall = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map:terrazzo, roughness:.7, side:THREE.DoubleSide })); wall.castShadow = wall.receiveShadow = true; root.add(wall);
+		// le totem noir de la bibliothèque, au pied du mur, tourné vers l'angle des rues
+		const am = (a0 + a1)/2, tx = ox + Math.cos(am)*(r0 + th + .14), tz = oz + Math.sin(am)*(r0 + th + .14);
+		const sign = (() => { const c = document.createElement("canvas"); c.width = 128; c.height = 256; const x = c.getContext("2d");
+			x.fillStyle = "#1b1d22"; x.fillRect(0, 0, 128, 256); x.fillStyle = "#f2f2f2"; x.textAlign = "center";
+			x.font = "600 13px Arial, sans-serif"; x.fillText("BIBLIOTHÈQUE", 64, 40); x.fillText("UNIVERSITAIRE", 64, 58); x.font = "700 24px Arial, sans-serif"; x.fillText("VAUBAN", 64, 88);
+			x.fillStyle = "#f2f2f2"; x.beginPath(); x.moveTo(52, 104); x.lineTo(76, 104); x.lineTo(76, 120); x.quadraticCurveTo(64, 132, 52, 120); x.closePath(); x.fill();
+			x.font = "600 9px Arial, sans-serif"; x.fillText("UNIVERSITÉ", 64, 148); x.fillText("CATHOLIQUE", 64, 160); x.fillText("DE LILLE", 64, 172);
+			const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; })();
+		const totem = new THREE.Mesh(BOXC, [black, black, black, black, new THREE.MeshStandardMaterial({ map:sign, roughness:.5 }), black]);
+		// grand panneau noir plaqué au pied du mur, comme sur la façade
+		totem.scale.set(1.25, 2.5, .12); totem.position.set(tx, .55 + 1.25, tz); totem.rotation.y = Math.atan2(Math.cos(am), Math.sin(am)); totem.castShadow = true; root.add(totem);
+		const foot = box(root, .5, .55, .25, black, tx, 0, tz); foot.rotation.y = totem.rotation.y;
+	}
+
+	// ---------- devant l'aile : bouleaux du square Robert Schuman ----------
+	{
+		const birch = std("#ece9e2"), mark = std("#2a2a2a"), leaf = std("#e3c45c");
+		const wing = edges.filter(e => kindOf(e) === "aile" && e.len > 3);
+		let n = 0;
+		for(const e of wing) for(const t of [.3, .7]){
+			if(n >= 4) break;
+			const x = e.a[0] + (e.b[0] - e.a[0])*t + e.n[0]*2.2, z = e.a[1] + (e.b[1] - e.a[1])*t + e.n[1]*2.2;
+			cyl(root, .09, .12, 4.2, birch, x, 0, z, 6);
+			for(const y of [.8, 1.7, 2.6]) box(root, .2, .05, .2, mark, x, y, z);
+			for(let k = 0; k < 4; k++) mesh(cached("buLeaf", () => new THREE.IcosahedronGeometry(.55, 0)), leaf, root, x + Math.sin(k*1.9)*.45, 3.5 + k*.35, z + Math.cos(k*1.9)*.45);
+			n++;
+		}
+	}
+
+	buGlass = [mGreen, mDark, mWing];
+	if(/[?&]debug/.test(location.search)) window.__buDebug = { se, arc, C0, flip, kinds:edges.map(e => [kindOf(e), e.m.map(v => +v.toFixed(1)), e.n.map(v => +v.toFixed(2))]) };
+	// l'ancien bloc générique d'OpenStreetMap laisse la place
+	city.pois.bu.group.visible = false;
+	city.pois.bu.H = H + 1;
+	city.pois.bu.mats = [mGreen, mWing, mLouvre, mClad, mRed];
+	register(root, "bu");
+}
+
+buildHA(); buildFalise(); buildWenov(); buildCitadelle(); buildKiosque(); buildRameau(); buildBU();
 const monuments = buildMonuments(scene, MAP);
 const landmarks = buildLandmarks(scene, MAP, { inBuilding:city.inBuilding, roadGap:city.roadGap, home:[0, 14] });
 let horizon = null, farWood = null;          // le lointain arrive après le campus (js/vauban_far.js), voir loadFar
@@ -947,7 +1148,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=9d334ab44c").then(({ FAR }) => {
+	import("./vauban_far.js?v=e911c80652").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1363,6 +1564,7 @@ function showLight(){
 	glowPts.visible = lamp > .01; glowPts.material.opacity = lamp;
 	faliseGlass.emissiveIntensity = .9*k;
 	if(rameauGlass) rameauGlass.forEach(m => m.emissiveIntensity = .8*k);
+	if(buGlass) buGlass.forEach(m => m.emissiveIntensity = .7*k);
 	atriumRoof.emissiveIntensity = .55*k;
 	atriumGlow.emissiveIntensity = .4 + 1.6*k;
 	wenovGlass.emissiveIntensity = .28*k;
@@ -1451,14 +1653,14 @@ setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night 
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=9d334ab44c").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=9d334ab44c").then(m => m.createChapelle), eura:() => import("./eura.js?v=9d334ab44c").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=9d334ab44c").then(m => m.createWenovIn) };
+const MAKERS = { atrium:() => import("./atrium.js?v=e911c80652").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=e911c80652").then(m => m.createChapelle), eura:() => import("./eura.js?v=e911c80652").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=e911c80652").then(m => m.createWenovIn) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=9d334ab44c").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=9d334ab44c").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=9d334ab44c").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=9d334ab44c").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=9d334ab44c").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=9d334ab44c").then(m => m.openBiodata)
+	comptoir:() => import("./games/comptoir.js?v=e911c80652").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=e911c80652").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=e911c80652").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=e911c80652").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=e911c80652").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=e911c80652").then(m => m.openBiodata)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
