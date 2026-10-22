@@ -674,6 +674,39 @@ function fitInstances(m, counts){
 	m.counts = counts; m.frustumCulled = true;
 	return m;
 }
+/* Les blocs du lointain sont les rectangles englobants des vrais bâtiments : un immeuble en L ou autour d'une cour
+   déborde sur ses voisins, et leurs toits se croisent. Du plus grand au plus petit : un bloc recouvert à plus de 30 %
+   par un bloc déjà posé disparaît ; s'il le touche seulement, il garde son volume mais perd son toit en pente. */
+function untangleFar(list){
+	const quad = s => { const W = Math.max(.8, s[3])/2, D = Math.max(.8, s[4])/2, c = Math.cos(s[2]), n = Math.sin(s[2]);
+		return [[-W, -D], [W, -D], [W, D], [-W, D]].map(([a, b]) => [s[0] + a*c - b*n, s[1] + a*n + b*c]); };
+	const area = p => { let a = 0; for(let i = 0; i < p.length; i++){ const q = p[i], r = p[(i+1)%p.length]; a += q[0]*r[1] - r[0]*q[1]; } return Math.abs(a)/2; };
+	const ccw = p => { let a = 0; for(let i = 0; i < p.length; i++){ const q = p[i], r = p[(i+1)%p.length]; a += q[0]*r[1] - r[0]*q[1]; } return a < 0 ? p.slice().reverse() : p; };
+	// intersection de deux quadrilatères convexes (Sutherland-Hodgman)
+	const clip = (subject, by) => {
+		let out = subject;
+		for(let i = 0; i < by.length && out.length; i++){
+			const A = by[i], B = by[(i+1)%by.length], inside = p => (B[0]-A[0])*(p[1]-A[1]) - (B[1]-A[1])*(p[0]-A[0]) >= 0, inp = out; out = [];
+			for(let k = 0; k < inp.length; k++){
+				const P = inp[k], Q = inp[(k+1)%inp.length], ip = inside(P), iq = inside(Q);
+				if(ip) out.push(P);
+				if(ip !== iq){ const d1 = (B[0]-A[0])*(P[1]-A[1]) - (B[1]-A[1])*(P[0]-A[0]), d2 = (B[0]-A[0])*(Q[1]-A[1]) - (B[1]-A[1])*(Q[0]-A[0]), t = d1/(d1 - d2); out.push([P[0] + (Q[0]-P[0])*t, P[1] + (Q[1]-P[1])*t]); }
+			}
+		}
+		return out;
+	};
+	const G = 16, grid = new Map(), keep = [];
+	const cells = q => { const xs = q.map(p => p[0]), zs = q.map(p => p[1]), out = []; for(let a = Math.floor(Math.min(...xs)/G); a <= Math.floor(Math.max(...xs)/G); a++) for(let b = Math.floor(Math.min(...zs)/G); b <= Math.floor(Math.max(...zs)/G); b++) out.push(a*100003 + b); return out; };
+	const items = list.map(s => { const q = ccw(quad(s)); return { s, q, A:area(q) }; }).sort((a, b) => b.A - a.A);
+	for(const it of items){
+		const near = new Set(); for(const k of cells(it.q)) for(const o of grid.get(k) || []) near.add(o);
+		let over = 0; for(const o of near){ const x = clip(it.q, o.q); if(x.length > 2) over += area(x); }
+		if(over > .3*it.A) continue;
+		if(over > .03*it.A) it.s[6] = 0;
+		keep.push(it.s); for(const k of cells(it.q)){ if(!grid.has(k)) grid.set(k, []); grid.get(k).push(it); }
+	}
+	return keep;
+}
 function buildHorizon(F){
 	// les vrais bâtiments au-delà de la zone à l'échelle réelle (BD TOPO), en miniature puisque le lointain est compressé ;
 	// la Citadelle et Euratechnologies ont leurs propres modèles
@@ -685,14 +718,40 @@ function buildHorizon(F){
 	// valeurs entières du fichier : positions et tailles au dixième, angle au centième, hauteur du toit au dixième
 	// le fichier contient certains bâtiments deux fois : un seul exemplaire, sinon leurs faces confondues clignotent
 	const twice = new Set();
-	const spots = F.filter(([x, z, a]) => { const k = x + "," + z + "," + a; if(twice.has(k)) return false; twice.add(k); return true; })
+	const all = F.filter(([x, z, a]) => { const k = x + "," + z + "," + a; if(twice.has(k)) return false; twice.add(k); return true; })
 		.map(([x, z, a, w, dp, lv, rh, col, rm]) => [x/10, z/10, a/100, w/10, dp/10, lv, rh/10, col, rm])
 		.filter(([x, z]) => !blockedFar(x, z) && !monuments.covers(x, z) && !(ZONE && pointInPoly(x, z, ZONE)));
-	spots.forEach((s, i) => s.push(i));          // la teinte du toit dépend du rang d'origine
+	all.forEach((s, i) => s.push(i));          // la teinte du toit dépend du rang d'origine
+	const spots = untangleFar(all);
 	const H0 = (MAP.fh || 2.3)*.85;
 	for(const s of spots) s.rank = farRank(Math.hypot(s[0], s[1]), Math.max(.8, s[3])*Math.max(.8, s[4])*s[5]);
 	const bodyGeo = withoutFaces(BOX, (nx, ny) => ny < -.5), roofGeo = withoutFaces(gable(1, 1, 1), (nx, ny) => ny < -.5);
 	const wallMat = std("#ffffff"), roofMat = std("#ffffff");
+	// fenêtres dessinées par le shader, en coordonnées du monde (une travée de 1,4, un étage de H0) : de près, les blocs
+	// ressemblent à des immeubles ; elles s'effacent avant 150 unités (pas de moiré qui scintille au loin)
+	wallMat.onBeforeCompile = sh => {
+		sh.vertexShader = sh.vertexShader.replace("#include <common>", `#include <common>
+varying vec3 vFarP; varying vec3 vFarN;`)
+			.replace("#include <project_vertex>", `#include <project_vertex>
+	mat4 farM = modelMatrix;
+	#ifdef USE_INSTANCING
+	farM = modelMatrix*instanceMatrix;
+	#endif
+	vFarP = (farM*vec4(transformed, 1.0)).xyz; vFarN = normalize(mat3(farM)*objectNormal);`);
+		sh.fragmentShader = sh.fragmentShader.replace("#include <common>", `#include <common>
+varying vec3 vFarP; varying vec3 vFarN;`)
+			.replace("#include <color_fragment>", `#include <color_fragment>
+	if(abs(vFarN.y) < .5){
+		vec3 t = normalize(cross(vec3(0.0, 1.0, 0.0), vFarN));
+		vec2 q = vec2(dot(vFarP, t)/1.4, vFarP.y/${H0.toFixed(3)});
+		vec2 f = fract(q), w = fwidth(q)*1.5;
+		float wx = smoothstep(.26, .26 + w.x, f.x) - smoothstep(.74 - w.x, .74, f.x);
+		float wy = (smoothstep(.34, .34 + w.y, f.y) - smoothstep(.82 - w.y, .82, f.y))*step(.7, q.y);
+		float fade = 1.0 - smoothstep(80.0, 150.0, distance(vFarP, cameraPosition));
+		diffuseColor.rgb = mix(diffuseColor.rgb, vec3(.25, .3, .37), clamp(wx*wy, 0.0, 1.0)*fade*.85);
+	}`);
+	};
+	wallMat.customProgramCacheKey = () => "farWindows";
 	const d = new THREE.Object3D(), c = new THREE.Color(), tiles = [];
 	const walls = ["#b5563d","#a84e3a","#c46a4a","#9c4a38","#b9603f","#efe6d6","#e6d9c1","#d9cbb5","#f3eee6","#cdbfa8","#e9d3b4","#c9c2b8"];
 	const roofs = { 0:["#4f5767","#5d6170","#8d4a3a"], 1:["#8d4a3a","#7a4234","#9a5a43"], 2:["#4f5767","#4a505d"], 3:["#7f8791"] };
