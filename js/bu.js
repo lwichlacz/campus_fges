@@ -48,7 +48,8 @@ export function createBU({ background }){
 	const nameWall = canvasTex(1024, 220, (x, w, h) => {
 		x.fillStyle = "#f1eee8"; x.fillRect(0, 0, w, h);
 		x.fillStyle = "#8a2a2c"; x.fillRect(0, 150, w, 70);
-		for(let k = 0; k < 2500; k++){ x.fillStyle = ["#a63c3a", "#6d1d20", "#9a3a36"][k % 3]; x.fillRect((k*733) % w, 150 + (k*97) % 70, 2, 2);          // grains proches du fond : pas de points clairs qui grésillent }
+		// grains proches du fond : pas de points clairs qui grésillent
+		for(let k = 0; k < 2500; k++){ x.fillStyle = ["#a63c3a", "#6d1d20", "#9a3a36"][k % 3]; x.fillRect((k*733) % w, 150 + (k*97) % 70, 2, 2); }
 		x.fillStyle = "#1f2b3c"; x.font = "600 30px Arial, sans-serif"; x.textAlign = "center";
 		x.fillText("BIBLIOTHÈQUE UNIVERSITAIRE", w/2, 70); x.font = "800 52px Arial, sans-serif"; x.fillText("VAUBAN", w/2, 126);
 	});

@@ -213,7 +213,7 @@ function bench(parent, x, z, ry){
 const pickables = [];
 function register(root, id){ root.traverse(o => { if(o.isMesh){ o.userData.place = id; if(!pickables.includes(o)) pickables.push(o); } }); }
 const ball = () => cached("ball", () => new THREE.SphereGeometry(.2, 8, 6));
-let cedarMat, courtFlowers, flags = [], clockHands;
+let cedarMat, courtFlowers, courtLawn, flags = [], clockHands;
 const snowRoofs = [];          // toits plats faits main (BU, Rizomm) : blancs sous la neige
 function flagTexture(kind){
 	const c = document.createElement("canvas"); c.width = 96; c.height = 64;
@@ -345,12 +345,14 @@ function buildHA(){
 		put(cached("k.05,.16,4", () => new THREE.ConeGeometry(.05, .16, 4).translate(0, .08, 0)), tips, ([x, y, z]) => { d.position.set(x, y, z); d.scale.set(1, 1, 1); d.rotation.set(0, 0, 0); });
 		put(cached("gateScroll", () => new THREE.TorusGeometry(.16, .025, 4, 14)), scrolls, ([x, y, z]) => { d.position.set(x, y, z); d.scale.set(1, 1, 1); d.rotation.set(0, 0, 0); });
 	}
+	// gazon propre à la cour : celui de la ville se peint en pavé là où la photo aérienne voit du minéral
+	courtLawn = std("#9cb257", { flatShading:false });
 	const buis = std("#2f5a35"), soil = std("#5b4334"), flowers = [];
 	const bloom = ["#d8344a", "#e8577a", "#f2a2b8", "#f4f0e8", "#c9243c", "#f0c24a", "#b8325a"];
 	// une pelouse : gazon, bordure de buis (ouverte côté allée), massif fleuri le long de l'allée et au bout
 	const lawn = (x0, x1, z0, z1, side) => {
 		const cx = (x0 + x1)/2, cz = (z0 + z1)/2, w = x1 - x0, d = z1 - z0;
-		flat(HAG, w, d, lawnMat, cx, cz, .1);
+		flat(HAG, w, d, courtLawn, cx, cz, .1);
 		const ex = side > 0 ? x0 : x1, far = side > 0 ? x1 : x0;          // ex : bord côté allée centrale
 		box(HAG, .3, .32, d, buis, far, .1, cz);
 		box(HAG, w, .32, .3, buis, cx, .1, z0);
@@ -1800,7 +1802,7 @@ function applyAmbiance(instant, dur = 1.8){
 	slateMats.forEach(m => m.color.set(S.slate));
 	zincMats.forEach(m => m.color.set(S.snowy ? "#dfe6ee" : "#9aa5b1"));
 	cedarMat.color.set(S.conifer); pineMats.forEach(m => m.color.set(S.conifer));
-	courtFlowers.visible = !S.snowy;          // massifs de la cour : pas de fleurs sous la neige
+	courtFlowers.visible = !S.snowy; courtLawn.color.set(S.lawn);          // massifs de la cour : pas de fleurs sous la neige
 	for(const m of snowRoofs){
 		if(!m.userData.base) m.userData.base = { c:m.color.clone(), map:m.map };
 		m.color.copy(S.snowy ? new THREE.Color("#e4eaf1") : m.userData.base.c); m.map = S.snowy ? null : m.userData.base.map; m.needsUpdate = true;
