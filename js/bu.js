@@ -2,7 +2,7 @@
    mezzanine sous la verrière, salles de travail en groupe et banque d'accueil.
    Vue « maquette » : deux murs pleins (vitrage du fond, mur du nom à gauche), les deux autres à hauteur d'appui. */
 import * as THREE from "three";
-import { std, box, cyl, mesh, makePerson, R, mulberry32, BOX } from "./kit.js?v=b61d33e63e";
+import { std, box, cyl, mesh, makePerson, R, mulberry32, BOX } from "./kit.js?v=5edcdae804";
 
 const X0 = -20, X1 = 20, Z0 = -12, Z1 = 12, HT = 8.6, MZ = 4.2, MZ1 = -5;      // salle, hauteur, mezzanine (de Z0 à MZ1)
 
