@@ -1,7 +1,7 @@
 /* Le quartier d'Euratechnologies (Bois-Blancs, Lille), autour du campus Wenov et de l'École du Numérique.
    Comme Vauban : OpenStreetMap, BD TOPO et photo aérienne de l'IGN (js/euramap.js, généré par tools/build_eura.py),
    à la même échelle verticale (un étage = 1,64 unité), avec plaques de rue, jalonnement « M » et lieux réels. Trois bâtiments faits main
-   d'après photos : Wenov (Lalou+Lebec, 2022 : béton clair, patio planté sur pilotis, volume vitré),
+   d'après photos et descriptions : Wenov (Lalou+Lebec, 2022 : briques blanches, portiques, patio planté, « Deck » à 9 m),
    le Blan-Lafont (filature de coton de 1896, siège d'Euratechnologies depuis 2009) et sa tour.
    Chargé à la demande, comme l'atrium : une seule scène de quartier à la fois (léger sur téléphone). */
 import * as THREE from "three";
@@ -16,15 +16,6 @@ const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const ring = f => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; };
 const cen = p => [p.reduce((s, q) => s + q[0], 0)/p.length, p.reduce((s, q) => s + q[1], 0)/p.length];
 
-function concreteGrid(){
-	// trame de Wenov : béton clair, fenêtres verticales régulières
-	const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
-	x.fillStyle = "#e9e6df"; x.fillRect(0, 0, 128, 128);
-	const g = x.createLinearGradient(0, 0, 0, 128); g.addColorStop(0, "#6c8296"); g.addColorStop(1, "#465a6e");
-	x.fillStyle = g; x.fillRect(14, 16, 36, 96); x.fillRect(78, 16, 36, 96);
-	x.fillStyle = "rgba(233,230,223,.5)"; x.fillRect(30, 16, 4, 96); x.fillRect(94, 16, 4, 96);
-	const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
-}
 function canvasTex(draw, w = 128, h = 128, color = true){
 	const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h);
 	const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; if(color) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
@@ -67,12 +58,6 @@ function darkOffices(){
 function officeLit(){
 	const r = mulberry32(21);
 	return canvasTex(x => { x.fillStyle = "#000"; x.fillRect(0, 0, 128, 128); for(const xx of [9, 47, 85]) if(r() < .6){ x.fillStyle = "#e8f0ff"; x.fillRect(xx, 22, 32, 84); } }, 128, 128, false);
-}
-function litGrid(){
-	const r = mulberry32(5), c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
-	x.fillStyle = "#000"; x.fillRect(0, 0, 128, 128);
-	for(const xx of [14, 78]) if(r() < .7){ x.fillStyle = "#ffd28f"; x.fillRect(xx, 16, 36, 96); }
-	return new THREE.CanvasTexture(c);
 }
 // une forme (contour + trou) extrudée en hauteur, posée au sol
 function ringSlab(outer, hole, h, mat, y, parent, uvScale=1){
@@ -149,47 +134,94 @@ export function createEura({ background }){
 	// plaques de rue, panneaux « M » de Wenov jusqu'à la station, lieux réels du quartier
 	const landmarks = buildLandmarks(scene, EMAP, { inBuilding:city.inBuilding, roadGap:city.roadGap, home:[0, -12] });
 
-	/* ---------- Wenov ---------- */
+	/* ---------- Wenov ----------
+	   D'après la description de l'architecte (Lalou+Lebec, aujourd'hui Post Architectes) : plateaux horizontaux superposés
+	   vêtus de longues briques blanches ; au sol, des portiques réguliers de plus de 5 m de haut sur tout le périmètre
+	   et autour des patios ; de grandes baies vitrées découpées différemment d'une façade et d'un étage à l'autre ;
+	   des patios plantés au cœur de l'îlot, des passerelles au premier étage, et le « Deck », terrasse de 1 500 m² à 9 m. */
 	const W = ring(EMAP.wenov.pts), WC = cen(W);
 	const wen = new THREE.Group(); scene.add(wen);
-	const white = std("#efede8"), slabM = std("#f6f4ef");
-	const gridTex = concreteGrid(), FH = 2.16, NF = 5;                       // R+4 : 20,5 m à l'acrotère (PSS-archi), à l'échelle de Vauban
-	gridTex.repeat.set(1/1.6, 1/FH);
-	const facadeM = new THREE.MeshStandardMaterial({ map:gridTex, roughness:.85, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:litGrid() }); softenFar(facadeM);
+	const FH = 2.16, NF = 5;                                                  // R+4 : 20,5 m à l'acrotère (PSS-archi), à l'échelle de Vauban
+	const MPU = FH*NF/20.5;                                                   // unités par mètre réel, à la verticale
+	const PH = 5.6*MPU, UF = (NF*FH - PH)/4;                                  // portiques de 5,6 m, puis quatre plateaux
+	const brickW = std("#efede8"), slabM = std("#f7f6f2", { flatShading:false });
+	// briques blanches longues ; huit travées et quatre plateaux par image : les baies ne se répètent pas d'un étage à l'autre
+	const bays = (() => { const r = mulberry32(31), K = [];
+		for(let f = 0; f < 4; f++) for(let i = 0; i < 8; i++){ const k = r(); K.push(k < .3 ? "plein" : k < .5 ? "deux" : k < .7 ? "bande" : k < .85 ? "haute" : "mixte"); }
+		return K; })();
+	const drawFacade = (x, lit) => {
+		x.fillStyle = lit ? "#000" : "#eceae4"; x.fillRect(0, 0, 1024, 512);
+		if(!lit) for(let y = 0; y < 512; y += 5){ x.fillStyle = "#dedbd3"; x.fillRect(0, y, 1024, 1); const o = (y/5 % 2)*30; for(let px = o; px < 1024; px += 60) x.fillRect(px, y, 1, 5); }
+		const r = mulberry32(57);
+		bays.forEach((k, n) => {
+			const bx = (n % 8)*128, by = (3 - Math.floor(n/8))*128;          // plateau 1 en bas de l'image
+			const win = (px, py, w, h, cols) => {
+				if(lit){ if(r() < .6){ x.fillStyle = "#ffe3ad"; x.fillRect(bx + px, by + py, w, h); } return; }
+				const g = x.createLinearGradient(0, by + py, 0, by + py + h); g.addColorStop(0, "#8ea7ba"); g.addColorStop(1, "#4d6276");
+				x.fillStyle = "#a4abb2"; x.fillRect(bx + px - 3, by + py - 3, w + 6, h + 6);
+				x.fillStyle = g; x.fillRect(bx + px, by + py, w, h);
+				x.fillStyle = "#a4abb2"; for(let c = 1; c < cols; c++) x.fillRect(bx + px + c*w/cols - 1.5, by + py, 3, h);
+				x.fillStyle = "rgba(255,255,255,.14)"; x.fillRect(bx + px + 4, by + py + 4, Math.min(10, w/4), h - 8);
+			};
+			if(k === "plein") win(8, 14, 112, 100, 3);
+			else if(k === "deux"){ win(14, 14, 38, 100, 1); win(76, 14, 38, 100, 1); }
+			else if(k === "bande") win(6, 40, 116, 56, 4);
+			else if(k === "haute") win(30, 10, 68, 108, 2);
+			else { win(8, 14, 60, 100, 2); win(84, 40, 34, 50, 1); }
+		});
+	};
+	const facadeTex = canvasTex(x => drawFacade(x, false), 1024, 512), facadeLit = canvasTex(x => drawFacade(x, true), 1024, 512, false);
+	facadeTex.repeat.set(1/(8*3.2), 1/(4*UF)); facadeLit.repeat.copy(facadeTex.repeat);
+	const facadeM = new THREE.MeshStandardMaterial({ map:facadeTex, roughness:.85, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:facadeLit }); softenFar(facadeM);
 	const patio = inset(W, .5);
 	const shopM = std("#6f8497", { roughness:.3, metalness:.2, emissive:"#ffd08a", emissiveIntensity:0 });
-	// rez-de-chaussée en retrait sur pilotis : commerces vitrés (cafés, coworking)
-	ringSlab(offset(W, 1.2), offset(patio, -1.2), FH, shopM, 0, wen);
+	// rez-de-chaussée vitré, en retrait derrière les portiques (cafés, coworking, accueil des écoles)
+	ringSlab(offset(W, 1.1), offset(patio, -1.1), PH, shopM, 0, wen);
 	{
-		const cols = [];
-		for(const poly of [W, patio]) for(let i=0;i<poly.length;i++){
-			const a = poly[i], b = poly[(i+1)%poly.length], l = Math.hypot(b[0]-a[0], b[1]-a[1]), n = Math.max(2, Math.round(l/3.2));
-			for(let k=0;k<n;k++){ const t = (k + .5)/n; cols.push([a[0] + (b[0]-a[0])*t, a[1] + (b[1]-a[1])*t]); }
+		const piers = [];
+		for(const [poly, out] of [[W, 1], [patio, -1]]){
+			const ccw = poly.reduce((s, a, i) => { const b = poly[(i+1)%poly.length]; return s + a[0]*b[1] - b[0]*a[1]; }, 0) > 0 ? 1 : -1;
+			for(let i = 0; i < poly.length; i++){
+				const a = poly[i], b = poly[(i+1)%poly.length], l = Math.hypot(b[0]-a[0], b[1]-a[1]), n = Math.max(2, Math.round(l/2.6));
+				const nx = -(b[1]-a[1])/l*ccw*out, nz = (b[0]-a[0])/l*ccw*out;          // vers le dedans du bâtiment
+				for(let k = 0; k <= n; k++){ const t = k/n; piers.push([a[0] + (b[0]-a[0])*t + nx*.45, a[1] + (b[1]-a[1])*t + nz*.45, -Math.atan2(b[1]-a[1], b[0]-a[0])]); }
+			}
 		}
-		const im = new THREE.InstancedMesh(new THREE.CylinderGeometry(.32, .32, FH, 8).translate(0, FH/2, 0), white, cols.length), d = new THREE.Object3D();
-		cols.forEach(([x, z], i) => { d.position.set(x, 0, z); d.updateMatrix(); im.setMatrixAt(i, d.matrix); });
+		const im = new THREE.InstancedMesh(new THREE.BoxGeometry(.5, PH, .9).translate(0, PH/2, 0), brickW, piers.length), d = new THREE.Object3D();
+		piers.forEach(([x, z, a], i) => { d.position.set(x, 0, z); d.rotation.set(0, a, 0); d.updateMatrix(); im.setMatrixAt(i, d.matrix); });
 		im.castShadow = im.receiveShadow = true; wen.add(im);
 	}
-	for(let f=1; f<NF; f++){
-		ringSlab(W, patio, FH - .22, facadeM, f*FH, wen);
-		ringSlab(offset(W, -.35), offset(patio, .35), .22, slabM, f*FH - .22, wen);     // nez de dalle qui dépasse
-	}
-	ringSlab(offset(W, -.35), offset(patio, .35), .3, slabM, NF*FH - .22, wen);
-	// volume vitré à l'angle, face au Blan-Lafont et à la cour de Bretagne
-	const corner = W[0], toC = [WC[0] - corner[0], WC[1] - corner[1]], tl = Math.hypot(...toC);
-	const gx = corner[0] + toC[0]/tl*5.2, gz = corner[1] + toC[1]/tl*5.2;
+	// les quatre plateaux, d'un seul tenant (les baies changent d'un étage à l'autre), et leurs nez de dalle blancs
+	ringSlab(W, patio, 4*UF, facadeM, PH, wen);
+	for(let f = 0; f <= 4; f++) ringSlab(offset(W, -.14), offset(patio, .14), .2, slabM, PH + f*UF - (f === 4 ? 0 : .1), wen);
+	ringSlab(inset(W, .985), inset(patio, 1.02), .12, std("#bdbab3"), NF*FH + .2, wen);          // toit-terrasse
+	// le patio : une moitié en jardin au sol, l'autre sous le Deck (volume vitré, terrasse en bois à 9 m)
+	const P0 = patio[0], P1 = patio[1], P2 = patio[2], P3 = patio[3], lerp = (a, b, t) => [a[0] + (b[0]-a[0])*t, a[1] + (b[1]-a[1])*t];
+	const deck = inset([lerp(P0, P3, .52), lerp(P1, P2, .52), P2, P3], .96), DH = 9*MPU;
 	const glassM = new THREE.MeshStandardMaterial({ color:"#a9c7d6", roughness:.12, metalness:.35, transparent:true, opacity:.88, emissive:"#ffd08a", emissiveIntensity:0 });
-	const gb = box(wen, 7.4, NF*FH + .6, 7.4, glassM, gx, 0, gz, -Math.atan2(W[1][1] - W[0][1], W[1][0] - W[0][0]));
-	// patio : dalle claire, grands arbres, bancs jaunes (comme sur le rendu des architectes)
+	ringSlab(deck, null, DH - .3, glassM, 0, wen);
+	ringSlab(offset(deck, -.12), null, .3, slabM, DH - .3, wen);
+	const wood = canvasTex(x => { for(let k = 0; k < 16; k++){ x.fillStyle = k % 2 ? "#b7865a" : "#a97a50"; x.fillRect(0, k*8, 128, 7); x.fillStyle = "#7f5a3c"; x.fillRect(0, k*8 + 7, 128, 1); } });
+	ringSlab(inset(deck, .97), null, .06, new THREE.MeshStandardMaterial({ map:wood, roughness:.8 }), DH, wen, .5);
+	{
+		const [dx, dz] = cen(deck), rr = mulberry32(12), green = std("#5d8a4a"), planter = std("#d6d1c6");
+		for(let k = 0; k < 6; k++){ const t = (k + .5)/6, q = lerp(lerp(deck[0], deck[1], t), lerp(deck[3], deck[2], t), .5); box(wen, 1.6, .5, .8, planter, q[0], DH + .06, q[1]); for(let j = 0; j < 3; j++) mesh(new THREE.IcosahedronGeometry(.42, 0), green, wen, q[0] + (j - 1)*.45, DH + .75, q[1] + (rr() - .5)*.3); }
+		for(let k = 0; k < 6; k++){ const s_ = makePerson(wen); s_.g.scale.setScalar(.8); s_.g.position.set(dx + (rr() - .5)*8, DH + .06, dz + (rr() - .5)*5); s_.g.rotation.y = rr()*6; }
+	}
+	// passerelle du premier étage, au-dessus du jardin, avec garde-corps vitrés
+	{
+		const A = lerp(P0, P3, .28), B = lerp(P1, P2, .28), L = Math.hypot(B[0]-A[0], B[1]-A[1]) + .4, ang = -Math.atan2(B[1]-A[1], B[0]-A[0]), m = lerp(A, B, .5);
+		box(wen, L, .22, 1.3, slabM, m[0], PH, m[1], ang);
+		for(const sd of [-.62, .62]){ const g = box(wen, L, .9, .04, glassM, m[0] - Math.sin(ang)*sd, PH + .22, m[1] - Math.cos(ang)*sd, ang, false); g.renderOrder = 2; }
+	}
 	ringSlab(patio, null, .12, std("#d9d4ca", { flatShading:false }), 0, wen);
 	const patioTrees = [];
-	{ const r = mulberry32(9); for(let k=0;k<7;k++){ const t = .25 + r()*.5, s = .25 + r()*.5; const p0 = patio[0], p1 = patio[1], p3 = patio[3];
-		patioTrees.push({ x:p0[0] + (p1[0]-p0[0])*t + (p3[0]-p0[0])*s, z:p0[1] + (p1[1]-p0[1])*t + (p3[1]-p0[1])*s, s:.85 + r()*.35 }); } }
+	{ const r = mulberry32(9); for(let k=0;k<7;k++){ const t = .2 + r()*.6, s = .08 + r()*.32;
+		patioTrees.push({ x:P0[0] + (P1[0]-P0[0])*t + (P3[0]-P0[0])*s, z:P0[1] + (P1[1]-P0[1])*t + (P3[1]-P0[1])*s, s:.8 + r()*.3 }); } }
 	const yellow = std("#f2c63c");
 	for(let k=0;k<5;k++){ const q = patioTrees[k]; box(wen, 1.3, .35, .45, yellow, q.x + 1.6, 0, q.z + .4, k); }
-	// toiture : édicules et panneaux
-	const roofY = NF*FH + .08;
-	for(let k=0;k<4;k++){ const p = W[k]; box(wen, 2.4, 1.2, 1.8, std("#c9c6bf"), p[0] + (WC[0]-p[0])*.18, roofY, p[1] + (WC[1]-p[1])*.18, k*.4); }
+	// toiture : édicules techniques en retrait
+	for(let k=0;k<4;k++){ const p = W[k]; box(wen, 2.4, 1.2, 1.8, std("#c9c6bf"), p[0] + (WC[0]-p[0])*.18, NF*FH + .32, p[1] + (WC[1]-p[1])*.18, k*.4); }
 
 	/* ---------- le Blan-Lafont et sa tour (d'après les photos de Wikimedia Commons) ----------
 	   Filatures Lafont (1896) et Le Blan (1900), réunies en 2009 par Brossy & Associés autour d'un atrium vitré de 1 600 m².
@@ -284,6 +316,30 @@ export function createEura({ background }){
 		ringSlab(F, null, FH2*2.5, offM, FH2*2.5, scene);
 		ringSlab(F, null, .3, std("#1f2226"), FH2*5, scene);
 		var diamantM = offM;
+	}
+	/* ---------- Student Factory (Post Architectes, 2021) : bardage de tuiles de terre cuite bleu fumé, poutres d'acier
+	   laqué noir à chaque étage, capots métalliques verticaux entre les fenêtres ; remplace le volume générique ---------- */
+	if(footprint("factory") && pois.factory){
+		const F = footprint("factory"), H = pois.factory.H;
+		pois.factory.group.visible = false;
+		const draw = lit => canvasTex(x => {
+			if(lit){ x.fillStyle = "#000"; x.fillRect(0, 0, 128, 128); }
+			else {
+				x.fillStyle = "#56657a"; x.fillRect(0, 0, 128, 128);
+				for(let y = 0; y < 116; y += 6){ x.fillStyle = (y/6) % 2 ? "#5f6f85" : "#506074"; x.fillRect(0, y, 128, 5); x.fillStyle = "rgba(0,0,0,.2)"; x.fillRect(0, y + 5, 128, 1); }
+				x.fillStyle = "#16181c"; x.fillRect(0, 116, 128, 12);                                   // poutre d'acier noir
+				x.fillStyle = "#1d2024"; x.fillRect(34, 14, 6, 96); x.fillRect(88, 14, 6, 96);           // capots verticaux
+			}
+			const g = x.createLinearGradient(0, 22, 0, 104);
+			if(lit) x.fillStyle = "#ffd9a0"; else { g.addColorStop(0, "#9fb3c4"); g.addColorStop(1, "#5b6f82"); x.fillStyle = g; }
+			x.fillRect(42, 22, 44, 82);
+			if(!lit){ x.fillStyle = "#16181c"; x.fillRect(42, 60, 44, 3); }
+		});
+		const t = draw(false), l = draw(true); t.repeat.set(1/2.2, 1/1.64); l.repeat.copy(t.repeat);
+		const fM = new THREE.MeshStandardMaterial({ map:t, roughness:.7, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:l }); softenFar(fM);
+		ringSlab(F, null, H, fM, 0, scene);
+		ringSlab(F, null, .25, std("#7a7e84"), H, scene);
+		var factoryM = fM;
 	}
 
 	/* ---------- La French Tech Lille : bureaux vitrés à double peau de lames de verre verticales (Barbarito Bancel),
@@ -500,7 +556,7 @@ export function createEura({ background }){
 	}
 	function setNight(night){
 		facadeM.emissiveIntensity = night ? 1.1 : 0; brickM.emissiveIntensity = night ? .8 : 0; towerM.emissiveIntensity = night ? .6 : 0; atticM.emissiveIntensity = night ? .7 : 0;
-		if(diamantM) diamantM.emissiveIntensity = night ? .8 : 0; if(ftGlass) ftGlass.emissiveIntensity = night ? .6 : 0;
+		if(diamantM) diamantM.emissiveIntensity = night ? .8 : 0; if(factoryM) factoryM.emissiveIntensity = night ? .45 : 0; if(ftGlass) ftGlass.emissiveIntensity = night ? .6 : 0;
 		shopM.emissiveIntensity = night ? .9 : 0; glassM.emissiveIntensity = night ? .55 : 0; shedMat.emissiveIntensity = night ? .7 : 0;
 		lampMat.emissiveIntensity = night ? 2.2 : 0;
 		tower.traverse(o => { if(o.userData.clock) o.material.emissiveIntensity = night ? 1.2 : 0; });
