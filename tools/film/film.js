@@ -5,7 +5,7 @@
 
    Montage (calé sur la musique, 80 bpm, docs/validation-web/voix/musique.py) :
    ouverture · la promesse (découvrir le campus, découvrir les formations, les essayer) · 01 découvrir le campus
-   (travellings) · 02 découvrir les formations, entité par entité (FGES, ISEA, École du Numérique), les 36 formations
+   (travellings) · 02 découvrir les formations, entité par entité (FGES, ISEA, EDN), les 40 formations
    avec leur mini-jeu ou « mini-jeu en préparation » · 03 les essayer (les mini-jeux) · la relecture · signature.
 
    Usage :  python tools/serve.py   et   python tools/film/recepteur.py   (reçoit la vidéo, port 8767)
@@ -23,13 +23,21 @@ import { createRame } from "/js/rame.js";
 const W = 1920, H = 1080, FPS = 30, RENDU = 2;                  // image finale · rendu 3D en 2560×1440 (1280×720 ×2)
 const NAVY = "#0c1a38", INK = "#13254a", CYAN = "#21b6ce", CYAN_L = "#7fdcec", CREAM = "#f6f1e7", WHITE = "#ffffff", MUTED = "rgba(232,238,248,.74)";
 const ENT = {
-	FGES: { name:"FGES", long:"Faculté de Gestion, Économie & Sciences", color:"#21b6ce", ink:"#0b2f67" },
-	ISEA: { name:"ISEA", long:"École d'expertise et d'audit", color:"#a0335f", ink:"#ffffff" },
-	EDN:  { name:"École du Numérique", long:"Informatique, data, cyber et numérique", color:"#d6a227", ink:"#1f1a10" }
+	FGES: { name:"FGES", long:"Faculté de Gestion, Économie, Sciences", color:"#21b6ce", ink:"#0b2f67" },
+	ISEA: { name:"ISEA", long:"Institut Supérieur d'Expertise et d'Audit", color:"#a0335f", ink:"#ffffff" },
+	EDN:  { name:"EDN", long:"École du Numérique", color:"#d6a227", ink:"#1f1a10" }
 };
 const DISP = "Fraunces, Georgia, serif", BODY = "Nunito, system-ui, sans-serif";
-const F = Object.fromEntries(FORMATIONS.map(f => [f.id, f]));
-const LEVEL = { prep:"Année préparatoire", L:"Licence", LP:"Licence pro", M:"Master", DU:"Diplôme d'université" };
+// formations nouvelles, annoncées dans le film avant d'avoir leur fiche dans le campus
+const NOUVELLES = [
+	{ id:"veto", name:"Prépa Véto", level:"prepa", school:"FGES" },
+	{ id:"d2", name:"Prépa D2", level:"prepa", school:"FGES" },
+	{ id:"aese", name:"Licence AESe", level:"L", school:"FGES" },
+	{ id:"mre", name:"Master MRE", level:"M", school:"FGES" }
+];
+const TOUTES = [...FORMATIONS, ...NOUVELLES], NB = TOUTES.length, NEUVE = new Set(NOUVELLES.map(f => f.id));
+const F = Object.fromEntries(TOUTES.map(f => [f.id, f]));
+const LEVEL = { prep:"Année préparatoire", prepa:"Prépa", L:"Licence", LP:"Licence pro", M:"Master", DU:"Diplôme universitaire" };
 const STEPS = {
 	gestion:["L1 · Prix, équipe et compte de résultat", "L2 · Coût de revient", "L3 · Investir pour grandir"],
 	cfa:["L1 · Pièces, TVA et banque", "L2 · Écarts de budget", "L3 · Mener l'audit"],
@@ -90,14 +98,15 @@ const SHOTS = [
 	{ d:5.5, scene:"eura", cam:around(...WENOV, 1, .8, -.3, .2), lt:["Wenov", "Le campus de l'École du Numérique"] },
 	// 02 · découvrir les formations
 	{ d:3, scene:"eura", blur:.9, chap:"02 · Découvrir les formations", cam:orbit([1, 8, 7], 80, 50, 1.3, 1.5), ov:"compteur" },
-	{ d:3, scene:"ext", blur:.65, cam:orbit([9, 6, -37], 58, 32, .9, 1.1), ent:"FGES", ov:"entite", info:"16 formations · campus de Vauban" },
-	{ d:9, scene:"ext", blur:.9, cam:orbit([9, 6, -37], 58, 32, 1.1, 1.6), ent:"FGES", grid:{ t:"Licences et prépas", list:ids("apes sv mh gestion ecofi cupge lieg lpabf") } },
-	{ d:9, scene:"ext", blur:.9, cam:orbit([0, 8, -3], 60, 30, 1.2, 1.75), ent:"FGES", grid:{ t:"Masters et parcours", list:ids("ecoop mdd im mrc me frd mbif duhm") } },
-	{ d:3, scene:"atrium", blur:.65, cam:orbit([0, 4.5, 0], 34, 16, .6, .8), ent:"ISEA", ov:"entite", info:"6 formations · campus de Vauban" },
-	{ d:9, scene:"atrium", blur:.9, cam:orbit([0, 4.5, 0], 34, 16, .8, 1.4), ent:"ISEA", grid:{ t:"Licence, masters et diplômes d'université", list:ids("cfa cca dgp cgao duiacg dusp") } },
+	{ d:3, scene:"ext", blur:.65, cam:orbit([9, 6, -37], 58, 32, .9, 1.1), ent:"FGES", ov:"entite", info:`${TOUTES.filter(f => f.school === "FGES").length} formations · Campus Vauban` },
+	{ d:5, scene:"ext", blur:.9, cam:orbit([9, 6, -37], 58, 32, 1.1, 1.3), ent:"FGES", grid:{ t:"Prépas", list:ids("apes cupge veto d2") } },
+	{ d:7, scene:"ext", blur:.9, cam:orbit([9, 6, -37], 58, 32, 1.3, 1.65), ent:"FGES", grid:{ t:"Licences", list:ids("sv mh gestion ecofi lieg lpabf aese") } },
+	{ d:8, scene:"ext", blur:.9, cam:orbit([0, 8, -3], 60, 30, 1.2, 1.75), ent:"FGES", grid:{ t:"Masters et parcours", list:ids("ecoop mdd im mrc me frd mbif mre duhm") } },
+	{ d:3, scene:"atrium", blur:.65, cam:orbit([0, 4.5, 0], 34, 16, .6, .8), ent:"ISEA", ov:"entite", info:"6 formations · Campus Vauban" },
+	{ d:9, scene:"atrium", blur:.9, cam:orbit([0, 4.5, 0], 34, 16, .8, 1.4), ent:"ISEA", grid:{ t:"Licence, masters et diplômes universitaires", list:ids("cfa cca dgp cgao duiacg dusp") } },
 	{ d:3, scene:"eura", blur:.65, cam:orbit([1, 8, 7], 64, 30, 1.2, 1.35), ent:"EDN", ov:"entite", info:"14 formations · Euratechnologies" },
-	{ d:7.5, scene:"wenovin", blur:.9, cam:orbit([0, 1, -3], 42, 32, 1.2, 1.6), ent:"EDN", grid:{ t:"Licences et masters", list:ids("info spi mn iasi dia cyber jn") } },
-	{ d:7.5, scene:"wenovin", blur:.9, cam:orbit([0, 1, -3], 42, 32, 1.6, 2.0), ent:"EDN", grid:{ t:"Masters et diplômes d'université", list:ids("dmb ebmd mtn duia duric ducse ducc") } },
+	{ d:6.5, scene:"wenovin", blur:.9, cam:orbit([0, 1, -3], 42, 32, 1.2, 1.6), ent:"EDN", grid:{ t:"Licences et masters", list:ids("info spi mn iasi dia cyber jn") } },
+	{ d:6.5, scene:"wenovin", blur:.9, cam:orbit([0, 1, -3], 42, 32, 1.6, 2.0), ent:"EDN", grid:{ t:"Masters et diplômes universitaires", list:ids("dmb ebmd mtn duia duric ducse ducc") } },
 	// 03 · les essayer
 	{ d:15, scene:"wenovin", blur:.92, chap:"03 · Les essayer", cam:orbit([0, 1, -3], 44, 30, 2.0, 2.7), ov:"jeux" },
 	// la relecture
@@ -110,7 +119,7 @@ const TOTAL = acc;
 const shotAt = T => { let i = SHOTS.findIndex(s => T < s.t0 + s.d); return i < 0 ? SHOTS.length - 1 : i; };
 export function controle(){
 	const vues = SHOTS.flatMap(s => s.grid ? s.grid.list : []);
-	return { manquantes:FORMATIONS.map(f => f.id).filter(id => !vues.includes(id)), inconnues:vues.filter(id => !F[id]), doublons:vues.filter((id, i) => vues.indexOf(id) !== i), total:vues.length, duree:TOTAL };
+	return { manquantes:TOUTES.map(f => f.id).filter(id => !vues.includes(id)), inconnues:vues.filter(id => !F[id]), doublons:vues.filter((id, i) => vues.indexOf(id) !== i), total:vues.length, duree:TOTAL };
 }
 
 /* ---------- outils de dessin ---------- */
@@ -214,13 +223,13 @@ function ouverture(c, t, d){
 	rise(c, "Le campus FGES", W/2, 560, seg(t, 1.8, 2.8), { size:150, fam:DISP, align:"center", a });
 	line(c, W/2 - 160, 606, 320, seg(t, 2.6, 3.4)*a, CYAN, 5);
 	rise(c, "en 3D", W/2, 690, seg(t, 3, 3.8), { size:64, fam:DISP, color:CYAN_L, align:"center", a });
-	rise(c, "Une visite. 36 formations. Des mini-jeux pour les essayer.", W/2, 790, seg(t, 4.2, 5.2), { size:30, weight:700, color:MUTED, align:"center", a });
+	rise(c, `Une visite. ${NB} formations. Des mini-jeux pour les essayer.`, W/2, 790, seg(t, 4.2, 5.2), { size:30, weight:700, color:MUTED, align:"center", a });
 }
 function promesse(c, t, d){
 	const a1 = life(t, .3, 5.6, .4, .5);
 	rise(c, "Choisir une formation,", 200, 470, seg(t, .4, 1.2), { size:96, fam:DISP, a:a1 });
 	rise(c, "c'est d'abord se projeter.", 200, 590, seg(t, 1.3, 2.1), { size:96, fam:DISP, color:CYAN_L, a:a1 });
-	const P = [["campus", "01", "Découvrir le campus", "Vauban et Euratechnologies, reconstitués à l'échelle"], ["formations", "02", "Découvrir les formations", "36 formations, de la licence au master"], ["jeux", "03", "Les essayer", "Un mini-jeu pour vivre ce que font les étudiants"]];
+	const P = [["campus", "01", "Découvrir le campus", "Vauban et Euratechnologies, reconstitués à l'échelle"], ["formations", "02", "Découvrir les formations", `${NB} formations, de la prépa au master`], ["jeux", "03", "Les essayer", "Un mini-jeu pour vivre ce que font les étudiants"]];
 	const a2 = life(t, 5.8, d, .4, .6), cw = 500, gap = 80, x0 = (W - 3*cw - 2*gap)/2;
 	P.forEach(([k, n, title, sub], i) => {
 		const t0 = 6 + i*.55, p = seg(t, t0, t0 + .9); if(p <= 0) return;
@@ -233,7 +242,7 @@ function promesse(c, t, d){
 	});
 }
 function compteur(c, t, d){
-	const a = life(t, .2, d + .3, .4, .3), n = Math.round(36*out3(seg(t, .3, 1.6)));
+	const a = life(t, .2, d + .3, .4, .3), n = Math.round(NB*out3(seg(t, .3, 1.6)));
 	text(c, String(n), W/2 - 30, 560, { size:260, fam:DISP, align:"right", a, color:WHITE });
 	rise(c, "formations", W/2, 470, seg(t, .5, 1.2), { size:64, fam:DISP, a });
 	rise(c, "réparties dans trois entités", W/2, 540, seg(t, .8, 1.5), { size:32, weight:700, color:MUTED, a });
@@ -276,7 +285,7 @@ function grid(c, S, t, d){
 		const name = f.name.replace(/^(Licence Pro|Licence|Master|DU|Prépa) /, m => m);
 		text(c, name, x + 34, y + 76, { size:fitSize(c, name, cw - 68, 30, 800), weight:800, color:INK });
 		// badge du mini-jeu
-		const s = g ? `🎮  Mini-jeu « ${g.title} »` : "Mini-jeu en préparation";
+		const s = g ? `🎮  Mini-jeu « ${g.title} »` : NEUVE.has(id) ? "Nouvelle formation · mini-jeu en préparation" : "Mini-jeu en préparation";
 		font(c, 800, 17); const bw = c.measureText(s).width + 28;
 		rr(c, x + 34, y + 88, bw, 28, 14); c.fillStyle = g ? "#dff5e6" : "#eef0f5"; c.fill();
 		text(c, s, x + 48, y + 108, { size:17, weight:800, color:g ? "#1d7a43" : "#6b7590" });
