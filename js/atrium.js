@@ -2,7 +2,7 @@
    escaliers croisés et grande verrière. Vue « maison de poupée » : le mur côté
    caméra s'efface tout seul. */
 import * as THREE from "three";
-import { std, box, cyl, mesh, beam, gable, cached, windowBatch, makeStudent, R, rng, pick, BOXC } from "./kit.js?v=73f0f1170e";
+import { std, box, cyl, mesh, beam, gable, cached, windowBatch, makeStudent, R, rng, pick, BOXC } from "./kit.js?v=4ff2e5806d";
 
 const W = 34, D = 22, FL = 4.2, TOP = 16.4, RIDGE = 20;
 const HX = W/2, HZ = D/2, GAL = 2.4;
@@ -158,32 +158,35 @@ export function createAtrium({ background }){
 		for(const s of [-1,1]) box(roof, .02, TOP-13.2, .02, steelDark, x + s*3.2, 13.3, z, 0, false);
 	}
 
-	/* ---------- escaliers croisés ---------- */
+	/* ---------- escaliers croisés ----------
+	   Le long de la coursive est, parallèles à elle (comme dans le vrai atrium) : trois volées en ciseaux sur deux
+	   couloirs, A contre la coursive, B juste devant ; chaque palier se raccroche à la coursive de son étage. */
 	const treadGeo = cached("tread", () => new THREE.BoxGeometry(1, .07, 1));
 	const flights = [];
-	function flight(x0, x1, y0, y1, z){
-		const n = Math.round((y1-y0)/.2), run = (x1-x0)/n;
-		for(let i=0;i<n;i++) flights.push([x0 + run*(i+.5), y0 + (y1-y0)*(i+1)/n, z, Math.abs(run)]);
+	function flight(z0, z1, y0, y1, x){
+		const n = Math.round((y1-y0)/.2), run = (z1-z0)/n;
+		for(let i=0;i<n;i++) flights.push([x, y0 + (y1-y0)*(i+1)/n, z0 + run*(i+.5), Math.abs(run)]);
 		for(const s of [-1,1]){
-			const zz = z + s*.95;
-			beam(scene, V(x0,y0,zz), V(x1,y1,zz), .08, .32, steelDark);
-			beam(scene, V(x0,y0+1,zz), V(x1,y1+1,zz), .06, .06, steel, false);
-			const p = beam(scene, V(x0,y0+.52,zz), V(x1,y1+.52,zz), .02, .9, mesh_, false); p.castShadow = false;
+			const xx = x + s*.95;
+			beam(scene, V(xx,y0,z0), V(xx,y1,z1), .08, .32, steelDark);
+			beam(scene, V(xx,y0+1,z0), V(xx,y1+1,z1), .06, .06, steel, false);
+			const p = beam(scene, V(xx,y0+.52,z0), V(xx,y1+.52,z1), .02, .9, mesh_, false); p.castShadow = false;
 		}
 	}
 	function landing(x0, x1, z0, z1, y){
 		box(scene, x1-x0, .25, z1-z0, steel, (x0+x1)/2, y-.25, (z0+z1)/2);
 		for(const [x,z] of [[x0+.1,z0+.1],[x1-.1,z0+.1],[x0+.1,z1-.1],[x1-.1,z1-.1]]) box(scene, .12, y-.25, .12, steel, x, 0, z);
 	}
-	flight(5, 12.5, 0, FL, 1);
-	landing(12.5, HX-GAL+.01, -.05, 4, FL);
-	flight(12.5, 5, FL, 2*FL, 3);
-	landing(3, 5, -.05, 4, 2*FL);
-	flight(5, 12.5, 2*FL, 3*FL, 1);
-	landing(12.5, HX-GAL+.01, -.05, 4, 3*FL);
+	const GX = HX - GAL, LA = GX - 1, LB = GX - 3, SZ0 = -3, SZ1 = 5;          // bord de la coursive, couloirs A et B
+	flight(SZ1, SZ0, 0, FL, LA);
+	landing(LB - .95, GX + .01, SZ0 - 2, SZ0, FL);
+	flight(SZ0, SZ1, FL, 2*FL, LB);
+	landing(LB - .95, GX + .01, SZ1, SZ1 + 2, 2*FL);
+	flight(SZ1, SZ0, 2*FL, 3*FL, LA);
+	landing(LB - .95, GX + .01, SZ0 - 2, SZ0, 3*FL);
 	{
 		const im = new THREE.InstancedMesh(treadGeo, wood, flights.length), d = new THREE.Object3D();
-		flights.forEach(([x,y,z,r],i) => { d.position.set(x,y,z); d.scale.set(r+.02, 1, 1.85); d.updateMatrix(); im.setMatrixAt(i, d.matrix); });
+		flights.forEach(([x,y,z,r],i) => { d.position.set(x,y,z); d.scale.set(1.85, 1, r+.02); d.updateMatrix(); im.setMatrixAt(i, d.matrix); });
 		im.castShadow = true; im.receiveShadow = true; scene.add(im);
 	}
 
@@ -241,7 +244,7 @@ export function createAtrium({ background }){
 	const seated = [];
 	tables.forEach(([x,z]) => { if(rng() < .32){ const s = small(makeStudent(scene, true)); s.g.position.set(x + R(-.3,.3), 0, z + .95); s.g.rotation.y = Math.PI; seated.push({ ...s, ph:R(0,6) }); } });
 	// promeneurs du rez-de-chaussée
-	const LOOP = [[-10.4,7.4],[11,7.4],[11,-7.4],[-10.4,-7.4]];
+	const LOOP = [[-10.4,7.4],[9,7.4],[9,-7.4],[-10.4,-7.4]];          // côté est : on passe devant l'escalier
 	for(let i=0;i<7;i++){
 		const s = small(makeStudent(scene));
 		people.push({ ...s, kind:"loop", seg:Math.floor(rng()*4), t:rng(), speed:R(1.3,1.9), lane:R(-.6,.6), ph:R(0,6), wait:0, dir: rng() < .5 ? 1 : -1 });
