@@ -24,7 +24,7 @@ Avant de le présenter aux candidats, nous avons besoin de votre regard d'enseig
 
 Tout se passe sur cette page : <jeu>
 
-1. Regardez le film du campus (1 min 40) : toutes les formations y sont, avec leur mini-jeu déjà jouable ou en préparation.
+1. Regardez le film du campus (2 minutes) : toutes les formations y sont, avec leur mini-jeu déjà jouable ou en préparation.
 2. Jouez une partie : le bouton « Ouvrir le jeu » le lance directement, et une bannière note votre temps et vos erreurs.
 3. Remplissez le formulaire, en joignant si besoin le journal de partie et des captures d'écran.
 

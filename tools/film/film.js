@@ -1,285 +1,383 @@
-/* Film de présentation du campus FGES 3D (environ 2 min, Full HD), tourné dans le vrai campus.
+/* Film de présentation du campus FGES en 3D (2 min 12, Full HD), tourné dans le vrai campus, à jour.
    Tournage image par image : l'horloge et la boucle du campus sont pilotées (tools/film/pilote.js), chaque image est
-   rendue à l'instant exact en 2560×1440 puis réduite en 1920×1080, et encodée en H.264 dans le navigateur (WebCodecs).
-   Aucune saccade, même si la fenêtre est en arrière-plan ou si l'ordinateur est lent.
-   Les titres et les panneaux sont dessinés par-dessus, en coordonnées 1280×720 agrandies (texte net en 1080p).
+   rendue à l'instant exact en 2560×1440 puis réduite en 1920×1080, et encodée en H.264 + AAC dans le navigateur
+   (WebCodecs) : aucune saccade, même sur une machine lente.
+
+   Montage (calé sur la musique, 80 bpm, docs/validation-web/voix/musique.py) :
+   ouverture · la promesse (découvrir le campus, découvrir les formations, les essayer) · 01 découvrir le campus
+   (travellings) · 02 découvrir les formations, entité par entité (FGES, ISEA, École du Numérique), les 36 formations
+   avec leur mini-jeu ou « mini-jeu en préparation » · 03 les essayer (les mini-jeux) · la relecture · signature.
 
    Usage :  python tools/serve.py   et   python tools/film/recepteur.py   (reçoit la vidéo, port 8767)
-            musique : python docs/validation-web/voix/mix.py --duree 124 --sortie docs/validation-web/voix/musique-film.wav
+            musique : cd docs/validation-web/voix && python musique.py   (→ musique-film.wav, 132 s)
             ouvrir http://localhost:8765/?debug, puis dans la console :
               const F = await import("/tools/film/film.js");
-              await F.apercu(12.5)        // une image à 12,5 s → tools/film/_apercu.jpg
+              await F.apercu(56)          // une image à 56 s → tools/film/_apercu.jpg
+              await F.planche(4)          // une image toutes les 4 s → tools/film/_planche.jpg
               F.tourner()                 // tout le film ; avancement dans F.etat()
-   Résultat : docs/validation-web/media/campus-3d.mp4, puis python docs/validation-web/build.py (page de relecture).
-
-   Toutes les formations du site apparaissent une fois, avec leur mini-jeu s'il existe, sinon « mini-jeu à venir ». */
+   Résultat : docs/validation-web/media/campus-3d.mp4, puis python docs/validation-web/build.py (page de relecture). */
 import { FORMATIONS, GAMES, GAME_INFO } from "/js/data.js";
 import * as P from "/tools/film/pilote.js";
 
-const W = 1280, H = 720, FPS = 30, OUT_W = 1920, OUT_H = 1080, RENDU = 2;
-const NAVY = "#0a1530", CYAN = "#5fd3e6", GOLD = "#f4c46b", WHITE = "#ffffff", MUTED = "rgba(235,240,250,.74)", GREEN = "#7ee2a0";
+const W = 1920, H = 1080, FPS = 30, RENDU = 2;                  // image finale · rendu 3D en 2560×1440 (1280×720 ×2)
+const NAVY = "#0c1a38", INK = "#13254a", CYAN = "#21b6ce", CYAN_L = "#7fdcec", CREAM = "#f6f1e7", WHITE = "#ffffff", MUTED = "rgba(232,238,248,.74)";
+const ENT = {
+	FGES: { name:"FGES", long:"Faculté de Gestion, Économie & Sciences", color:"#21b6ce", ink:"#0b2f67" },
+	ISEA: { name:"ISEA", long:"École d'expertise et d'audit", color:"#a0335f", ink:"#ffffff" },
+	EDN:  { name:"École du Numérique", long:"Informatique, data, cyber et numérique", color:"#d6a227", ink:"#1f1a10" }
+};
 const DISP = "Fraunces, Georgia, serif", BODY = "Nunito, system-ui, sans-serif";
 const F = Object.fromEntries(FORMATIONS.map(f => [f.id, f]));
+const LEVEL = { prep:"Année préparatoire", L:"Licence", LP:"Licence pro", M:"Master", DU:"Diplôme d'université" };
+const STEPS = {
+	gestion:["L1 · Prix, équipe et compte de résultat", "L2 · Coût de revient", "L3 · Investir pour grandir"],
+	cfa:["L1 · Pièces, TVA et banque", "L2 · Écarts de budget", "L3 · Mener l'audit"],
+	sv:["L1 · Identifier les espèces", "L2 · Génétique de Mendel", "L3 · Choisir sa spécialité"],
+	spi:["L1 · Piloter le bras robot", "L2 · Programmer et régler", "L3 · Vision par ordinateur"],
+	info:["L1 · Un niveau et un héros en Python", "L1 · Les scores en ligne en SQL", "L2 · Réalité virtuelle et 5 000 joueurs"],
+	dmb:["M1 · Données et séquençage", "M1 · Statistiques et IA", "M2 · Compte rendu clinique"]
+};
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const seg = (t, a, b) => clamp((t - a)/(b - a));
-const smooth = x => x*x*x*(x*(x*6 - 15) + 10);                       // départ et arrivée en douceur
-const out = x => 1 - Math.pow(1 - x, 3);
+const sine = x => -(Math.cos(Math.PI*x) - 1)/2;
+const out3 = x => 1 - Math.pow(1 - x, 3);
+const out5 = x => 1 - Math.pow(1 - x, 5);
+const inout = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3)/2;
 const life = (t, a, b, fi = .6, fo = .6) => Math.min(seg(t, a, a + fi), 1 - seg(t, b - fo, b));
+
+/* ---------- trajectoires de caméra : courbes de Catmull-Rom, vitesse douce ---------- */
+function cr(P, u){
+	const n = P.length - 1, x = clamp(u)*n, i = Math.min(n - 1, Math.floor(x)), f = x - i;
+	const p0 = P[Math.max(0, i - 1)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(n, i + 2)];
+	return p1.map((_, k) => .5*(2*p1[k] + (-p0[k] + p2[k])*f + (2*p0[k] - 5*p1[k] + 4*p2[k] - p3[k])*f*f + (-p0[k] + 3*p1[k] - 3*p2[k] + p3[k])*f*f*f));
+}
+const path = (cams, tgts, e = sine) => u => [cr(cams, e(u)), cr(tgts, e(u))];
+const orbit = (c, r, h, a0, a1, dh = 0) => u => { const k = sine(u), a = a0 + (a1 - a0)*k; return [[c[0] + r*Math.cos(a), c[1] + h + dh*k, c[2] + r*Math.sin(a)], c]; };
+
+// travelling autour d'un cadrage du site : on part de sa position de caméra, on tourne de da0 à da1 radians
+// autour du lieu et on avance de k0 à k1 fois la distance (k < 1 : on se rapproche)
+const around = (tg, cam0, k0, k1, da0, da1, dy = 0) => u => {
+	const e = sine(u), k = k0 + (k1 - k0)*e, a = da0 + (da1 - da0)*e;
+	const v = [cam0[0] - tg[0], cam0[1] - tg[1], cam0[2] - tg[2]], ca = Math.cos(a), sa = Math.sin(a);
+	return [[tg[0] + (v[0]*ca - v[2]*sa)*k, tg[1] + v[1]*k + dy*e, tg[2] + (v[0]*sa + v[2]*ca)*k], tg];
+};
+const HA = [[0, 8, -3], [16, 30, 43]], JARDIN = [[-28, 2, -37], [-14, 25, -1]], FALISE = [[9, 5, -37], [29, 40, 13]], WENOV = [[1, 6, 7], [30, 36, 71]];
+
+/* ---------- le montage ---------- */
 const ids = s => s.split(" ");
-const games = id => GAMES[id] ? GAME_INFO[GAMES[id]] : null;
-
-/* ---------- mouvements de caméra ---------- */
-let T = null;
-// trajectoire courbe (Catmull-Rom) pour la caméra et pour le point visé, parcourue avec un départ et une arrivée en douceur
-function path(pts, tgs){
-	const cp = new T.CatmullRomCurve3(pts.map(v => new T.Vector3(...v)), false, "centripetal");
-	const ct = new T.CatmullRomCurve3((tgs.length > 1 ? tgs : [tgs[0], tgs[0]]).map(v => new T.Vector3(...v)), false, "centripetal");
-	return u => { const k = smooth(u); return [cp.getPoint(k).toArray(), ct.getPoint(k).toArray()]; };
-}
-// tour lent autour d'un point, avec une légère montée (effet grue)
-const orbit = (c, r, h0, h1, a0, a1) => u => { const k = .15*u + .85*smooth(u), a = a0 + (a1 - a0)*k, h = h0 + (h1 - h0)*k; return [[c[0] + r*Math.cos(a), c[1] + h, c[2] + r*Math.sin(a)], c]; };
-
-/* ---------- découpage ---------- */
-// les lieux sont lus dans le campus (bâtiments de Vauban, épingles d'Euratechnologies) : le film suit le site s'il change
-function plans(C){
-	const PL = C.PLACES, LI = C.LIFE, E = C.interiors.eura.places;
-	const ha = PL.ha.target, fal = PL.falise.target, ch = LI.chapelle.target, jb = LI.jardin.target, wv = E.wenov.target, bl = E.blan.target;
-	return [
-		{ d:9, lieu:"ext", cam:path([[190, 105, 270], [120, 82, 185], [58, 56, 112]], [[40, 0, 70], [16, 3, 25], [0, 8, -4]]), over:"ouverture" },
-		{ d:8, lieu:"ext", cam:orbit([0, 4, -14], 175, 92, 86, 1.05, 1.55), over:"chiffres" },
-		{ d:8, lieu:"ext", cam:path([[-6, 7.5, 21], [5, 12, 25], [20, 30, 50]], [[ha[0], 13, ha[2]], [ha[0], 10, ha[2]], [ha[0], 6, ha[2] - 2]]),
-			lower:["Hôtel Académique", "60 boulevard Vauban, le cœur historique de l'Université Catholique de Lille"] },
-		{ d:7, lieu:"ext", cam:path([[4, 30, 36], [-24, 32, 14], [-46, 36, -6]], [[ch[0], 5, ch[2]], [(ch[0] + jb[0])/2, 3, (ch[2] + jb[2])/2], [jb[0], 2, jb[2]]]),
-			lower:["La chapelle et le jardin botanique", "Entre les bâtiments, la vie du campus de Vauban"] },
-		{ d:12, lieu:"ext", cam:orbit(fal, 60, 30, 36, .95, 1.75), panel:{ k:"Faculté de Gestion, Économie & Sciences · Michel Falise", t:"Licences et prépas", list:ids("apes sv mh gestion ecofi cupge lieg cfa lpabf") } },
-		{ d:11, lieu:"atrium", cam:orbit([0, 4.5, 0], 36, 13, 17, .9, 1.65), panel:{ k:"FGES et ISEA · l'atrium de Michel Falise", t:"Masters et diplômes d'université", list:ids("ecoop mdd im mrc cca dgp cgao duiacg dusp duhm") } },
-		{ d:5, lieu:"atrium", cam:orbit([0, 4.5, 0], 36, 17, 18, 1.65, 1.75), over:"metro" },
-		{ d:8, lieu:"eura", cam:path([[wv[0] - 20, 120, wv[2] + 250], [wv[0] + 30, 62, wv[2] + 130], [wv[0] + 34, 38, wv[2] + 68]], [[bl[0], 0, bl[2]], [(bl[0] + wv[0])/2, 4, (bl[2] + wv[2])/2], [wv[0], 6, wv[2]]]),
-			lower:["Euratechnologies", "Le quartier du numérique de Lille, au bord de la Deûle"] },
-		{ d:11, lieu:"eura", cam:orbit(wv, 68, 30, 38, 1.15, 1.85), panel:{ k:"Wenov · Euratechnologies", t:"Licences du numérique et masters de gestion", list:ids("info spi mn me frd mbif") } },
-		{ d:11, lieu:"wenovin", cam:orbit([0, 1, -3], 42, 30, 26, 1.2, 1.85), panel:{ k:"École du Numérique · à l'intérieur de Wenov", t:"Masters du numérique", list:ids("iasi dia cyber jn dmb ebmd mtn") } },
-		{ d:8, lieu:"wenovin", cam:orbit([0, 1, -3], 42, 26, 24, 1.85, 2.3), panel:{ k:"École du Numérique", t:"Diplômes d'université", list:ids("duia duric ducse ducc") } },
-		{ d:12, lieu:"eura", cam:orbit([(bl[0] + wv[0])/2, 2, (bl[2] + wv[2])/2], 150, 70, 80, 2.2, 2.75), over:"jeux" },
-		{ d:8, lieu:"ext", cam:orbit([0, 4, -14], 190, 80, 100, 2.4, 2.85), over:"relecture" },
-		{ d:6, lieu:"ext", cam:orbit([0, 4, -14], 190, 100, 108, 2.85, 3.05), over:"fin" }
-	];
-}
-let SHOTS = null, TOTAL = 0;
-// chaque formation du site doit apparaître une fois, et une seule
+const SHOTS = [
+	// ouverture
+	{ d:9, scene:"ext", lb:1, cam:path([[300, 210, 360], [170, 120, 220], [70, 58, 110]], [[-10, 0, -30], [0, 2, -12], [0, 6, -3]]), ov:"ouverture" },
+	// la promesse
+	{ d:12, scene:"ext", blur:.85, cam:around(...HA, 1.5, 1.25, .9, .5, 8), ov:"promesse" },
+	// 01 · découvrir le campus
+	{ d:6, scene:"ext", lb:1, chap:"01 · Découvrir le campus", cam:around(...HA, 1.2, .9, -.45, .2), lt:["Hôtel Académique", "Le cœur historique de l'Université, depuis 1881"] },
+	{ d:4.5, scene:"ext", lb:1, cam:around(...JARDIN, 1.25, 1, .35, -.1), lt:["Jardin botanique Nicolas Boulay", "Un îlot de nature au milieu du campus"] },
+	{ d:4.5, scene:"ext", lb:1, cam:around(...FALISE, 1.05, .85, -.35, .25), lt:["Bâtiment Michel Falise", "Les formations de la FGES et de l'ISEA"] },
+	{ d:4.5, scene:"atrium", lb:1, cam:path([[32, 16, 30], [22, 11, 22], [14, 8, 16]], [[0, 5, 0], [0, 4.5, 0], [-2, 4.5, 0]]), lt:["L'atrium", "Le cœur de la vie étudiante à Vauban"] },
+	{ d:4.5, scene:"eura", lb:1, cam:path([[-9, 95, 207], [14, 60, 130], [30, 36, 72]], [[-19, 0, 22], [-6, 3, 14], [1, 6, 7]]), lt:["Wenov · Euratechnologies", "L'École du Numérique, à dix minutes en métro"] },
+	// 02 · découvrir les formations
+	{ d:3, scene:"eura", blur:.9, chap:"02 · Découvrir les formations", cam:orbit([1, 8, 7], 80, 50, 1.3, 1.5), ov:"compteur" },
+	{ d:3, scene:"ext", blur:.65, cam:orbit([9, 6, -37], 58, 32, .9, 1.1), ent:"FGES", ov:"entite", info:"16 formations · campus de Vauban" },
+	{ d:9, scene:"ext", blur:.9, cam:orbit([9, 6, -37], 58, 32, 1.1, 1.6), ent:"FGES", grid:{ t:"Licences et prépas", list:ids("apes sv mh gestion ecofi cupge lieg lpabf") } },
+	{ d:9, scene:"ext", blur:.9, cam:orbit([0, 8, -3], 60, 30, 1.2, 1.75), ent:"FGES", grid:{ t:"Masters et parcours", list:ids("ecoop mdd im mrc me frd mbif duhm") } },
+	{ d:3, scene:"atrium", blur:.65, cam:orbit([0, 4.5, 0], 34, 16, .6, .8), ent:"ISEA", ov:"entite", info:"6 formations · campus de Vauban" },
+	{ d:9, scene:"atrium", blur:.9, cam:orbit([0, 4.5, 0], 34, 16, .8, 1.4), ent:"ISEA", grid:{ t:"Licence, masters et diplômes d'université", list:ids("cfa cca dgp cgao duiacg dusp") } },
+	{ d:3, scene:"eura", blur:.65, cam:orbit([1, 8, 7], 64, 30, 1.2, 1.35), ent:"EDN", ov:"entite", info:"14 formations · Euratechnologies" },
+	{ d:7.5, scene:"wenovin", blur:.9, cam:orbit([0, 1, -3], 42, 32, 1.2, 1.6), ent:"EDN", grid:{ t:"Licences et masters", list:ids("info spi mn iasi dia cyber jn") } },
+	{ d:7.5, scene:"wenovin", blur:.9, cam:orbit([0, 1, -3], 42, 32, 1.6, 2.0), ent:"EDN", grid:{ t:"Masters et diplômes d'université", list:ids("dmb ebmd mtn duia duric ducse ducc") } },
+	// 03 · les essayer
+	{ d:15, scene:"wenovin", blur:.92, chap:"03 · Les essayer", cam:orbit([0, 1, -3], 44, 30, 2.0, 2.7), ov:"jeux" },
+	// la relecture
+	{ d:9, scene:"eura", blur:.8, cam:path([[30, 36, 72], [10, 70, 150], [-9, 110, 240]], [[1, 6, 7], [-8, 2, 16], [-19, 0, 22]]), ov:"relecture" },
+	// signature
+	{ d:9, scene:"eura", blur:.95, cam:path([[-9, 110, 240], [-9, 140, 300]], [[-19, 0, 22], [-19, 0, 22]]), ov:"signature" }
+];
+let acc = 0; for(const s of SHOTS){ s.t0 = acc; acc += s.d; }
+const TOTAL = acc;
+const shotAt = T => { let i = SHOTS.findIndex(s => T < s.t0 + s.d); return i < 0 ? SHOTS.length - 1 : i; };
 export function controle(){
-	const vues = (SHOTS || plans(window.campus)).flatMap(s => s.panel ? s.panel.list : []);
-	return { manquantes:FORMATIONS.map(f => f.id).filter(id => !vues.includes(id)), inconnues:vues.filter(id => !F[id]), doublons:vues.filter((id, i) => vues.indexOf(id) !== i), total:vues.length };
+	const vues = SHOTS.flatMap(s => s.grid ? s.grid.list : []);
+	return { manquantes:FORMATIONS.map(f => f.id).filter(id => !vues.includes(id)), inconnues:vues.filter(id => !F[id]), doublons:vues.filter((id, i) => vues.indexOf(id) !== i), total:vues.length, duree:TOTAL };
 }
 
-/* ---------- habillage ---------- */
+/* ---------- outils de dessin ---------- */
 function rr(c, x, y, w, h, r){ c.beginPath(); c.roundRect(x, y, w, h, r); }
-function text(c, s, x, y, { size = 24, weight = 700, fam = BODY, color = WHITE, align = "left", a = 1, track = 0 } = {}){
-	if(a <= 0) return; c.save(); c.globalAlpha *= a; c.font = `${weight} ${size}px ${fam}`; c.fillStyle = color; c.textAlign = align; c.textBaseline = "middle";
-	if(track) c.letterSpacing = `${track}px`;
+function font(c, w, s, f = BODY){ c.font = `${w} ${s}px ${f}`; }
+function text(c, s, x, y, { size = 32, weight = 700, fam = BODY, color = WHITE, align = "left", a = 1, track = 0, base = "alphabetic" } = {}){
+	if(a <= 0 || !s) return;
+	c.save(); c.globalAlpha *= a; font(c, weight, size, fam); c.fillStyle = color; c.textAlign = align; c.textBaseline = base;
+	if(track) c.letterSpacing = track + "px";
 	c.fillText(s, x, y); c.restore();
 }
-function fit(c, s, max, size, weight = 700, fam = BODY){ c.font = `${weight} ${size}px ${fam}`; while(size > 12 && c.measureText(s).width > max){ size--; c.font = `${weight} ${size}px ${fam}`; } return size; }
-// verre dépoli : l'image du campus floutée et assombrie derrière le panneau
-function glass(c, img, x, y, w, h, r, a, tint = "rgba(10,21,48,.5)"){
-	if(a <= 0) return;
-	c.save(); c.globalAlpha = a; rr(c, x, y, w, h, r); c.clip();
-	c.filter = "blur(14px) brightness(.62) saturate(1.15)"; c.drawImage(img, -20, -20, W + 40, H + 40); c.filter = "none";
-	c.fillStyle = tint; c.fillRect(x, y, w, h);
-	c.restore();
-	c.save(); c.globalAlpha = a*.9; rr(c, x + .5, y + .5, w - 1, h - 1, r); c.strokeStyle = "rgba(255,255,255,.16)"; c.lineWidth = 1; c.stroke(); c.restore();
-}
-function vignette(c){
-	const g = c.createRadialGradient(W/2, H/2, H*.45, W/2, H/2, H*1.05);
-	g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(5,10,25,.42)");
-	c.fillStyle = g; c.fillRect(0, 0, W, H);
-}
-function badge(c, g, x, y, a){
-	const s = g ? `Mini-jeu « ${g.title} »` : "Mini-jeu à venir";
-	c.save(); c.globalAlpha *= a; c.font = `800 13px ${BODY}`;
-	const w = Math.min(400, c.measureText(s).width + (g ? 34 : 20));
-	rr(c, x, y - 11, w, 22, 11); c.fillStyle = g ? "rgba(126,226,160,.18)" : "rgba(255,255,255,.1)"; c.fill();
-	if(g){ c.fillStyle = GREEN; c.beginPath(); c.arc(x + 13, y, 4, 0, 7); c.fill(); }
-	c.fillStyle = g ? GREEN : MUTED; c.textBaseline = "middle"; c.fillText(s, x + (g ? 24 : 10), y + .5, 370);
+// texte qui monte derrière un masque (typographie animée)
+function rise(c, s, x, y, p, opts = {}){
+	if(p <= 0) return;
+	const size = opts.size || 32, k = out5(clamp(p));
+	c.save(); c.beginPath(); c.rect(0, y - size*1.15, W, size*1.5); c.clip();
+	text(c, s, x, y + (1 - k)*size*1.3, { ...opts, a:(opts.a ?? 1)*clamp(p*3) });
 	c.restore();
 }
-function panel(c, img, p, t, d){
-	const a = life(t, .3, d, .8, .7), n = p.list.length, rowH = n > 8 ? 50 : 56, h = 108 + n*rowH, w = 476, x = W - w - 44, y = Math.max(28, (H - h)/2);
-	if(a <= 0) return;
-	const slide = (1 - out(seg(t, .3, 1.3)))*30;
-	c.save(); c.translate(slide, 0);
-	glass(c, img, x, y, w, h, 20, a);
-	c.save(); c.globalAlpha = a; c.fillStyle = CYAN; c.fillRect(x + 24, y + 22, 28, 3); c.restore();
-	text(c, p.k.toUpperCase(), x + 24, y + 42, { size:fit(c, p.k.toUpperCase(), w - 48, 12, 800), weight:800, color:CYAN, a, track:1 });
-	text(c, p.t, x + 24, y + 76, { size:fit(c, p.t, w - 48, 27, 600, DISP), weight:600, fam:DISP, a });
-	p.list.forEach((id, i) => {
-		const f = F[id], k = out(seg(t, .7 + i*.2, 1.3 + i*.2))*a; if(k <= 0) return;
-		const ry = y + 110 + i*rowH + (1 - k)*8;
-		c.save(); c.globalAlpha = k;
-		text(c, f.name, x + 24, ry + 12, { size:fit(c, f.name, w - 48, 18, 800), weight:800 });
-		badge(c, games(id), x + 24, ry + 36, 1);
-		c.restore();
-	});
-	c.restore();
-}
-function lower(c, img, [title, sub], t, d){
-	const a = life(t, .5, d, .8, .7); if(a <= 0) return;
-	c.save(); c.globalAlpha = a; const g = c.createLinearGradient(0, H - 210, 0, H); g.addColorStop(0, "rgba(5,10,25,0)"); g.addColorStop(1, "rgba(5,10,25,.82)"); c.fillStyle = g; c.fillRect(0, H - 210, W, 210); c.restore();
-	const k = out(seg(t, .5, 1.4));
-	c.save(); c.globalAlpha = a; c.fillStyle = CYAN; c.fillRect(64, H - 118, 4, 70*k); c.restore();
-	text(c, title, 88 - (1 - k)*20, H - 98, { size:38, weight:600, fam:DISP, a });
-	text(c, sub, 88 - (1 - k)*20, H - 58, { size:19, weight:700, color:MUTED, a:a*seg(t, .9, 1.6) });
-}
-function ouverture(c, t, d){
-	const a = life(t, .8, d, 1.2, .8); if(a <= 0) return;
-	c.save(); c.globalAlpha = a*.6; const g = c.createRadialGradient(W/2, H/2, 60, W/2, H/2, 720); g.addColorStop(0, "rgba(5,10,25,.75)"); g.addColorStop(1, "rgba(5,10,25,0)"); c.fillStyle = g; c.fillRect(0, 0, W, H); c.restore();
-	text(c, "FACULTÉ DE GESTION, ÉCONOMIE & SCIENCES · UNIVERSITÉ CATHOLIQUE DE LILLE", W/2, 262, { size:14, weight:800, color:CYAN, align:"center", a, track:2 });
-	const k = out(seg(t, .8, 2.2));
-	text(c, "Le campus FGES en 3D", W/2, 334 + (1 - k)*14, { size:80, weight:600, fam:DISP, align:"center", a:a*k });
-	text(c, "Toutes nos formations, à visiter et à jouer", W/2, 408, { size:27, weight:700, align:"center", a:a*out(seg(t, 1.8, 2.8)) });
-	c.save(); c.globalAlpha = a*seg(t, 2.2, 3); c.fillStyle = GOLD; c.fillRect(W/2 - 40*out(seg(t, 2.2, 3.2)), 448, 80*out(seg(t, 2.2, 3.2)), 3); c.restore();
-}
-function chiffres(c, img, t, d){
-	const a = life(t, .4, d, .8, .7); if(a <= 0) return;
-	const n = FORMATIONS.length, jeux = FORMATIONS.filter(f => GAMES[f.id]).length;
-	const items = [[n, "formations", "licences, masters, prépas et diplômes d'université"], [2, "campus", "Vauban et Euratechnologies, reconstitués à l'échelle"], [jeux, "mini-jeux jouables", "un par formation à terme, conçus avec les équipes"]];
-	const cw = 330, gap = 28, x0 = (W - 3*cw - 2*gap)/2, y = 230, h = 230;
-	c.save(); c.globalAlpha = a; c.fillStyle = "rgba(5,10,25,.32)"; c.fillRect(0, 0, W, H); c.restore();
-	text(c, "LE PROJET", W/2, 168, { size:14, weight:800, color:CYAN, align:"center", a, track:3 });
-	text(c, "Un lycéen visite le campus depuis son téléphone… et joue une formation", W/2, 200, { size:24, weight:600, fam:DISP, align:"center", a });
-	items.forEach(([v, l, s], i) => {
-		const k = out(seg(t, .8 + i*.35, 1.6 + i*.35))*a; if(k <= 0) return;
-		const x = x0 + i*(cw + gap), yy = y + (1 - k)*16;
-		glass(c, img, x, yy, cw, h, 22, k);
-		const shown = Math.round(v*out(seg(t, .9 + i*.35, 2.3 + i*.35)));
-		text(c, String(shown), x + cw/2, yy + 82, { size:84, weight:600, fam:DISP, color:GOLD, align:"center", a:k });
-		text(c, l, x + cw/2, yy + 148, { size:24, weight:800, align:"center", a:k });
-		text(c, s, x + cw/2, yy + 184, { size:fit(c, s, cw - 36, 15, 700), weight:700, color:MUTED, align:"center", a:k });
-	});
-}
-function metro(c, t, d){
-	c.fillStyle = NAVY; c.fillRect(0, 0, W, H);
-	const a = life(t, .2, d, .5, .5);
-	const g = c.createRadialGradient(W/2, H*.4, 50, W/2, H*.4, 700); g.addColorStop(0, "rgba(95,211,230,.12)"); g.addColorStop(1, "rgba(95,211,230,0)"); c.fillStyle = g; c.fillRect(0, 0, W, H);
-	const x0 = 300, x1 = 980, y = 380, k = out(seg(t, .5, 3));
-	c.save(); c.globalAlpha = a; c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 6; c.lineCap = "round"; c.beginPath(); c.moveTo(x0, y); c.lineTo(x1, y); c.stroke();
-	c.strokeStyle = CYAN; c.beginPath(); c.moveTo(x0, y); c.lineTo(x0 + (x1 - x0)*k, y); c.stroke();
-	for(const [x, on] of [[x0, true], [x1, k > .98]]){ c.fillStyle = on ? CYAN : "#33415e"; c.beginPath(); c.arc(x, y, 13, 0, 7); c.fill(); c.fillStyle = NAVY; c.beginPath(); c.arc(x, y, 6, 0, 7); c.fill(); }
-	c.fillStyle = WHITE; c.beginPath(); c.roundRect(x0 + (x1 - x0)*k - 22, y - 14, 44, 28, 10); c.fill();
-	c.fillStyle = NAVY; c.font = `800 15px ${BODY}`; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText("M", x0 + (x1 - x0)*k, y + 1);
-	c.restore();
-	text(c, "Vauban", x0, y + 44, { size:22, weight:800, align:"center", a });
-	text(c, "Cormontaigne", x0, y + 70, { size:15, weight:700, color:MUTED, align:"center", a });
-	text(c, "Euratechnologies", x1, y + 44, { size:22, weight:800, align:"center", a:a*seg(t, 2.4, 3) });
-	text(c, "Canteleu – Euratechnologies", x1, y + 70, { size:15, weight:700, color:MUTED, align:"center", a:a*seg(t, 2.4, 3) });
-	text(c, "Direction Euratechnologies", W/2, 230, { size:50, weight:600, fam:DISP, align:"center", a });
-	text(c, "À dix minutes en métro, le quartier de l'École du Numérique", W/2, 284, { size:22, weight:700, color:MUTED, align:"center", a:a*seg(t, .6, 1.3) });
-}
-function jeux(c, img, t, d){
-	const a = life(t, .3, d, .8, .6); if(a <= 0) return;
-	c.save(); c.globalAlpha = a; c.fillStyle = "rgba(5,10,25,.56)"; c.fillRect(0, 0, W, H); c.restore();
-	const all = FORMATIONS.length, ready = FORMATIONS.filter(f => GAMES[f.id]);
-	text(c, "LES MINI-JEUX", W/2, 92, { size:14, weight:800, color:CYAN, align:"center", a, track:3 });
-	text(c, `${ready.length} formations ont déjà leur mini-jeu`, W/2, 132, { size:42, weight:600, fam:DISP, align:"center", a });
-	text(c, `Quelques minutes pour faire ce que font vraiment les étudiants · les ${all - ready.length} autres sont en préparation`, W/2, 174, { size:18, weight:700, color:MUTED, align:"center", a:a*seg(t, .8, 1.5) });
-	const cw = 372, chh = 176, gap = 20, x0 = (W - 3*cw - 2*gap)/2, y0 = 214;
-	ready.forEach((r, i) => {
-		const g = games(r.id), k = out(seg(t, 1.1 + i*.28, 1.8 + i*.28))*a; if(k <= 0) return;
-		const x = x0 + (i % 3)*(cw + gap), y = y0 + Math.floor(i/3)*(chh + gap) + (1 - k)*18;
-		c.save(); c.globalAlpha = k; rr(c, x, y, cw, chh, 18); c.fillStyle = "rgba(250,248,243,.97)"; c.fill(); c.restore();
-		c.save(); c.globalAlpha = k; c.font = "44px system-ui, 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif"; c.textBaseline = "middle"; c.fillText(g.icon, x + 22, y + 48); c.restore();
-		text(c, g.title, x + 84, y + 40, { size:fit(c, g.title, cw - 104, 23, 600, DISP), weight:600, fam:DISP, color:"#13254a", a:k });
-		text(c, r.name, x + 84, y + 68, { size:fit(c, r.name, cw - 104, 14, 800), weight:800, color:"#0b7a8e", a:k });
-		c.save(); c.globalAlpha = k; c.fillStyle = "#e8e3d8"; c.fillRect(x + 22, y + 94, cw - 44, 1); c.restore();
-		const line = `${g.dur} · ${g.whereLabel}`;
-		text(c, line, x + 22, y + 120, { size:fit(c, line, cw - 44, 15, 700), weight:700, color:"#55607a", a:k });
-		text(c, "Jouable sur ordinateur et téléphone", x + 22, y + 146, { size:14, weight:700, color:"#2f8a4f", a:k });
-	});
-}
-function relecture(c, img, t, d){
-	const a = life(t, .3, d, .8, .6); if(a <= 0) return;
-	c.save(); c.globalAlpha = a; c.fillStyle = "rgba(5,10,25,.36)"; c.fillRect(0, 0, W, H); c.restore();
-	text(c, "AVANT LA MISE EN LIGNE", W/2, 150, { size:14, weight:800, color:CYAN, align:"center", a, track:3 });
-	text(c, "Chaque mini-jeu est relu par son équipe pédagogique", W/2, 192, { size:38, weight:600, fam:DISP, align:"center", a });
-	const steps = [["1", "Jouer", "le mini-jeu de sa formation, environ 15 minutes"], ["2", "Noter", "ce qui est juste, ce qui est à corriger"], ["3", "Envoyer", "nous corrigeons avant de le montrer aux candidats"]];
-	const cw = 340, gap = 26, x0 = (W - 3*cw - 2*gap)/2, y = 262, h = 190;
-	steps.forEach(([n, ti, s], i) => {
-		const k = out(seg(t, .8 + i*.45, 1.5 + i*.45))*a; if(k <= 0) return;
-		const x = x0 + i*(cw + gap), yy = y + (1 - k)*16;
-		glass(c, img, x, yy, cw, h, 22, k);
-		c.save(); c.globalAlpha = k; c.fillStyle = GOLD; c.beginPath(); c.arc(x + cw/2, yy + 52, 26, 0, 7); c.fill(); c.restore();
-		text(c, n, x + cw/2, yy + 53, { size:26, weight:800, color:NAVY, align:"center", a:k });
-		text(c, ti, x + cw/2, yy + 110, { size:28, weight:600, fam:DISP, align:"center", a:k });
-		text(c, s, x + cw/2, yy + 148, { size:fit(c, s, cw - 36, 16, 700), weight:700, color:MUTED, align:"center", a:k });
-	});
-}
-function fin(c, t, d, logo){
-	const a = seg(t, .2, 1.2);
-	c.save(); c.globalAlpha = a*.88; c.fillStyle = NAVY; c.fillRect(0, 0, W, H); c.restore();
-	const k = out(seg(t, .3, 1.4));
-	c.save(); c.globalAlpha = a; rr(c, W/2 - 390, 132 + (1 - k)*14, 780, 440, 28); c.fillStyle = "#f7f2e9"; c.fill(); c.restore();
-	c.save(); c.globalAlpha = a; if(logo.complete && logo.naturalWidth) c.drawImage(logo, W/2 - 180, 168 + (1 - k)*14, 360, 360*logo.naturalHeight/logo.naturalWidth); c.restore();
-	text(c, "Le campus FGES en 3D", W/2, 360, { size:40, weight:600, fam:DISP, color:"#13254a", align:"center", a });
-	text(c, "lwichlacz.github.io/campus_fges", W/2, 408, { size:20, weight:800, color:"#0b7a8e", align:"center", a:a*seg(t, .9, 1.6) });
-	text(c, "Votre relecture rend chaque jeu plus juste. Merci !", W/2, 478, { size:22, weight:700, color:"#55607a", align:"center", a:seg(t, 1.6, 2.4) });
+function fitSize(c, s, max, size, weight = 700, fam = BODY){ font(c, weight, size, fam); while(size > 12 && c.measureText(s).width > max){ size--; font(c, weight, size, fam); } return size; }
+function line(c, x, y, w, p, color = CYAN, th = 4){ if(p <= 0) return; c.save(); c.fillStyle = color; c.fillRect(x, y, w*out3(p), th); c.restore(); }
+function wrap(c, s, max, size, weight = 700, fam = BODY){ font(c, weight, size, fam); const out = []; let l = ""; for(const w of s.split(" ")){ const t = l ? l + " " + w : w; if(c.measureText(t).width > max && l){ out.push(l); l = w; } else l = t; } if(l) out.push(l); return out; }
+
+// icônes au trait, dessinées progressivement
+function icon(c, kind, x, y, s, p, color){
+	if(p <= 0) return;
+	c.save(); c.translate(x, y); c.scale(s/100, s/100); c.strokeStyle = color; c.lineWidth = 5; c.lineCap = c.lineJoin = "round";
+	c.setLineDash([600]); c.lineDashOffset = 600*(1 - out3(p)); c.beginPath();
+	if(kind === "campus"){ c.moveTo(8, 88); c.lineTo(92, 88); c.moveTo(18, 88); c.lineTo(18, 44); c.lineTo(50, 18); c.lineTo(82, 44); c.lineTo(82, 88); c.moveTo(40, 88); c.lineTo(40, 62); c.lineTo(60, 62); c.lineTo(60, 88); c.moveTo(50, 18); c.lineTo(50, 4); }
+	else if(kind === "formations"){ c.moveTo(50, 26); c.quadraticCurveTo(30, 14, 8, 18); c.lineTo(8, 80); c.quadraticCurveTo(30, 76, 50, 88); c.quadraticCurveTo(70, 76, 92, 80); c.lineTo(92, 18); c.quadraticCurveTo(70, 14, 50, 26); c.lineTo(50, 88); }
+	else if(kind === "jeux"){ c.roundRect(6, 30, 88, 46, 22); c.moveTo(28, 44); c.lineTo(28, 62); c.moveTo(19, 53); c.lineTo(37, 53); c.moveTo(68, 48); c.arc(66, 48, 2, 0, 7); c.moveTo(78, 58); c.arc(76, 58, 2, 0, 7); }
+	else if(kind === "check"){ c.moveTo(20, 52); c.lineTo(42, 72); c.lineTo(80, 30); }
+	c.stroke(); c.restore();
 }
 
-// pendant un panneau (à droite), le cadrage glisse vers la gauche pour que le bâtiment reste visible
-function decale(ca, S, t){
-	const dx = S.panel ? 240*smooth(life(t, 0, S.d, 1.6, 1.4)) : 0;
-	if(dx > .5) ca.setViewOffset(W, H, dx, 0, W, H); else if(ca.view?.enabled) ca.clearViewOffset();
+/* ---------- habillage permanent ---------- */
+export const FX = { grain:true, blur:true, vignette:true };      // effets activables (mesure de fluidité)
+let grain = null;
+function makeGrain(){ const g = document.createElement("canvas"); g.width = g.height = 256; const x = g.getContext("2d"), d = x.createImageData(256, 256); for(let i = 0; i < d.data.length; i += 4){ const v = Math.random()*255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } x.putImageData(d, 0, 0); return g; }
+function finish(c, T){
+	// vignettage, grain, fondu d'entrée et de sortie
+	const v = c.createRadialGradient(W/2, H/2, H*.35, W/2, H/2, H*.95); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(5,10,25,.42)");
+	if(FX.vignette){ c.fillStyle = v; c.fillRect(0, 0, W, H); }
+	grain ||= makeGrain();
+	if(FX.grain)
+	c.save(); c.globalAlpha = .045; c.globalCompositeOperation = "overlay"; const ox = Math.random()*256, oy = Math.random()*256;
+	c.translate(-ox, -oy); c.fillStyle = c.createPattern(grain, "repeat"); c.fillRect(0, 0, W + 256, H + 256); c.restore();
+	const k = Math.max(1 - seg(T, 0, 1.2), seg(T, TOTAL - 1.6, TOTAL));
+	if(k > 0){ c.fillStyle = `rgba(0,0,0,${k})`; c.fillRect(0, 0, W, H); }
 }
-function compose(c, img, i, t, logo){
-	const S = SHOTS[i];
+function letterbox(c, T){
+	// bandes cinéma (2,39:1) sur les plans de campus, qui entrent et sortent en douceur
+	const i = shotAt(T), S = SHOTS[i], t = T - S.t0;
+	const prev = SHOTS[i - 1], next = SHOTS[i + 1];
+	let k = S.lb ? 1 : 0;
+	if(S.lb && !(prev && prev.lb)) k = out3(seg(t, 0, .8));
+	if(S.lb && !(next && next.lb)) k = Math.min(k, 1 - inout(seg(t, S.d - .8, S.d)));
+	if(k <= 0) return;
+	const h = (H - W/2.39)/2*k;
+	c.fillStyle = "#000"; c.fillRect(0, 0, W, h); c.fillRect(0, H - h, W, h);
+}
+// passage d'un chapitre à l'autre : trois bandes de couleur qui balaient l'image
+function wipes(c, T){
+	for(const S of SHOTS){
+		if(!S.chap) continue;
+		const u = (T - (S.t0 - .45))/.9; if(u <= 0 || u >= 1) continue;
+		[NAVY, CYAN, "#f6f1e7"].forEach((col, i) => {
+			const p = clamp((u - i*.07)/.79), x0 = -W*.45 + (W*2.7)*inout(p);          // à mi-course la bande couvre tout l'écran : la coupe ne se voit pas
+			c.save(); c.fillStyle = col; c.beginPath(); c.moveTo(x0 - 2000, 0); c.lineTo(x0 + 700, 0); c.lineTo(x0 + 500, H); c.lineTo(x0 - 2200, H); c.closePath(); c.fill(); c.restore();
+		});
+	}
+}
+// fondu au bleu nuit quand on change de lieu sans transition de chapitre
+function dips(c, T){
+	for(let i = 1; i < SHOTS.length; i++){
+		const S = SHOTS[i], P = SHOTS[i - 1]; if(S.scene === P.scene || S.chap) continue;
+		const k = 1 - Math.abs(T - S.t0)/.45; if(k > 0){ c.fillStyle = `rgba(12,26,56,${sine(k)})`; c.fillRect(0, 0, W, H); }
+	}
+}
+
+/* ---------- les habillages de chaque plan ---------- */
+function chapter(c, S, t){
+	if(!S.chap) return;
+	const a = life(t, .5, 3.6, .5, .6); if(a <= 0) return;
+	const [n, title] = S.chap.split(" · ");
+	const y = S.lb ? (H - W/2.39)/2 + 74 : 96;
+	text(c, n, 96, y, { size:22, weight:800, color:CYAN, a, track:3 });
+	line(c, 140, y - 8, 46, seg(t, .6, 1.2), CYAN, 3);
+	rise(c, title.toUpperCase(), 200, y, seg(t, .7, 1.4), { size:22, weight:800, track:4, a });
+}
+function lowerThird(c, [title, sub], t, d, lb){
+	const a = life(t, .7, d, .5, .5); if(a <= 0) return;
+	const yb = lb ? H - (H - W/2.39)/2 - 70 : H - 120;
+	c.save(); c.globalAlpha = a; c.fillStyle = CYAN; c.fillRect(96, yb - 74, 6, 92*out3(seg(t, .7, 1.2))); c.restore();
+	rise(c, title, 126, yb - 22, seg(t, .8, 1.5), { size:52, fam:DISP, a });
+	rise(c, sub, 128, yb + 18, seg(t, 1.05, 1.75), { size:26, weight:600, color:MUTED, a });
+}
+function ouverture(c, t, d){
+	const a = 1 - seg(t, d - 1, d - .2);
+	rise(c, "UNIVERSITÉ CATHOLIQUE DE LILLE", W/2, 418, seg(t, 1.3, 2.1), { size:22, weight:800, color:CYAN_L, align:"center", track:6, a });
+	rise(c, "Le campus FGES", W/2, 560, seg(t, 1.8, 2.8), { size:150, fam:DISP, align:"center", a });
+	line(c, W/2 - 160, 606, 320, seg(t, 2.6, 3.4)*a, CYAN, 5);
+	rise(c, "en 3D", W/2, 690, seg(t, 3, 3.8), { size:64, fam:DISP, color:CYAN_L, align:"center", a });
+	rise(c, "Une visite. 36 formations. Des mini-jeux pour les essayer.", W/2, 790, seg(t, 4.2, 5.2), { size:30, weight:700, color:MUTED, align:"center", a });
+}
+function promesse(c, t, d){
+	const a1 = life(t, .3, 5.6, .4, .5);
+	rise(c, "Choisir une formation,", 200, 470, seg(t, .4, 1.2), { size:96, fam:DISP, a:a1 });
+	rise(c, "c'est d'abord se projeter.", 200, 590, seg(t, 1.3, 2.1), { size:96, fam:DISP, color:CYAN_L, a:a1 });
+	const P = [["campus", "01", "Découvrir le campus", "Vauban et Euratechnologies, reconstitués à l'échelle"], ["formations", "02", "Découvrir les formations", "36 formations, de la licence au master"], ["jeux", "03", "Les essayer", "Un mini-jeu pour vivre ce que font les étudiants"]];
+	const a2 = life(t, 5.8, d, .4, .6), cw = 500, gap = 80, x0 = (W - 3*cw - 2*gap)/2;
+	P.forEach(([k, n, title, sub], i) => {
+		const t0 = 6 + i*.55, p = seg(t, t0, t0 + .9); if(p <= 0) return;
+		const x = x0 + i*(cw + gap), y = 360;
+		icon(c, k, x, y, 120, seg(t, t0, t0 + 1.4), CYAN_L);
+		text(c, n, x + cw - 4, y + 40, { size:28, weight:800, color:"rgba(127,220,236,.55)", align:"right", a:a2*p, track:2 });
+		line(c, x, y + 170, cw, p*a2, "rgba(255,255,255,.35)", 2);
+		rise(c, title, x, y + 240, seg(t, t0 + .2, t0 + 1), { size:fitSize(c, title, cw, 44, 700, DISP), fam:DISP, a:a2 });
+		wrap(c, sub, cw, 26, 600).forEach((l, j) => rise(c, l, x, y + 296 + j*38, seg(t, t0 + .35, t0 + 1.15), { size:26, weight:600, color:MUTED, a:a2 }));
+	});
+}
+function compteur(c, t, d){
+	const a = life(t, .2, d + .3, .4, .3), n = Math.round(36*out3(seg(t, .3, 1.6)));
+	text(c, String(n), W/2 - 30, 560, { size:260, fam:DISP, align:"right", a, color:WHITE });
+	rise(c, "formations", W/2, 470, seg(t, .5, 1.2), { size:64, fam:DISP, a });
+	rise(c, "réparties dans trois entités", W/2, 540, seg(t, .8, 1.5), { size:32, weight:700, color:MUTED, a });
+	let xx = W/2;
+	Object.values(ENT).forEach((e, i) => {
+		font(c, 800, 26); const w = c.measureText(e.name).width + 48, x = xx; xx += w + 14;
+		const p = out3(seg(t, 1.2 + i*.25, 1.8 + i*.25)); if(p <= 0) return;
+		c.save(); c.globalAlpha = a*p; rr(c, x, 590 + (1 - p)*20, w, 52, 26); c.fillStyle = e.color; c.fill(); c.restore();
+		text(c, e.name, x + 24, 625 + (1 - p)*20, { size:26, weight:800, color:e.ink, a:a*p });
+	});
+}
+function entite(c, S, t, d){
+	const e = ENT[S.ent], p = inout(seg(t, 0, .7)), q = 1 - inout(seg(t, d - .5, d + .2));
+	// bandeau de couleur qui s'ouvre de la gauche
+	c.save(); c.globalAlpha = .96*Math.min(1, q*1.2); c.fillStyle = e.color; c.fillRect(0, 0, W*.5*p, H); c.restore();
+	c.save(); c.beginPath(); c.rect(0, 0, W*.5*p, H); c.clip();
+	text(c, "ENTITÉ", 120, 380, { size:24, weight:800, color:e.ink, track:6, a:q });
+	text(c, e.name, 116, 520, { size:fitSize(c, e.name, W*.5 - 200, 150, 700, DISP), fam:DISP, color:e.ink, a:q });
+	c.restore();
+	wrap(c, e.long, W*.5 - 200, 52, 700, DISP).forEach((l, j, arr) => rise(c, l, W*.5 + 100, 500 - (arr.length - 1)*64 + j*64, seg(t, .5 + j*.12, 1.2 + j*.12), { size:52, fam:DISP, a:q }));
+	rise(c, S.info, W*.5 + 102, 570, seg(t, .75, 1.45), { size:30, weight:700, color:MUTED, a:q });
+}
+function grid(c, S, t, d){
+	const e = ENT[S.ent], L = S.grid.list, a = life(t, 0, d, .3, .5);
+	// pastille de l'entité et titre du groupe
+	font(c, 800, 22); const w = c.measureText(e.name.toUpperCase()).width + 40 + 3*e.name.length;
+	c.save(); c.globalAlpha = a; rr(c, 160, 118, w, 44, 22); c.fillStyle = e.color; c.fill(); c.restore();
+	text(c, e.name.toUpperCase(), 180, 148, { size:22, weight:800, color:e.ink, a, track:3 });
+	rise(c, S.grid.t, 160, 238, seg(t, .15, .8), { size:62, fam:DISP, a });
+	const cols = 2, cw = 780, ch = 118, gx = 40, gy = 20, x0 = 160, y0 = 300;
+	L.forEach((id, i) => {
+		const f = F[id], g = GAMES[id] ? GAME_INFO[GAMES[id]] : null;
+		const t0 = .35 + i*.11, p = out5(seg(t, t0, t0 + .7))*a; if(p <= 0) return;
+		const alone = i === L.length - 1 && L.length % cols;          // dernière carte seule sur sa ligne : centrée
+		const x = alone ? x0 + (cw + gx)/2 : x0 + (i % cols)*(cw + gx), y = y0 + Math.floor(i/cols)*(ch + gy) + (1 - p)*30;
+		c.save(); c.globalAlpha = p;
+		rr(c, x, y, cw, ch, 16); c.fillStyle = "rgba(255,255,255,.96)"; c.fill();
+		c.fillStyle = e.color; c.fillRect(x, y + 16, 6, ch - 32);
+		text(c, (f.id === "cupge" ? "Prépa et licence" : LEVEL[f.level]).toUpperCase(), x + 34, y + 38, { size:16, weight:800, color:"#6b7590", track:2 });
+		const name = f.name.replace(/^(Licence Pro|Licence|Master|DU|Prépa) /, m => m);
+		text(c, name, x + 34, y + 76, { size:fitSize(c, name, cw - 68, 30, 800), weight:800, color:INK });
+		// badge du mini-jeu
+		const s = g ? `🎮  Mini-jeu « ${g.title} »` : "Mini-jeu en préparation";
+		font(c, 800, 17); const bw = c.measureText(s).width + 28;
+		rr(c, x + 34, y + 88, bw, 28, 14); c.fillStyle = g ? "#dff5e6" : "#eef0f5"; c.fill();
+		text(c, s, x + 48, y + 108, { size:17, weight:800, color:g ? "#1d7a43" : "#6b7590" });
+		c.restore();
+	});
+}
+function jeux(c, t, d){
+	const a = life(t, 0, d, .3, .6);
+	rise(c, "Un mini-jeu par formation", 160, 238, seg(t, .4, 1.2), { size:72, fam:DISP, a });
+	rise(c, "Quelques minutes pour vivre ce que font vraiment les étudiants.", 162, 300, seg(t, .7, 1.5), { size:32, weight:700, color:MUTED, a });
+	const ready = FORMATIONS.filter(f => GAMES[f.id]), cw = 520, ch = 270, gx = 40, gy = 36, x0 = (W - 3*cw - 2*gx)/2, y0 = 370;
+	ready.forEach((f, i) => {
+		const g = GAME_INFO[GAMES[f.id]], e = ENT[f.school], t0 = 1.6 + i*.3, p = out5(seg(t, t0, t0 + .8))*a; if(p <= 0) return;
+		const x = x0 + (i % 3)*(cw + gx), y = y0 + Math.floor(i/3)*(ch + gy) + (1 - p)*40;
+		c.save(); c.globalAlpha = p;
+		rr(c, x, y, cw, ch, 20); c.fillStyle = "rgba(255,255,255,.97)"; c.fill();
+		c.fillStyle = e.color; c.fillRect(x, y, cw, 8);
+		font(c, 400, 54, "system-ui, 'Apple Color Emoji', sans-serif"); c.textBaseline = "alphabetic"; c.fillText(g.icon, x + 30, y + 86);
+		text(c, g.title, x + 110, y + 64, { size:fitSize(c, g.title, cw - 140, 32, 700, DISP), fam:DISP, color:INK });
+		text(c, f.name, x + 110, y + 96, { size:fitSize(c, f.name, cw - 140, 19, 700), weight:700, color:"#5b6580" });
+		(STEPS[f.id] || []).forEach((s, j) => {
+			const q = seg(t, t0 + .5 + j*.18, t0 + .9 + j*.18);
+			c.save(); c.globalAlpha = p*q; rr(c, x + 30, y + 128 + j*44, cw - 60, 36, 10); c.fillStyle = "#f1f3f8"; c.fill(); c.restore();
+			text(c, s, x + 46, y + 153 + j*44, { size:19, weight:700, color:INK, a:p*q });
+		});
+		c.restore();
+	});
+	const all = FORMATIONS.length, n = ready.length;
+	rise(c, `${n} jouables aujourd'hui · les ${all - n} suivants construits avec chaque équipe pédagogique`, W/2, 1000, seg(t, 4.6, 5.4), { size:28, weight:800, color:CYAN_L, align:"center", a });
+}
+function relecture(c, t, d){
+	const a = life(t, 0, d, .3, .6);
+	rise(c, "Avant de les montrer aux candidats,", 200, 380, seg(t, .3, 1.1), { size:72, fam:DISP, a });
+	rise(c, "chaque jeu est relu par son équipe pédagogique.", 200, 470, seg(t, .9, 1.7), { size:72, fam:DISP, color:CYAN_L, a });
+	["Juste sur le fond", "Fidèle à la formation", "Au bon niveau"].forEach((s, i) => {
+		const t0 = 2.6 + i*.5, p = seg(t, t0, t0 + .7); if(p <= 0) return;
+		const x = 200 + i*540, y = 600;
+		c.save(); c.globalAlpha = a*clamp(p*2); c.beginPath(); c.arc(x + 36, y + 36, 36, 0, 7); c.fillStyle = CYAN; c.fill(); c.restore();
+		icon(c, "check", x + 6, y + 6, 60, seg(t, t0 + .1, t0 + .8), NAVY);
+		rise(c, s, x + 96, y + 50, seg(t, t0 + .15, t0 + .85), { size:38, weight:800, a });
+	});
+	rise(c, "Votre relecture : environ 15 minutes, sur la page de chaque jeu.", 200, 820, seg(t, 4.6, 5.4), { size:32, weight:700, color:MUTED, a });
+}
+function signature(c, t, d, logo){
+	const p = inout(seg(t, 0, 1));
+	c.save(); c.globalAlpha = .9*p; c.fillStyle = NAVY; c.fillRect(0, 0, W, H); c.restore();
+	const k = out5(seg(t, .4, 1.4));
+	c.save(); c.globalAlpha = k; rr(c, W/2 - 520, 250 + (1 - k)*30, 1040, 230, 26); c.fillStyle = CREAM; c.fill();
+	if(logo.complete && logo.naturalWidth){ const lw = 560, lh = lw*logo.naturalHeight/logo.naturalWidth; c.drawImage(logo, W/2 - lw/2, 250 + (230 - lh)/2 + (1 - k)*30, lw, lh); }
+	c.restore();
+	rise(c, "Le campus FGES en 3D", W/2, 620, seg(t, 1, 1.8), { size:84, fam:DISP, align:"center" });
+	rise(c, "Découvrir le campus  ·  Découvrir les formations  ·  Les essayer", W/2, 690, seg(t, 1.4, 2.2), { size:32, weight:700, color:CYAN_L, align:"center" });
+	rise(c, "lwichlacz.github.io/campus_fges", W/2, 790, seg(t, 2, 2.8), { size:26, weight:700, color:MUTED, align:"center", track:1 });
+	text(c, "Bâtiments et photos aériennes : © IGN · Carte : © contributeurs OpenStreetMap", W/2, 1010, { size:18, weight:600, color:"rgba(232,238,248,.45)", align:"center", a:seg(t, 2.4, 3.2) });
+}
+
+/* ---------- une image du film ---------- */
+let small = null;
+function compose(c, img, T, logo){
+	const i = shotAt(T), S = SHOTS[i], t = T - S.t0;
 	c.drawImage(img, 0, 0, W, H);
-	vignette(c);
-	if(S.lower) lower(c, img, S.lower, t, S.d);
-	if(S.panel) panel(c, img, S.panel, t, S.d);
-	if(S.over === "ouverture") ouverture(c, t, S.d);
-	if(S.over === "chiffres") chiffres(c, img, t, S.d);
-	if(S.over === "metro") metro(c, t, S.d);
-	if(S.over === "jeux") jeux(c, img, t, S.d);
-	if(S.over === "relecture") relecture(c, img, t, S.d);
-	if(S.over === "fin") fin(c, t, S.d, logo);
-	// fondus : au noir au début et à la fin, enchaînés aux changements de lieu
-	const nx = SHOTS[i + 1], pv = SHOTS[i - 1];
-	let f = 0;
-	if(i === 0) f = 1 - seg(t, 0, 1.2);
-	if(nx && nx.lieu !== S.lieu && S.over !== "metro") f = Math.max(f, seg(t, S.d - .45, S.d));
-	if(pv && pv.lieu !== S.lieu && pv.over !== "metro") f = Math.max(f, 1 - seg(t, 0, .45));
-	if(pv && pv.over === "metro") f = Math.max(f, 1 - seg(t, 0, .6));
-	if(!nx) f = Math.max(f, seg(t, S.d - .8, S.d));
-	if(f > 0){ c.fillStyle = `rgba(5,10,25,${f})`; c.fillRect(0, 0, W, H); }
+	// fond flouté et assombri derrière les textes et les cartes (flou par réduction-agrandissement)
+	const prev = SHOTS[i - 1], next = SHOTS[i + 1];
+	let b = S.blur || 0;
+	if(b){ if(!(prev && prev.blur)) b *= sine(seg(t, 0, .9)); if(!(next && next.blur)) b *= 1 - sine(seg(t, S.d - .9, S.d)); }
+	if(b > 0 && FX.blur){
+		small ||= Object.assign(document.createElement("canvas"), { width:320, height:180 });
+		const sc = small.getContext("2d"); sc.filter = "blur(5px)"; sc.drawImage(img, -12, -7, 344, 194);
+		c.save(); c.globalAlpha = clamp(b*1.1); c.imageSmoothingQuality = "high"; c.drawImage(small, 0, 0, W, H); c.restore();
+		c.fillStyle = `rgba(12,26,56,${.62*b})`; c.fillRect(0, 0, W, H);
+	}
+	if(S.lt) lowerThird(c, S.lt, t, S.d, S.lb);
+	if(S.ov === "ouverture") ouverture(c, t, S.d);
+	if(S.ov === "promesse") promesse(c, t, S.d);
+	if(S.ov === "compteur") compteur(c, t, S.d);
+	if(S.ov === "entite") entite(c, S, t, S.d);
+	if(S.grid) grid(c, S, t, S.d);
+	if(S.ov === "jeux") jeux(c, t, S.d);
+	if(S.ov === "relecture") relecture(c, t, S.d);
+	if(S.ov === "signature") signature(c, t, S.d, logo);
+	letterbox(c, T);
+	chapter(c, S, t);
+	dips(c, T);
+	wipes(c, T);
+	finish(c, T);
 }
 
 /* ---------- installation ---------- */
-let ctx = null, logo = null, cur = null;
+let ctx = null, logo = null, cur = null, T = null;
 async function installer(){
 	const C = window.campus; if(!C) throw new Error("Ouvrir le site avec ?debug");
 	T = C.THREE;
 	await P.preparer({ qualite:"haute", heure:"jour" });
 	for(const id of ["atrium", "wenovin", "eura"]){ const ld = C.loadInterior(id); for(let i = 0; i < 400 && !C.interiors?.[id]; i++){ P.pas(); await new Promise(r => setTimeout(r, 5)); } await ld; }
-	SHOTS = plans(C); TOTAL = SHOTS.reduce((s, x) => s + x.d, 0);
 	const ctl = controle(); if(ctl.manquantes.length || ctl.inconnues.length || ctl.doublons.length) throw new Error("Formations : " + JSON.stringify(ctl));
 	await document.fonts.load(`600 40px ${DISP}`); await document.fonts.load(`800 20px ${BODY}`); await document.fonts.load(`700 20px ${BODY}`);
 	const R = C.renderer, cam = C.camera;
-	R.setPixelRatio(RENDU); R.setSize(W, H, false); cam.aspect = W/H; cam.updateProjectionMatrix(); C.post?.setSize(W, H, RENDU);
+	R.setPixelRatio(RENDU); R.setSize(1280, 720, false); cam.aspect = 16/9; cam.updateProjectionMatrix(); C.post?.setSize(1280, 720, RENDU);
 	logo = new Image(); logo.src = "/img/logo-fges.png"; await logo.decode().catch(() => {});
-	const cv = document.createElement("canvas"); cv.width = OUT_W; cv.height = OUT_H;
-	ctx = cv.getContext("2d"); ctx.setTransform(OUT_W/W, 0, 0, OUT_H/H, 0, 0); ctx.imageSmoothingQuality = "high";
+	const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+	ctx = cv.getContext("2d"); ctx.imageSmoothingQuality = "high";
 	cur = null;
 	return cv;
 }
 const free = C => Object.assign(C.controls, { enableDamping:false, autoRotate:false, minDistance:0, maxDistance:1e4, minPolarAngle:0, maxPolarAngle:Math.PI });
 function placer(C, lieu){ if(lieu === cur) return; cur = lieu; if(lieu === "ext") C.placeExt("ha"); else C.placeIn(lieu); free(C); for(let k = 0; k < 3; k++) P.pas(0); }
-// une image du film : caméra posée, campus avancé de dt, rendu, habillage
-function image(C, tg, dt){
-	let i = 0, t0 = 0; while(i < SHOTS.length - 1 && tg >= t0 + SHOTS[i].d){ t0 += SHOTS[i].d; i++; }
-	const S = SHOTS[i], t = tg - t0;
-	placer(C, S.lieu);
-	const [p, look] = S.cam(clamp(t/S.d)); C.view(...p, ...look);
-	decale(C.camera, S, t);
+// une image du film : lieu installé, caméra posée, campus avancé de dt (ms), rendu, habillage
+function image(C, T, dt){
+	const i = shotAt(T), S = SHOTS[i];
+	placer(C, S.scene);
+	const [p, look] = S.cam(clamp((T - S.t0)/S.d)); C.view(...p, ...look);
 	P.pas(dt);
-	compose(ctx, C.renderer.domElement, i, t, logo);
+	compose(ctx, C.renderer.domElement, Math.min(T, TOTAL - .001), logo);
 	return i;
 }
 
@@ -306,17 +404,17 @@ export async function planche(n = 4, sortie = "tools/film/_planche.jpg"){
 /* ---------- tournage ---------- */
 let ETAT = { phase:"repos" };
 export const etat = () => ETAT;
-export async function tourner({ sortie = "docs/validation-web/media/campus-3d.mp4", musique = "/docs/validation-web/voix/musique-film.wav", debit = 5_500_000, recepteur = "http://127.0.0.1:8767/film" } = {}){
+export async function tourner({ sortie = "docs/validation-web/media/campus-3d.mp4", musique = "/docs/validation-web/voix/musique-film.wav", debit = 4_500_000, recepteur = "http://127.0.0.1:8767/film" } = {}){
 	try {
 		ETAT = { phase:"installation" };
 		const cv = await installer(), C = window.campus;
 		const { Muxer, ArrayBufferTarget } = await import("https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.mjs");
 		const SR = 48000, N = Math.round(TOTAL*FPS);
 		const mux = new Muxer({ target:new ArrayBufferTarget(), fastStart:"in-memory", firstTimestampBehavior:"offset",
-			video:{ codec:"avc", width:OUT_W, height:OUT_H, frameRate:FPS }, audio:{ codec:"aac", numberOfChannels:2, sampleRate:SR } });
+			video:{ codec:"avc", width:W, height:H, frameRate:FPS }, audio:{ codec:"aac", numberOfChannels:2, sampleRate:SR } });
 		let fail = null;
 		const venc = new VideoEncoder({ output:(ch, meta) => mux.addVideoChunk(ch, meta), error:e => fail = e });
-		venc.configure({ codec:"avc1.640028", width:OUT_W, height:OUT_H, bitrate:debit, framerate:FPS, latencyMode:"quality", avc:{ format:"avc" } });
+		venc.configure({ codec:"avc1.640028", width:W, height:H, bitrate:debit, framerate:FPS, latencyMode:"quality", avc:{ format:"avc" } });
 		// une pause qui n'est pas ralentie quand l'onglet est en arrière-plan
 		const mc = new MessageChannel(), souffle = () => new Promise(r => { mc.port1.onmessage = r; mc.port2.postMessage(0); });
 		const t0 = performance.now ? Date.now() : 0;

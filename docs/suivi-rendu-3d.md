@@ -98,11 +98,11 @@ tricheurs (L3 Data). Épingle dans Wenov, salle de l'École du Numérique.
 
 ## Film de présentation
 
-`tools/film/film.js` tourne le film dans le site lui-même (plans de caméra, panneaux de formations, musique), et
-`tools/film/recepteur.py` l'écrit dans `docs/validation-web/media/campus-3d.mp4`. Pour le refaire (nouvelle formation,
-nouveau mini-jeu) : `docs/validation-web/voix/voix.sh` (musique), `python3 tools/serve.py`, `python3 tools/film/recepteur.py`,
-ouvrir http://localhost:8765/?debug (onglet au premier plan pendant 100 s), puis dans la console
-`(await import("/tools/film/film.js")).tourner()`. `apercu(n° du plan, seconde)` montre une image sans tourner ;
-`controle()` vérifie que chaque formation apparaît une fois. Le film est rendu en 2560×1440, réduit en 1920×1080 (bords lissés), enregistré à 5 Mb/s (environ 60 Mo) dans
-`campus-3d-brut.mp4`. Ensuite `avconvert -s campus-3d-brut.mp4 -o campus-3d.mp4 -p PresetPassthrough` (MP4 standard)
-et `python3 docs/validation-web/build.py`.
+2 min 12, Full HD, sur la page de relecture (destiné aussi à la direction). Tourné image par image dans le campus à
+jour (`tools/film/pilote.js` pilote l'horloge, `tools/film/film.js` le montage), encodé dans le navigateur.
+Montage calé sur la musique (`docs/validation-web/voix/musique.py`, 80 bpm) : ouverture, la promesse (découvrir le
+campus, découvrir les formations, les essayer), 01 le campus en travellings, 02 les formations **entité par entité**
+(FGES, ISEA, École du Numérique : carte d'entité puis grilles, les 36 formations avec leur mini-jeu ou « en
+préparation »), 03 les mini-jeux, la relecture, signature. Bandes cinéma, transitions aux couleurs des entités,
+typographie animée, fond flouté sous les textes. Refaire : `F.planche(4)` pour relire, puis `F.tourner()` (2 min),
+puis `python docs/validation-web/build.py`. **Toujours partir de `git pull` : les bâtiments évoluent.**
