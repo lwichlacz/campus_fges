@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=2222f08d8b";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=2222f08d8b";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=2222f08d8b";
-import { MAP } from "./vauban.js?v=2222f08d8b";
-import { buildLandmarks } from "./landmarks.js?v=2222f08d8b";
-import { buildMonuments } from "./monuments.js?v=2222f08d8b";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=2222f08d8b";
-import { buildStation } from "./station.js?v=2222f08d8b";
-import { createRame } from "./rame.js?v=2222f08d8b";
-import { Audio } from "./audio.js?v=2222f08d8b";
-import { DETAILS } from "./details.js?v=2222f08d8b";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=73f0f1170e";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=73f0f1170e";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=73f0f1170e";
+import { MAP } from "./vauban.js?v=73f0f1170e";
+import { buildLandmarks } from "./landmarks.js?v=73f0f1170e";
+import { buildMonuments } from "./monuments.js?v=73f0f1170e";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=73f0f1170e";
+import { buildStation } from "./station.js?v=73f0f1170e";
+import { createRame } from "./rame.js?v=73f0f1170e";
+import { Audio } from "./audio.js?v=73f0f1170e";
+import { DETAILS } from "./details.js?v=73f0f1170e";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -318,32 +318,48 @@ function buildHA(){
 		const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map:pave, roughness:.85 })); m.position.set(0, .06, .4); m.receiveShadow = true; HAG.add(m);
 	}
 	const wallM = std("#d9cbb2"), iron = std("#2c2a30");
-	// grille en fer forgé sur muret, barreaux à pointes de lance, et portail à deux battants (ouverts vers la cour)
-	const bars = [], tips = [], rails = [], scrolls = [];
+	// grille en fer forgé sur muret, barreaux à pointes de lance, et portail à deux battants (ouverts vers la cour).
+	// Barreaux, lisses et volutes sont peints sur des panneaux ajourés plutôt que modélisés un par un : la carte
+	// graphique les moyenne avec la distance (mipmaps), donc plus de scintillement des barreaux plus fins qu'un pixel.
+	const PXM = 200;                                                    // pixels par mètre dans les dessins
+	const ironTex = (w, h, draw) => {
+		const c = document.createElement("canvas"); c.width = Math.ceil(w*PXM); c.height = Math.ceil(h*PXM);
+		const x = c.getContext("2d"); x.fillStyle = x.strokeStyle = "#2c2a30"; x.lineCap = "round";
+		draw(x, v => v*PXM, v => c.height - v*PXM);                      // conversions mètres → pixels (y vers le haut)
+		const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+	};
+	const ironPanel = (tex, w, h) => new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map:tex, transparent:true, alphaTest:.04, side:THREE.DoubleSide, roughness:.6, metalness:.3 }));
+	// une travée de grille : de 3,4 à 14 m de l'axe, du muret (0,82 m) aux pointes (2,2 m)
+	const FX0 = 3.4, FW = 10.6, FY0 = .76, FH = 1.48;
+	const fenceTex = ironTex(FW, FH, (x, X, Y) => {
+		const yy = v => Y(v - FY0);
+		for(const y of [1.05, 1.82]) x.fillRect(0, yy(y) - .025*PXM, FW*PXM, .05*PXM);                        // lisses
+		for(let bx = 3.5; bx <= 13.9; bx += .26){
+			const px = X(bx - FX0);
+			x.fillRect(px - .0225*PXM, yy(2), .045*PXM, (2 - .82)*PXM);                                       // barreau
+			x.beginPath(); x.moveTo(px - .05*PXM, yy(2)); x.lineTo(px, yy(2.16)); x.lineTo(px + .05*PXM, yy(2)); x.fill();   // pointe de lance
+		}
+		x.lineWidth = .05*PXM;
+		for(let sx = 4.2; sx <= 13.6; sx += 1.3){ x.beginPath(); x.arc(X(sx - FX0), yy(1.43), .16*PXM, 0, 7); x.stroke(); }   // volutes
+	});
+	// un battant : du pilier (u = 0) au milieu du portail (u = 1), sommet en arc
+	const GW = 2.55, GH = 2.9, top = t => 2.15 + .55*Math.sin(Math.PI/2*t);
+	const leafTex = ironTex(GW, GH, (x, X, Y) => {
+		for(let k = 0; k <= 12; k++){ const t = k/12, h = top(t); x.fillRect(X(t*GW) - .025*PXM, Y(h), .05*PXM, (h - .12)*PXM); x.beginPath(); x.moveTo(X(t*GW) - .05*PXM, Y(h)); x.lineTo(X(t*GW), Y(h + .16)); x.lineTo(X(t*GW) + .05*PXM, Y(h)); x.fill(); }
+		for(const y of [.12, .9, 1.6]) x.fillRect(0, Y(y) - .03*PXM, GW*PXM, .06*PXM);
+		x.lineWidth = .06*PXM; x.beginPath(); for(let k = 0; k <= 24; k++){ const t = k/24; k ? x.lineTo(X(t*GW), Y(top(t) - .3)) : x.moveTo(X(0), Y(top(0) - .3)); } x.stroke();
+		x.lineWidth = .05*PXM; for(let k = 0; k < 4; k++){ x.beginPath(); x.arc(X(.35 + k*.6), Y(1.25), .16*PXM, 0, 7); x.stroke(); }
+	});
 	for(const s of [-1,1]){
 		box(HAG, 11, .7, .5, wallM, s*8.5, 0, 10.3);
 		box(HAG, 11.2, .12, .6, wallM, s*8.5, .7, 10.3);
-		rails.push([s*8.5, 1.05, 10.3, 11, 0], [s*8.5, 1.82, 10.3, 11, 0]);
-		for(let x=3.5; x<=13.9; x+=.26){ bars.push([s*x, .82, 10.3, 1.18, 0]); tips.push([s*x, 2, 10.3, 0]); }
-		for(let x=4.2; x<=13.6; x+=1.3) scrolls.push([s*x, 1.43, 10.3, 0]);
+		const f = ironPanel(fenceTex, FW, FH); f.position.set(s*(FX0 + FW/2), FY0 + FH/2, 10.3); f.scale.x = s; HAG.add(f);
 		box(HAG, .8, 2.6, .8, wallM, s*3, 0, 10.3);
 		box(HAG, .95, .18, .95, wallM, s*3, 2.6, 10.3);
 		cone(HAG, .55, .7, wallM, s*3, 2.78, 10.3, 4, Math.PI/4);
-		// un battant : charnière contre le pilier, arc qui monte vers le milieu du portail
 		const leaf = new THREE.Group(); leaf.position.set(s*2.58, 0, 10.3); leaf.rotation.y = -s*1.15; HAG.add(leaf);
-		const W = 2.55, top = t => 2.15 + .55*Math.sin(Math.PI/2*t);          // t : 0 au pilier, 1 au milieu
-		for(let k = 0; k <= 12; k++){ const t = k/12, h = top(t) - .12; box(leaf, .05, h, .05, iron, -s*t*W, .12, 0); cone(leaf, .05, .16, iron, -s*t*W, h + .12, 0, 4); }
-		for(const y of [.12, .9, 1.6]) box(leaf, W, .06, .06, iron, -s*W/2, y, 0);
-		for(let k = 0; k < 6; k++){ const t0 = k/6, t1 = (k + 1)/6; const a = top(t0) - .3, b = top(t1) - .3, m = (a + b)/2; const r = box(leaf, W/6 + .02, .06, .06, iron, -s*(t0 + t1)/2*W, m, 0); r.rotation.z = s*Math.atan2(b - a, W/6); }
-		for(let k = 0; k < 4; k++) mesh(cached("gateScroll", () => new THREE.TorusGeometry(.16, .025, 4, 14)), iron, leaf, -s*(.35 + k*.6), 1.25, 0);
-		mesh(cached("gateDisc", () => new THREE.CylinderGeometry(.22, .22, .05, 16).rotateX(Math.PI/2)), std("#c9a640", { metalness:.6, roughness:.35 }), leaf, -s*(W - .25), 1.25, 0);
-	}
-	{
-		const d = new THREE.Object3D(), put = (geo, list, f) => { const m = new THREE.InstancedMesh(geo, iron, list.length); list.forEach((v, k) => { f(v); d.updateMatrix(); m.setMatrixAt(k, d.matrix); }); m.castShadow = true; HAG.add(m); };
-		put(BOX, bars, ([x, y, z, h]) => { d.position.set(x, y, z); d.scale.set(.045, h, .045); d.rotation.set(0, 0, 0); });
-		put(BOX, rails, ([x, y, z, w]) => { d.position.set(x, y, z); d.scale.set(w, .05, .06); d.rotation.set(0, 0, 0); });
-		put(cached("k.05,.16,4", () => new THREE.ConeGeometry(.05, .16, 4).translate(0, .08, 0)), tips, ([x, y, z]) => { d.position.set(x, y, z); d.scale.set(1, 1, 1); d.rotation.set(0, 0, 0); });
-		put(cached("gateScroll", () => new THREE.TorusGeometry(.16, .025, 4, 14)), scrolls, ([x, y, z]) => { d.position.set(x, y, z); d.scale.set(1, 1, 1); d.rotation.set(0, 0, 0); });
+		const l = ironPanel(leafTex, GW, GH); l.position.set(-s*GW/2, GH/2, 0); l.scale.x = -s; leaf.add(l);
+		mesh(cached("gateDisc", () => new THREE.CylinderGeometry(.22, .22, .05, 16).rotateX(Math.PI/2)), std("#c9a640", { metalness:.6, roughness:.35 }), leaf, -s*(GW - .25), 1.25, 0);
 	}
 	// gazon propre à la cour : celui de la ville se peint en pavé là où la photo aérienne voit du minéral
 	courtLawn = std("#9cb257", { flatShading:false });
@@ -1409,7 +1425,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=2222f08d8b").then(({ FAR }) => {
+	import("./vauban_far.js?v=73f0f1170e").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1921,14 +1937,14 @@ setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night 
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=2222f08d8b").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=2222f08d8b").then(m => m.createChapelle), eura:() => import("./eura.js?v=2222f08d8b").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=2222f08d8b").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=2222f08d8b").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=73f0f1170e").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=73f0f1170e").then(m => m.createChapelle), eura:() => import("./eura.js?v=73f0f1170e").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=73f0f1170e").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=73f0f1170e").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=2222f08d8b").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=2222f08d8b").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=2222f08d8b").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=2222f08d8b").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=2222f08d8b").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=2222f08d8b").then(m => m.openBiodata)
+	comptoir:() => import("./games/comptoir.js?v=73f0f1170e").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=73f0f1170e").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=73f0f1170e").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=73f0f1170e").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=73f0f1170e").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=73f0f1170e").then(m => m.openBiodata)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -3533,7 +3549,7 @@ function relectureMode(fid, page){
 		}
 	};
 }
-if(/[?&]debug/.test(location.search)) window.campus = { THREE, scene, camera, controls, renderer, city, selectPlace, enterInterior, exitInterior, openGame, PLACES, LIFE, MAP, interiors, relecture, get mode(){ return mode; },
+if(/[?&]debug/.test(location.search)) window.campus = { THREE, scene, camera, controls, renderer, city, selectPlace, enterInterior, exitInterior, openGame, PLACES, LIFE, MAP, interiors, relecture, frame, get mode(){ return mode; },
 	// tournage du film de présentation (tools/film/film.js) : changer de lieu sans cinématique, figer la résolution
 	loadInterior, placeIn, placeExt, perf, set fly(v){ fly = v; }, set intro(v){ intro = v; },
 	view(px,py,pz,tx,ty,tz){ fly = null; intro = null; camera.position.set(px,py,pz); controls.target.set(tx,ty,tz); controls.update(); if(entered) updatePins(); },

@@ -18,6 +18,7 @@
    Résultat : docs/validation-web/media/campus-3d.mp4, puis python docs/validation-web/build.py (page de relecture). */
 import { FORMATIONS, GAMES, GAME_INFO } from "/js/data.js";
 import * as P from "/tools/film/pilote.js";
+import { createRame } from "/js/rame.js";
 
 const W = 1920, H = 1080, FPS = 30, RENDU = 2;                  // image finale · rendu 3D en 2560×1440 (1280×720 ×2)
 const NAVY = "#0c1a38", INK = "#13254a", CYAN = "#21b6ce", CYAN_L = "#7fdcec", CREAM = "#f6f1e7", WHITE = "#ffffff", MUTED = "rgba(232,238,248,.74)";
@@ -67,15 +68,27 @@ const HA = [[0, 8, -3], [16, 30, 43]], JARDIN = [[-28, 2, -37], [-14, 25, -1]], 
 const ids = s => s.split(" ");
 const SHOTS = [
 	// ouverture
-	{ d:9, scene:"ext", lb:1, cam:path([[300, 210, 360], [170, 120, 220], [70, 58, 110]], [[-10, 0, -30], [0, 2, -12], [0, 6, -3]]), ov:"ouverture" },
+	{ d:9, scene:"ext", cam:path([[300, 210, 360], [170, 120, 220], [70, 58, 110]], [[-10, 0, -30], [0, 2, -12], [0, 6, -3]]), ov:"ouverture" },
 	// la promesse
 	{ d:12, scene:"ext", blur:.85, cam:around(...HA, 1.5, 1.25, .9, .5, 8), ov:"promesse" },
-	// 01 · découvrir le campus
-	{ d:6, scene:"ext", lb:1, chap:"01 · Découvrir le campus", cam:around(...HA, 1.2, .9, -.45, .2), lt:["Hôtel Académique", "Le cœur historique de l'Université, depuis 1881"] },
-	{ d:4.5, scene:"ext", lb:1, cam:around(...JARDIN, 1.25, 1, .35, -.1), lt:["Jardin botanique Nicolas Boulay", "Un îlot de nature au milieu du campus"] },
-	{ d:4.5, scene:"ext", lb:1, cam:around(...FALISE, 1.05, .85, -.35, .25), lt:["Bâtiment Michel Falise", "Les formations de la FGES et de l'ISEA"] },
-	{ d:4.5, scene:"atrium", lb:1, cam:path([[32, 16, 30], [22, 11, 22], [14, 8, 16]], [[0, 5, 0], [0, 4.5, 0], [-2, 4.5, 0]]), lt:["L'atrium", "Le cœur de la vie étudiante à Vauban"] },
-	{ d:4.5, scene:"eura", lb:1, cam:path([[-9, 95, 207], [14, 60, 130], [30, 36, 72]], [[-19, 0, 22], [-6, 3, 14], [1, 6, 7]]), lt:["Wenov · Euratechnologies", "L'École du Numérique, à dix minutes en métro"] },
+	// 01 · découvrir le campus : bâtiments, vie étudiante, métro, Euratechnologies
+	{ d:6, scene:"ext", chap:"01 · Découvrir le campus", cam:around(...HA, 1.15, .85, -.5, .15), lt:["Hôtel Académique", "Le cœur historique de l'Université, depuis 1881"] },
+	{ d:5, scene:"ext", cam:path([[5, 18, 27], [2.5, 13.5, 19], [1.5, 12, 16]], [[0, 7, -2], [0, 8, -3], [0, 9, -4]]), lt:["La cour d'honneur", "Le portail, les pelouses et le grand cèdre"] },
+	{ d:4.5, scene:"chapelle", cam:around([0, 4, -3], [19, 30, 32], .9, .7, -.2, .2), lt:["La chapelle universitaire", "Néogothique des années 1920, restaurée en 2020"] },
+	{ d:4.5, scene:"ext", cam:around([-47.6, 4, -9.8], [-33.6, 30.8, 26.2], 1.1, .9, .3, -.15), lt:["BU Vauban", "300 000 ouvrages et 338 places pour travailler"] },
+	{ d:4.5, scene:"bibli", cam:around([-1, 1.5, -1], [24, 24, 30], .95, .75, -.25, .2), lt:["À l'intérieur de la BU", "La bibliothèque universitaire du campus"] },
+	{ d:4.5, scene:"ext", cam:around([-8, 6, -37], [6, 34, -1], .95, .72, -.3, .2, -4), lt:["Rizomm", "Un bâtiment intelligent, alimenté à 73 % par le soleil"] },
+	{ d:4, scene:"ext", cam:around(...JARDIN, 1.2, 1, .35, -.1), lt:["Jardin botanique Nicolas Boulay", "Un poumon vert au milieu du campus"] },
+	{ d:4.5, scene:"ext", cam:around(...FALISE, 1.05, .85, -.35, .25), lt:["Bâtiment Michel Falise", "Les formations de la FGES et de l'ISEA"] },
+	{ d:4.5, scene:"atrium", cam:path([[32, 16, 30], [22, 11, 22], [14, 8, 16]], [[0, 5, 0], [0, 4.5, 0], [-2, 4.5, 0]]), lt:["L'atrium", "Le cœur de la vie étudiante à Vauban"] },
+	{ d:4, scene:"ext", cam:around([30.3, 5, 30.5], [44.3, 37.1, 66.5], .9, .7, -.3, .1, -5), lt:["Restaurant universitaire", "3 500 repas servis chaque jour par All"] },
+	{ d:4, scene:"ext", cam:around([-13, 5, 27.8], [1, 34, 63.8], .9, .7, .25, -.15, -5), lt:["Maison de l'étudiant", "Plus de 300 associations étudiantes"] },
+	{ d:4, scene:"ext", cam:around([54.7, 5, 93.6], [68.7, 26.4, 129.6], .9, .72, -.25, .15, -3), lt:["Salle omnisports Norbert Segard", "Plus de 24 cours collectifs par semaine"] },
+	{ d:4.5, scene:"ext", cam:around([105, 6, 53], [119, 40, 89], .85, .68, .3, -.1, -6), lt:["Palais Rameau", "L'agriculture urbaine, rouvert en 2025"] },
+	{ d:4, scene:"ext", cam:around([-343.5, 3, 17.5], [-382, 30, 10], 1.1, .85, -.25, .25), lt:["Métro Cormontaigne", "La ligne 2, au pied du campus"] },
+	{ d:7, scene:"rame", cam:() => [[0, 0, 0], [0, 0, -1]], lt:["Ligne 2 · direction Euratechnologies", "Trois stations jusqu'à Wenov"] },
+	{ d:6, scene:"eura", cam:path([[-9, 95, 207], [14, 60, 130], [30, 36, 72]], [[-19, 0, 22], [-6, 3, 14], [1, 6, 7]]), lt:["Euratechnologies", "Le quartier du numérique, au bord de la Deûle"] },
+	{ d:5.5, scene:"eura", cam:around(...WENOV, 1, .8, -.3, .2), lt:["Wenov", "Le campus de l'École du Numérique"] },
 	// 02 · découvrir les formations
 	{ d:3, scene:"eura", blur:.9, chap:"02 · Découvrir les formations", cam:orbit([1, 8, 7], 80, 50, 1.3, 1.5), ov:"compteur" },
 	{ d:3, scene:"ext", blur:.65, cam:orbit([9, 6, -37], 58, 32, .9, 1.1), ent:"FGES", ov:"entite", info:"16 formations · campus de Vauban" },
@@ -358,26 +371,48 @@ async function installer(){
 	const C = window.campus; if(!C) throw new Error("Ouvrir le site avec ?debug");
 	T = C.THREE;
 	await P.preparer({ qualite:"haute", heure:"jour" });
-	for(const id of ["atrium", "wenovin", "eura"]){ const ld = C.loadInterior(id); for(let i = 0; i < 400 && !C.interiors?.[id]; i++){ P.pas(); await new Promise(r => setTimeout(r, 5)); } await ld; }
+	for(const id of ["atrium", "wenovin", "eura", "chapelle", "bibli"]){ const ld = C.loadInterior(id); for(let i = 0; i < 400 && !C.interiors?.[id]; i++){ P.pas(); await new Promise(r => setTimeout(r, 5)); } await ld; }
 	const ctl = controle(); if(ctl.manquantes.length || ctl.inconnues.length || ctl.doublons.length) throw new Error("Formations : " + JSON.stringify(ctl));
 	await document.fonts.load(`600 40px ${DISP}`); await document.fonts.load(`800 20px ${BODY}`); await document.fonts.load(`700 20px ${BODY}`);
-	const R = C.renderer, cam = C.camera;
-	R.setPixelRatio(RENDU); R.setSize(1280, 720, false); cam.aspect = 16/9; cam.updateProjectionMatrix(); C.post?.setSize(1280, 720, RENDU);
-	logo = new Image(); logo.src = "/img/logo-fges.png"; await logo.decode().catch(() => {});
+	cadre(C);
+	// pas de bulles de noms dans le film (le shader des étiquettes se reconnaît à son uniforme uSplit)
+	C.scene.traverse(o => { if(o.material?.uniforms?.uSplit) o.visible = false; });
+	// la rame de la ligne 2, filmée de l'intérieur
+	rame = createRame(); rame.camera.fov = 52;
+	// pas de logo.decode() : il attend une image affichée, et le pilote suspend l'affichage
+	logo = new Image(); await Promise.race([new Promise(r => { logo.onload = logo.onerror = r; logo.src = "/img/logo-fges.png"; }), new Promise(r => setTimeout(r, 4000))]);
 	const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
 	ctx = cv.getContext("2d"); ctx.imageSmoothingQuality = "high";
 	cur = null;
 	return cv;
 }
+// rendu verrouillé en 2560×1440 et en 16/9 à chaque image : si la fenêtre change de taille pendant le tournage,
+// le site recalcule ses proportions, et l'image serait déformée
+function cadre(C){
+	const R = C.renderer, cam = C.camera;
+	if(R.getPixelRatio() !== RENDU || R.domElement.width !== 1280*RENDU || R.domElement.height !== 720*RENDU){ R.setPixelRatio(RENDU); R.setSize(1280, 720, false); C.post?.setSize(1280, 720, RENDU); }
+	if(cam.aspect !== 16/9){ cam.aspect = 16/9; cam.updateProjectionMatrix(); }
+	if(rame && rame.camera.aspect !== 16/9){ rame.camera.aspect = 16/9; rame.camera.updateProjectionMatrix(); }
+}
+let rame = null, rameShot = null, rameT = 0;
+const LINE2 = ["Cormontaigne", "Port de Lille", "Bois Blancs", "Canteleu – Euratechnologies"];
 const free = C => Object.assign(C.controls, { enableDamping:false, autoRotate:false, minDistance:0, maxDistance:1e4, minPolarAngle:0, maxPolarAngle:Math.PI });
-function placer(C, lieu){ if(lieu === cur) return; cur = lieu; if(lieu === "ext") C.placeExt("ha"); else C.placeIn(lieu); free(C); for(let k = 0; k < 3; k++) P.pas(0); }
+function placer(C, lieu){ if(lieu === cur || lieu === "rame") return; cur = lieu; if(lieu === "ext") C.placeExt("ha"); else C.placeIn(lieu); free(C); for(let k = 0; k < 3; k++) P.pas(0); }
 // une image du film : lieu installé, caméra posée, campus avancé de dt (ms), rendu, habillage
+const MESURE = { pas:0, habillage:0, encodage:0 };      // millisecondes cumulées (Date.now : l'horloge du pilote est figée)
 function image(C, T, dt){
 	const i = shotAt(T), S = SHOTS[i];
-	placer(C, S.scene);
-	const [p, look] = S.cam(clamp((T - S.t0)/S.d)); C.view(...p, ...look);
-	P.pas(dt);
-	compose(ctx, C.renderer.domElement, Math.min(T, TOTAL - .001), logo);
+	placer(C, S.scene); cadre(C);
+	const [p, look] = S.cam(clamp((T - S.t0)/S.d)); if(S.scene !== "rame") C.view(...p, ...look);
+	let m0 = Date.now(); P.pas(dt); MESURE.pas += Date.now() - m0;
+	if(S.scene === "rame"){
+		// à bord : la rame quitte Cormontaigne, s'arrête à Port de Lille et repart
+		const t = T - S.t0;
+		if(rameShot !== S || t < rameT){ rame.start({ names:LINE2, step:3.6 }); rameShot = S; rameT = 0; rame.camera.aspect = 16/9; rame.camera.updateProjectionMatrix(); }
+		rame.update(Math.max(0, t - rameT), T); rameT = t;
+		C.renderer.setRenderTarget(null); C.renderer.render(rame.scene, rame.camera);
+	}
+	m0 = Date.now(); compose(ctx, C.renderer.domElement, Math.min(T, TOTAL - .001), logo); MESURE.habillage += Date.now() - m0;
 	return i;
 }
 
@@ -414,7 +449,10 @@ export async function tourner({ sortie = "docs/validation-web/media/campus-3d.mp
 			video:{ codec:"avc", width:W, height:H, frameRate:FPS }, audio:{ codec:"aac", numberOfChannels:2, sampleRate:SR } });
 		let fail = null;
 		const venc = new VideoEncoder({ output:(ch, meta) => mux.addVideoChunk(ch, meta), error:e => fail = e });
-		venc.configure({ codec:"avc1.640028", width:W, height:H, bitrate:debit, framerate:FPS, latencyMode:"quality", avc:{ format:"avc" } });
+		// encodeur matériel du Mac demandé explicitement (sinon le navigateur peut retomber sur l'encodage logiciel, 10 fois plus lent)
+		const vcfg = { codec:"avc1.640028", width:W, height:H, bitrate:debit, framerate:FPS, latencyMode:"quality", avc:{ format:"avc" }, hardwareAcceleration:"prefer-hardware" };
+		if(!(await VideoEncoder.isConfigSupported(vcfg)).supported) delete vcfg.hardwareAcceleration;
+		venc.configure(vcfg);
 		// une pause qui n'est pas ralentie quand l'onglet est en arrière-plan
 		const mc = new MessageChannel(), souffle = () => new Promise(r => { mc.port1.onmessage = r; mc.port2.postMessage(0); });
 		const t0 = performance.now ? Date.now() : 0;
@@ -423,10 +461,12 @@ export async function tourner({ sortie = "docs/validation-web/media/campus-3d.mp
 		for(let f = 0; f < N; f++){
 			if(fail) throw fail;
 			image(C, f/FPS, 1000/FPS);
+			const e0 = Date.now();
 			const vf = new VideoFrame(cv, { timestamp:Math.round(f*1e6/FPS), duration:Math.round(1e6/FPS) });
 			venc.encode(vf, { keyFrame:f % (FPS*2) === 0 }); vf.close();
 			while(venc.encodeQueueSize > 6) await new Promise(r => venc.addEventListener("dequeue", r, { once:true }));
-			if(f % 10 === 0){ ETAT = { phase:"images", image:f, total:N, pct:Math.round(f/N*100), ecoule:Math.round((Date.now() - t0)/1000) }; await souffle(); }
+			MESURE.encodage += Date.now() - e0;
+			if(f % 10 === 0){ ETAT = { phase:"images", image:f, total:N, pct:Math.round(f/N*100), ecoule:Math.round((Date.now() - t0)/1000), msParImage:{ pas:Math.round(MESURE.pas/(f + 1)), habillage:Math.round(MESURE.habillage/(f + 1)), encodage:Math.round(MESURE.encodage/(f + 1)) } }; await souffle(); }
 		}
 		await venc.flush(); venc.close();
 		// la bande-son, rééchantillonnée en 48 kHz stéréo
