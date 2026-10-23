@@ -1,4 +1,4 @@
-/* Film de présentation du campus FGES en 3D (2 min 12, Full HD), tourné dans le vrai campus, à jour.
+/* Film de présentation du campus FGES en 3D (3 min 09, Full HD), tourné dans le vrai campus, à jour.
    Tournage image par image : l'horloge et la boucle du campus sont pilotées (tools/film/pilote.js), chaque image est
    rendue à l'instant exact en 2560×1440 puis réduite en 1920×1080, et encodée en H.264 + AAC dans le navigateur
    (WebCodecs) : aucune saccade, même sur une machine lente.
@@ -9,7 +9,7 @@
    avec leur mini-jeu ou « mini-jeu en préparation » · 03 les essayer (les mini-jeux) · la relecture · signature.
 
    Usage :  python tools/serve.py   et   python tools/film/recepteur.py   (reçoit la vidéo, port 8767)
-            musique : cd docs/validation-web/voix && python musique.py   (→ musique-film.wav, 132 s)
+            musique : cd docs/validation-web/voix && python musique.py   (→ musique-film.wav, 189 s)
             ouvrir http://localhost:8765/?debug, puis dans la console :
               const F = await import("/tools/film/film.js");
               await F.apercu(56)          // une image à 56 s → tools/film/_apercu.jpg
@@ -68,26 +68,25 @@ const HA = [[0, 8, -3], [16, 30, 43]], JARDIN = [[-28, 2, -37], [-14, 25, -1]], 
 const ids = s => s.split(" ");
 const SHOTS = [
 	// ouverture
-	{ d:9, scene:"ext", cam:path([[300, 210, 360], [170, 120, 220], [70, 58, 110]], [[-10, 0, -30], [0, 2, -12], [0, 6, -3]]), ov:"ouverture" },
+	// descente plongeante (45 à 50° sous l'horizon) : l'horizon et le lointain dans la brume restent hors cadre
+	{ d:9, scene:"ext", cam:path([[150, 330, 190], [95, 200, 125], [48, 95, 70]], [[-10, 0, -30], [-4, 2, -16], [0, 6, -4]]), ov:"ouverture" },
 	// la promesse
-	{ d:12, scene:"ext", blur:.85, cam:around(...HA, 1.5, 1.25, .9, .5, 8), ov:"promesse" },
+	{ d:12, scene:"ext", blur:.85, cam:around(...HA, 1.5, 1.25, .9, .5, 26), ov:"promesse" },
 	// 01 · découvrir le campus : bâtiments, vie étudiante, métro, Euratechnologies
-	{ d:6, scene:"ext", chap:"01 · Découvrir le campus", cam:around(...HA, 1.15, .85, -.5, .15), lt:["Hôtel Académique", "Le cœur historique de l'Université, depuis 1881"] },
-	{ d:5, scene:"ext", cam:path([[5, 18, 27], [2.5, 13.5, 19], [1.5, 12, 16]], [[0, 7, -2], [0, 8, -3], [0, 9, -4]]), lt:["La cour d'honneur", "Le portail, les pelouses et le grand cèdre"] },
-	{ d:4.5, scene:"chapelle", cam:around([0, 4, -3], [19, 30, 32], .9, .7, -.2, .2), lt:["La chapelle universitaire", "Néogothique des années 1920, restaurée en 2020"] },
+	{ d:7, scene:"ext", chap:"01 · Découvrir le campus", cam:around(...HA, 1.15, .85, -.5, .15), lt:["Hôtel Académique", "Le cœur historique de l'Université, depuis 1881"] },
+	{ d:6, scene:"ext", cam:path([[5, 18, 27], [2.5, 13.5, 19], [1.5, 12, 16]], [[0, 7, -2], [0, 8, -3], [0, 9, -4]]), lt:["La cour d'honneur", "Le portail, les pelouses et le grand cèdre"] },
+	{ d:5.5, scene:"chapelle", cam:around([0, 4, -3], [19, 30, 32], .9, .7, -.2, .2), lt:["La chapelle universitaire", "Néogothique des années 1920, restaurée en 2020"] },
 	{ d:4.5, scene:"ext", cam:around([-47.6, 4, -9.8], [-33.6, 30.8, 26.2], 1.1, .9, .3, -.15), lt:["BU Vauban", "300 000 ouvrages et 338 places pour travailler"] },
-	{ d:4.5, scene:"bibli", cam:around([-1, 1.5, -1], [24, 24, 30], .95, .75, -.25, .2), lt:["À l'intérieur de la BU", "La bibliothèque universitaire du campus"] },
+	{ d:5.5, scene:"bibli", cam:around([-1, 1.5, -1], [24, 24, 30], .95, .75, -.25, .2), lt:["À l'intérieur de la BU", "La bibliothèque universitaire du campus"] },
 	{ d:4.5, scene:"ext", cam:around([-8, 6, -37], [6, 34, -1], .95, .72, -.3, .2, -4), lt:["Rizomm", "Un bâtiment intelligent, alimenté à 73 % par le soleil"] },
 	{ d:4, scene:"ext", cam:around(...JARDIN, 1.2, 1, .35, -.1), lt:["Jardin botanique Nicolas Boulay", "Un poumon vert au milieu du campus"] },
-	{ d:4.5, scene:"ext", cam:around(...FALISE, 1.05, .85, -.35, .25), lt:["Bâtiment Michel Falise", "Les formations de la FGES et de l'ISEA"] },
-	{ d:4.5, scene:"atrium", cam:path([[32, 16, 30], [22, 11, 22], [14, 8, 16]], [[0, 5, 0], [0, 4.5, 0], [-2, 4.5, 0]]), lt:["L'atrium", "Le cœur de la vie étudiante à Vauban"] },
-	{ d:4, scene:"ext", cam:around([30.3, 5, 30.5], [44.3, 37.1, 66.5], .9, .7, -.3, .1, -5), lt:["Restaurant universitaire", "3 500 repas servis chaque jour par All"] },
-	{ d:4, scene:"ext", cam:around([-13, 5, 27.8], [1, 34, 63.8], .9, .7, .25, -.15, -5), lt:["Maison de l'étudiant", "Plus de 300 associations étudiantes"] },
-	{ d:4, scene:"ext", cam:around([54.7, 5, 93.6], [68.7, 26.4, 129.6], .9, .72, -.25, .15, -3), lt:["Salle omnisports Norbert Segard", "Plus de 24 cours collectifs par semaine"] },
-	{ d:4.5, scene:"ext", cam:around([105, 6, 53], [119, 40, 89], .85, .68, .3, -.1, -6), lt:["Palais Rameau", "L'agriculture urbaine, rouvert en 2025"] },
+	{ d:5.5, scene:"ext", cam:around(...FALISE, 1.05, .85, -.35, .25), lt:["Bâtiment Michel Falise", "Les formations de la FGES et de l'ISEA"] },
+	{ d:6, scene:"atrium", cam:path([[-30, 17, 30], [-21, 12, 23], [-13, 9, 17]], [[2, 5, 0], [4, 4.8, 0], [6, 4.8, -1]]), lt:["L'atrium", "Le cœur de la vie étudiante à Vauban"] },
+	{ d:4, scene:"ext", cam:around([54.7, 5, 93.6], [68.7, 26.4, 129.6], .9, .72, -.25, .15, -3), lt:["Salle omnisports Norbert Segard", "Avec aussi le restaurant universitaire et la Maison de l'étudiant"] },
+	{ d:5.5, scene:"ext", cam:around([105, 6, 53], [119, 40, 89], .85, .68, .3, -.1, -6), lt:["Palais Rameau", "L'agriculture urbaine, rouvert en 2025"] },
 	{ d:4, scene:"ext", cam:around([-343.5, 3, 17.5], [-382, 30, 10], 1.1, .85, -.25, .25), lt:["Métro Cormontaigne", "La ligne 2, au pied du campus"] },
 	{ d:7, scene:"rame", cam:() => [[0, 0, 0], [0, 0, -1]], lt:["Ligne 2 · direction Euratechnologies", "Trois stations jusqu'à Wenov"] },
-	{ d:6, scene:"eura", cam:path([[-9, 95, 207], [14, 60, 130], [30, 36, 72]], [[-19, 0, 22], [-6, 3, 14], [1, 6, 7]]), lt:["Euratechnologies", "Le quartier du numérique, au bord de la Deûle"] },
+	{ d:6.5, scene:"eura", cam:path([[-9, 95, 207], [14, 60, 130], [30, 36, 72]], [[-19, 0, 22], [-6, 3, 14], [1, 6, 7]]), lt:["Euratechnologies", "Le quartier du numérique, au bord de la Deûle"] },
 	{ d:5.5, scene:"eura", cam:around(...WENOV, 1, .8, -.3, .2), lt:["Wenov", "Le campus de l'École du Numérique"] },
 	// 02 · découvrir les formations
 	{ d:3, scene:"eura", blur:.9, chap:"02 · Découvrir les formations", cam:orbit([1, 8, 7], 80, 50, 1.3, 1.5), ov:"compteur" },
@@ -375,8 +374,12 @@ async function installer(){
 	const ctl = controle(); if(ctl.manquantes.length || ctl.inconnues.length || ctl.doublons.length) throw new Error("Formations : " + JSON.stringify(ctl));
 	await document.fonts.load(`600 40px ${DISP}`); await document.fonts.load(`800 20px ${BODY}`); await document.fonts.load(`700 20px ${BODY}`);
 	cadre(C);
-	// pas de bulles de noms dans le film (le shader des étiquettes se reconnaît à son uniforme uSplit)
-	C.scene.traverse(o => { if(o.material?.uniforms?.uSplit) o.visible = false; });
+	// pas de bulles de noms dans le film, ni à Vauban ni à Euratechnologies (le shader des étiquettes se reconnaît à son
+	// uniforme uSplit) ; pas de feuilles qui tombent non plus : une feuille qui passe devant l'objectif remplit le cadre
+	for(const sc of [C.scene, ...Object.values(C.interiors || {}).map(i => i?.scene)]) sc?.traverse(o => {
+		if(o.material?.uniforms?.uSplit) o.visible = false;
+		if(o.isInstancedMesh && !o.frustumCulled && o.geometry?.type === "PlaneGeometry" && o.geometry.parameters?.width === 1 && o.geometry.parameters?.height === 1 && o.material?.isMeshBasicMaterial) o.visible = false;
+	});
 	// la rame de la ligne 2, filmée de l'intérieur
 	rame = createRame(); rame.camera.fov = 52;
 	// pas de logo.decode() : il attend une image affichée, et le pilote suspend l'affichage

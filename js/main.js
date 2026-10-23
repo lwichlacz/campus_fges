@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=73f0f1170e";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=73f0f1170e";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=73f0f1170e";
-import { MAP } from "./vauban.js?v=73f0f1170e";
-import { buildLandmarks } from "./landmarks.js?v=73f0f1170e";
-import { buildMonuments } from "./monuments.js?v=73f0f1170e";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=73f0f1170e";
-import { buildStation } from "./station.js?v=73f0f1170e";
-import { createRame } from "./rame.js?v=73f0f1170e";
-import { Audio } from "./audio.js?v=73f0f1170e";
-import { DETAILS } from "./details.js?v=73f0f1170e";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=4ff2e5806d";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=4ff2e5806d";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=4ff2e5806d";
+import { MAP } from "./vauban.js?v=4ff2e5806d";
+import { buildLandmarks } from "./landmarks.js?v=4ff2e5806d";
+import { buildMonuments } from "./monuments.js?v=4ff2e5806d";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=4ff2e5806d";
+import { buildStation } from "./station.js?v=4ff2e5806d";
+import { createRame } from "./rame.js?v=4ff2e5806d";
+import { Audio } from "./audio.js?v=4ff2e5806d";
+import { DETAILS } from "./details.js?v=4ff2e5806d";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -253,7 +253,7 @@ function buildHA(){
 	const ph = 13.6, pd = 7, pl = 14;
 	box(P, pl, ph, pd, M.brick, 0, 0, 0);
 	box(P, pl+.3, 1.1, pd+.3, M.base, 0, 0, 0);
-	box(P, 7, ph, .3, M.stone, 0, 0, pd/2);
+	box(P, 7, ph - 1.1, .3, M.stone, 0, 1.1, pd/2);          // au-dessus du soubassement : pas deux faces au même endroit
 	for(let f=1; f<4; f++) box(P, pl+.16, .24, pd+.16, M.stone, 0, f*3.4-.12, 0);
 	box(P, pl+.5, .4, pd+.5, M.stone, 0, ph, 0);
 	box(P, 6.6, .35, 1.2, M.stone, 0, 6.5, pd/2+.5);
@@ -264,7 +264,7 @@ function buildHA(){
 		for(const x of [-5.3,5.3]) win(P, x, f*3.4+1.6, pd/2, 1.3, 1.7);
 	}
 	for(const x of [-2.3,0,2.3]) win(P, x, 1.2, fz, 1.6, 2, 0, { arch:true, door:true });
-	for(const x of [-5.3,5.3]) win(P, x, 1.3, pd/2, 1.3, 1.8, 0, { arch:true });
+	for(const x of [-5.3,5.3]) win(P, x, 2.05, pd/2, 1.3, 1.5, 0, { arch:true });          // au-dessus du soubassement (1,1 m)
 	mesh(gable(pl+.4, pd+1, 5.5), M.slate, P, 0, ph+.4, 0);
 	const G = new THREE.Group(); G.position.set(0, ph+.4, pd/2-.1); P.add(G);
 	mesh(gable(1.2, 7.6, 8), M.stone, G, 0, 0, 0, Math.PI/2);
@@ -1160,6 +1160,19 @@ function buildRizomm(){
 	const P = MAP.pois.rizomm, rec = P && MAP.buildings[P.i];
 	if(!rec || !city.pois.rizomm) return;
 	const f = rec[4]; let pts = []; for(let k=0;k<f.length;k+=2) pts.push([f[k], f[k+1]]);
+	// contour simplifié : les segments de moins de 1,6 m et les angles presque plats du relevé retournaient des pentes
+	// du toit (trous entre façade et toit) ; on retire à chaque fois le sommet qui change le moins la surface
+	for(;;){
+		const n = pts.length; if(n <= 4) break;
+		let best = -1, bestA = Infinity;
+		for(let i = 0; i < n; i++){
+			const a = pts[(i+n-1)%n], b = pts[i], c = pts[(i+1)%n], ux = b[0]-a[0], uz = b[1]-a[1], vx = c[0]-b[0], vz = c[1]-b[1];
+			const turn = Math.abs(Math.atan2(ux*vz - uz*vx, ux*vx + uz*vz));
+			if(Math.min(Math.hypot(ux, uz), Math.hypot(vx, vz)) >= 1.6 && turn >= .14) continue;
+			const A = Math.abs(ux*(c[1]-a[1]) - uz*(c[0]-a[0])); if(A < bestA){ bestA = A; best = i; }
+		}
+		if(best < 0) break; pts.splice(best, 1);
+	}
 	const FHm = MAP.fh || 1.64, GF = FHm*1.15, H = GF + 4*FHm, RH = 3.9, IN = 2.1;       // socle un peu plus haut, 4 étages, toit de 7,3 m
 	const root = new THREE.Group(); scene.add(root);
 	const rnd = (a => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0)/4294967296; })(41);
@@ -1236,25 +1249,26 @@ function buildRizomm(){
 		const [ax, az] = e.a, [bx, bz] = e.b, n3 = [e.n[0], 0, e.n[1]], u0 = run/MOD, u1 = (run + e.len)/MOD;
 		quad4(mBase, [ax - e.n[0]*.12, 0, az - e.n[1]*.12], [bx - e.n[0]*.12, 0, bz - e.n[1]*.12], [bx - e.n[0]*.12, GF, bz - e.n[1]*.12], [ax - e.n[0]*.12, GF, az - e.n[1]*.12], n3, [[u0*2, 0], [u1*2, 0], [u1*2, 1], [u0*2, 1]]);
 		quad4(mSlats, [ax, GF, az], [bx, GF, bz], [bx, H, bz], [ax, H, az], n3, [[u0, 0], [u1, 0], [u1, 2], [u0, 2]]);
-		// bandeau de zinc entre façade et toit
-		quad4(zinc, [ax + e.n[0]*.06, H - .05, az + e.n[1]*.06], [bx + e.n[0]*.06, H - .05, bz + e.n[1]*.06], [bx + e.n[0]*.06, H + .25, bz + e.n[1]*.06], [ax + e.n[0]*.06, H + .25, az + e.n[1]*.06], n3, [[0, 0], [1, 0], [1, 1], [0, 1]]);
 		run += e.len;
 	}
 	// ---------- toit brisé : chaque pente monte du bord de la façade vers le contour rentré ----------
-	const inner = pts.map((b, i) => {
+	const mit = [], inner = pts.map((b, i) => {
 		const n = pts.length, a = pts[(i+n-1)%n], c = pts[(i+1)%n];
 		const l1 = Math.hypot(b[0]-a[0], b[1]-a[1]) || 1, l2 = Math.hypot(c[0]-b[0], c[1]-b[1]) || 1;
 		let n1 = [(b[1]-a[1])/l1, -(b[0]-a[0])/l1], n2 = [(c[1]-b[1])/l2, -(c[0]-b[0])/l2];
 		if(flip){ n1 = [-n1[0], -n1[1]]; n2 = [-n2[0], -n2[1]]; }
 		const k = Math.max(.45, 1 + n1[0]*n2[0] + n1[1]*n2[1]);
-		return [b[0] - IN*(n1[0] + n2[0])/k, b[1] - IN*(n1[1] + n2[1])/k];
-	});
+		return [(n1[0] + n2[0])/k, (n1[1] + n2[1])/k];                  // décalage en onglet, vers l'extérieur
+	}).map((m, i) => (mit[i] = m, [pts[i][0] - IN*m[0], pts[i][1] - IN*m[1]]));
 	const idx = new Map(pts.map((p, i) => [p, i]));
 	for(const e of edges){
 		const ia = idx.get(e.a), ib = idx.get(e.b), A1 = inner[ia], B1 = inner[ib];
 		const nr = [e.n[0]*RH, IN, e.n[1]*RH], L = Math.hypot(...nr), n3 = [nr[0]/L, nr[1]/L, nr[2]/L];
 		const s = Math.hypot(IN, RH)/(8*.4*1.35/2), u = e.len/(4*.4*1.35);
-		quad4(mRoof, [e.a[0], H + .25, e.a[1]], [e.b[0], H + .25, e.b[1]], [B1[0], H + RH, B1[1]], [A1[0], H + RH, A1[1]], n3, [[0, 0], [u, 0], [u, s], [0, s]]);
+		// bandeau de zinc entre façade et toit, raccordé en onglet aux angles ; le pied de la pente part de son haut
+		const Za = [e.a[0] + mit[ia][0]*.06, e.a[1] + mit[ia][1]*.06], Zb = [e.b[0] + mit[ib][0]*.06, e.b[1] + mit[ib][1]*.06];
+		quad4(zinc, [Za[0], H - .05, Za[1]], [Zb[0], H - .05, Zb[1]], [Zb[0], H + .25, Zb[1]], [Za[0], H + .25, Za[1]], [e.n[0], 0, e.n[1]], [[0, 0], [1, 0], [1, 1], [0, 1]]);
+		quad4(mRoof, [Za[0], H + .25, Za[1]], [Zb[0], H + .25, Zb[1]], [B1[0], H + RH, B1[1]], [A1[0], H + RH, A1[1]], n3, [[0, 0], [u, 0], [u, s], [0, s]]);
 	}
 	for(const [m, B] of buckets){
 		const g = new THREE.BufferGeometry();
@@ -1425,7 +1439,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=73f0f1170e").then(({ FAR }) => {
+	import("./vauban_far.js?v=4ff2e5806d").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1937,14 +1951,14 @@ setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night 
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=73f0f1170e").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=73f0f1170e").then(m => m.createChapelle), eura:() => import("./eura.js?v=73f0f1170e").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=73f0f1170e").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=73f0f1170e").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=4ff2e5806d").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=4ff2e5806d").then(m => m.createChapelle), eura:() => import("./eura.js?v=4ff2e5806d").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=4ff2e5806d").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=4ff2e5806d").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=73f0f1170e").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=73f0f1170e").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=73f0f1170e").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=73f0f1170e").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=73f0f1170e").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=73f0f1170e").then(m => m.openBiodata)
+	comptoir:() => import("./games/comptoir.js?v=4ff2e5806d").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=4ff2e5806d").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=4ff2e5806d").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=4ff2e5806d").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=4ff2e5806d").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=4ff2e5806d").then(m => m.openBiodata)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
