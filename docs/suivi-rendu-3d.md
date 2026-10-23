@@ -98,11 +98,15 @@ tricheurs (L3 Data). Épingle dans Wenov, salle de l'École du Numérique.
 
 ## Film de présentation
 
-2 min 12, Full HD, sur la page de relecture (destiné aussi à la direction). Tourné image par image dans le campus à
-jour (`tools/film/pilote.js` pilote l'horloge, `tools/film/film.js` le montage), encodé dans le navigateur.
-Montage calé sur la musique (`docs/validation-web/voix/musique.py`, 80 bpm) : ouverture, la promesse (découvrir le
-campus, découvrir les formations, les essayer), 01 le campus en travellings, 02 les formations **entité par entité**
-(FGES, ISEA, École du Numérique : carte d'entité puis grilles, les 36 formations avec leur mini-jeu ou « en
-préparation »), 03 les mini-jeux, la relecture, signature. Bandes cinéma, transitions aux couleurs des entités,
-typographie animée, fond flouté sous les textes. Refaire : `F.planche(4)` pour relire, puis `F.tourner()` (2 min),
-puis `python docs/validation-web/build.py`. **Toujours partir de `git pull` : les bâtiments évoluent.**
+3 min 09, Full HD, plein écran, sur la page de relecture (destiné aussi à la direction). Tourné image par image dans
+le campus à jour (`tools/film/pilote.js` pilote l'horloge, `tools/film/film.js` le montage), encodé dans le navigateur,
+puis réencodé à 3,5 Mb/s par `tools/film/accelere.swift` (sous la limite de 100 Mo de GitHub).
+Montage calé sur la musique (`docs/validation-web/voix/musique.py`, 80 bpm, 189 s) : ouverture ; la promesse ;
+01 le campus en 17 plans (Hôtel Académique, cour d'honneur, chapelle, BU dehors et dedans, Rizomm, jardin, Falise,
+atrium, restaurant, Maison de l'étudiant, salle omnisports, Palais Rameau, métro Cormontaigne, à bord de la rame,
+Euratechnologies, Wenov) ; 02 les formations entité par entité (FGES, ISEA, École du Numérique), les 36 avec leur
+mini-jeu ou « en préparation » ; 03 les mini-jeux ; la relecture ; signature.
+Pendant le tournage : rendu verrouillé en 2560×1440 et 16/9 à chaque image (sinon un changement de taille de la
+fenêtre déforme l'image), bulles de noms masquées. Refaire : `git pull` d'abord (les bâtiments évoluent),
+`F.planche(4)` pour relire, `F.tourner()` (environ 5 min), `swift tools/film/accelere.swift <film> <musique> <sortie> 1 3.5`,
+puis `python docs/validation-web/build.py`.

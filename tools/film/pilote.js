@@ -22,7 +22,10 @@ export async function prendre(){
 	}
 	manual = true; vt = pn();
 	// la boucle du campus se réinscrit à la fin de sa prochaine image (un aperçu d'écran suffit à la déclencher)
-	for(let i = 0; i < 400 && !queue.length; i++) await new Promise(r => setTimeout(r, 25));
+	for(let i = 0; i < 80 && !queue.length; i++) await new Promise(r => setTimeout(r, 25));
+	// fenêtre cachée (onglet en arrière-plan, application réduite) : la boucle du campus n'a jamais tourné ;
+	// on la lance nous-mêmes, elle se réinscrit ensuite dans notre file
+	if(!queue.length && C.frame) queue.push(C.frame);
 	return queue.length > 0;
 }
 export function pas(dtMs = 1000/30, image = false){ vt += dtMs; grab = image; const q = queue; queue = []; q.forEach(f => f(vt)); return image ? last : null; }
