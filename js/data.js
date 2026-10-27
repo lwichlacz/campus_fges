@@ -51,6 +51,12 @@ export const CATALOGUE_PLAQUETTES = "https://www.calameo.com/accounts/7206845";
    Vide : le site utilise le relais local (tools/serve.py), ou le mode démo une fois en ligne. */
 export const LEAD_ENDPOINT = "";     // ex. "https://www.fges.fr/wp-json/campus-fges/v1/lead"
 
+/* Rendez-vous sur le campus : le prochain à venir s'affiche dans le mot d'accueil. À tenir à jour (fges.fr, univ-catholille.fr). */
+export const RENDEZ_VOUS = [
+	{ date:"2026-11-28", label:"journée portes ouvertes", hours:"de 9 h 30 à 16 h 30", url:"https://www.univ-catholille.fr/construire-son-projet/journees-portes-ouvertes/" },
+	{ date:"2027-01-30", label:"journée portes ouvertes", hours:"de 9 h 30 à 17 h", url:"https://www.univ-catholille.fr/construire-son-projet/journees-portes-ouvertes/" }
+];
+
 /* Mini-jeux disponibles : id de formation → id du jeu */
 export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming" };
 /* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */

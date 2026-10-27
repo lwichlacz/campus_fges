@@ -38,6 +38,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 #loader.gone{opacity:0;pointer-events:none}
 #loader p{font:600 20px Fraunces,Georgia,serif;color:var(--brand-ink);margin:0}
 #loader i{display:block;width:44px;height:44px;margin:0 auto 14px;border-radius:50%;border:4px solid #e9c99a;border-top-color:var(--brand);animation:spin 1s linear infinite}
+#loader>div{text-align:center;padding:0 16px}
+#loader .ltip{max-width:360px;min-height:88px;margin:22px auto 0;font-size:14.5px;line-height:1.45;color:var(--ink2);transition:opacity .45s ease}
+#loader .ltip.out{opacity:0}
+#loader .ltip b{display:block;margin-bottom:4px;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-ink)}
+#loader .lfast{display:inline-block;margin-top:6px;font-size:13.5px;font-weight:800;color:var(--brand-ink);animation:rise .5s ease both}
+#loader .lfast[hidden]{display:none}
+#loader .lfast.slow{background:var(--cream);border-radius:14px;padding:10px 14px;max-width:340px;box-shadow:var(--shadow)}
 @keyframes spin{to{transform:rotate(360deg)}}
 #fade{position:fixed;inset:0;background:#fff3e0;z-index:35;opacity:0;pointer-events:none;transition:opacity .4s ease}
 #fade.on{opacity:1;pointer-events:auto}
@@ -111,6 +118,15 @@ button{font:inherit;color:inherit;cursor:pointer}
 .card h1{font:700 34px/1.08 Fraunces,Georgia,serif;margin:8px 0 10px;letter-spacing:-.01em}
 .card .wlogo{display:block;height:54px;width:auto;margin:0 auto 6px}
 .card p{margin:0 auto 16px;color:var(--ink2);max-width:380px}
+/* mot d'accueil : météo réelle de Lille et prochain rendez-vous sur le campus (remplis par main.js) */
+.wnote{display:grid;gap:6px;margin:-4px auto 14px;max-width:400px;text-align:left}
+.wnote[hidden]{display:none}
+.card .wnote p{margin:0;max-width:none;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13.5px;line-height:1.4;color:var(--ink2)}
+.wnote a{color:var(--brand-ink);font-weight:800;white-space:nowrap}
+.wnote .short{display:none}
+@media (max-width:480px), (max-height:820px){ .wnote{gap:4px;margin:-6px auto 12px} .card .wnote p{padding:6px 10px;font-size:12.5px} .wnote .long{display:none} .wnote .short{display:inline} }
+/* écran peu haut (portable 1366×768) : la carte d'accueil se resserre pour que « Entrer sur le campus » reste visible */
+@media (min-width:481px) and (max-height:820px){ #welcome .card{padding:18px 24px 16px} #welcome .card .wlogo{height:44px;margin-bottom:2px} #welcome .card h1{font-size:30px;margin:4px 0 8px} #welcome .card>p{margin-bottom:12px} #welcome .profiles{gap:7px} #welcome .profile{padding:8px 14px} #welcome .toggle{margin-bottom:10px} #welcome .go{padding:13px} #welcome .plain{margin-top:8px} }
 .profiles{display:grid;gap:9px;margin:0 0 12px}
 .profile{display:flex;align-items:center;gap:12px;text-align:left;border:2px solid var(--line);background:#fff;border-radius:16px;padding:11px 14px;transition:.15s ease}
 .profile:hover{border-color:#d9b98a;transform:translateY(-1px)}
@@ -456,23 +472,58 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"}}
 </script>
-<link rel="modulepreload" href="js/main.js?v=4e01d065bb">
-<link rel="modulepreload" href="js/kit.js?v=4e01d065bb">
-<link rel="modulepreload" href="js/data.js?v=4e01d065bb">
-<link rel="modulepreload" href="js/details.js?v=4e01d065bb">
-<link rel="modulepreload" href="js/vauban.js?v=4e01d065bb">
-<link rel="modulepreload" href="js/city.js?v=4e01d065bb">
-<link rel="modulepreload" href="js/render.js?v=4e01d065bb">
-<link rel="modulepreload" href="js/landmarks.js?v=4e01d065bb">
-<link rel="modulepreload" href="js/monuments.js?v=4e01d065bb">
-<link rel="modulepreload" href="js/audio.js?v=4e01d065bb">
+<link rel="modulepreload" href="js/main.js?v=9e0fadedde">
+<link rel="modulepreload" href="js/kit.js?v=9e0fadedde">
+<link rel="modulepreload" href="js/data.js?v=9e0fadedde">
+<link rel="modulepreload" href="js/details.js?v=9e0fadedde">
+<link rel="modulepreload" href="js/vauban.js?v=9e0fadedde">
+<link rel="modulepreload" href="js/city.js?v=9e0fadedde">
+<link rel="modulepreload" href="js/render.js?v=9e0fadedde">
+<link rel="modulepreload" href="js/landmarks.js?v=9e0fadedde">
+<link rel="modulepreload" href="js/monuments.js?v=9e0fadedde">
+<link rel="modulepreload" href="js/audio.js?v=9e0fadedde">
 <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js" crossorigin>
 <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/controls/OrbitControls.js" crossorigin>
 </head>
 <body>
 <noscript><p style="padding:24px;font:16px sans-serif">Le campus en 3D nécessite JavaScript. <a href="liste.html">Voir toutes les formations en version liste</a>.</p></noscript>
 <div id="scene"></div>
-<div id="loader"><div><i></i><p>Le campus se réveille…</p></div></div>
+<div id="loader"><div><i></i><p>Le campus se réveille…</p><div class="ltip" id="ltip" aria-live="polite"></div><a class="lfast" id="lfast" href="liste.html" hidden>Pressé·e ? La version rapide, sans 3D →</a></div></div>
+<script>
+/* Écran de chargement : de vraies anecdotes (reprises des fiches des lieux et des formations, js/data.js) défilent,
+   puis la version rapide sans 3D est proposée. Script classique, hors des modules : il tourne même si la 3D ne charge pas. */
+(() => {
+	const TIPS = [
+		"L'Hôtel Académique a été construit de 1879 à 1881 : 125 mètres de façade néogothique, en plein quartier Vauban.",
+		"La FGES s'est installée en juin 2024 dans le bâtiment Michel Falise : 30 salles et 15 amphis autour d'un grand atrium vitré.",
+		"Les panneaux solaires du Rizomm produisent environ 73 % de son électricité.",
+		"La BU Vauban, c'est environ 300 000 ouvrages et 338 places pour travailler au calme.",
+		"Le resto U du campus sert environ 3 500 repas par jour.",
+		"Plus de 300 associations étudiantes : chorale, orchestres, théâtre, clubs de sport…",
+		"La chapelle universitaire, construite dans les années 1920, a été restaurée en 2020 : voûtes blanches et dorées, vitraux remis en lumière.",
+		"Un jardin botanique en plein cœur du campus : le jardin Nicolas Boulay, pour réviser au soleil.",
+		"Le campus Wenov de l'École du Numérique est à 3 stations de métro de Cormontaigne, au cœur d'Euratechnologies.",
+		"Le Campus Cyber Hauts-de-France est installé dans Wenov, à quelques mètres des salles de cours.",
+		"Voisin de Wenov, le Blan-Lafont est une filature de coton de 1896 devenue le siège d'Euratechnologies.",
+		"En Licence Sciences de la Vie, la L2 part en stage de terrain à Ambleteuse, sur la Côte d'Opale.",
+		"L'APES, l'année de préparation aux études scientifiques, affiche 94 % de réussite.",
+		"Le Master Data Management in Biosciences est enseigné 100 % en anglais.",
+		"Le quartier que tu vas visiter est reconstruit d'après les données de l'IGN et d'OpenStreetMap : plus de 20 000 vrais bâtiments jusqu'à l'horizon."
+	];
+	const loader = document.getElementById("loader"), box = document.getElementById("ltip"), fast = document.getElementById("lfast"), t0 = Date.now();
+	let i = Math.floor(Math.random()*TIPS.length), tick = 0;
+	const show = () => { box.innerHTML = "<b>Le savais-tu ?</b>" + TIPS[i++ % TIPS.length]; };
+	show();
+	const timer = setInterval(() => {
+		// la 3D est prête (ou l'écran a été remplacé par le message « navigateur non compatible ») : on s'arrête
+		if(loader.classList.contains("gone") || !document.body.contains(box)) return clearInterval(timer);
+		const s = (Date.now() - t0)/1000;
+		if(s > 6) fast.hidden = false;
+		if(s > 30 && !fast.classList.contains("slow")){ fast.classList.add("slow"); fast.textContent = "Le chargement est long sur cet appareil : découvre toutes les formations dans la version rapide →"; }
+		if(++tick % 5 === 0){ box.classList.add("out"); setTimeout(() => { show(); box.classList.remove("out"); }, 450); }
+	}, 1000);
+})();
+</script>
 <div id="pins"></div>
 <div id="introCap"></div>
 <button id="skip" hidden>Passer ⏭</button>
@@ -507,6 +558,7 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 		<img class="wlogo" src="img/logo-fges.png" alt="FGES · Faculté de Gestion, Économie et Sciences · Université Catholique de Lille" width="652" height="195">
 		<h1>Bienvenue sur le campus</h1>
 		<p>Promène-toi dans le vrai quartier Vauban, entre dans les bâtiments… et <b>joue une formation</b> : chaque mini-jeu te fait vivre une licence avec de vrais exercices, et te rapporte une médaille 🏅</p>
+		<div class="wnote" id="wnote" hidden></div>
 		<div class="profiles">
 			<button class="profile" data-p="lycee"><span class="e">🎒</span><span><b>Je suis au lycée</b><small>Licences, prépa, année préparatoire</small></span></button>
 			<button class="profile" data-p="bac3"><span class="e">🎓</span><span><b>J'ai un bac+2 ou un bac+3</b><small>Masters et licence pro</small></span></button>
@@ -615,6 +667,6 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 	<div class="pb" id="pbody"></div>
 </aside>
 
-<script type="module" src="js/main.js?v=4e01d065bb"></script>
+<script type="module" src="js/main.js?v=9e0fadedde"></script>
 </body>
 </html>

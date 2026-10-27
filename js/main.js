@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=4e01d065bb";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=4e01d065bb";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT } from "./data.js?v=4e01d065bb";
-import { MAP } from "./vauban.js?v=4e01d065bb";
-import { buildLandmarks } from "./landmarks.js?v=4e01d065bb";
-import { buildMonuments } from "./monuments.js?v=4e01d065bb";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=4e01d065bb";
-import { buildStation } from "./station.js?v=4e01d065bb";
-import { createRame } from "./rame.js?v=4e01d065bb";
-import { Audio } from "./audio.js?v=4e01d065bb";
-import { DETAILS } from "./details.js?v=4e01d065bb";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=9e0fadedde";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=9e0fadedde";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=9e0fadedde";
+import { MAP } from "./vauban.js?v=9e0fadedde";
+import { buildLandmarks } from "./landmarks.js?v=9e0fadedde";
+import { buildMonuments } from "./monuments.js?v=9e0fadedde";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=9e0fadedde";
+import { buildStation } from "./station.js?v=9e0fadedde";
+import { createRame } from "./rame.js?v=9e0fadedde";
+import { Audio } from "./audio.js?v=9e0fadedde";
+import { DETAILS } from "./details.js?v=9e0fadedde";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -1439,7 +1439,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=4e01d065bb").then(({ FAR }) => {
+	import("./vauban_far.js?v=9e0fadedde").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1805,12 +1805,14 @@ let golden = false;
 const WEATHERS = [["auto","🛰️ Réelle"],["soleil","☀️ Soleil"],["nuageux","⛅ Nuageux"],["pluie","🌧️ Pluie"],["brouillard","🌫️ Brouillard"]];
 let weatherMode = store.get("weather", "auto"); if(!WEATHERS.some(([k]) => k === weatherMode)) weatherMode = "auto";
 let realWeather = "soleil", weather = "soleil", realWind = 0;          // vent réel en km/h
+let realCode = null, realTemp = null;          // code météo de l'OMM et température, pour le mot d'accueil
 const weatherNow = () => weatherMode === "auto" ? realWeather : weatherMode;
 function fetchWeather(){
-	fetch("https://api.open-meteo.com/v1/forecast?latitude=50.6327&longitude=3.0464&current=weather_code,cloud_cover,wind_speed_10m")
+	fetch("https://api.open-meteo.com/v1/forecast?latitude=50.6327&longitude=3.0464&current=weather_code,cloud_cover,wind_speed_10m,temperature_2m")
 		.then(r => r.json()).then(d => {
 			const c = d.current.weather_code, cc = d.current.cloud_cover;          // codes météo de l'OMM
 			realWind = +d.current.wind_speed_10m || 0; soundWeather();
+			realCode = c; realTemp = Number.isFinite(d.current.temperature_2m) ? d.current.temperature_2m : null; welcomeNote();
 			const w = (c >= 51 && c <= 67) || (c >= 80 && c <= 82) || c >= 95 ? "pluie" : (c === 45 || c === 48) ? "brouillard"
 				: (c >= 71 && c <= 77) || c === 85 || c === 86 || c === 3 || cc > 60 ? "nuageux" : "soleil";
 			if(w !== realWeather){ realWeather = w; if(weatherMode === "auto" && light) applyAmbiance(false, 4); }
@@ -1951,14 +1953,14 @@ setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night 
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=4e01d065bb").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=4e01d065bb").then(m => m.createChapelle), eura:() => import("./eura.js?v=4e01d065bb").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=4e01d065bb").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=4e01d065bb").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=9e0fadedde").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=9e0fadedde").then(m => m.createChapelle), eura:() => import("./eura.js?v=9e0fadedde").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=9e0fadedde").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=9e0fadedde").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=4e01d065bb").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=4e01d065bb").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=4e01d065bb").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=4e01d065bb").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=4e01d065bb").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=4e01d065bb").then(m => m.openBiodata)
+	comptoir:() => import("./games/comptoir.js?v=9e0fadedde").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=9e0fadedde").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=9e0fadedde").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=9e0fadedde").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=9e0fadedde").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=9e0fadedde").then(m => m.openBiodata)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2167,6 +2169,35 @@ document.querySelectorAll(".profile").forEach(b => {
 $("musicPref").checked = musicWanted;
 $("go").disabled = !profile;
 $("go").addEventListener("click", enter);
+/* Mot d'accueil : un clin d'œil à la météo réelle de Lille, et le prochain rendez-vous sur le campus (RENDEZ_VOUS, data.js) */
+// chaque message a une version longue et une version courte (téléphone : la carte d'accueil doit tenir à l'écran)
+function weatherLine(){
+	if(realCode == null) return null;
+	const c = realCode, T = realTemp == null ? null : Math.round(realTemp), deg = T == null ? "" : ` (${T} °C)`, live = weatherMode === "auto";
+	if((c >= 71 && c <= 77) || c === 85 || c === 86) return ["❄️ Il neige sur Lille : bien au chaud, c'est le moment de visiter le campus depuis chez toi.", "❄️ Il neige à Lille : visite le campus au chaud !"];
+	if((c >= 51 && c <= 67) || (c >= 80 && c <= 82) || c >= 95) return [`☔ Il pleut aujourd'hui à Lille${live ? ", et sur le campus 3D aussi" : ""} : le moment idéal pour l'explorer au sec, depuis chez toi.`, "☔ Il pleut à Lille : visite le campus au sec !"];
+	if(c === 45 || c === 48) return [`🌫️ Brouillard sur Lille en ce moment${live ? " (et dans le campus 3D)" : ""} : le campus sort de la brume rien que pour toi.`, "🌫️ Brouillard sur Lille : le campus sort de la brume."];
+	if(realNight()) return [`🌙 La nuit est tombée sur Lille${timeMode === "auto" ? " : sur le campus aussi, les fenêtres s'allument une à une" : ""}.`, "🌙 La nuit tombe sur Lille : les fenêtres s'allument."];
+	if(T != null && T <= 3) return [`🧣 Il fait ${T} °C à Lille : reste bien au chaud, c'est le campus qui vient à toi.`, `🧣 ${T} °C à Lille : c'est le campus qui vient à toi.`];
+	if(c <= 1) return T != null && T >= 22 ? [`☀️ Grand soleil sur Lille${deg} : la cour d'honneur t'attend.`, `☀️ Grand soleil à Lille${deg} !`] : [`☀️ Beau temps sur Lille${deg} : parfait pour une balade dans le quartier Vauban.`, `☀️ Beau temps à Lille${deg} : balade-toi !`];
+	return [`⛅ Ciel nuageux sur Lille${deg} : une vraie journée lilloise, idéale pour flâner sur le campus.`, `⛅ Nuageux à Lille${deg} : idéal pour flâner.`];
+}
+function rdvLine(){
+	const today = new Date(); today.setHours(0, 0, 0, 0);
+	const r = RENDEZ_VOUS.map(x => ({ ...x, d:new Date(x.date + "T12:00:00") })).filter(x => x.d >= today).sort((a, b) => a.d - b.d)[0];
+	if(!r) return null;
+	const isToday = r.d.toDateString() === new Date().toDateString();
+	const day = isToday ? "aujourd'hui" : r.d.toLocaleDateString("fr-FR", { weekday:"long", day:"numeric", month:"long", ...(r.d.getFullYear() !== today.getFullYear() ? { year:"numeric" } : {}) });
+	const link = `<a href="${r.url}" target="_blank" rel="noopener">${isToday ? "Infos" : "En savoir plus"} ↗</a>`;
+	return [`👋 On a hâte de te rencontrer en vrai : ${r.label} ${isToday ? "<b>aujourd'hui</b>" : `le <b>${day}</b>`}, ${r.hours}. ${link}`,
+		`👋 ${r.label[0].toUpperCase() + r.label.slice(1)} ${isToday ? "<b>aujourd'hui</b>" : `le <b>${day}</b>`} · ${link}`];
+}
+function welcomeNote(){
+	const lines = [weatherLine(), rdvLine()].filter(Boolean);
+	$("wnote").innerHTML = lines.map(([long, short]) => `<p><span class="long">${long}</span><span class="short">${short}</span></p>`).join("");
+	$("wnote").hidden = !lines.length;
+}
+welcomeNote();
 function enter(){
 	musicWanted = $("musicPref").checked; store.set("music", musicWanted);
 	if(musicWanted) Audio.enable(); else Audio.disable();
