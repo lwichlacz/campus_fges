@@ -254,8 +254,8 @@ PAGES = {
 		"cfg": {
 			"id": "dgp", "game": "Le Dossier Deslaurier (Master Droit & Gestion du Patrimoine)", "short": "Le Dossier Deslaurier",
 			"h1": "Le Dossier Deslaurier : votre relecture",
-			"lead": "Le mini-jeu du Master Droit & Gestion du Patrimoine (ISEA), dans le campus 3D de la FGES. Il reprend le cas pratique Deslaurier proposé par Jean-Daniel Wecxsteen : la vie d'une famille lilloise de 1959 à aujourd'hui, et à chaque question « Gestion de patrimoine » du cas, le joueur répond en conseiller. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux candidats.",
-			"facts": ["Environ 8 min", "8 étapes, de 1967 à aujourd'hui", "Public : étudiants de licence et lycéens curieux", "Famille fictive, droit d'aujourd'hui"],
+			"lead": "Le mini-jeu du Master Droit & Gestion du Patrimoine (ISEA), dans le campus 3D de la FGES. Il reprend le cas pratique Deslaurier proposé par Jean-Daniel Wecxsteen : la vie d'une famille lilloise de 1959 à aujourd'hui, sur une maquette 3D (pions de la famille, cabinet, maison, immeuble, ferme, zones « propre » et « commun »), et à chaque question « Gestion de patrimoine » du cas, le joueur répond en conseiller. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux candidats.",
+			"facts": ["Environ 8 min", "8 étapes, de 1967 à aujourd'hui", "Maquette 3D qui suit le dossier", "Public : étudiants de licence et lycéens curieux", "Famille fictive, droit d'aujourd'hui"],
 			"url": SITE + "?jeu=dgp",
 			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Le Dossier Deslaurier.",
 			"card": {"icon": "📜", "title": "Le Dossier Deslaurier", "formation": "Master Droit & Gestion du Patrimoine", "steps": [
