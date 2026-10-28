@@ -130,14 +130,25 @@ const CSS = `
 .gp-real{font-style:italic;color:#6f6a5c;font-size:13.5px;margin:6px 0}
 .gp-sim{font-variant-numeric:tabular-nums;font-size:13.5px;margin:6px 0;padding:0;list-style:none}
 .gp-sim li{display:flex;justify-content:space-between;gap:8px;border-top:1px dashed #e2d8bf;padding:4px 0}
+.gp-bubble{position:absolute;z-index:3;display:flex;align-items:flex-end;gap:8px;max-width:440px;pointer-events:auto;cursor:pointer;transition:opacity .3s,transform .3s}
+.gp-bubble.off{opacity:0;transform:translateY(8px);pointer-events:none}
+.gp-bubble svg{flex:none;width:74px;height:74px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
+.gp-bubble p{position:relative;margin:0 0 14px;background:#fffcf3;border:2px solid #1f3d31;border-radius:14px 14px 14px 4px;padding:10px 14px;font-size:15px;font-weight:700;line-height:1.4;color:#1f3d31;box-shadow:0 8px 20px rgba(0,0,0,.3);min-height:20px}
+.gp-bubble p b{display:block;font:800 10.5px Nunito,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#8a6a24;margin-bottom:2px}
+.gp-cs{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#3b2a5a,#7a3e8f);color:#fff;border-radius:12px;padding:10px 12px;margin-bottom:10px;animation:gpCs .7s cubic-bezier(.2,1.4,.4,1) both}
+.gp-cs i{font-style:normal;font-size:30px;animation:gpDie 1s ease both}
+.gp-cs b{font:700 18px Fraunces,Georgia,serif;display:block}
+.gp-cs small{opacity:.85;font-weight:700}
+@keyframes gpCs{from{opacity:0;transform:rotateX(90deg)}}
+@keyframes gpDie{0%{transform:rotate(0)}70%{transform:rotate(720deg) scale(1.3)}100%{transform:rotate(720deg)}}
 .gp-clock{font:700 26px Fraunces,Georgia,serif;text-align:center;color:#1f3d31;margin:8px 0}
-@media (max-width:520px){ .gp-meters{gap:4px;left:8px;right:60px} .gp-m{min-width:0;padding:4px 7px;font-size:12px} .gp-m small{display:none}
+@media (max-width:520px){ .gp-bubble svg{width:52px;height:52px} .gp-bubble p{font-size:13px;padding:7px 10px;margin-bottom:8px} .gp-meters{gap:4px;left:8px;right:60px} .gp-m{min-width:0;padding:4px 7px;font-size:12px} .gp-m small{display:none}
 	.gp-m.fam b:before{content:"💰 "}.gp-m.fisc b:before{content:"🏛 "}.gp-m.conf b:before{content:"⚡ "} }
 @media (max-width:440px){ .gp-c{min-height:150px;padding:8px 5px} .gp-c .ic{font-size:28px} .gp-c b{font-size:12.5px} .gp-c small{font-size:10.5px} .gp-m{min-width:56px;font-size:11.5px;padding:4px 8px} }
 `;
 
 /* ================= la maquette 3D ================= */
-const COL = { paul:"#2f5d9e", jeannette:"#c2547a", jb:"#3c8d6e", elise:"#d07a3a", louise:"#c9a227", florent:"#4a7f9e", paulette:"#7a3e8f", pk:"#a77cc4", sarah:"#b8476b",
+const COL = { lea:"#e58fb0", paul:"#2f5d9e", jeannette:"#c2547a", jb:"#3c8d6e", elise:"#d07a3a", louise:"#c9a227", florent:"#4a7f9e", paulette:"#7a3e8f", pk:"#a77cc4", sarah:"#b8476b",
 	zP:"#8fb3e0", zC:"#e8c766", zJ:"#eaa6bd" };
 function world(canvas){
 	const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
@@ -259,7 +270,7 @@ function world(canvas){
 		if(small) p.scale.setScalar(.74);
 		return p;
 	}
-	const PEOPLE = [["paul", "Paul"], ["jeannette", "Jeannette"], ["jb", "Jean-Baptiste", 1], ["elise", "Élise", 1], ["louise", "Louise", 1], ["florent", "Florent"], ["paulette", "Paulette"], ["sarah", "Sarah"], ["pk1", "Enfants de Paulette", 1], ["pk2", "", 1]];
+	const PEOPLE = [["paul", "Paul"], ["jeannette", "Jeannette"], ["jb", "Jean-Baptiste", 1], ["elise", "Élise", 1], ["louise", "Louise", 1], ["florent", "Florent"], ["paulette", "Paulette"], ["sarah", "Sarah"], ["pk1", "Enfants de Paulette", 1], ["pk2", "", 1], ["lea", "Léa", 1]];
 	for(const [id, n, small] of PEOPLE) add(id, pawn(COL[id] || COL.pk, small), n, { lab:{ size:.46 }, dy:.3 });
 
 	function roofed(w, h, d, wall, roof){
@@ -495,9 +506,39 @@ const CARDS = {
 	dp:      ["👨‍👧‍👦", "Donation-partage", "Donner de son vivant, à parts égales, chez le notaire."],
 	np:      ["🗝️", "Donner la nue-propriété", "Donner la ferme et garder l'usufruit (les loyers)."],
 	testP:   ["📜", "Tout léguer à Paulette", "Un testament en faveur de sa nouvelle épouse."],
-	legs:    ["🏚️", "Ferme aux enfants de Paulette", "Un legs pour traiter tout le monde pareil."]
+	legs:    ["🏚️", "Ferme aux enfants de Paulette", "Un legs pour traiter tout le monde pareil."],
+	// cartes des coups du sort
+	hsep:    ["🗂️", "Un compte à son nom", "Placé à part, avec la preuve de l'héritage."],
+	hcom:    ["🔀", "Le compte joint", "Mélangé à l'épargne du couple."],
+	hach:    ["🛠️", "Rénover la maison", "Financer des travaux dans la maison commune."],
+	aref:    ["🚫", "Refuser et vérifier", "Consulter les listes noires de l'AMF."],
+	ainv:    ["💸", "Investir 50 000 €", "À 15 %, c'est trop beau pour passer à côté !"],
+	ates:    ["🧪", "Tester avec 10 000 €", "Juste pour voir si ça marche."],
+	kven:    ["😱", "Tout vendre", "Sauver ce qui reste, vite !"],
+	kgar:    ["🧘", "Garder et patienter", "Il n'a pas besoin de cet argent avant longtemps."],
+	kach:    ["🛒", "Racheter un peu", "Profiter des prix bas."],
+	cliv:    ["📘", "Puiser dans son livret", "L'épargne de précaution, c'est fait pour ça."],
+	cact:    ["📉", "Vendre ses actions", "Même si elles sont en baisse ce mois-ci."],
+	ccre:    ["💳", "Un crédit à la consommation", "Pour ne pas toucher à ses placements."],
+	ldiv:    ["🧺", "Diversifier", "Précaution, assurance-vie, actions… et un petit plaisir."],
+	ltou:    ["🛍️", "Tout dépenser", "Voyages, voiture : on ne vit qu'une fois !"],
+	lcry:    ["🪙", "Tout sur une cryptomonnaie", "Un ami a fait ×10 l'an dernier."],
+	nabt:    ["🍼", "Donner 31 865 € à Léa", "L'abattement grand-parent → petit-enfant."],
+	nlat:    ["⏳", "Attendre la succession", "Elle recevra bien quelque chose plus tard."],
+	nliv:    ["🐷", "Lui ouvrir un livret", "Avec quelques centaines d'euros."]
 };
 const euro = v => Math.round(v).toLocaleString("fr-FR") + " €";
+// Maître Bonchamp, le notaire de la famille (fictif), en portrait
+const NOTAIRE = `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="31" fill="#1f3d31"/><path d="M10 60c2-12 10-17 22-17s20 5 22 17" fill="#2b2b33"/><path d="M26 43l6 8 6-8" fill="#fff"/><path d="M28 50l4-3 4 3-4 3z" fill="#8f1d21"/>
+	<circle cx="32" cy="28" r="13" fill="#f1c9a5"/><path d="M19 25c0-9 6-13 13-13s13 4 13 13c-3-4-7-6-13-6s-10 2-13 6z" fill="#d9d4cc"/>
+	<circle cx="27" cy="29" r="3.6" fill="none" stroke="#3b2a10" stroke-width="1.6"/><circle cx="37" cy="29" r="3.6" fill="none" stroke="#3b2a10" stroke-width="1.6"/><path d="M30.6 29h2.8" stroke="#3b2a10" stroke-width="1.6"/>
+	<circle cx="27" cy="29" r="1.1" fill="#3b2a10"/><circle cx="37" cy="29" r="1.1" fill="#3b2a10"/><path d="M28 35.5q4 3 8 0" stroke="#8a4b3a" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M27 33.5q5-2 10 0" stroke="#d9d4cc" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>`;
+const REACT = {
+	3:["Remarquable ! Je n'aurais pas mieux conseillé.", "Voilà un conseil digne d'un associé du cabinet.", "Parfait. Je prépare l'acte.", "Bravo ! La famille vous doit une fière chandelle."],
+	2:["Pas mal… mais on pouvait faire mieux.", "C'est défendable. Jetez tout de même un œil au conseil de l'expert.", "Correct, sans plus. La famille s'en sortira."],
+	1:["Aïe… J'ai bien peur que la famille le regrette.", "Hum. Ce n'est pas ce que j'aurais conseillé.", "Ouille ! Relisez vite le conseil de l'expert."]
+};
+const pick = a => a[Math.floor(Math.random()*a.length)];
 const STARS = n => "★".repeat(n) + "☆".repeat(3 - n);
 const VERDICT = ["", "Conseil risqué", "Bon conseil", "Excellent conseil"];
 
@@ -509,14 +550,18 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		<div class="gp-meters" aria-live="polite"><span class="gp-m fam"><small>💰 Famille</small><b data-m="fam">0 €</b></span><span class="gp-m fisc"><small>🏛 Fisc</small><b data-m="fisc">0 €</b></span><span class="gp-m conf"><small>⚡ Conflits</small><b data-m="conf">0</b></span><span class="gp-m st"><small>Conseils</small><b data-m="stars">0 ★</b></span></div>
 		<div class="gp-hint">↻ Fais tourner la maquette</div>
 		<div class="gp-tl" aria-label="Frise des années"><div class="gp-tl-bar"><i></i></div><ol>${TIMELINE.map(([l, s]) => `<li><span class="l">${l}</span><span class="s">${s}</span></li>`).join("")}</ol></div>
+		<div class="gp-bubble off" title="Toucher pour masquer">${NOTAIRE}<p><b>Maître Bonchamp</b><span></span></p></div>
 		<div class="gp-wrap"><div class="gp-card"></div></div>`;
 	document.body.appendChild(root);
+	const bubble = root.querySelector(".gp-bubble");
 	const canvas = root.querySelector("canvas"), wrap = root.querySelector(".gp-wrap"), card = root.querySelector(".gp-card"), hint = root.querySelector(".gp-hint"), tl = root.querySelector(".gp-tl"), meters = root.querySelector(".gp-meters");
 	const W = world(canvas);
 	function layout(){
 		const w = innerWidth, h = innerHeight;
-		if(w >= MOBILE){ wrap.style.top = ""; hint.style.top = ""; tl.style.top = ""; tl.style.width = (w - 444 - 24) + "px"; W.resize(w - 444, h); }
-		else { const top = Math.round(h*.44); wrap.style.top = top + "px"; tl.style.top = (top - 56) + "px"; tl.style.width = (w - 24) + "px"; hint.style.top = (top - 90) + "px"; W.resize(w, top + 16); }
+		if(w >= MOBILE){ wrap.style.top = ""; hint.style.top = ""; tl.style.top = ""; tl.style.width = (w - 444 - 24) + "px"; W.resize(w - 444, h);
+			Object.assign(bubble.style, { left:"auto", right:"456px", top:"auto", bottom:"74px", maxWidth:Math.min(440, w - 444 - 200) + "px" }); }
+		else { const top = Math.round(h*.44); wrap.style.top = top + "px"; tl.style.top = (top - 56) + "px"; tl.style.width = (w - 24) + "px"; hint.style.top = (top - 90) + "px"; W.resize(w, top + 16);
+			Object.assign(bubble.style, { left:"8px", right:"8px", top:"96px", bottom:"auto", maxWidth:"none" }); }
 	}
 	let curEra = "intro";
 	const onResize = () => { layout(); frise(curEra); };
@@ -547,6 +592,16 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		requestAnimationFrame(step);
 		if(v !== from){ el.parentNode.classList.remove("pop"); void el.offsetWidth; el.parentNode.classList.add("pop"); }
 	}
+	// Maître Bonchamp commente : le texte s'écrit lettre à lettre ; sur téléphone, la bulle s'efface seule
+	let sayT = 0, hideT = 0;
+	function say(text){
+		if(!text) return;
+		const sp = bubble.querySelector("span"); clearInterval(sayT); clearTimeout(hideT);
+		bubble.classList.remove("off"); sp.textContent = ""; let i = 0;
+		sayT = setInterval(() => { if(closed) return clearInterval(sayT); sp.textContent = text.slice(0, ++i); if(i >= text.length) clearInterval(sayT); }, 18);
+		if(innerWidth < MOBILE) hideT = setTimeout(() => bubble.classList.add("off"), 2600 + text.length*45);
+	}
+	bubble.addEventListener("click", () => bubble.classList.add("off"));
 	function course(k){ const [n, t] = COURSES[k]; S.learned.add(k); return `<div class="gp-course"><span class="tag">📚 Au cœur du Master Droit & Gestion du Patrimoine</span><b>${n}</b><span>${t}</span></div>`; }
 	// le régime d'un couple, sur ses deux parcelles
 	function regime(k, A, B, z = .8){
@@ -565,7 +620,9 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 	function deal(E){
 		stage(E.stage, E.era);
 		const n = E.pick || 1;
-		show(`<span class="gp-year">${E.year}</span><h2 class="gp-h">${E.title}</h2>
+		say(E.say);
+		if(E.cs) later(150, () => play("chime"));
+		show(`${E.cs ? `<div class="gp-cs"><i>🎲</i><span><b>Coup du sort !</b><small>Une carte tirée au hasard : chaque partie est différente.</small></span></div>` : ""}<span class="gp-year">${E.year}</span><h2 class="gp-h">${E.title}</h2>
 			<div class="gp-story">${E.story}<span class="gp-ask">${E.ask}</span></div>
 			${E.pre ? `<div class="gp-pre">${E.pre()}</div>` : ""}
 			<p class="gp-goal">🎯 ${E.goal}</p>
@@ -594,6 +651,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 	function resolve(E, o, sel){
 		o.fx && o.fx();
 		later(o.wait || 900, () => {
+			say(o.say || pick(REACT[o.stars]));
 			const hand = card.querySelector(".gp-hand");
 			sel.forEach(k => { const c = hand.querySelector(`[data-c="${k}"]`); c.insertAdjacentHTML("beforeend", `<span class="stamp s${o.stars}">${STARS(o.stars)}</span>`); });
 			play(o.stars === 3 ? "good" : o.stars === 2 ? "chime" : "bad");
@@ -617,7 +675,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 
 	/* ---------- les événements du dossier ---------- */
 	const EV = {};
-	EV.mariage = { key:"mariage", stage:"1967 · Le mariage", era:"mariage", year:"20 juin 1967", title:"Un mariage… et un futur cabinet",
+	EV.mariage = { key:"mariage", say:"Bonjour ! Je suis Maître Bonchamp, notaire de la famille. Un mariage, c'est aussi un contrat… même quand on n'en signe pas !", stage:"1967 · Le mariage", era:"mariage", year:"20 juin 1967", title:"Un mariage… et un futur cabinet",
 		story:"Paul, fils d'agriculteurs, est arrivé à Lille en 1959 avec 2 000 F en poche. Aide-comptable dans le textile, il prépare ses diplômes d'expert-comptable et compte ouvrir son cabinet. Il épouse Jeannette Poirier.",
 		ask:"Faut-il un contrat de mariage ?", goal:"Un régime adapté à un futur chef d'entreprise, qui protège aussi le couple.",
 		setup:() => { W.setPlot("plA", COL.zP, "Biens de Paul"); W.setPlot("plB", COL.zJ, "Biens de Jeannette"); },
@@ -632,7 +690,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		after:() => regime("legal", ["Biens de Paul", COL.zP], ["Biens de Jeannette", COL.zJ]),
 		courses:["famille"], next:"maison", nextLabel:"1972 · La maison →" };
 
-	EV.maison = { key:"maison", stage:"1972 · La maison", era:"maison", year:"Juin 1972", title:"Une maison, et une inquiétude",
+	EV.maison = { key:"maison", say:"Une maison à crédit, deux jeunes parents… C'est le moment de penser à l'imprévu.", stage:"1972 · La maison", era:"maison", year:"Juin 1972", title:"Une maison, et une inquiétude",
 		story:"Le cabinet, créé en 1968, se développe vite. Jean-Baptiste a 4 ans. Paul et Jeannette s'endettent pour acheter une grande maison en proche banlieue : elle est <b>commune</b>. Chez le notaire, Paul s'inquiète : « Et s'il arrivait quelque chose à l'un de nous ? »",
 		ask:"Comment protéger celui qui resterait ?", goal:"Protéger le conjoint survivant. Ce choix comptera plus tard…",
 		cards:["dde", "test", "av", "rien"],
@@ -645,7 +703,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		best:"la donation entre époux (dite « au dernier vivant ») : simple, réciproque, et elle élargit les options du survivant.",
 		next:"immeuble", nextLabel:"1985 · L'immeuble →" };
 
-	EV.immeuble = { key:"immeuble", stage:"1985 · L'immeuble", era:"immeuble", year:"1985", title:"Des murs pour le cabinet",
+	EV.immeuble = { key:"immeuble", say:"Acheter les murs de son cabinet : excellente idée. Reste à savoir qui en sera propriétaire.", stage:"1985 · L'immeuble", era:"immeuble", year:"1985", title:"Des murs pour le cabinet",
 		story:"Les jumelles Élise et Louise sont nées en 1973. Le cabinet poursuit sa croissance. Paul, jusque-là locataire, veut acheter un immeuble pour y installer son activité.",
 		ask:"Comment acheter les locaux professionnels ?", goal:"Loger le cabinet sans tout mélanger entre vie privée et vie professionnelle.",
 		cards:["commun", "sci", "loc"],
@@ -659,7 +717,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		after:() => { W.rename("immeuble", "Immeuble (1985)"); W.moveTo("immeuble", 2.8, -.6); },
 		next:"deces", nextLabel:"1991 · L'accident →" };
 
-	EV.deces = { key:"deces", stage:"1991 · La succession", era:"deces", year:"2 juillet 1991", title:"Le drame",
+	EV.deces = { key:"deces", say:"Quelle tristesse… Je dois pourtant ouvrir la succession. Et d'abord, liquider la communauté.", stage:"1991 · La succession", era:"deces", year:"2 juillet 1991", title:"Le drame",
 		story:"Paul et Jeannette ont un grave accident de voiture. Jeannette décède deux jours plus tard, à 45 ans. Le notaire de famille, Maître Bonchamp, convoque Paul et les enfants, tous majeurs.",
 		ask:"Comment régler la succession ?",
 		pre:() => `<b>D'abord, le notaire liquide la communauté :</b> Paul reprend sa moitié des biens communs ; seule l'autre moitié forme la succession de Jeannette.<br>${{
@@ -676,7 +734,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		},
 		out: k => ({
 			partage:{ stars:3, fam:457000, txt:"Paul garde la maison et une partie des titres ; les enfants reçoivent le reste du portefeuille : 3 000 000 F, environ 457 000 € d'aujourd'hui. Chacun est libre.", fx:() => ["jb", "elise", "louise"].forEach((c, i) => later(i*250, () => W.fly("zCR", c, 3))) },
-			indiv:{ stars:1, fam:457000, conf:1, txt:"Tout le monde possède tout : chaque décision demande l'accord de chacun. Les disputes guettent, et « nul n'est tenu de rester dans l'indivision » : un enfant pourra exiger le partage.", fx:() => { W.zap("jb", "louise"); } },
+			indiv:{ stars:1, fam:457000, conf:1, say:"« Nul n'est tenu de demeurer dans l'indivision » : article 815 du Code civil. Les disputes arrivent vite…", txt:"Tout le monde possède tout : chaque décision demande l'accord de chacun. Les disputes guettent, et « nul n'est tenu de rester dans l'indivision » : un enfant pourra exiger le partage.", fx:() => { W.zap("jb", "louise"); } },
 			vendre:{ stars:1, fam:411000, txt:"On vend aussi la maison familiale, avec environ 10 % de frais, alors que Paul voulait y rester.", fx:() => { W.popOut("maison"); ["jb", "elise", "louise"].forEach((c, i) => later(i*250, () => W.fly("zCR", c, 2))); } }
 		}[k]),
 		best:"un partage amiable chez le notaire, qui respecte le souhait de Paul de garder la maison.",
@@ -684,14 +742,14 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 
 	const MULT = { livret:1.3, avp:1.6, pea:1.9, immo:1.7, action:.3, compte:1 };
 	const OBJ = { livret:"livret", avp:"av", pea:"pea", immo:"loc", action:"action", compte:"compte" };
-	EV.placer = { key:"placer", stage:"1991 · Placer l'héritage", era:"placer", year:"1991", title:"Placer l'héritage",
+	EV.placer = { key:"placer", say:"Trois jeunes gens et un beau capital : prudence et diversification, je vous prie.", stage:"1991 · Placer l'héritage", era:"placer", year:"1991", title:"Placer l'héritage",
 		story:"Jean-Baptiste (23 ans), Élise et Louise (18 ans) ont reçu environ 457 000 € à eux trois. Ils te confient leur épargne.",
 		ask:"Comment réinvestir les fonds de la succession ?", goal:"Choisis 3 placements (un tiers chacun), puis on avance de 10 ans.", pick:3,
 		cards:["livret", "avp", "pea", "immo", "action", "compte"],
 		out: ks => {
 			const part = 457000/3, res = ks.map(k => [k, part*MULT[k]]), tot = res.reduce((a, [, v]) => a + v, 0);
 			const stars = ks.includes("action") ? 1 : ks.includes("compte") ? 2 : 3;
-			return { stars, fam:Math.round(tot - 457000), wait:3400,
+			return { stars, fam:Math.round(tot - 457000), wait:3400, say:ks.includes("action") ? "Tout sur une seule action ? J'en ai vu, des fortunes s'envoler…" : null,
 				txt:`<div class="gp-clock" data-clock>1991</div><ul class="gp-sim">${res.map(([k, v]) => `<li><span>${CARDS[k][0]} ${CARDS[k][1]} · ×${String(MULT[k]).replace(".", ",")}</span><b>${euro(v)}</b></li>`).join("")}<li><span><b>Total en 2001</b></span><b>${euro(tot)}</b></li></ul>
 					${ks.includes("action") ? "La valeur à la mode s'est effondrée (souvenez-vous de la bulle internet de 2000) : ne jamais tout miser sur une seule entreprise. " : ""}${ks.includes("compte") ? "L'argent qui dort sur un compte courant ne rapporte rien, et l'inflation le grignote. " : ""}<small>Rendements illustratifs : les performances passées ne préjugent pas des performances futures.</small>`,
 				fx:() => {
@@ -706,7 +764,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		best:"diversifier entre épargne disponible, assurance-vie, actions et immobilier, selon l'âge et les projets de chacun.",
 		courses:["place"], next:"contrats", nextLabel:"1997 · Le mariage d'Élise →" };
 
-	EV.contrats = { key:"contrats", stage:"1997 · Contrats de mariage", era:"contrats", year:"1997", title:"Élise se marie",
+	EV.contrats = { key:"contrats", say:"Le jeune Florent veut créer son entreprise ? Alors parlons contrat de mariage !", stage:"1997 · Contrats de mariage", era:"contrats", year:"1997", title:"Élise se marie",
 		story:"Élise, 24 ans, épouse Florent Perbeau, jeune ingénieur qui rêve de créer son entreprise. Paul insiste pour qu'ils passent chez le notaire avant le mariage.",
 		ask:"Quels sont les types de contrats de mariage possibles ?", goal:"Protéger l'héritage d'Élise. Et si l'entreprise de Florent faisait faillite ?",
 		setup:() => { W.setPlot("plA", "#eaa6bd", "Biens d'Élise"); W.setPlot("plB", "#8fb3e0", "Biens de Florent"); },
@@ -727,7 +785,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		real:"Dans le vrai dossier, Élise et Florent signent une séparation de biens, comme le souhaitait Paul. La faillite n'était qu'une simulation !",
 		next:"remariage", nextLabel:"Paul se remarie →" };
 
-	EV.remariage = { key:"remariage", stage:"Le remariage", era:"remariage", year:"Plus tard", title:"Une famille recomposée",
+	EV.remariage = { key:"remariage", say:"Un remariage, Paul ? Félicitations ! Pensons aux enfants de chacun.", stage:"Le remariage", era:"remariage", year:"Plus tard", title:"Une famille recomposée",
 		story:"Las de la solitude, Paul veut épouser Paulette Mercier, veuve, du même âge. Elle estime son patrimoine à 2 000 000 € et a des enfants de ses deux mariages.",
 		ask:"Quels contrats possibles, avec leurs avantages et inconvénients ?", goal:"Que chacun puisse transmettre à ses propres enfants.",
 		setup:() => { W.setPlot("plA", COL.zP, "Patrimoine de Paul"); W.setPlot("plB", "#b99ad6", "Patrimoine de Paulette (2 M€)"); },
@@ -740,7 +798,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		best:"la séparation de biens dans une famille recomposée, complétée par des outils pour protéger le conjoint.",
 		next:"paulette", nextLabel:"Protéger Paulette →" };
 
-	EV.paulette = { key:"paulette", stage:"Le remariage", era:"remariage", year:"Plus tard", title:"Et si Paul partait le premier ?",
+	EV.paulette = { key:"paulette", say:"Paul tient à protéger Paulette. Attention à la réserve de ses enfants…", stage:"Le remariage", era:"remariage", year:"Plus tard", title:"Et si Paul partait le premier ?",
 		story:"Paul et Paulette se marient sous le régime de la séparation de biens. Paul veut maintenant que Paulette ne se retrouve pas démunie s'il décède avant elle.",
 		ask:"Comment protéger Paulette ?", goal:"Protéger Paulette sans léser les trois enfants de Paul.",
 		setup:() => { W.setPlot("plA", COL.zP, "Patrimoine de Paul"); W.setPlot("plB", "#b99ad6", "Patrimoine de Paulette (2 M€)"); W.O.fence.g.position.set(0, 0, 1.4); W.popIn("fence"); },
@@ -754,14 +812,14 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		best:"une donation entre époux ou une assurance-vie au profit de Paulette, en respectant la réserve des enfants.",
 		courses:["succ"], next:"concubin", nextLabel:"Jean-Baptiste et Sarah →" };
 
-	EV.concubin = { key:"concubin", stage:"Le concubinage", era:"concubin", year:"Aujourd'hui", title:"Ni marié, ni pacsé",
+	EV.concubin = { key:"concubin", say:"Ni mariés, ni pacsés… Beaucoup de couples ignorent ce que cela implique.", stage:"Le concubinage", era:"concubin", year:"Aujourd'hui", title:"Ni marié, ni pacsé",
 		story:"Jean-Baptiste vit avec Sarah Dourdon, rencontrée pendant ses études à Paris. Ils n'ont pas voulu se pacser. Il n'a pas d'enfant.",
 		ask:"Que se passerait-il en cas de décès ?", goal:"Simulation : Jean-Baptiste laisse 300 000 €. Que Sarah en reçoive le plus possible.",
 		setup:() => { W.O.heart.g.position.set(-1.4, 0, 2); later(800, () => W.popIn("heart")); },
 		cards:["rien", "test", "pacs", "av"],
 		out: k => {
 			const r = {
-				rien:{ stars:1, sarah:0, fisc:0, txt:"Sarah ne reçoit <b>rien</b> : pour la loi, un concubin n'est pas un héritier. Tout va au père et aux sœurs de Jean-Baptiste." },
+				rien:{ stars:1, sarah:0, fisc:0, say:"Pour la loi, Sarah est étrangère à la succession. Cruel, mais c'est ainsi.", txt:"Sarah ne reçoit <b>rien</b> : pour la loi, un concubin n'est pas un héritier. Tout va au père et aux sœurs de Jean-Baptiste." },
 				test:{ stars:1, sarah:120956, fisc:179044, txt:"Sarah hérite grâce au testament, mais comme concubine elle paie <b>60 %</b> de droits, après un abattement de seulement 1 594 €." },
 				av:{ stars:2, sarah:270500, fisc:29500, txt:"Pour des versements faits avant 70 ans, Sarah reçoit <b>152 500 € sans impôt</b>, puis 20 % au-delà. Très efficace, même sans être pacsés." },
 				pacs:{ stars:3, sarah:300000, fisc:0, txt:"Le partenaire de PACS est <b>exonéré</b> de droits. Avec un testament (sans enfant, Jean-Baptiste n'a pas d'héritier réservataire), Sarah reçoit tout." }
@@ -777,7 +835,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		after:() => { W.mourn("jb", false); W.mourn("sarah", false); W.hop("jb"); },
 		courses:["fisca"], next:"transmettre", nextLabel:"Préparer la transmission →" };
 
-	EV.transmettre = { key:"transmettre", stage:"La transmission", era:"transmettre", year:"Aujourd'hui", title:"Préparer la succession de Paul",
+	EV.transmettre = { key:"transmettre", say:"Paul, il est temps d'organiser votre succession. Mieux vaut tard que jamais !", stage:"La transmission", era:"transmettre", year:"Aujourd'hui", title:"Préparer la succession de Paul",
 		story:"Paul a aujourd'hui 86 ans. À la mort de ses parents, il a hérité du corps de ferme (250 000 €), qu'il loue, et de 100 000 € d'actions gardées en souvenir. Avec la maison et ses titres, son patrimoine atteint environ 650 000 €.",
 		ask:"Comment préparer la succession de M. Deslaurier ?", goal:"Joue 2 cartes : transmettre à ses enfants, payer moins de droits, éviter les disputes. Sans rien faire : environ 65 000 € de droits.", pick:2,
 		cards:["dp", "np", "av", "testP", "legs", "rien"],
@@ -795,7 +853,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 			ks.forEach(k => E[k]());
 			if(conf && !ks.includes("dp")) lines.push("⚡ Sans donation-partage, les enfants se disputent sur la valeur de la ferme.");
 			const bad = ks.some(k => k === "testP" || k === "legs"), good = ks.filter(k => ["dp", "np", "av"].includes(k)).length;
-			return { stars:bad ? 1 : good === 2 ? 3 : 2, fam:650000 - fisc, fisc, conf, wait:2200,
+			return { stars:bad ? 1 : good === 2 ? 3 : 2, fam:650000 - fisc, fisc, conf, wait:2200, say:bad ? null : "Bien joué. Mais retenez la leçon : le fisc rappelle les donations des 15 dernières années. Anticipez !",
 				txt:`${lines.map(l => `${l}<br>`).join("")}<br><b>Le piège :</b> à 86 ans, une donation est « rappelée » par le fisc si Paul décède dans les 15 ans. Le vrai conseil, c'était d'anticiper bien plus tôt !`,
 				fx:() => {
 					["jb", "elise", "louise"].forEach((c, i) => later(i*250, () => W.fly("paul", c, 3)));
@@ -808,23 +866,114 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		real:"Pour Paulette, même logique : ses enfants, des deux mariages, sont ses héritiers réservataires. Le conseiller bâtit deux stratégies en parallèle, avec le notaire.",
 		courses:["succ"], next:"end", nextLabel:"Voir mon bilan →" };
 
+
+	/* ---------- les coups du sort : 3 tirés au hasard par partie, un par période ---------- */
+	const CS = {
+		heritage:{ key:"heritage", cs:1, era:"immeuble", year:"1987", title:"Héritage surprise", say:"Coup du sort ! Une vieille tante pense à Jeannette…",
+			story:"Une tante de Jeannette décède et lui laisse l'équivalent de 30 000 €. Jeannette se demande quoi en faire.",
+			ask:"Où mettre cet héritage ?", goal:"Garder la trace de ce qui appartient à Jeannette.",
+			setup:() => { W.rename("heritage", "Héritage de Jeannette"); W.pose("heritage", 5.6, 5.2); },
+			cards:["hsep", "hcom", "hach"],
+			out: k => ({
+				hsep:{ stars:3, txt:"Placé à part, avec la preuve de son origine, l'héritage reste <b>propre</b> à Jeannette : il lui reviendrait en cas de divorce, et ira à sa succession.", fx:() => W.moveTo("heritage", 7.2, 2.6) },
+				hcom:{ stars:1, txt:"Mélangé au compte joint, l'argent devient impossible à distinguer : faute de preuve, il sera présumé <b>commun</b>.", fx:() => W.moveTo("heritage", .6, 3.4) },
+				hach:{ stars:2, txt:"Possible : la communauté devra une <b>récompense</b> à Jeannette, c'est-à-dire lui rendre cette somme au moment du partage. Encore faut-il garder les factures !", fx:() => { W.fly("heritage", "maison", 4); later(900, () => W.popOut("heritage")); } }
+			})[k],
+			best:"garder l'héritage sur un compte au nom de Jeannette, avec la preuve de son origine." },
+		arnaque:{ key:"arnaque", cs:1, era:"immeuble", year:"1988", title:"Le placement miracle", say:"Coup du sort ! Méfiance, un beau parleur vient d'entrer…",
+			story:"Un démarcheur très sympathique propose à Paul un placement « garanti à 15 % par an, sans aucun risque ». Il faut signer vite, dit-il : l'offre expire ce soir.",
+			ask:"Que fait Paul ?", goal:"Protéger l'épargne de la famille.",
+			setup:() => { W.rename("creancier", "Démarcheur"); const p = W.O.paul.g.position; W.pose("creancier", p.x + 2.4, p.z + 1.6); },
+			cards:["aref", "ainv", "ates"],
+			out: k => ({
+				aref:{ stars:3, txt:"« Garanti, sans risque, et vite » : les trois signes d'une arnaque. Un rendement élevé va toujours avec un risque élevé. On vérifie l'intermédiaire (registre de l'ORIAS, listes noires de l'AMF).", fx:() => { W.shake("creancier"); later(700, () => W.popOut("creancier")); } },
+				ainv:{ stars:1, fam:-50000, say:"Envolés, les 50 000 €… et le démarcheur avec.", txt:"L'argent a disparu avec le démarcheur. Un conseiller vérifie toujours qu'un intermédiaire est autorisé (ORIAS, AMF).", fx:() => { W.fly("paul", "creancier", 5); later(1300, () => { W.moveTo("creancier", 12, 9, 1.2, 1200); later(1300, () => W.popOut("creancier")); }); } },
+				ates:{ stars:1, fam:-10000, txt:"Les escrocs versent parfois de faux intérêts au début, pour attirer plus d'argent. Ici, les 10 000 € ont disparu.", fx:() => { W.fly("paul", "creancier", 2); later(1000, () => { W.moveTo("creancier", 12, 9, 1.2, 1200); later(1300, () => W.popOut("creancier")); }); } }
+			})[k],
+			best:"refuser, et vérifier l'intermédiaire sur les listes de l'AMF et le registre de l'ORIAS." },
+		chomage:{ key:"chomage", cs:1, era:"placer", year:"1995", title:"Un coup dur pour Louise", say:"Coup du sort ! Louise a besoin d'aide…",
+			story:"Louise perd son emploi à Paris. Il lui faut environ 15 000 € pour tenir quelques mois, le temps de retrouver un poste.",
+			ask:"Où trouver l'argent ?", goal:"Passer le cap sans abîmer son patrimoine.",
+			setup:() => { W.pose("livret", -6.6, -1); W.shake("louise"); },
+			cards:["cliv", "cact", "ccre"],
+			out: k => ({
+				cliv:{ stars:3, txt:"C'est exactement le rôle de l'<b>épargne de précaution</b> : quelques mois de dépenses, disponibles tout de suite, sans risque.", fx:() => W.fly("livret", "louise", 3) },
+				cact:{ stars:2, fam:-5000, txt:"Possible, mais vendre au mauvais moment coûte cher : environ 5 000 € de moins-value.", fx:() => W.shake("louise") },
+				ccre:{ stars:1, fam:-3000, txt:"Emprunter sans revenus, c'est risquer le surendettement, et payer des intérêts (environ 3 000 €).", fx:() => W.shake("louise") }
+			})[k],
+			best:"toujours garder une épargne de précaution disponible : c'est elle qui sert dans les coups durs." },
+		loto:{ key:"loto", cs:1, era:"placer", year:"1994", title:"Le gros lot !", say:"Coup du sort ! Pour une fois, une bonne nouvelle…",
+			story:"Louise gagne 100 000 € au loto ! Elle a 21 ans, est célibataire et vit à Paris.",
+			ask:"Que faire de ce gain ?", goal:"Que ce coup de chance dure.",
+			setup:() => { W.rename("compte", "Gain du loto · 100 000 €"); W.pose("compte", 3.4, 3); W.hop("louise"); },
+			cards:["ldiv", "ltou", "lcry"],
+			out: k => ({
+				ldiv:{ stars:3, fam:100000, txt:"Les gains des jeux de hasard ne sont pas imposés en France. Bien répartis (précaution, assurance-vie, actions… et un petit plaisir), ils peuvent changer une vie.", fx:() => W.fly("compte", "louise", 5) },
+				ltou:{ stars:1, txt:"Beaucoup de gagnants dépensent tout en quelques années. Un plaisir, oui ; tout, non.", fx:() => { W.fly("compte", "louise", 2); later(800, () => W.popOut("compte")); } },
+				lcry:{ stars:1, fam:30000, txt:"Un actif très spéculatif : il peut faire ×10… ou perdre 70 %. Ici, il ne reste que 30 000 €. Jamais tout sur un seul placement !", fx:() => { W.grow("compte", .4, 1500); later(1500, () => W.fly("compte", "louise", 1)); } }
+			})[k],
+			best:"diversifier : une épargne de précaution, du long terme (assurance-vie, actions), et un petit plaisir." },
+		krach:{ key:"krach", cs:1, era:"remariage", year:"2008", title:"Krach boursier", say:"Coup du sort ! Les marchés s'effondrent, Jean-Baptiste panique…",
+			story:"Crise financière de 2008 : les actions de Jean-Baptiste perdent 40 % en quelques semaines. Il n'a pas besoin de cet argent avant longtemps, mais il t'appelle, paniqué.",
+			ask:"Que lui conseiller ?", goal:"Ne pas transformer une baisse en perte.",
+			setup:() => { W.pose("pea", -5.6, -1.2); later(300, () => W.grow("pea", .6, 900)); W.shake("jb"); },
+			cards:["kven", "kgar", "kach"],
+			out: k => ({
+				kgar:{ stars:3, txt:"Vendre au plus bas, c'est figer la perte. Avec un horizon long, on patiente : les marchés ont fini par remonter.", fx:() => W.grow("pea", 1.15, 2000) },
+				kach:{ stars:2, txt:"Investir un peu dans la baisse peut payer, à condition de ne pas toucher à l'épargne de précaution.", fx:() => { W.fly("jb", "pea", 2); W.grow("pea", 1.25, 2000); } },
+				kven:{ stars:1, fam:-40000, txt:"En vendant au plus bas, Jean-Baptiste a figé une perte d'environ 40 000 €. Les marchés ont fini par remonter… sans lui.", fx:() => { W.fly("pea", "jb", 2); later(900, () => W.popOut("pea")); } }
+			})[k],
+			best:"avec un horizon long, ne pas vendre dans la panique ; et ne placer en actions que l'argent dont on n'a pas besoin." },
+		naissance:{ key:"naissance", cs:1, era:"remariage", year:"Plus tard", title:"Une naissance", say:"Coup du sort ! Un heureux événement chez Élise…",
+			story:"Élise et Florent ont une petite fille, Léa. Paul, grand-père comblé, veut l'aider dès maintenant.",
+			ask:"Comment aider Léa ?", goal:"Transmettre à sa petite-fille sans droits.",
+			setup:() => { W.pose("lea", -4, 4.2); W.hop("lea", 400); },
+			cards:["nabt", "nlat", "nliv"],
+			out: k => ({
+				nabt:{ stars:3, fam:31865, txt:"Chaque grand-parent peut donner <b>31 865 €</b> à chaque petit-enfant sans droits, tous les 15 ans. Ses parents géreront la somme jusqu'à sa majorité.", fx:() => W.fly("paul", "lea", 4) },
+				nlat:{ stars:1, txt:"Léa n'est pas l'héritière de Paul tant que ses parents sont là. Attendre, c'est se priver d'un abattement qui lui est réservé.", fx:() => W.shake("lea") },
+				nliv:{ stars:2, fam:500, txt:"Un joli geste, mais l'abattement de 31 865 € reste inutilisé.", fx:() => W.fly("paul", "lea", 1) }
+			})[k],
+			best:"utiliser l'abattement de 31 865 € entre grand-parent et petit-enfant, renouvelable tous les 15 ans." }
+	};
+	// tirage : une carte par période, sans doublon (le démarcheur peut venir en 1988 ou plus tard)
+	const POOLS = { A:[["heritage", "arnaque"], "deces", "1991 · L'accident →"], B:[["chomage", "loto"], "contrats", "1997 · Le mariage d'Élise →"], C:[["krach", "naissance", "arnaque"], "concubin", "Jean-Baptiste et Sarah →"] };
+	let plan = {};
+	function draw(){
+		plan = {}; const used = new Set();
+		for(const P of ["A", "B", "C"]){ const k = pick(POOLS[P][0].filter(x => !used.has(x))); used.add(k); plan[P] = k; }
+	}
+	function coup(P, key){
+		const k = key || plan[P], E = { ...CS[k], stage:"🎲 Coup du sort", next:POOLS[P][1], nextLabel:POOLS[P][2] };
+		if(k === "arnaque" && P === "C"){ E.era = "remariage"; E.year = "2009"; }
+		// après le remariage : les parcelles de Paul et de Paulette, séparées par la clôture
+		if(E.era === "remariage"){ const own = E.setup; E.setup = () => { W.setPlot("plA", COL.zP, "Patrimoine de Paul"); W.setPlot("plB", "#b99ad6", "Patrimoine de Paulette (2 M€)"); W.O.fence.g.position.set(0, 0, 1.4); W.popIn("fence"); own && own(); }; }
+		deal(E);
+	}
+	EV.immeuble.next = "cs:A"; EV.placer.next = "cs:B"; EV.paulette.next = "cs:C";
+	draw();
+
 	/* ---------- intro et bilan ---------- */
 	function intro(){
 		stage("Dossier", "intro");
+		later(700, () => say("Bienvenue dans mon étude ! Asseyez-vous, la famille Deslaurier a besoin de vos conseils."));
 		show(`<div class="gp-k">Mini-jeu · ${formation.name}</div><h2 class="gp-h">Le Dossier Deslaurier</h2>
 			<p class="gp-p">Tu es <b>conseiller en gestion de patrimoine</b>. Dans l'étude de Maître Bonchamp, la famille Deslaurier (fictive) te confie sa vie, de 1959 à aujourd'hui : mariage, cabinet, maison, accident, héritage, remariage…</p>
 			<p class="gp-p">À chaque tournant, tu reçois une <b>main de cartes</b> : contrat de mariage, donation, testament, assurance-vie, SCI… Joue la bonne, et regarde les conséquences sur la maquette : l'argent va-t-il à la famille, au fisc, ou finit-il en dispute ?</p>
+			<p class="gp-p">Attention : entre deux étapes, des <b>coups du sort</b> tirés au hasard (héritage surprise, krach, gros lot…) rendent chaque partie différente.</p>
 			<ul class="gp-list"><li><span>💰</span>Ce qui revient à la famille</li><li><span>🏛</span>Ce qui part au fisc</li><li><span>⚡</span>Les conflits</li><li><span>★</span>La qualité de tes conseils</li></ul>
 			<p class="gp-p"><small>D'après un cas pratique utilisé à l'ISEA en initiation à la gestion de patrimoine. Droit d'aujourd'hui, chiffres simplifiés.</small></p>
 			<button class="gp-go" data-a="mariage">Distribuer les cartes</button>`);
 	}
 	function finale(){
 		stage("Bilan patrimonial", "end");
-		const st = Object.values(S.done).reduce((a, b) => a + b, 0), max = Object.keys(EV).length*3;
-		const [rank, mention] = st >= max - 4 ? ["Associé du cabinet", "Très bien"] : st >= max - 10 ? ["Conseiller confirmé", "Bien"] : ["Conseiller junior", "Assez bien"];
+		const st = Object.values(S.done).reduce((a, b) => a + b, 0), max = (Object.keys(EV).length + 3)*3;
+		const [rank, mention] = st >= max*.87 ? ["Associé du cabinet", "Très bien"] : st >= max*.67 ? ["Conseiller confirmé", "Bien"] : ["Conseiller junior", "Assez bien"];
+		later(600, () => say(st >= max*.87 ? "Je vous propose de devenir associé ! Votre place est au cabinet." : st >= max*.67 ? "Du bon travail. Encore un peu d'expérience, et vous serez associé." : "Un début prometteur… Rejouez, les cartes seront différentes !"));
 		onEvent && onEvent("win", mention);
 		play("win");
-		later(900, () => ["paul", "paulette", "jb", "elise", "louise", "florent", "sarah", "pk1", "pk2"].forEach((id, i) => W.hop(id, i*110)));
+		if(S.done.naissance) later(300, () => W.pose("lea", -5.7, 3.4));
+		later(900, () => ["paul", "paulette", "jb", "elise", "louise", "florent", "sarah", "pk1", "pk2", "lea"].forEach((id, i) => W.hop(id, i*110)));
 		const order = ["famille", "liquid", "succ", "place", "fisca"].filter(k => S.learned.has(k));
 		show(`<div class="gp-k">${formation.name} · bilan</div><h2 class="gp-h">Dossier bouclé !</h2>
 			<p class="gp-p" style="text-align:center;font-size:16px">Tu es <b>${rank}</b><br><span style="font-size:22px;color:#b08a3e">${st} / ${max} ★</span></p>
@@ -834,7 +983,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 			${openLead ? `<button class="gp-go" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
 			<a class="gp-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master Droit & Gestion du Patrimoine ↗</a>
 			<button class="gp-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
-			<button class="gp-alt" data-a="replay">Rejouer et viser 30 ★</button>`);
+			<button class="gp-alt" data-a="replay">Rejouer : d'autres coups du sort t'attendent</button>`);
 	}
 
 	/* ---------- actions ---------- */
@@ -843,10 +992,11 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 	root.addEventListener("click", e => {
 		const a = e.target.closest("[data-a]"); if(!a) return;
 		const k = a.dataset.a; play("pop");
+		if(k.startsWith("cs:")) return coup(k.slice(3));
 		if(STEPS[k]) return STEPS[k]();
 		if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
 		if(k === "lead"){ close(); return openLead(); }
-		if(k === "replay"){ Object.assign(S, { errors:0, learned:new Set(), dde:null, done:{} }); ["fam", "fisc", "conf", "stars"].forEach(m => meter(m, 0)); return intro(); }
+		if(k === "replay"){ draw(); Object.assign(S, { errors:0, learned:new Set(), dde:null, done:{} }); ["fam", "fisc", "conf", "stars"].forEach(m => meter(m, 0)); return intro(); }
 	});
 	function close(){ if(closed) return; closed = true; removeEventListener("resize", onResize); document.removeEventListener("keydown", onKey); W.dispose(); root.remove(); onClose && onClose(); }
 	function onKey(e){ if(e.key === "Escape") close(); }
@@ -855,6 +1005,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 	intro();
 	onEvent && onEvent("start");
 	// mode relecture : étapes où l'enseignant peut sauter directement
-	onEvent && onEvent("missions", [["1967 · Le mariage", STEPS.mariage], ["1972 · La maison", STEPS.maison], ["1985 · L'immeuble", STEPS.immeuble], ["1991 · La succession", STEPS.deces], ["1991 · Placer l'héritage", STEPS.placer], ["1997 · Le mariage d'Élise", STEPS.contrats], ["Le remariage", STEPS.remariage], ["Protéger Paulette", STEPS.paulette], ["Le concubinage", STEPS.concubin], ["La transmission", STEPS.transmettre], ["Bilan patrimonial", finale]]);
-	if(window.campus) window.campus.game = { S, card, W, EV, ...STEPS };
+	onEvent && onEvent("missions", [["1967 · Le mariage", STEPS.mariage], ["1972 · La maison", STEPS.maison], ["1985 · L'immeuble", STEPS.immeuble], ["1991 · La succession", STEPS.deces], ["1991 · Placer l'héritage", STEPS.placer], ["1997 · Le mariage d'Élise", STEPS.contrats], ["Le remariage", STEPS.remariage], ["Protéger Paulette", STEPS.paulette], ["Le concubinage", STEPS.concubin], ["La transmission", STEPS.transmettre], ["Bilan patrimonial", finale],
+		["🎲 Héritage surprise", () => coup("A", "heritage")], ["🎲 Le placement miracle", () => coup("A", "arnaque")], ["🎲 Le chômage de Louise", () => coup("B", "chomage")], ["🎲 Le gros lot", () => coup("B", "loto")], ["🎲 Krach boursier", () => coup("C", "krach")], ["🎲 Une naissance", () => coup("C", "naissance")]]);
+	if(window.campus) window.campus.game = { S, card, W, EV, coup, ...STEPS };
 }

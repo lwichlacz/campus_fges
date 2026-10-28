@@ -255,13 +255,13 @@ PAGES = {
 			"id": "dgp", "game": "Le Dossier Deslaurier (Master Droit & Gestion du Patrimoine)", "short": "Le Dossier Deslaurier",
 			"h1": "Le Dossier Deslaurier : votre relecture",
 			"lead": "Le mini-jeu du Master Droit & Gestion du Patrimoine (ISEA), dans le campus 3D de la FGES. Il reprend le cas pratique Deslaurier proposé par Jean-Daniel Wecxsteen. Dans l'étude de Maître Bonchamp, le joueur conseille la famille de 1959 à aujourd'hui : à chaque question « Gestion de patrimoine » du cas, il joue une carte (contrat de mariage, donation entre époux, testament, assurance-vie, SCI, PACS, donation-partage…) et voit les conséquences sur une maquette 3D : l'argent va à la famille, au fisc ou à un créancier, et des éclairs marquent les conflits. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux candidats.",
-			"facts": ["Environ 8 à 10 min", "10 événements, de 1967 à aujourd'hui", "Un jeu de cartes sur une maquette 3D", "Droit d'aujourd'hui, chiffres simplifiés"],
+			"facts": ["Environ 10 min", "10 événements et 3 coups du sort tirés au hasard", "Un jeu de cartes sur une maquette 3D, commenté par le notaire", "Droit d'aujourd'hui, chiffres simplifiés"],
 			"url": SITE + "?jeu=dgp",
 			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Le Dossier Deslaurier.",
 			"card": {"icon": "📜", "title": "Le Dossier Deslaurier", "formation": "Master Droit & Gestion du Patrimoine", "steps": [
 				["1967-1985", "Mariage, maison, locaux du cabinet"], ["1991", "La succession et le placement de l'héritage"], ["1997 →", "Mariage d'Élise, remariage de Paul"], ["Aujourd'hui", "Concubinage et transmission"]]},
 			"publicHint": "Des étudiants de L3 qui envisagent le master, et des lycéens curieux.",
-			"dureeHint": "Durée prévue : 8 à 10 minutes.",
+			"dureeHint": "Durée prévue : environ 10 minutes.",
 			"sections": [
 				{"t": "Le principe", "items": [
 					c("fidele", "Le jeu reste-t-il fidèle au cas Deslaurier ?", "Chaque question « Gestion de patrimoine » du cas devient un événement. Le joueur peut faire un autre choix que la famille ; le jeu rappelle ensuite ce qui s'est passé « dans le vrai dossier ». Ajouts : la SCI pour l'immeuble, deux simulations (faillite de l'entreprise de Florent, décès de Jean-Baptiste)."),
@@ -282,8 +282,18 @@ PAGES = {
 					c("concubin", "Simulation du décès de Jean-Baptiste (300 000 €)", "Rien : 0 € pour Sarah ; testament : 120 956 € pour Sarah, 179 044 € de droits (60 % après 1 594 €) ; assurance-vie : 270 500 € et 29 500 € (152 500 € exonérés puis 20 %) ; PACS + testament : 300 000 €, exonérés."),
 					c("transmission", "Transmission de Paul (86 ans, environ 650 000 €)", "Base : environ 65 000 € de droits et un conflit sur la valeur de la ferme. Donation-partage −5 000 € et plus de conflit ; nue-propriété −8 000 € ; assurance-vie après 70 ans −6 000 € ; testament pour Paulette : conflit ; ferme aux enfants de Paulette : +150 000 € (60 %). Message final : à 86 ans, le rappel fiscal de 15 ans limite l'intérêt des donations."),
 					q("chiffres", "Ces ordres de grandeur sont-ils acceptables pour un public de lycéens et d'étudiants ?")]},
+				{"t": "Les coups du sort", "sub": "3 tirés au hasard par partie", "items": [
+					c("cs_heritage", "Héritage surprise (1987)", "Une tante laisse 30 000 € à Jeannette. Compte à son nom avec preuve ★★★ (reste propre) ; travaux dans la maison commune ★★ (récompense due à Jeannette) ; compte joint ★ (présumé commun faute de preuve)."),
+					c("cs_arnaque", "Le placement miracle (1988 ou 2009)", "« Garanti à 15 %, sans risque, signez ce soir. » Refuser et vérifier (ORIAS, listes noires de l'AMF) ★★★ ; investir 50 000 € ★ ; tester avec 10 000 € ★."),
+					c("cs_chomage", "Le chômage de Louise (1995)", "Il lui faut 15 000 €. Épargne de précaution ★★★ ; vendre ses actions en baisse ★★ (−5 000 €) ; crédit à la consommation ★ (−3 000 €)."),
+					c("cs_loto", "Le gros lot (1994)", "Louise gagne 100 000 €, non imposables. Diversifier ★★★ ; tout dépenser ★ ; tout sur une cryptomonnaie ★ (il reste 30 000 €)."),
+					c("cs_krach", "Krach boursier (2008)", "Les actions de Jean-Baptiste perdent 40 %. Garder et patienter ★★★ ; racheter un peu ★★ ; tout vendre ★ (−40 000 €)."),
+					c("cs_naissance", "Une naissance", "Paul veut aider sa petite-fille Léa. Donner 31 865 € (abattement grand-parent → petit-enfant, tous les 15 ans) ★★★ ; lui ouvrir un livret ★★ ; attendre la succession ★."),
+					q("cs_autres", "D'autres coups du sort à proposer (dépendance d'un parent, vente du cabinet, expatriation…) ?")]},
+				{"t": "Maître Bonchamp", "items": [
+					c("notaire", "Le notaire qui commente les choix est-il un bon fil conducteur ?", "Une phrase d'accueil à chaque étape, une réaction selon la note (3 répliques possibles par niveau), quelques remarques précises (article 815 sur l'indivision, rappel fiscal de 15 ans).")]},
 				{"t": "Fin de partie", "items": [
-					c("mention", "Les rangs sont-ils bien calibrés ?", "Sur 30 étoiles : Associé du cabinet (26 et plus, Très bien), Conseiller confirmé (20 et plus, Bien), Conseiller junior."),
+					c("mention", "Les rangs sont-ils bien calibrés ?", "Sur 39 étoiles (10 événements et 3 coups du sort) : Associé du cabinet (87 % et plus, Très bien), Conseiller confirmé (67 % et plus, Bien), Conseiller junior."),
 					c("ton", "Le ton « jeu de cartes » vous convient-il pour présenter le métier ?")]},
 			],
 			"open": [
@@ -358,7 +368,7 @@ GAMES = [
 	{"id": "sv", "icon": "🔍", "title": "Mission Jardin Boulay", "formation": "Licence Sciences de la Vie", "dur": "7 min"},
 	{"id": "spi", "icon": "🦾", "title": "Cellule robotique Wenov", "formation": "Licence Sciences pour l'Ingénieur", "dur": "9 min"},
 	{"id": "info", "icon": "🎮", "title": "Game Jam 48 h", "formation": "Licence Informatique", "dur": "12 min"},
-	{"id": "dgp", "icon": "📜", "title": "Le Dossier Deslaurier", "formation": "Master Droit & Gestion du Patrimoine", "dur": "8-10 min"},
+	{"id": "dgp", "icon": "📜", "title": "Le Dossier Deslaurier", "formation": "Master Droit & Gestion du Patrimoine", "dur": "10 min"},
 	{"id": "dmb", "icon": "🧬", "title": "From Blood to Decision", "formation": "Master Data Management in Biosciences", "dur": "12-15 min"},
 ]
 # une seule page pour tous les jeux (relecture/#dmb, #sv…), servie par GitHub Pages avec le site ;
