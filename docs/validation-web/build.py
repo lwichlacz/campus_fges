@@ -248,6 +248,49 @@ PAGES = {
 			],
 		},
 	},
+	"dgp": {
+		"title": "Relecture Le Dossier Deslaurier",
+		"accent": ("#1f4d3a", "#e3f0e8", "#7cc9a2", "#18342a"),
+		"cfg": {
+			"id": "dgp", "game": "Le Dossier Deslaurier (Master Droit & Gestion du Patrimoine)", "short": "Le Dossier Deslaurier",
+			"h1": "Le Dossier Deslaurier : votre relecture",
+			"lead": "Le mini-jeu du Master Droit & Gestion du Patrimoine (ISEA), dans le campus 3D de la FGES. Il reprend le cas pratique Deslaurier proposé par Jean-Daniel Wecxsteen : la vie d'une famille lilloise de 1959 à aujourd'hui, et à chaque question « Gestion de patrimoine » du cas, le joueur répond en conseiller. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux candidats.",
+			"facts": ["Environ 8 min", "8 étapes, de 1967 à aujourd'hui", "Public : étudiants de licence et lycéens curieux", "Famille fictive, droit d'aujourd'hui"],
+			"url": SITE + "?jeu=dgp",
+			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Le Dossier Deslaurier.",
+			"card": {"icon": "📜", "title": "Le Dossier Deslaurier", "formation": "Master Droit & Gestion du Patrimoine", "steps": [
+				["1967", "Le mariage sans contrat"], ["1968-1985", "Biens propres ou communs, et le divorce"], ["1991", "La succession et le placement de l'héritage"], ["1997 →", "Contrats de mariage, remariage, concubinage, transmission"]]},
+			"publicHint": "Des étudiants de L3 qui envisagent le master, et des lycéens curieux.",
+			"dureeHint": "Durée prévue : environ 8 minutes.",
+			"sections": [
+				{"t": "Le déroulé", "items": [
+					c("fidele", "Le jeu reste-t-il fidèle au cas Deslaurier ?", "Chaque question « Gestion de patrimoine » du cas devient une étape. Ajout : une commode héritée par Jeannette, pour illustrer un bien propre à l'épouse. Le raisonnement suit le droit d'aujourd'hui, pas celui de 1991."),
+					c("cours", "Les grands thèmes du master sont-ils bien nommés ?", "Droit de la famille, Liquidation et partage, Successions et libéralités, Ingénierie financière, Fiscalité patrimoniale.")]},
+				{"t": "1967-1985 · Le couple", "items": [
+					c("regime", "Mariage de 1967 sans contrat : la réponse est-elle juste ?", "Communauté réduite aux acquêts (piège : la communauté de meubles et acquêts, régime légal avant 1966). Changement de régime par acte notarié, juge seulement en cas d'opposition ou d'enfant mineur lésé."),
+					c("biens", "Le classement propres / communs est-il juste ?", "2 000 F de 1959 : propres à Paul ; cabinet créé en 1968, maison de 1972, immeuble de 1985, épargne sur salaires : communs ; commode héritée : propre à Jeannette."),
+					c("cabinet", "Le sort du cabinet en cas de divorce est-il bien expliqué ?", "Valeur commune, titre et exercice personnels à Paul ; il le garde et verse une soulte. Même logique pour l'immeuble (attribution préférentielle).")]},
+				{"t": "1991 · La succession", "items": [
+					c("liquid", "La liquidation avant la succession est-elle juste ?", "Paul reprend la moitié de la communauté ; l'autre moitié et les propres de Jeannette forment la succession."),
+					c("dde", "Les options de la donation entre époux sont-elles justes ?", "Avec trois enfants communs : totalité en usufruit, ¼ en pleine propriété et ¾ en usufruit, ou quotité disponible (¼) en pleine propriété. Sans donation : usufruit de tout ou ¼ en pleine propriété."),
+					c("placer", "Le placement de l'héritage est-il bien présenté ?", "Connaître le client (objectifs, horizon, risque), puis relier : livret, assurance-vie, PEA, immobilier locatif."),
+					q("chiffres", "Faut-il faire calculer la liquidation avec les montants du cas ?")]},
+				{"t": "1997 → aujourd'hui", "items": [
+					c("contrats", "Les quatre régimes sont-ils bien définis ?", "Communauté réduite aux acquêts, séparation de biens, participation aux acquêts, communauté universelle."),
+					c("remariage", "Le conseil pour le remariage est-il le bon ?", "Séparation de biens ; la communauté universelle avec attribution intégrale est écartée (enfants non communs, action en retranchement)."),
+					c("concubin", "Le tableau marié / pacsé / concubin est-il juste ?", "Marié : héritier, exonéré ; pacsé : pas héritier sans testament, exonéré ; concubin : pas héritier, 60 % (abattement de 1 594 €). Conseil : assurance-vie (152 500 € par bénéficiaire pour les versements avant 70 ans)."),
+					c("transmission", "Les outils de transmission sont-ils justes ?", "Bons outils : donation-partage (100 000 € par parent et par enfant tous les 15 ans), donation de la nue-propriété de la ferme, assurance-vie après 70 ans (30 500 €, gains exonérés). Fausses bonnes idées : tout léguer à Paulette (réserve de ¾ avec trois enfants), léguer la ferme aux enfants de Paulette (60 %).")]},
+				{"t": "Fin de partie", "items": [
+					c("mention", "Les mentions sont-elles bien calibrées ?", "Très bien : 3 erreurs au plus ; Bien : 8 au plus ; Assez bien au-delà."),
+					c("ton", "Le ton « conseiller d'une famille » vous convient-il pour présenter le métier ?")]},
+			],
+			"open": [
+				{"k": "etape", "q": "Une étape à ajouter (transmission du cabinet, démembrement de la maison, SCI pour la ferme…) ?"},
+				{"k": "alternance", "q": "Une situation vécue en alternance (banque privée, cabinet de CGP, étude notariale) à mettre en scène ?"},
+				{"k": "manque", "q": "Qu'est-ce qui manque pour donner envie de rejoindre le master ?"},
+			],
+		},
+	},
 	"info": {
 		"title": "Relecture Game Jam 48 h",
 		"accent": ("#5b3fd0", "#ece8fd", "#a996ff", "#2a2350"),
@@ -313,6 +356,7 @@ GAMES = [
 	{"id": "sv", "icon": "🔍", "title": "Mission Jardin Boulay", "formation": "Licence Sciences de la Vie", "dur": "7 min"},
 	{"id": "spi", "icon": "🦾", "title": "Cellule robotique Wenov", "formation": "Licence Sciences pour l'Ingénieur", "dur": "9 min"},
 	{"id": "info", "icon": "🎮", "title": "Game Jam 48 h", "formation": "Licence Informatique", "dur": "12 min"},
+	{"id": "dgp", "icon": "📜", "title": "Le Dossier Deslaurier", "formation": "Master Droit & Gestion du Patrimoine", "dur": "8 min"},
 	{"id": "dmb", "icon": "🧬", "title": "From Blood to Decision", "formation": "Master Data Management in Biosciences", "dur": "12-15 min"},
 ]
 # une seule page pour tous les jeux (relecture/#dmb, #sv…), servie par GitHub Pages avec le site ;
