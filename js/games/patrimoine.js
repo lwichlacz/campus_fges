@@ -14,7 +14,9 @@ const COURSES = {
 	place:   ["Ingénierie financière", "Profil de l'épargnant, horizon, risque : construire une allocation entre épargne disponible, assurance-vie, actions et immobilier."],
 	fisca:   ["Fiscalité patrimoniale", "Droits de succession et de donation, abattements, assurance-vie : transmettre mieux, dans le respect de la loi."]
 };
-const MOBILE = 760;          // en dessous : maquette en haut, dossier en bas
+const MOBILE = 760;
+// frise : libellé, libellé court (téléphone), étapes du jeu
+const TIMELINE = [["1959", "1959", ["intro"]], ["1967", "1967", ["mariage"]], ["1968-1985", "1968", ["biens"]], ["1991", "1991", ["deces", "placer"]], ["1997", "1997", ["contrats"]], ["Remariage", "Remar.", ["remariage"]], ["Aujourd'hui", "Auj.", ["concubin", "transmettre", "end"]]];          // en dessous : maquette en haut, dossier en bas
 
 const CSS = `
 .gp{position:fixed;inset:0;z-index:40;font-family:Nunito,system-ui,sans-serif;color:#24302a;background:#1d3a2f;animation:gpIn .35s ease both;overflow:hidden}
@@ -25,14 +27,26 @@ const CSS = `
 .gp-chip{background:rgba(255,251,240,.95);border-radius:999px;padding:7px 12px;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(5,15,10,.3)}
 .gp-stage{background:#b08a3e;color:#fff}
 .gp-x{margin-left:auto;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,251,240,.95);font-size:22px;cursor:pointer}
-.gp-hint{position:absolute;z-index:2;left:12px;bottom:12px;background:rgba(15,30,24,.7);color:#f3e3b8;font-size:12px;font-weight:700;border-radius:999px;padding:5px 10px;pointer-events:none}
+.gp-tl{position:absolute;z-index:2;left:12px;bottom:12px;background:rgba(20,16,12,.72);border-radius:14px;padding:8px 12px 6px;pointer-events:none;box-sizing:border-box;backdrop-filter:blur(4px)}
+.gp-tl-bar{position:relative;height:4px;border-radius:2px;background:rgba(243,227,184,.18);margin:5px 6px 0}
+.gp-tl-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:#d9b25a;transition:width .9s cubic-bezier(.4,0,.2,1)}
+.gp-tl ol{list-style:none;margin:-9px 0 0;padding:0;display:flex;justify-content:space-between}
+.gp-tl li{flex:1;text-align:center;font-size:11.5px;font-weight:800;color:rgba(243,227,184,.45);transition:color .4s}
+.gp-tl li:first-child{text-align:left}.gp-tl li:last-child{text-align:right}
+.gp-tl li:before{content:"";display:block;width:10px;height:10px;border-radius:50%;background:#4a3f33;border:2px solid rgba(243,227,184,.35);margin:0 auto 4px;transition:all .4s}
+.gp-tl li:first-child:before{margin-left:0}.gp-tl li:last-child:before{margin-right:0}
+.gp-tl li.past{color:rgba(243,227,184,.8)}.gp-tl li.past:before{background:#d9b25a;border-color:#d9b25a}
+.gp-tl li.now{color:#ffd77a}.gp-tl li.now:before{background:#ffd77a;border-color:#fff;box-shadow:0 0 0 4px rgba(255,215,122,.3);transform:scale(1.25)}
+.gp-tl .s{display:none}
+@media (max-width:520px){ .gp-tl .l{display:none} .gp-tl .s{display:inline} .gp-tl li{font-size:10.5px} .gp-tl{padding:7px 9px 5px} }
+.gp-hint{position:absolute;z-index:2;left:12px;bottom:70px;background:rgba(15,30,24,.7);color:#f3e3b8;font-size:12px;font-weight:700;border-radius:999px;padding:5px 10px;pointer-events:none}
 .gp-wrap{position:absolute;z-index:2;top:62px;right:12px;bottom:12px;width:420px;overflow:auto;border-radius:8px;scrollbar-width:thin}
 .gp-card{background:#fffcf3;border-radius:8px;box-shadow:0 18px 40px rgba(5,15,10,.45);padding:18px 18px 16px;position:relative;animation:gpUp .35s cubic-bezier(.2,.8,.2,1) both;border-top:5px solid #b08a3e;min-height:calc(100% - 21px)}
 @keyframes gpUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @media (max-width:${MOBILE - 1}px){
 	.gp-wrap{left:0;right:0;bottom:0;width:auto;border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(5,15,10,.35)}
 	.gp-card{border-radius:16px 16px 0 0;padding:14px 14px 22px}
-	.gp-hint{bottom:auto}
+	.gp-hint,.gp-tl{bottom:auto}
 }
 .gp-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8a6a24}
 .gp-h{font:700 22px/1.15 Fraunces,Georgia,serif;margin:4px 0 6px;color:#1f3d31}
@@ -90,7 +104,7 @@ function world(canvas){
 	const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
 	renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-	const scene = new THREE.Scene(); scene.background = new THREE.Color("#1d3a2f"); scene.fog = new THREE.Fog("#1d3a2f", 38, 70);
+	const scene = new THREE.Scene(); scene.background = new THREE.Color("#241c15"); scene.fog = new THREE.Fog("#241c15", 70, 140);
 	const camera = new THREE.PerspectiveCamera(36, 1, .1, 200);
 	const controls = new OrbitControls(camera, canvas);
 	controls.enableDamping = true; controls.enablePan = false; controls.minDistance = 7; controls.maxDistance = 42; controls.maxPolarAngle = 1.3;
@@ -108,6 +122,64 @@ function world(canvas){
 	board.add(mesh(new THREE.CylinderGeometry(14.2, 14.6, .8, 64), M("#6e4a32"), 0, -.4, 0));
 	board.add(mesh(new THREE.CylinderGeometry(13.6, 13.6, .06, 64), M("#efe6cf"), 0, .03, 0));
 	const rim = mesh(new THREE.TorusGeometry(13.62, .07, 8, 96), M("#b08a3e", { metalness:.6, roughness:.35 }), 0, .06, 0); rim.rotation.x = Math.PI/2; board.add(rim);
+
+	/* --- le décor : l'étude de Maître Bonchamp, notaire de la famille (fictif) --- */
+	{
+		const FY = -7, deco = new THREE.Group(); scene.add(deco);
+		const still = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.receiveShadow = true; deco.add(m); return m; };
+		const sbox = (w, h, d, c, x, y, z) => still(new THREE.BoxGeometry(w, h, d), M(c), x, y + h/2, z);
+		const tex = (w, h, draw) => { const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
+		// parquet en points de Hongrie simplifié, tapis, pied du guéridon
+		const parquet = tex(256, 256, (x, w, h) => { for(let i = 0; i < 8; i++){ x.fillStyle = ["#7a5234", "#835a3a", "#6f4a2e", "#8a6040"][(i*3) % 4]; x.fillRect(0, i*32, w, 32); x.fillStyle = "rgba(0,0,0,.28)"; x.fillRect(0, i*32, w, 2); x.fillRect((i*97) % w, i*32, 2, 32); x.fillRect((i*97 + 128) % w, i*32, 2, 32); } });
+		parquet.wrapS = parquet.wrapT = THREE.RepeatWrapping; parquet.repeat.set(9, 9);
+		still(new THREE.PlaneGeometry(150, 150), new THREE.MeshStandardMaterial({ map:parquet, roughness:.7 }), 0, FY, 0).rotation.x = -Math.PI/2;
+		still(new THREE.CylinderGeometry(21, 21, .05, 64), M("#6b2328"), 0, FY + .03, 0);
+		still(new THREE.TorusGeometry(19.6, .25, 6, 96), M("#b08a3e"), 0, FY + .06, 0).rotation.x = Math.PI/2;
+		still(new THREE.CylinderGeometry(1.4, 2.1, 6.4, 32), M("#5e3e29"), 0, FY + 3.2, 0);
+		still(new THREE.CylinderGeometry(4.2, 4.8, .5, 32), M("#5e3e29"), 0, FY + .25, 0);
+		// murs lambrissés
+		sbox(80, 36, 1, "#2f4a3e", 0, FY, -32); sbox(80, 7, 1.4, "#5e3e29", 0, FY, -31.6);
+		for(const sx of [-1, 1]){ sbox(1, 36, 80, "#2f4a3e", sx*38, FY, 0); sbox(1.4, 7, 80, "#5e3e29", sx*37.6, FY, 0); }
+		// grande fenêtre au fond, lumière du jour sur Lille
+		sbox(11, 19, .6, "#e9dcc0", 0, FY + 8, -31.3);
+		const glass = still(new THREE.PlaneGeometry(9.6, 17.6), new THREE.MeshBasicMaterial({ map:tex(128, 256, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#cfe3f2"); g.addColorStop(1, "#f4ead2"); x.fillStyle = g; x.fillRect(0, 0, w, h); x.fillStyle = "rgba(90,110,120,.35)"; for(let i = 0; i < 9; i++) x.fillRect(i*15, h*.72 - (i % 3)*14, 13, h); }) }), 0, FY + 16.8, -30.9);
+		glass.receiveShadow = false;
+		sbox(.3, 17.6, .3, "#e9dcc0", 0, FY + 8, -30.8); sbox(9.6, .3, .3, "#e9dcc0", 0, FY + 16.8, -30.8);
+		// bibliothèques de part et d'autre, remplies de codes et de répertoires
+		const books = [];
+		for(const bx of [-19, 19]){
+			sbox(14, 23, 2.6, "#4a3020", bx, FY, -30.2);
+			for(let k = 0; k < 6; k++){
+				const y = FY + .6 + k*3.7; sbox(13.2, .25, 2.4, "#3a2416", bx, y, -29.9);
+				let x = bx - 6.4;
+				while(x < bx + 6.2){ const w = .35 + Math.random()*.35, h = 2.2 + Math.random()*1.1; if(Math.random() < .08){ x += .6; continue; } books.push([x + w/2, y + .25 + h/2, -29.6, w, h]); x += w + .03; }
+			}
+		}
+		const bm = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ roughness:.7 }), books.length);
+		const PAL = ["#8f1d21", "#8f1d21", "#1f4d3a", "#6b3a1f", "#23395b", "#b08a3e", "#5a1a2a"], mtx = new THREE.Matrix4(), col = new THREE.Color();
+		books.forEach(([x, y, z, w, h], i) => { mtx.makeScale(w, h, 1.9); mtx.setPosition(x, y, z); bm.setMatrixAt(i, mtx); bm.setColorAt(i, col.set(PAL[(i*7 + (i >> 3)) % PAL.length])); });
+		deco.add(bm);
+		// plaque de l'étude, entre la bibliothèque et la fenêtre
+		const plaque = tex(512, 128, (x, w, h) => { x.fillStyle = "#c9a548"; x.fillRect(0, 0, w, h); x.strokeStyle = "#7a5a1a"; x.lineWidth = 8; x.strokeRect(8, 8, w - 16, h - 16); x.fillStyle = "#3b2a10"; x.textAlign = "center"; x.font = "700 44px Fraunces, Georgia, serif"; x.fillText("Maître Bonchamp", w/2, 62); x.font = "800 26px Nunito, sans-serif"; x.fillText("NOTAIRE", w/2, 100); });
+		still(new THREE.PlaneGeometry(5, 1.25), new THREE.MeshStandardMaterial({ map:plaque, metalness:.4, roughness:.4 }), -8.75, FY + 13, -31.4);
+		// deux plantes dans les angles
+		for(const sx of [-1, 1]){
+			still(new THREE.CylinderGeometry(1.4, 1.1, 2.6, 20), M("#8a4b2c"), sx*31, FY + 1.3, -26);
+			for(let i = 0; i < 6; i++) still(new THREE.SphereGeometry(1.5 + (i % 2)*.4, 12, 10), M(i % 2 ? "#3f6b3a" : "#4f7d45"), sx*31 + Math.cos(i)*1.1, FY + 3.6 + i*.7, -26 + Math.sin(i*2)*1.1);
+		}
+		// sur le bureau, en bordure du plateau : lampe de banquier, dossiers, tampon, stylo
+		const lamp = new THREE.Group(); lamp.position.set(9, 0, -9.4); lamp.rotation.y = -.6; scene.add(lamp);
+		const brass = M("#c9a548", { metalness:.8, roughness:.3 });
+		lamp.add(mesh(new THREE.CylinderGeometry(.7, .8, .18, 24), brass, 0, .09, 0), mesh(new THREE.CylinderGeometry(.08, .08, 1.9, 10), brass, 0, 1, 0));
+		const shade = mesh(new THREE.CylinderGeometry(.5, .9, .7, 24, 1, true, 0, Math.PI), new THREE.MeshStandardMaterial({ color:"#1f6b45", roughness:.3, side:THREE.DoubleSide }), 0, 2, .2); shade.rotation.set(Math.PI/2.3, Math.PI/2, 0); lamp.add(shade);
+		const bulb = new THREE.PointLight("#ffd9a0", 6, 9, 1.6); bulb.position.set(0, 1.7, .6); lamp.add(bulb);
+		const dossiers = new THREE.Group(); dossiers.position.set(-9.2, 0, -9); dossiers.rotation.y = .5; scene.add(dossiers);
+		["#d8c08a", "#c9b07a", "#e2cc98", "#bfa36b"].forEach((c, i) => { const d = mesh(new THREE.BoxGeometry(2.2, .16, 2.9), M(c), (i % 2)*.12, .08 + i*.17, -(i % 2)*.1); d.rotation.y = (i - 1.5)*.05; dossiers.add(d); });
+		const cover = mesh(new THREE.PlaneGeometry(1.9, 1.1), new THREE.MeshStandardMaterial({ map:tex(256, 148, (x, w, h) => { x.fillStyle = "#fff8e8"; x.fillRect(0, 0, w, h); x.fillStyle = "#3b2a10"; x.textAlign = "center"; x.font = "700 30px Fraunces, Georgia, serif"; x.fillText("Dossier", w/2, 62); x.fillText("Deslaurier", w/2, 104); }) }), .12, .78, -.3); cover.rotation.x = -Math.PI/2; dossiers.add(cover);
+		const tampon = new THREE.Group(); tampon.position.set(-4.4, 0, -12.2); scene.add(tampon);
+		tampon.add(mesh(new THREE.BoxGeometry(1.4, .14, 1), M("#2a2a2a"), 1.1, .07, 0), mesh(new THREE.CylinderGeometry(.35, .35, .18, 20), M("#8f1d21"), 0, .09, 0), mesh(new THREE.CylinderGeometry(.12, .16, .7, 12), M("#6b3a1f"), 0, .53, 0), mesh(new THREE.SphereGeometry(.24, 14, 10), M("#6b3a1f"), 0, .95, 0));
+		const stylo = mesh(new THREE.CylinderGeometry(.07, .07, 2, 10), M("#111", { metalness:.5, roughness:.3 }), 4, .1, -12.2); stylo.rotation.set(0, 0, Math.PI/2); stylo.rotation.y = .4; scene.add(stylo);
+	}
 
 	/* --- étiquettes (sprites dessinés au canvas), plus grandes sur téléphone --- */
 	let LS = 1;
@@ -262,7 +334,7 @@ function world(canvas){
 	function slot(z){ const c = { zP:ZP, zC:ZC, zJ:ZJ }[z]; const i = slots[z] = (slots[z] || 0) + 1; const [dx, dz] = SLOT[(i - 1) % SLOT.length]; return [c[0] + dx, c[1] + dz]; }
 	const ZONES = { zP:[...ZP], zCL:[...ZC], zCR:[...ZC], lCom:[...ZC], zJ:[...ZJ] };
 	const ERAS = {
-		intro:   { cam:[0, 9, 15, 0, .8, 0], at:{ paul:[0, 1], apt:[-2.6, -1.5], f2000:[1.6, 1.6] } },
+		intro:   { cam:[0, 7, 27, 0, 3, -6], at:{ paul:[0, 1], apt:[-2.6, -1.5], f2000:[1.6, 1.6] } },
 		mariage: { cam:[0, 8, 13, 0, .8, 0], at:{ paul:[-.8, 1], jeannette:[.8, 1], apt:[-3, -2], f2000:[-2.5, 1.6] } },
 		biens:   { cam:[0, 21, 17, 0, 0, 1.6], zones:1, at:{ paul:[-1.6, -4.6], jeannette:[1.6, -4.6], jb:[-.8, -3.6], elise:[0, -3.4], louise:[.8, -3.6],
 			f2000:[-7.6, 6.4], cabinet:[-4.6, 7], maison:[-1.5, 7.4], immeuble:[1.6, 7.4], epargne:[4.5, 7], commode:[7.4, 6.4] } },
@@ -273,7 +345,7 @@ function world(canvas){
 		remariage:{ cam:[0, 11, 15, 0, .4, 0], at:{ paul:[-4, .4], paulette:[4, .4], jb:[-5.6, 2.4], elise:[-4, 2.9], louise:[-2.4, 2.4], pk1:[3.2, 2.6], pk2:[4.8, 2.6], plA:[-4, 1.4], plB:[4, 1.4] } },
 		concubin:{ cam:[0, 8, 13, 0, .8, 0], at:{ jb:[-1, 1.4], sarah:[1, 1.4], appart:[0, -1.6] } },
 		transmettre:{ cam:[0, 13, 17, 0, .4, .8], at:{ paul:[0, -2.4], paulette:[3.2, -2.4], ferme:[-4.6, -3.4], titres:[-2.2, -.6], jb:[-4.4, 3.6], elise:[-2.8, 4.2], louise:[-1.2, 4.4], pk1:[3.6, 4], pk2:[5.2, 3.6] } },
-		end:     { cam:[0, 10, 19, 0, .8, .8], at:{ paul:[-.9, -1], paulette:[.9, -1], florent:[-6.6, 1.2], elise:[-5.1, 1.9], louise:[-3.5, 2.6], jb:[-1.8, 3.1], sarah:[-.2, 3.4], pk1:[2.8, 2.6], pk2:[4.5, 1.9] } }
+		end:     { cam:[0, 7, 26, 0, 2.5, -5], at:{ paul:[-.9, -1], paulette:[.9, -1], florent:[-6.6, 1.2], elise:[-5.1, 1.9], louise:[-3.5, 2.6], jb:[-1.8, 3.1], sarah:[-.2, 3.4], pk1:[2.8, 2.6], pk2:[4.5, 1.9] } }
 	};
 	function era(name){
 		const E = ERAS[name]; for(const k in slots) delete slots[k];
@@ -346,23 +418,35 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 	const play = n => audio && audio.play(n);
 	const root = document.createElement("div"); root.className = "gp"; root.setAttribute("role", "dialog"); root.setAttribute("aria-modal", "true"); root.setAttribute("aria-label", "Mini-jeu Le Dossier Deslaurier");
 	root.innerHTML = `<canvas aria-hidden="true"></canvas><div class="gp-top"><span class="gp-chip gp-stage" id="gpStage">Dossier</span><span class="gp-chip" id="gpErr">⚖ 0 erreur</span><button class="gp-x" aria-label="Quitter le jeu">×</button></div>
-		<div class="gp-hint">↻ Fais tourner la maquette</div><div class="gp-wrap"><div class="gp-card"></div></div>`;
+		<div class="gp-hint">↻ Fais tourner la maquette</div>
+		<div class="gp-tl" aria-label="Frise des années"><div class="gp-tl-bar"><i></i></div><ol>${TIMELINE.map(([l, s]) => `<li><span class="l">${l}</span><span class="s">${s}</span></li>`).join("")}</ol></div><div class="gp-wrap"><div class="gp-card"></div></div>`;
 	document.body.appendChild(root);
-	const canvas = root.querySelector("canvas"), wrap = root.querySelector(".gp-wrap"), card = root.querySelector(".gp-card"), hint = root.querySelector(".gp-hint");
+	const canvas = root.querySelector("canvas"), wrap = root.querySelector(".gp-wrap"), card = root.querySelector(".gp-card"), hint = root.querySelector(".gp-hint"), tl = root.querySelector(".gp-tl");
 	const W = world(canvas);
 	function layout(){
 		const w = innerWidth, h = innerHeight;
-		if(w >= MOBILE){ wrap.style.top = ""; hint.style.top = ""; W.resize(w - 444, h); }
-		else { const top = Math.round(h*.42); wrap.style.top = top + "px"; hint.style.top = (top - 34) + "px"; W.resize(w, top + 16); }
+		if(w >= MOBILE){ wrap.style.top = ""; hint.style.top = ""; tl.style.top = ""; tl.style.width = (w - 444 - 24) + "px"; W.resize(w - 444, h); }
+		else { const top = Math.round(h*.44); wrap.style.top = top + "px"; tl.style.top = (top - 56) + "px"; tl.style.width = (w - 24) + "px"; hint.style.top = (top - 90) + "px"; W.resize(w, top + 16); }
 	}
-	addEventListener("resize", layout); layout();
+	let curEra = "intro";
+	const onResize = () => { layout(); frise(curEra); };
+	addEventListener("resize", onResize); layout();
 	canvas.addEventListener("pointerdown", () => hint.hidden = true, { once:true });
 
 	const S = { errors:0, learned:new Set() };
 	let closed = false;
 	const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
 	function show(html){ card.onclick = null; W.onZone = null; W.focus(null); card.innerHTML = html; card.style.animation = "none"; void card.offsetWidth; card.style.animation = ""; wrap.scrollTo({ top:0, behavior:"smooth" }); }
-	function stage(t, era){ root.querySelector("#gpStage").textContent = t; onEvent && onEvent("stage", t); W.era(era); }
+	function stage(t, era){ root.querySelector("#gpStage").textContent = t; onEvent && onEvent("stage", t); W.era(era); frise(era); }
+	// la frise avance avec le dossier
+	function frise(era){
+		curEra = era;
+		const n = TIMELINE.findIndex(x => x[2].includes(era)), li = tl.querySelectorAll("li");
+		li.forEach((x, i) => { x.classList.toggle("past", i < n); x.classList.toggle("now", i === n); });
+		const bar = tl.querySelector(".gp-tl-bar").getBoundingClientRect();
+		const dot = el => { const r = el.getBoundingClientRect(); return el === li[0] ? r.left + 7 : el === li[li.length - 1] ? r.right - 7 : r.left + r.width/2; };
+		tl.querySelector(".gp-tl-bar i").style.width = Math.max(0, dot(li[n]) - bar.left) + "px";
+	}
 	function err(){ S.errors++; play("bad"); onEvent && onEvent("err"); root.querySelector("#gpErr").textContent = `⚖ ${S.errors} erreur${S.errors > 1 ? "s" : ""}`; }
 	function course(k){ const [n, t] = COURSES[k]; S.learned.add(k); return `<div class="gp-course"><span class="tag">📚 Au cœur du Master Droit & Gestion du Patrimoine</span><b>${n}</b><span>${t}</span></div>`; }
 	const msg = (t, c, el = card) => { const m = el.querySelector(".gp-msg"); if(m){ m.className = "gp-msg " + (c || ""); m.textContent = t; } };
@@ -692,7 +776,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		if(k === "lead"){ close(); return openLead(); }
 		if(k === "replay"){ Object.assign(S, { errors:0, learned:new Set() }); root.querySelector("#gpErr").textContent = "⚖ 0 erreur"; return intro(); }
 	});
-	function close(){ if(closed) return; closed = true; removeEventListener("resize", layout); document.removeEventListener("keydown", onKey); W.dispose(); root.remove(); onClose && onClose(); }
+	function close(){ if(closed) return; closed = true; removeEventListener("resize", onResize); document.removeEventListener("keydown", onKey); W.dispose(); root.remove(); onClose && onClose(); }
 	function onKey(e){ if(e.key === "Escape") close(); }
 	document.addEventListener("keydown", onKey);
 	root.querySelector(".gp-x").addEventListener("click", close);
