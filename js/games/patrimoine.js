@@ -39,7 +39,7 @@ const CSS = `
 .gp-tl li.now{color:#ffd77a}.gp-tl li.now:before{background:#ffd77a;border-color:#fff;box-shadow:0 0 0 4px rgba(255,215,122,.3);transform:scale(1.25)}
 .gp-tl .s{display:none}
 @media (max-width:520px){ .gp-tl .l{display:none} .gp-tl .s{display:inline} .gp-tl li{font-size:10.5px} .gp-tl{padding:7px 9px 5px} }
-.gp-hint{position:absolute;z-index:2;left:12px;bottom:70px;background:rgba(15,30,24,.7);color:#f3e3b8;font-size:12px;font-weight:700;border-radius:999px;padding:5px 10px;pointer-events:none}
+.gp-hint{position:absolute;z-index:2;left:12px;background:rgba(15,30,24,.7);color:#f3e3b8;font-size:12px;font-weight:700;border-radius:999px;padding:5px 10px;pointer-events:none}
 .gp-wrap{position:absolute;z-index:2;top:62px;right:12px;bottom:12px;width:420px;overflow:auto;border-radius:8px;scrollbar-width:thin}
 .gp-card{background:#fffcf3;border-radius:8px;box-shadow:0 18px 40px rgba(5,15,10,.45);padding:18px 18px 16px;position:relative;animation:gpUp .35s cubic-bezier(.2,.8,.2,1) both;border-top:5px solid #b08a3e;min-height:calc(100% - 21px)}
 @keyframes gpUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -130,12 +130,12 @@ const CSS = `
 .gp-real{font-style:italic;color:#6f6a5c;font-size:13.5px;margin:6px 0}
 .gp-sim{font-variant-numeric:tabular-nums;font-size:13.5px;margin:6px 0;padding:0;list-style:none}
 .gp-sim li{display:flex;justify-content:space-between;gap:8px;border-top:1px dashed #e2d8bf;padding:4px 0}
-.gp-bubble{position:absolute;z-index:3;display:flex;align-items:flex-end;gap:8px;max-width:440px;pointer-events:auto;cursor:pointer;transition:opacity .3s,transform .3s}
-.gp-bubble.follow svg{display:none}
-.gp-bubble.follow p{margin:0;border-radius:14px 14px 14px 2px}
+.gp-bubble{position:absolute;z-index:3;display:flex;align-items:center;gap:10px;pointer-events:auto;cursor:pointer;transition:opacity .3s,transform .3s}
+.gp-tl.narrow .l{display:none}.gp-tl.narrow .s{display:inline}
 .gp-bubble.off{opacity:0;transform:translateY(8px);pointer-events:none}
-.gp-bubble svg{flex:none;width:74px;height:74px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
-.gp-bubble p{position:relative;margin:0 0 14px;background:#fffcf3;border:2px solid #1f3d31;border-radius:14px 14px 14px 4px;padding:10px 14px;font-size:15px;font-weight:700;line-height:1.4;color:#1f3d31;box-shadow:0 8px 20px rgba(0,0,0,.3);min-height:20px}
+.gp-bubble svg{flex:none;width:64px;height:64px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
+.gp-bubble p{flex:1;position:relative;margin:0;background:#fffcf3;border:2px solid #1f3d31;border-radius:14px;padding:8px 14px;font-size:14.5px;font-weight:700;line-height:1.35;color:#1f3d31;box-shadow:0 8px 20px rgba(0,0,0,.3);min-height:20px}
+.gp-bubble p:before{content:"";position:absolute;left:-9px;top:50%;width:14px;height:14px;background:#fffcf3;border:2px solid #1f3d31;border-top:0;border-right:0;transform:translateY(-50%) rotate(45deg)}
 .gp-bubble p b{display:block;font:800 10.5px Nunito,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#8a6a24;margin-bottom:2px}
 .gp-cs{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#3b2a5a,#7a3e8f);color:#fff;border-radius:12px;padding:10px 12px;margin-bottom:10px;animation:gpCs .7s cubic-bezier(.2,1.4,.4,1) both}
 .gp-cs i{font-style:normal;font-size:30px;animation:gpDie 1s ease both}
@@ -144,7 +144,7 @@ const CSS = `
 @keyframes gpCs{from{opacity:0;transform:rotateX(90deg)}}
 @keyframes gpDie{0%{transform:rotate(0)}70%{transform:rotate(720deg) scale(1.3)}100%{transform:rotate(720deg)}}
 .gp-clock{font:700 26px Fraunces,Georgia,serif;text-align:center;color:#1f3d31;margin:8px 0}
-@media (max-width:520px){ .gp-bubble svg{width:52px;height:52px} .gp-bubble p{font-size:13px;padding:7px 10px;margin-bottom:8px} .gp-meters{gap:4px;left:8px;right:60px} .gp-m{min-width:0;padding:4px 7px;font-size:12px} .gp-m small{display:none}
+@media (max-width:520px){ .gp-bubble svg{width:46px;height:46px} .gp-bubble p{font-size:12.5px;padding:6px 10px} .gp-meters{gap:4px;left:8px;right:60px} .gp-m{min-width:0;padding:4px 7px;font-size:12px} .gp-m small{display:none}
 	.gp-m.fam b:before{content:"💰 "}.gp-m.fisc b:before{content:"🏛 "}.gp-m.conf b:before{content:"⚡ "} }
 @media (max-width:440px){ .gp-c{min-height:150px;padding:8px 5px} .gp-c .ic{font-size:28px} .gp-c b{font-size:12.5px} .gp-c small{font-size:10.5px} .gp-m{min-width:56px;font-size:11.5px;padding:4px 8px} }
 `;
@@ -313,7 +313,7 @@ function world(canvas){
 		const geo = theta == null ? new THREE.CylinderGeometry(r, r, .06, 48) : new THREE.CylinderGeometry(r, r, .06, 32, 1, false, theta, Math.PI);
 		const m = mesh(geo, new THREE.MeshStandardMaterial({ color:c, roughness:.9, transparent:true, opacity:.85 }), 0, .07, 0); m.castShadow = false; m.userData.zone = id;
 		const rec = add(id, m, null); rec.mesh = m;
-		if(text){ rec.label = label(text, { size:.5, fg:"#fff", bg:new THREE.Color(c).multiplyScalar(.7).getStyle() }); rec.label.position.set(theta == null ? 0 : (theta > 1 ? -r*.45 : r*.45), .35, r*.62); rec.g.add(rec.label); }
+		if(text){ rec.label = label(text, { size:.5, fg:"#fff", bg:new THREE.Color(c).multiplyScalar(.7).getStyle() }); rec.label.position.set(theta == null ? 0 : (theta > 1 ? -r*.45 : r*.45), .2, r*.92); rec.g.add(rec.label); }
 		return rec;
 	}
 	zone("zP", 2.6, COL.zP, "Propre à Paul"); zone("zJ", 2.6, COL.zJ, "Propre à Jeannette");
@@ -351,15 +351,32 @@ function world(canvas){
 	}
 	const notLab = label("Maître Bonchamp", { size:.36, fg:"#fff", bg:"#1f3d31" }); notLab.position.y = 2.05; NOT.add(notLab);
 	const notTalk = label("💬", { bg:null, size:.75, big:1 }); notTalk.position.set(.5, 2.55, 0); notTalk.visible = false; NOT.add(notTalk);
-	let NR = 10.4, na = .5, nt = .5, nside = 1, talkUntil = 0;
-	NOT.position.set(NR*Math.sin(na), 0, NR*Math.cos(na));
+	let na = .5, nr = 10.4, ta = .5, tr = 10.4, nside = 1, talkUntil = 0;
+	NOT.position.set(nr*Math.sin(na), 0, nr*Math.cos(na));
 	const wrapA = a => Math.atan2(Math.sin(a), Math.cos(a));
-	// il vient se placer à l'avant du plateau, une fois à gauche, une fois à droite : on le voit marcher
+	// il cherche une place libre et bien visible avec le cadrage final de la caméra (pieds dans l'image, place pour la bulle
+	// au-dessus de la tête, loin des pions et des bâtiments), une fois à gauche, une fois à droite : on le voit marcher
+	const pc = new THREE.PerspectiveCamera(), pv = new THREE.Vector3(), ph = new THREE.Vector3();
+	const NO_OBST = ["lCom", "bolt", "cross", "heart"];
 	function notaryTalk(ms){
 		const p = cam ? cam.p1 : camera.position, t = cam ? cam.t1 : controls.target;
-		const az = Math.atan2(p.x - t.x, p.z - t.z);
-		nside = -nside; nt = az + nside*(NR < 10 ? 1.2 : .5);
-		talkUntil = performance.now() + ms + Math.abs(wrapA(nt - na))*NR/4.5*1000;
+		pc.copy(camera); pc.position.copy(p); pc.lookAt(t); pc.updateMatrixWorld(); pc.updateProjectionMatrix();
+		const obst = Object.values(O).filter(r => r.g.visible && !r.out && !r.mesh && !NO_OBST.includes(r.id)).map(r => r.g.position);
+		nside = -nside;
+		let best = null, bs = -1e9;
+		for(let i = 0; i < 48; i++) for(const r of [10.4, 8.8, 7.2, 5.6]){
+			const a = i/48*Math.PI*2, x = r*Math.sin(a), z = r*Math.cos(a);
+			pv.set(x, 0, z).project(pc); ph.set(x, 2.4, z).project(pc);
+			const sx = (pv.x + 1)/2, sy = (1 - pv.y)/2, hy = (1 - ph.y)/2;
+			if(pv.z > 1 || sx < .1 || sx > .9 || sy > 1 - (VD + 14)/VH || hy < .25) continue;
+			const near = obst.reduce((m, o) => Math.min(m, Math.hypot(o.x - x, o.z - z)), 99);
+			if(near < 2.6) continue;
+			let sc = -Math.abs(sy - (1 - (VD + 30)/VH))*5 - Math.abs(Math.abs(sx - .5) - .26)*3 + Math.min(near, 4)*.4 - Math.abs(wrapA(a - na))*.3;
+			if((sx < .5 ? -1 : 1) === nside) sc += 1.5;
+			if(sc > bs){ bs = sc; best = [a, r]; }
+		}
+		if(best){ ta = best[0]; tr = best[1]; }
+		talkUntil = performance.now() + ms + (Math.abs(wrapA(ta - na))*Math.max(nr, tr) + Math.abs(tr - nr))/4.5*1000;
 	}
 	const headV = new THREE.Vector3();
 	function notaryHead(){
@@ -368,10 +385,11 @@ function world(canvas){
 		return { x:r.left + (headV.x + 1)/2*r.width, y:r.top + (1 - headV.y)/2*r.height, visible:headV.z < 1 && Math.abs(headV.x) < 1.05 && Math.abs(headV.y) < 1.05 };
 	}
 	function notaryTick(dt, now){
-		const d = wrapA(nt - na), walking = Math.abs(d) > .002;
-		if(walking){ const st = Math.sign(d)*Math.min(Math.abs(d), dt*4.5/NR); na += st; NOT.position.set(NR*Math.sin(na), 0, NR*Math.cos(na)); }
+		const da = wrapA(ta - na), dr = tr - nr, L = Math.hypot(da*nr, dr), walking = L > .02;
+		const x0 = NOT.position.x, z0 = NOT.position.z;
+		if(walking){ const f = Math.min(1, dt*4.5/L); na += da*f; nr += dr*f; NOT.position.set(nr*Math.sin(na), 0, nr*Math.cos(na)); }
 		// cap : dans le sens de la marche, sinon vers la caméra
-		const face = walking ? na + Math.sign(d)*Math.PI/2 : Math.atan2(camera.position.x - NOT.position.x, camera.position.z - NOT.position.z);
+		const face = walking ? Math.atan2(NOT.position.x - x0, NOT.position.z - z0) : Math.atan2(camera.position.x - NOT.position.x, camera.position.z - NOT.position.z);
 		NOT.rotation.y += wrapA(face - NOT.rotation.y)*Math.min(1, dt*8);
 		const talking = !walking && now < talkUntil;
 		notInner.position.y = walking ? Math.abs(Math.sin(now/90))*.16 : 0;
@@ -436,7 +454,7 @@ function world(canvas){
 	let cam = null;
 	// plus l'écran est étroit, plus on recule pour garder le plateau dans le cadre
 	function look(px, py, pz, tx, ty, tz){
-		const t1 = new THREE.Vector3(tx, ty, tz), fit = Math.min(1.9, Math.max(1, 1.35/camera.aspect));
+		const t1 = new THREE.Vector3(tx, ty, tz), fit = Math.min(2.1, Math.max(1, 1.6/camera.aspect));
 		cam = { p0:camera.position.clone(), t0:controls.target.clone(), p1:new THREE.Vector3(px, py, pz).sub(t1).multiplyScalar(fit).add(t1), t1, k:0 };
 	}
 
@@ -448,7 +466,7 @@ function world(canvas){
 	const ZONES = { zP:[...ZP], zCL:[...ZC], zCR:[...ZC], lCom:[...ZC], zJ:[...ZJ] };
 	const ERAS = {
 		intro:   { cam:[0, 7, 27, 0, 3, -6], at:{ paul:[0, 1], apt:[-2.6, -1.5], f2000:[1.6, 1.6] } },
-		mariage: { cam:[0, 10, 15, 0, .4, .6], at:{ paul:[-3.2, 1.2], jeannette:[3.2, 1.2], plA:[-3.2, .8], plB:[3.2, .8], f2000:[-4.6, 2.4] } },
+		mariage: { cam:[0, 10, 15, 0, .4, .6], at:{ paul:[-3.2, 1.2], jeannette:[3.2, 1.2], plA:[-3.2, .8], plB:[3.2, .8], f2000:[-5.5, -.9] } },
 		maison:  { cam:[0, 19, 17, 0, 0, 1], zones:1, at:{ paul:[-1.4, -3.8], jeannette:[1.4, -3.8], jb:[0, -2.9], f2000:[-7.2, 1.6], cabinet:[-1.2, .9], maison:[1.3, 2] } },
 		immeuble:{ cam:[0, 19, 18, 0, 0, 0], zones:1, at:{ paul:[-1.6, -3.8], jeannette:[1.6, -3.8], jb:[-.8, -2.9], elise:[0, -2.7], louise:[.8, -2.9], f2000:[-7.2, 1.6], cabinet:[-1.2, .9], maison:[1.3, 2], epargne:[-.6, 3.2], immeuble:[0, -7.6] } },
 		deces:   { cam:[0, 20, 17, 0, 0, 1.6], zones:1, at:{ paul:[-7.2, -2.4], jeannette:[7.2, -2.4], jb:[-1.5, 6.6], elise:[0, 7], louise:[1.5, 6.6],
@@ -512,17 +530,20 @@ function world(canvas){
 		controls.update();
 		renderer.render(scene, camera);
 	}
+	// une bande en bas de la vue est réservée à la bulle du notaire : la scène est décalée vers le haut (view offset)
+	let VD = 0, VW = 1, VH = 1;
+	function reserve(px){ VD = px; camera.setViewOffset(VW, VH + VD, 0, VD, VW, VH); camera.updateProjectionMatrix(); }
 	function resize(w, h){
+		VW = w; VH = h;
 		const ls = w < 600 ? 1.3 : 1;
-		NR = w < 600 ? 7.8 : 10.4; NOT.position.set(NR*Math.sin(na), 0, NR*Math.cos(na));      // sur téléphone, il se poste sur les côtés du plateau, la frise cachant l'avant
 		if(ls !== LS){ scene.traverse(o => { if(o.isSprite) o.scale.multiplyScalar(ls/LS); }); LS = ls; }
-		renderer.setSize(w, h, false); canvas.style.width = w + "px"; canvas.style.height = h + "px"; camera.aspect = w/h; camera.fov = w/h < .9 ? 50 : 36; camera.updateProjectionMatrix(); }
+		renderer.setSize(w, h, false); canvas.style.width = w + "px"; canvas.style.height = h + "px"; camera.aspect = w/h; camera.fov = w/h < .9 ? 50 : 36; reserve(VD); }
 	camera.position.set(0, 22, 26); controls.target.set(0, 0, 0);
 	raf = requestAnimationFrame(loop);
 	return {
 		O, era, popIn, popOut, moveTo, shake, hop, glow, fly, mourn, focus, slot, halves, setPlot, scaleTo, look, resize, grow, rename, pose, zap,
 		set onZone(f){ onZone = f; canvas.style.cursor = f ? "pointer" : ""; },
-		get onZone(){ return onZone; }, camera, notaryTalk, notaryHead,
+		get onZone(){ return onZone; }, camera, notaryTalk, notaryHead, reserve,
 		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); }); }
 	};
 }
@@ -604,15 +625,20 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 	const bubble = root.querySelector(".gp-bubble");
 	const canvas = root.querySelector("canvas"), wrap = root.querySelector(".gp-wrap"), card = root.querySelector(".gp-card"), hint = root.querySelector(".gp-hint"), tl = root.querySelector(".gp-tl"), meters = root.querySelector(".gp-meters");
 	const W = world(canvas);
+	// la bulle du notaire : une bande de dialogue en bas de la maquette, que la scène 3D laisse libre
 	function layoutBubble(){
-		if(innerWidth >= MOBILE) Object.assign(bubble.style, { left:"auto", right:"456px", top:"auto", bottom:"74px", maxWidth:Math.min(380, innerWidth - 444 - 120) + "px" });
-		else Object.assign(bubble.style, { left:"8px", right:"8px", top:"96px", bottom:"auto", maxWidth:"none" });
+		const w = innerWidth, h = innerHeight;
+		if(w >= MOBILE){ Object.assign(bubble.style, { left:"12px", right:"456px", top:"auto", bottom:"86px" }); W.reserve(104); }
+		// sur téléphone, la maquette est petite : la bulle passe en haut (le fond du bureau) et s'efface seule
+		else { Object.assign(bubble.style, { left:"8px", right:"8px", top:"92px", bottom:"auto" }); W.reserve(0); }
 	}
 	function layout(){
 		const w = innerWidth, h = innerHeight;
-		if(w >= MOBILE){ wrap.style.top = ""; hint.style.top = ""; tl.style.top = ""; tl.style.width = (w - 444 - 24) + "px"; W.resize(w - 444, h);
+		// la frise a sa propre bande sous la maquette : elle ne recouvre plus la scène
+		tl.classList.toggle("narrow", (w >= MOBILE ? w - 444 : w) < 640);
+		if(w >= MOBILE){ wrap.style.top = ""; hint.style.top = "110px"; tl.style.top = ""; tl.style.width = (w - 444 - 24) + "px"; W.resize(w - 444, h - 76);
 			layoutBubble(); }
-		else { const top = Math.round(h*.44); wrap.style.top = top + "px"; tl.style.top = (top - 56) + "px"; tl.style.width = (w - 24) + "px"; hint.style.top = (top - 90) + "px"; W.resize(w, top + 16);
+		else { hint.hidden = true; const top = Math.round(h*.48); wrap.style.top = top + "px"; tl.style.top = (top - 54) + "px"; tl.style.width = (w - 24) + "px"; hint.style.top = ""; W.resize(w, top - 58);
 			layoutBubble(); }
 	}
 	let curEra = "intro";
@@ -655,16 +681,6 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		if(innerWidth < MOBILE) hideT = setTimeout(() => bubble.classList.add("off"), 2600 + text.length*45);
 	}
 	bubble.addEventListener("click", () => bubble.classList.add("off"));
-	// sur ordinateur, la bulle suit la tête du notaire sur la maquette ; sinon, elle reste à sa place fixe
-	(function follow(){
-		if(closed) return; requestAnimationFrame(follow);
-		const h = W.notaryHead(), on = innerWidth >= MOBILE && h.visible;
-		bubble.classList.toggle("follow", on);
-		if(!on){ layoutBubble(); return; }
-		const cw = innerWidth - 444, bw = bubble.offsetWidth, bh = bubble.offsetHeight;
-		const x = Math.max(8, Math.min(cw - bw - 8, h.x - 18)), y = Math.max(110, Math.min(innerHeight - bh - 70, h.y - bh - 4));
-		Object.assign(bubble.style, { left:x + "px", top:y + "px", right:"auto", bottom:"auto" });
-	})();
 	function course(k){ const [n, t] = COURSES[k]; S.learned.add(k); return `<div class="gp-course"><span class="tag">📚 Au cœur du Master Droit & Gestion du Patrimoine</span><b>${n}</b><span>${t}</span></div>`; }
 	// le régime d'un couple, sur ses deux parcelles
 	function regime(k, A, B, z = .8){
