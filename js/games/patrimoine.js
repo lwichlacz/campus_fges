@@ -131,6 +131,8 @@ const CSS = `
 .gp-sim{font-variant-numeric:tabular-nums;font-size:13.5px;margin:6px 0;padding:0;list-style:none}
 .gp-sim li{display:flex;justify-content:space-between;gap:8px;border-top:1px dashed #e2d8bf;padding:4px 0}
 .gp-bubble{position:absolute;z-index:3;display:flex;align-items:flex-end;gap:8px;max-width:440px;pointer-events:auto;cursor:pointer;transition:opacity .3s,transform .3s}
+.gp-bubble.follow svg{display:none}
+.gp-bubble.follow p{margin:0;border-radius:14px 14px 14px 2px}
 .gp-bubble.off{opacity:0;transform:translateY(8px);pointer-events:none}
 .gp-bubble svg{flex:none;width:74px;height:74px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
 .gp-bubble p{position:relative;margin:0 0 14px;background:#fffcf3;border:2px solid #1f3d31;border-radius:14px 14px 14px 4px;padding:10px 14px;font-size:15px;font-weight:700;line-height:1.4;color:#1f3d31;box-shadow:0 8px 20px rgba(0,0,0,.3);min-height:20px}
@@ -334,6 +336,50 @@ function world(canvas){
 		const cc = new THREE.Group(); [[0, 0], [.3, .2]].forEach(([x, z], i) => { for(let k = 0; k < 2 + i; k++) cc.add(mesh(new THREE.CylinderGeometry(.22, .22, .07, 20), M("#b9b4a8", { metalness:.6, roughness:.35 }), x, .035 + k*.075, z)); }); add("compte", cc, "Compte courant");
 	}
 
+	/* --- Maître Bonchamp en personne : il fait le tour du plateau et vient se placer devant le joueur quand il parle --- */
+	const NOT = new THREE.Group(), notInner = new THREE.Group(); NOT.add(notInner); scene.add(NOT);
+	{
+		const suit = M("#23232b", { roughness:.55 }), skin = M("#f1c9a5"), white = M("#f4f1ea"), black = M("#111");
+		notInner.add(mesh(new THREE.CylinderGeometry(.44, .48, .16, 28), suit, 0, .08, 0));
+		notInner.add(mesh(new THREE.CylinderGeometry(.2, .36, .9, 24), suit, 0, .6, 0));
+		notInner.add(mesh(new THREE.BoxGeometry(.16, .26, .06), white, 0, .9, .2));                       // plastron
+		notInner.add(mesh(new THREE.BoxGeometry(.16, .08, .05), M("#8f1d21"), 0, 1.02, .24));               // nœud papillon
+		notInner.add(mesh(new THREE.SphereGeometry(.26, 24, 16), skin, 0, 1.3, 0));
+		notInner.add(mesh(new THREE.SphereGeometry(.275, 24, 12, 0, Math.PI*2, 0, Math.PI*.42), white, 0, 1.33, -.03));   // cheveux blancs
+		for(const x of [-.09, .09]){ const g = mesh(new THREE.TorusGeometry(.06, .014, 6, 16), black, x, 1.32, .245); notInner.add(g); }
+		notInner.scale.setScalar(1.15);
+	}
+	const notLab = label("Maître Bonchamp", { size:.36, fg:"#fff", bg:"#1f3d31" }); notLab.position.y = 2.05; NOT.add(notLab);
+	const notTalk = label("💬", { bg:null, size:.75, big:1 }); notTalk.position.set(.5, 2.55, 0); notTalk.visible = false; NOT.add(notTalk);
+	let NR = 10.4, na = .5, nt = .5, nside = 1, talkUntil = 0;
+	NOT.position.set(NR*Math.sin(na), 0, NR*Math.cos(na));
+	const wrapA = a => Math.atan2(Math.sin(a), Math.cos(a));
+	// il vient se placer à l'avant du plateau, une fois à gauche, une fois à droite : on le voit marcher
+	function notaryTalk(ms){
+		const p = cam ? cam.p1 : camera.position, t = cam ? cam.t1 : controls.target;
+		const az = Math.atan2(p.x - t.x, p.z - t.z);
+		nside = -nside; nt = az + nside*(NR < 10 ? 1.2 : .5);
+		talkUntil = performance.now() + ms + Math.abs(wrapA(nt - na))*NR/4.5*1000;
+	}
+	const headV = new THREE.Vector3();
+	function notaryHead(){
+		headV.set(NOT.position.x, 2.3, NOT.position.z).project(camera);
+		const r = canvas.getBoundingClientRect();
+		return { x:r.left + (headV.x + 1)/2*r.width, y:r.top + (1 - headV.y)/2*r.height, visible:headV.z < 1 && Math.abs(headV.x) < 1.05 && Math.abs(headV.y) < 1.05 };
+	}
+	function notaryTick(dt, now){
+		const d = wrapA(nt - na), walking = Math.abs(d) > .002;
+		if(walking){ const st = Math.sign(d)*Math.min(Math.abs(d), dt*4.5/NR); na += st; NOT.position.set(NR*Math.sin(na), 0, NR*Math.cos(na)); }
+		// cap : dans le sens de la marche, sinon vers la caméra
+		const face = walking ? na + Math.sign(d)*Math.PI/2 : Math.atan2(camera.position.x - NOT.position.x, camera.position.z - NOT.position.z);
+		NOT.rotation.y += wrapA(face - NOT.rotation.y)*Math.min(1, dt*8);
+		const talking = !walking && now < talkUntil;
+		notInner.position.y = walking ? Math.abs(Math.sin(now/90))*.16 : 0;
+		notInner.rotation.z = walking ? Math.sin(now/90)*.06 : talking ? Math.sin(now/160)*.04 : 0;
+		notInner.scale.y = 1.15*(talking ? 1 + Math.sin(now/110)*.025 : 1);
+		notTalk.visible = talking; if(talking) notTalk.position.y = 2.55 + Math.sin(now/200)*.06;
+	}
+
 	// anneau sous l'objet à classer
 	const ring = mesh(new THREE.TorusGeometry(1, .06, 8, 48), new THREE.MeshBasicMaterial({ color:"#b08a3e" }), 0, .12, 0); ring.rotation.x = Math.PI/2; ring.visible = false; scene.add(ring);
 
@@ -461,12 +507,14 @@ function world(canvas){
 			a.fn(k); if(k >= 1){ anims.splice(i, 1); a.done && a.done(); }
 		}
 		if(focusId && O[focusId]){ const r = O[focusId]; ring.position.x = r.g.position.x; ring.position.z = r.g.position.z; ring.scale.setScalar(1.1 + .12*Math.sin(now/180)); if(!anims.some(a => a.rec === r && a.key === "hop")) r.inner.position.y = Math.abs(Math.sin(now/260))*.35; }
+		notaryTick(dt, now);
 		if(cam){ cam.k = Math.min(1, cam.k + dt/1.3); const e = easeIO(cam.k); camera.position.lerpVectors(cam.p0, cam.p1, e); controls.target.lerpVectors(cam.t0, cam.t1, e); if(cam.k >= 1) cam = null; }
 		controls.update();
 		renderer.render(scene, camera);
 	}
 	function resize(w, h){
 		const ls = w < 600 ? 1.3 : 1;
+		NR = w < 600 ? 7.8 : 10.4; NOT.position.set(NR*Math.sin(na), 0, NR*Math.cos(na));      // sur téléphone, il se poste sur les côtés du plateau, la frise cachant l'avant
 		if(ls !== LS){ scene.traverse(o => { if(o.isSprite) o.scale.multiplyScalar(ls/LS); }); LS = ls; }
 		renderer.setSize(w, h, false); canvas.style.width = w + "px"; canvas.style.height = h + "px"; camera.aspect = w/h; camera.fov = w/h < .9 ? 50 : 36; camera.updateProjectionMatrix(); }
 	camera.position.set(0, 22, 26); controls.target.set(0, 0, 0);
@@ -474,7 +522,7 @@ function world(canvas){
 	return {
 		O, era, popIn, popOut, moveTo, shake, hop, glow, fly, mourn, focus, slot, halves, setPlot, scaleTo, look, resize, grow, rename, pose, zap,
 		set onZone(f){ onZone = f; canvas.style.cursor = f ? "pointer" : ""; },
-		get onZone(){ return onZone; }, camera,
+		get onZone(){ return onZone; }, camera, notaryTalk, notaryHead,
 		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); }); }
 	};
 }
@@ -556,12 +604,16 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 	const bubble = root.querySelector(".gp-bubble");
 	const canvas = root.querySelector("canvas"), wrap = root.querySelector(".gp-wrap"), card = root.querySelector(".gp-card"), hint = root.querySelector(".gp-hint"), tl = root.querySelector(".gp-tl"), meters = root.querySelector(".gp-meters");
 	const W = world(canvas);
+	function layoutBubble(){
+		if(innerWidth >= MOBILE) Object.assign(bubble.style, { left:"auto", right:"456px", top:"auto", bottom:"74px", maxWidth:Math.min(380, innerWidth - 444 - 120) + "px" });
+		else Object.assign(bubble.style, { left:"8px", right:"8px", top:"96px", bottom:"auto", maxWidth:"none" });
+	}
 	function layout(){
 		const w = innerWidth, h = innerHeight;
 		if(w >= MOBILE){ wrap.style.top = ""; hint.style.top = ""; tl.style.top = ""; tl.style.width = (w - 444 - 24) + "px"; W.resize(w - 444, h);
-			Object.assign(bubble.style, { left:"auto", right:"456px", top:"auto", bottom:"74px", maxWidth:Math.min(440, w - 444 - 200) + "px" }); }
+			layoutBubble(); }
 		else { const top = Math.round(h*.44); wrap.style.top = top + "px"; tl.style.top = (top - 56) + "px"; tl.style.width = (w - 24) + "px"; hint.style.top = (top - 90) + "px"; W.resize(w, top + 16);
-			Object.assign(bubble.style, { left:"8px", right:"8px", top:"96px", bottom:"auto", maxWidth:"none" }); }
+			layoutBubble(); }
 	}
 	let curEra = "intro";
 	const onResize = () => { layout(); frise(curEra); };
@@ -598,10 +650,21 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		if(!text) return;
 		const sp = bubble.querySelector("span"); clearInterval(sayT); clearTimeout(hideT);
 		bubble.classList.remove("off"); sp.textContent = ""; let i = 0;
+		W.notaryTalk(1200 + text.length*40);
 		sayT = setInterval(() => { if(closed) return clearInterval(sayT); sp.textContent = text.slice(0, ++i); if(i >= text.length) clearInterval(sayT); }, 18);
 		if(innerWidth < MOBILE) hideT = setTimeout(() => bubble.classList.add("off"), 2600 + text.length*45);
 	}
 	bubble.addEventListener("click", () => bubble.classList.add("off"));
+	// sur ordinateur, la bulle suit la tête du notaire sur la maquette ; sinon, elle reste à sa place fixe
+	(function follow(){
+		if(closed) return; requestAnimationFrame(follow);
+		const h = W.notaryHead(), on = innerWidth >= MOBILE && h.visible;
+		bubble.classList.toggle("follow", on);
+		if(!on){ layoutBubble(); return; }
+		const cw = innerWidth - 444, bw = bubble.offsetWidth, bh = bubble.offsetHeight;
+		const x = Math.max(8, Math.min(cw - bw - 8, h.x - 18)), y = Math.max(110, Math.min(innerHeight - bh - 70, h.y - bh - 4));
+		Object.assign(bubble.style, { left:x + "px", top:y + "px", right:"auto", bottom:"auto" });
+	})();
 	function course(k){ const [n, t] = COURSES[k]; S.learned.add(k); return `<div class="gp-course"><span class="tag">📚 Au cœur du Master Droit & Gestion du Patrimoine</span><b>${n}</b><span>${t}</span></div>`; }
 	// le régime d'un couple, sur ses deux parcelles
 	function regime(k, A, B, z = .8){
