@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=9e0fadedde";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=9e0fadedde";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=9e0fadedde";
-import { MAP } from "./vauban.js?v=9e0fadedde";
-import { buildLandmarks } from "./landmarks.js?v=9e0fadedde";
-import { buildMonuments } from "./monuments.js?v=9e0fadedde";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=9e0fadedde";
-import { buildStation } from "./station.js?v=9e0fadedde";
-import { createRame } from "./rame.js?v=9e0fadedde";
-import { Audio } from "./audio.js?v=9e0fadedde";
-import { DETAILS } from "./details.js?v=9e0fadedde";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=cc2a4e3c29";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=cc2a4e3c29";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=cc2a4e3c29";
+import { MAP } from "./vauban.js?v=cc2a4e3c29";
+import { buildLandmarks } from "./landmarks.js?v=cc2a4e3c29";
+import { buildMonuments } from "./monuments.js?v=cc2a4e3c29";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=cc2a4e3c29";
+import { buildStation } from "./station.js?v=cc2a4e3c29";
+import { createRame } from "./rame.js?v=cc2a4e3c29";
+import { Audio } from "./audio.js?v=cc2a4e3c29";
+import { DETAILS } from "./details.js?v=cc2a4e3c29";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -1439,7 +1439,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=9e0fadedde").then(({ FAR }) => {
+	import("./vauban_far.js?v=cc2a4e3c29").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1953,14 +1953,14 @@ setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night 
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=9e0fadedde").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=9e0fadedde").then(m => m.createChapelle), eura:() => import("./eura.js?v=9e0fadedde").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=9e0fadedde").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=9e0fadedde").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=cc2a4e3c29").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=cc2a4e3c29").then(m => m.createChapelle), eura:() => import("./eura.js?v=cc2a4e3c29").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=cc2a4e3c29").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=cc2a4e3c29").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=9e0fadedde").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=9e0fadedde").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=9e0fadedde").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=9e0fadedde").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=9e0fadedde").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=9e0fadedde").then(m => m.openBiodata)
+	comptoir:() => import("./games/comptoir.js?v=cc2a4e3c29").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=cc2a4e3c29").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=cc2a4e3c29").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=cc2a4e3c29").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=cc2a4e3c29").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=cc2a4e3c29").then(m => m.openBiodata)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -3522,7 +3522,7 @@ function relectureMode(fid, page){
 	const cur = () => steps[steps.length - 1];
 	const stage = name => { if(jumped){ jumped = false; name = `↪ ${name} (saut direct)`; } if(cur()?.name === name) return; const now = Date.now(); if(cur()) cur().end = now; steps.push({ name, start:now, err:0, why:[], notes:[] }); };
 	const dur = ms => { const s = Math.round(ms/1000), m = Math.floor(s/60); return m ? `${m} min ${String(s % 60).padStart(2, "0")} s` : `${s} s`; };
-	const plural = n => `${n} erreur${n > 1 ? "s" : ""}`;
+	const plural = n => `${n} erreur${n > 1 ? "s" : ""}`, short = n => `${n} err.`;
 	const text = () => {
 		const now = Date.now(), notes = steps.reduce((n, st) => n + st.notes.length, 0);
 		return [`Journal de partie · ${info.title}`,
@@ -3531,25 +3531,52 @@ function relectureMode(fid, page){
 			...steps.flatMap(st => [`- ${st.name} : ${dur((st.end || now) - st.start)}${st.err ? `, ${plural(st.err)}` : ""}${st.why.length ? ` (${st.why.join(" ; ")})` : ""}`,
 				...st.notes.map(n => `  ✏️ ${n}`)])].join("\n");
 	};
+	// bannière discrète : une pastille (chrono, erreurs, note, menu) qu'on peut glisser où elle gêne le moins ;
+	// le reste (aller à une étape, copier le journal, formulaire) s'ouvre dans un petit menu
 	const el = document.createElement("div");
 	el.id = "relecture";
 	const form = `relecture/#${fid}`;
-	el.innerHTML = `<div data-row><b title="Réduire ou agrandir la bannière">● Relecture</b><span data-t>0:00</span><span data-e>0 erreur</span>
-		<select data-jump aria-label="Aller directement à une étape" hidden><option value="">Aller à…</option></select>
-		<button type="button" data-note>✏️ Noter ici</button><button type="button" data-copy>Copier le journal</button>${form ? `<a data-form href="${form}" target="_blank" rel="noopener">Formulaire ↗</a>` : ""}</div>
+	el.innerHTML = `<div data-row><b data-grip title="Glisser pour déplacer">⠿ ●</b><span data-t>0:00</span><span data-e>0 err.</span>
+		<button type="button" data-note title="Noter une remarque sur cet écran">✏️</button><button type="button" data-more title="Plus d'options" aria-expanded="false">⋯</button></div>
+		<div data-menu hidden><select data-jump aria-label="Aller directement à une étape" hidden><option value="">Aller à une étape…</option></select>
+		<button type="button" data-copy>Copier le journal</button><a data-form href="${form}" target="_blank" rel="noopener">Formulaire ↗</a></div>
 		<form data-pad hidden><textarea rows="3" maxlength="500" placeholder="Ce qui ne va pas sur cet écran (la note est rangée à l'étape en cours)"></textarea><div><button type="submit">Ajouter au journal</button><button type="button" data-cancel>Annuler</button></div></form>`;
-	el.style.cssText = "position:fixed;z-index:70;left:max(10px, env(safe-area-inset-left, 0px));bottom:max(10px, env(safe-area-inset-bottom, 0px));display:flex;flex-direction:column;gap:8px;max-width:min(560px, calc(100vw - 20px));padding:7px 8px 7px 12px;border-radius:14px;background:rgba(24,28,38,.94);color:#fff;font:600 13px Nunito,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25)";
-	el.querySelector("[data-row]").style.cssText = "display:flex;flex-wrap:wrap;align-items:center;gap:8px";
-	for(const b of el.querySelectorAll("button, a, select")) b.style.cssText = "font:700 13px Nunito,system-ui,sans-serif;color:#18202c;background:#ffd36b;border:0;border-radius:9px;padding:6px 10px;cursor:pointer;text-decoration:none;max-width:100%";
-	el.querySelector("[data-jump]").style.background = "#e8edf5";
-	el.querySelector("[data-cancel]").style.background = "#e8edf5";
+	el.style.cssText = "position:fixed;z-index:70;left:50%;top:max(8px, env(safe-area-inset-top, 0px));transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;width:max-content;max-width:min(340px, calc(100vw - 16px));padding:4px 5px 4px 8px;border-radius:12px;background:rgba(24,28,38,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;font:700 12px Nunito,system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.22);touch-action:none";
+	el.querySelector("[data-row]").style.cssText = "display:flex;align-items:center;gap:7px;white-space:nowrap";
+	for(const b of el.querySelectorAll("button, a, select")) b.style.cssText = "font:700 12px Nunito,system-ui,sans-serif;color:#18202c;background:#ffd36b;border:0;border-radius:8px;padding:4px 8px;cursor:pointer;text-decoration:none;text-align:center;max-width:100%";
+	for(const b of el.querySelectorAll("[data-row] button")) b.style.padding = "2px 7px";
+	el.querySelector("[data-more]").style.background = el.querySelector("[data-jump]").style.background = el.querySelector("[data-cancel]").style.background = "#e8edf5";
+	const menu = el.querySelector("[data-menu]");
+	menu.style.cssText = "flex-direction:column;gap:6px";
+	const showMenu = on => { menu.hidden = !on; menu.style.display = on ? "flex" : ""; el.querySelector("[data-more]").setAttribute("aria-expanded", on); };
+	el.querySelector("[data-more]").addEventListener("click", () => { pad.hidden = true; showMenu(menu.hidden); });
 	const pad = el.querySelector("[data-pad]"), ta = pad.querySelector("textarea");
-	pad.style.cssText = "margin:0";          // pas de display ici : l'attribut hidden doit pouvoir la masquer
-	ta.style.cssText = "display:block;box-sizing:border-box;margin-bottom:6px;font:500 14px Nunito,system-ui,sans-serif;border-radius:9px;border:0;padding:8px;width:100%;resize:vertical;color:#18202c";
-	pad.querySelector("div").style.cssText = "display:flex;gap:8px";
-	const tag = el.querySelector("b");
-	tag.style.cssText = "color:#ff8f7a;cursor:pointer";
-	tag.addEventListener("click", () => el.querySelectorAll("[data-e], [data-row] > button, [data-row] > a, [data-jump]").forEach(x => x.hidden = !x.hidden || (x.matches("[data-jump]") && !jumps.length)));
+	pad.style.cssText = "margin:0;width:min(300px, calc(100vw - 30px))";          // pas de display ici : l'attribut hidden doit pouvoir la masquer
+	ta.style.cssText = "display:block;box-sizing:border-box;margin-bottom:6px;font:500 14px Nunito,system-ui,sans-serif;border-radius:8px;border:0;padding:8px;width:100%;resize:vertical;color:#18202c";
+	pad.querySelector("div").style.cssText = "display:flex;gap:6px";
+	const grip = el.querySelector("[data-grip]");
+	grip.style.cssText = "color:#ff8f7a;cursor:grab;user-select:none;-webkit-user-select:none;padding:2px 0";
+	// glisser la pastille (souris ou doigt) ; la place est retenue pour les parties suivantes
+	const place = (x, y) => {
+		const r = el.getBoundingClientRect(), X = Math.max(4, Math.min(innerWidth - r.width - 4, x)), Y = Math.max(4, Math.min(innerHeight - r.height - 4, y));
+		Object.assign(el.style, { left:X + "px", top:Y + "px", right:"auto", transform:"none" });
+		return [X/innerWidth, Y/innerHeight];
+	};
+	// téléphone : le haut de l'écran est pris par les compteurs du jeu ; la pastille se range à droite, sous la croix
+	// et se réduit au chrono et au menu, où passe le bouton de note
+	if(innerWidth < 640){
+		Object.assign(el.style, { left:"auto", right:"max(8px, env(safe-area-inset-right, 0px))", top:"calc(max(8px, env(safe-area-inset-top, 0px)) + 58px)", transform:"none" });
+		el.querySelector("[data-e]").hidden = true;
+		const note = el.querySelector("[data-note]"); note.textContent = "✏️ Noter une remarque"; note.style.padding = "4px 8px"; menu.prepend(note);
+	}
+	try { const p = JSON.parse(localStorage.getItem("relecture-place")); if(p) requestAnimationFrame(() => { el.style.right = "auto"; place(p[0]*innerWidth, p[1]*innerHeight); }); } catch(e){}
+	grip.addEventListener("pointerdown", e => {
+		e.preventDefault(); grip.setPointerCapture(e.pointerId); grip.style.cursor = "grabbing";
+		const r = el.getBoundingClientRect(), dx = e.clientX - r.left, dy = e.clientY - r.top;
+		const move = m => place(m.clientX - dx, m.clientY - dy);
+		const up = u => { grip.removeEventListener("pointermove", move); grip.style.cursor = "grab"; try { localStorage.setItem("relecture-place", JSON.stringify(place(u.clientX - dx, u.clientY - dy))); } catch(x){} };
+		grip.addEventListener("pointermove", move); grip.addEventListener("pointerup", up, { once:true });
+	});
 	document.body.append(el);
 	const copy = async () => {
 		const b = el.querySelector("[data-copy]");
@@ -3560,20 +3587,21 @@ function relectureMode(fid, page){
 	el.querySelector("[data-copy]").addEventListener("click", copy);
 	el.querySelector("[data-form]")?.addEventListener("click", copy);
 	// note libre, rangée à l'étape en cours
-	el.querySelector("[data-note]").addEventListener("click", () => { pad.hidden = !pad.hidden; if(!pad.hidden) ta.focus(); });
+	el.querySelector("[data-note]").addEventListener("click", () => { showMenu(false); pad.hidden = !pad.hidden; if(!pad.hidden) ta.focus(); });
 	pad.querySelector("[data-cancel]").addEventListener("click", () => { pad.hidden = true; ta.value = ""; });
 	pad.addEventListener("submit", e => {
 		e.preventDefault();
 		const n = ta.value.replace(/\s+/g, " ").trim(); if(!n) return;
 		if(!cur()) stage("Accueil du jeu");
 		cur().notes.push(n); ta.value = ""; pad.hidden = true; save();
-		const b = el.querySelector("[data-note]"); b.textContent = "Note ajoutée ✓"; setTimeout(() => b.textContent = "✏️ Noter ici", 1800);
+		const b = el.querySelector("[data-note]"), was = b.textContent; b.textContent = "✓ Note ajoutée"; setTimeout(() => b.textContent = was, 1800);
 	});
 	// pas à pas : sauter directement à une étape du jeu
 	const sel = el.querySelector("[data-jump]");
 	sel.addEventListener("change", () => {
 		const j = jumps[+sel.value]; sel.value = "";
 		if(!j) return;
+		showMenu(false);
 		jumped = true;
 		try { j[1](); } catch(x){ console.warn(x); }
 	});
@@ -3585,11 +3613,11 @@ function relectureMode(fid, page){
 		text,
 		event(ev, v){
 			if(ev === "stage") stage(String(v));
-			else if(ev === "missions"){ jumps = v || []; sel.innerHTML = `<option value="">Aller à…</option>` + jumps.map((j, i) => `<option value="${i}">${j[0]}</option>`).join(""); sel.hidden = !jumps.length; }
+			else if(ev === "missions"){ jumps = v || []; sel.innerHTML = `<option value="">Aller à une étape…</option>` + jumps.map((j, i) => `<option value="${i}">${j[0]}</option>`).join(""); sel.hidden = !jumps.length; }
 			else if(ev === "err"){ if(!cur()) stage("Accueil du jeu"); errors++; cur().err++; if(typeof v === "string" && v && cur().why.length < 4) cur().why.push(v.replace(/\s+/g, " ").slice(0, 90)); }
-			else if(ev === "win"){ end = `Terminée, mention ${v}`; el.querySelector("[data-copy]").textContent = "Partie finie : copier le journal"; }
+			else if(ev === "win"){ end = `Terminée, mention ${v}`; el.querySelector("[data-copy]").textContent = "Partie finie : copier le journal"; showMenu(true); }
 			else if(ev === "close"){ jumps = []; sel.hidden = true; if(end === "Partie non terminée") stage("Jeu fermé, retour au campus"); }
-			el.querySelector("[data-e]").textContent = plural(errors);
+			el.querySelector("[data-e]").textContent = short(errors);
 			save();
 		}
 	};

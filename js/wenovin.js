@@ -3,7 +3,7 @@
    l'espace du Campus Cyber Hauts-de-France, le coworking et son café, le hall et la passerelle de l'étage.
    Les murs côté caméra s'effacent tout seuls. */
 import * as THREE from "three";
-import { std, box, cyl, mesh, beam, makeStudent, makePerson, mulberry32 } from "./kit.js?v=9e0fadedde";
+import { std, box, cyl, mesh, beam, makeStudent, makePerson, mulberry32 } from "./kit.js?v=cc2a4e3c29";
 
 const W = 44, D = 34, FL = 4.2, WING = 8;
 const HX = W/2, HZ = D/2, PX = HX - WING, PZ = HZ - WING;      // patio : 28 × 18

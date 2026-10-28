@@ -2,7 +2,7 @@
    cathédrale de la Treille, beffroi de l'Hôtel de Ville, tours d'Euralille. Positions et tailles : MAP.monuments
    (tools/build_map.py), déjà mises à l'échelle du lointain. De nuit, ils sont éclairés comme en vrai. */
 import * as THREE from "three";
-import { std, BOX } from "./kit.js?v=9e0fadedde";
+import { std, BOX } from "./kit.js?v=cc2a4e3c29";
 
 export function buildMonuments(scene, MAP){
 	const brick = std("#a5523c"), stone = std("#e2d6c0"), slate = std("#4c5464"), dark = std("#2c3038"), copper = std("#7fa595");
