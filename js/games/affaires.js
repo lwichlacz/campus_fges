@@ -168,6 +168,8 @@ function world(canvas){
 	const mesh = (geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; return m; };
 	const box = (w, h, d, c, x, y, z) => mesh(new THREE.BoxGeometry(w, h, d), M(c), x, y + h/2, z);
 	const tex = (w, h, draw) => { const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
+	// un texte dessiné sur une texture ne doit jamais déborder : on réduit la police jusqu'à ce qu'il tienne
+	const fitFont = (x, text, maxW, size, weight = 800, family = "Nunito, sans-serif") => { let s = size; do { x.font = `${weight} ${s}px ${family}`; } while(x.measureText(text).width > maxW && --s > 8); return s; };
 	const add = (...o) => { scene.add(...o); return o[0]; };
 	const group = (c, parent = scene) => { const g = new THREE.Group(); g.position.copy(c); parent.add(g); return g; };
 	const roof = (w, h, d, c) => { const sh = new THREE.Shape(); sh.moveTo(-w/2, 0); sh.lineTo(0, h); sh.lineTo(w/2, 0); sh.closePath(); return mesh(new THREE.ExtrudeGeometry(sh, { depth:d, bevelEnabled:false }), M(c)); };
@@ -254,7 +256,7 @@ function world(canvas){
 		const sky = new THREE.MeshBasicMaterial({ map:tex(64, 64, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#bcdcef"); g.addColorStop(1, "#f2ead6"); x.fillStyle = g; x.fillRect(0, 0, w, h); }) });
 		for(const wx of [-7, -4.3]){ add(box(2.6, 1.9, .1, "#2e3d48", wx, .9, -6.2)); add(mesh(new THREE.PlaneGeometry(2.3, 1.6), sky, wx, 1.85, -6.13)).castShadow = false; add(box(.06, 1.6, .06, "#2e3d48", wx, 1.05, -6.1)); }
 		// enseigne de l'agence (fictive)
-		const sign = tex(512, 160, (x, w, h) => { x.fillStyle = "#16324f"; x.fillRect(0, 0, w, h); x.fillStyle = "#e0a33a"; x.fillRect(0, h - 14, w, 14); x.fillStyle = "#fff"; x.textAlign = "center"; x.font = "700 56px Fraunces, Georgia, serif"; x.fillText("Agence Vauban", w/2, 74); x.font = "800 24px Nunito, sans-serif"; x.fillStyle = "#cfe0ea"; x.fillText("PARTICULIERS · PROFESSIONNELS · ENTREPRISES", w/2, 118); });
+		const sign = tex(512, 160, (x, w, h) => { x.fillStyle = "#16324f"; x.fillRect(0, 0, w, h); x.fillStyle = "#e0a33a"; x.fillRect(0, h - 14, w, 14); x.fillStyle = "#fff"; x.textAlign = "center"; fitFont(x, "Agence Vauban", w - 60, 56, 700, "Fraunces, Georgia, serif"); x.fillText("Agence Vauban", w/2, 74); fitFont(x, "PARTICULIERS · PROFESSIONNELS · ENTREPRISES", w - 48, 24); x.fillStyle = "#cfe0ea"; x.fillText("PARTICULIERS · PROFESSIONNELS · ENTREPRISES", w/2, 118); });
 		add(mesh(new THREE.PlaneGeometry(3.4, 1.06), new THREE.MeshStandardMaterial({ map:sign }), -1, 2.3, -6.18)).castShadow = false;
 		// l'accueil, où Sophie dirige l'agence
 		add(box(3.2, 1.05, .9, "#16324f", -1.6, 0, -4.4), box(3.4, .08, 1.05, "#e9e2d2", -1.6, 1.05, -4.4));
@@ -327,7 +329,7 @@ function world(canvas){
 		shop.add(box(1.9, 1.25, 1.4, "#f3e1c0", 0, 0, 0));
 		const r = roof(2.1, .8, 1.6, "#a0522d"); r.position.set(0, 1.25, -.8); shop.add(r);
 		shop.add(box(.5, .8, .05, "#6b3a1f", -.4, 0, .71), box(.6, .5, .05, "#ffe4a8", .45, .4, .71));
-		const store = tex(256, 64, (x, w) => { x.fillStyle = "#6b3a1f"; x.fillRect(0, 0, w, 64); x.fillStyle = "#ffe9b8"; x.textAlign = "center"; x.font = "700 34px Fraunces, Georgia, serif"; x.fillText("Boulangerie", w/2, 44); });
+		const store = tex(256, 64, (x, w) => { x.fillStyle = "#6b3a1f"; x.fillRect(0, 0, w, 64); x.fillStyle = "#ffe9b8"; x.textAlign = "center"; fitFont(x, "Boulangerie", w - 24, 34, 700, "Fraunces, Georgia, serif"); x.fillText("Boulangerie", w/2, 44); });
 		shop.add(mesh(new THREE.PlaneGeometry(1.6, .4), new THREE.MeshStandardMaterial({ map:store }), 0, 1.0, .72));
 		for(let i = 0; i < 4; i++) shop.add(mesh(new THREE.CapsuleGeometry(.05, .4, 4, 8).rotateZ(Math.PI/2.4), M("#c98a3a"), .3 + i*.08, .45, .78));
 		at(shop, -.7, 2.25, -.5);
@@ -578,7 +580,7 @@ function world(canvas){
 	function setLevel(i){
 		const from = water.level, to = LEVELS[i]; anim(1800, k => { water.level = from + (to - from)*easeIO(k); }, null, "water"); ripple(U.karim, water.level, 4);
 		// la caméra descend avec l'eau, pour bien cadrer le besoin découvert tout au fond
-		const v = VIEWS.karim; look(v[0], v[1] - i*1.1, v[2] + i*.5, v[3], v[4] - i*.75, v[5], 1.8);
+		const v = VIEWS.karim; look(v[0], v[1] - i*1.1, v[2] + i*.5, v[3], v[4] - i*.75, v[5], 1.8, 0, v[6]);
 	}
 	function wave(){ ripple(U.karim, water.level, 6, true); const m = water.mesh; anim(1400, k => { m.rotation.z = Math.sin(k*Math.PI*5)*.02*(1 - k); m.rotation.x = Math.cos(k*Math.PI*4)*.015*(1 - k); }, null, "wave"); }
 	function burst(wp, color = "#f4fbff", n = 10){ for(let i = 0; i < n; i++){ const sh = mesh(new THREE.TetrahedronGeometry(.18), M(color)); sh.position.copy(wp); scene.add(sh); shards.push({ m:sh, v:new THREE.Vector3((Math.random() - .5)*5, Math.random()*4 + 1, Math.random()*3 + 1), t0:performance.now() }); } }
@@ -590,7 +592,7 @@ function world(canvas){
 		anim(500, k => s.frost.scale.copy(f0).multiplyScalar(Math.max(.001, 1 - k)), () => s.frost.visible = false);
 		anim(700, k => c.scale.setScalar(Math.max(.001, 1.5*(k < .7 ? k/.7*1.1 : 1.1 - (k - .7)/.3*.1))));
 		burst(s.g.getWorldPosition(new THREE.Vector3()));
-		s.lab = label(text, { size:.55, bg:"#fbfaf6", line:"#2b7fb5" }); s.lab.position.set(0, 1.45, .4); s.g.add(s.lab);
+		s.lab = label(text, { size:.55, bg:"#fbfaf6", line:"#2b7fb5" }); s.lab.position.set(0, 1.45, .4); s.lab.renderOrder = 12; s.g.add(s.lab);
 	}
 	function unknown(i){ const s = slotGroups[i]; if(s.content) return; relabel(s.q, "?", { fg:"#b3261e" }); s.lab = label("Besoin non découvert", { size:.45, bg:"#f1f1f1", fg:"#8a8f94" }); s.lab.position.set(0, 1.3, .4); s.g.add(s.lab); }
 	function resetIce(){ resetCash(); water.level = LEVELS[0]; slotGroups.forEach(s => { if(s.content) s.g.remove(s.content); if(s.lab) s.g.remove(s.lab); s.content = s.lab = null; s.frost.visible = true; s.frost.scale.set(1.35, 1.05, .75); s.q.visible = true; relabel(s.q, "?", { fg:"#7fb2cc" }); }); }
@@ -658,9 +660,18 @@ function world(canvas){
 
 	/* --- famille Martin : la tour --- */
 	function stack(color, text, good){
-		const i = tower.blocks.length, b = box(1.7, .52, 1.15, color, 0, 0, 0);
-		const off = good ? (Math.random() - .5)*.08 : (i % 2 ? -.38 : .38);
-		const lab = label(text, { size:.32, bg:"#fbfaf6" }); lab.position.set(0, .26, .62); lab.material.depthTest = true; b.add(lab);
+		// le nom du produit est imprimé sur la face avant du bloc : il ne peut plus être caché par les blocs voisins
+		const face = tex(512, 140, (x, w, h) => {
+			x.fillStyle = color; x.fillRect(0, 0, w, h); x.fillStyle = "rgba(0,0,0,.18)"; x.fillRect(0, h - 10, w, 10); x.fillRect(0, 0, w, 4);
+			x.fillStyle = "#fff"; x.textAlign = "center"; x.textBaseline = "middle"; x.shadowColor = "rgba(0,0,0,.35)"; x.shadowBlur = 4;
+			// sur une ligne si elle reste grande, sinon sur deux lignes (plus lisible de loin)
+			if(fitFont(x, text, w - 40, 58) >= 48 || text.split(" ").length < 3) return x.fillText(text, w/2, h/2);
+			const words = text.split(" "), cut = Math.ceil(words.length/2), l1 = words.slice(0, cut).join(" "), l2 = words.slice(cut).join(" ");
+			const s = Math.min(fitFont(x, l1, w - 40, 52), fitFont(x, l2, w - 40, 52)); x.font = `800 ${s}px Nunito, sans-serif`;
+			x.fillText(l1, w/2, h*.3); x.fillText(l2, w/2, h*.7);
+		});
+		const side = M(color), b = mesh(new THREE.BoxGeometry(1.9, .52, 1.15).translate(0, .26, 0), [side, side, side, side, new THREE.MeshStandardMaterial({ map:face, roughness:.6 }), side]);
+		const i = tower.blocks.length, off = good ? (Math.random() - .5)*.08 : (i % 2 ? -.38 : .38);
 		const y1 = i*.54; b.position.set(off, y1 + 6, 0); tower.g.add(b); tower.blocks.push(b);
 		anim(650, k => { b.position.y = y1 + 6*(1 - k*k); }, () => { burst(b.getWorldPosition(new THREE.Vector3()), "#e9e2d2", 5); if(!good){ tower.tilt += .085; } });
 	}
@@ -709,7 +720,7 @@ function world(canvas){
 			g.add(box(.8, 2.4, .3, "#e9edf0", 0, 0, 0));
 			gauge.fill = mesh(new THREE.BoxGeometry(.56, 1, .34).translate(0, .5, 0), new THREE.MeshStandardMaterial({ color:"#3d7a55" }), 0, .08, 0); gauge.fill.scale.y = .001; g.add(gauge.fill);
 			const lim = .08 + 35/50*GH; g.add(box(1.1, .07, .4, "#c0392b", 0, lim - .035, 0));
-			const ll = label("35 % max", { size:.28, bg:null, fg:"#c0392b" }); ll.position.set(1.05, lim, 0); g.add(ll);
+			const ll = label("35 % max", { size:.32, bg:"#fbfaf6", fg:"#c0392b" }); ll.position.set(1.25, lim, 0); g.add(ll);
 			gauge.lab = label(" ", { size:.4 }); gauge.lab.position.y = 2.9; g.add(gauge.lab);
 		}
 		gauge.g.visible = true;
@@ -734,19 +745,21 @@ function world(canvas){
 			doc.g = group(new THREE.Vector3(U.martin.x + 3.2, 0, U.martin.z + 4.2));
 			const d = new THREE.Group(); d.scale.setScalar(1.5); d.rotation.y = -.35; doc.g.add(d);
 			d.add(mesh(new THREE.CylinderGeometry(.08, .1, 1.1, 10), M("#5a3a22"), 0, .55, 0), box(1.5, .06, 1.1, "#6b4a2e", 0, 1.1, 0));
-			doc.paper = mesh(new THREE.PlaneGeometry(1.2, 1.5), new THREE.MeshStandardMaterial({ roughness:.9 }), 0, 1.5, .05); doc.paper.rotation.x = -.85; d.add(doc.paper);
-			d.add(mesh(new THREE.CylinderGeometry(.03, .03, .8, 8).rotateZ(Math.PI/2.3), M("#16324f"), .5, 1.2, .35));
+			doc.paper = mesh(new THREE.PlaneGeometry(1.2, 1.2*340/256), new THREE.MeshStandardMaterial({ roughness:.9 }), 0, 1.5, .05); doc.paper.rotation.x = -.85; d.add(doc.paper);
+			// le stylo est posé sur le bord du pupitre, pas sur le texte
+			d.add(mesh(new THREE.CylinderGeometry(.03, .03, .8, 8).rotateZ(Math.PI/2), M("#16324f"), 0, 1.16, .5));
 		}
 		const date = new Date().toLocaleDateString("fr-FR");
-		const t = tex(256, 320, (x, w, h) => {
+		const t = tex(256, 340, (x, w, h) => {
 			x.fillStyle = "#fffdf6"; x.fillRect(0, 0, w, h); x.fillStyle = "#16324f"; x.fillRect(0, 0, w, 36);
-			x.fillStyle = "#fff"; x.font = "800 18px Nunito, sans-serif"; x.textAlign = "center"; x.fillText("PROFIL CLIENT", w/2, 25);
-			x.textAlign = "left"; x.fillStyle = "#2b3a44"; x.font = "700 14px Nunito, sans-serif";
-			["M. et Mme Martin", "Objectifs : retraite, enfants,", "protection du conjoint", "Horizon : 6 ans et plus", "Tolérance au risque : faible", "Connaissances : livrets, AV"].forEach((l, i) => x.fillText(l, 16, 64 + i*22));
-			x.font = "800 16px Nunito, sans-serif"; x.fillStyle = ok ? "#23704a" : "#b3261e"; x.fillText("Profil retenu : " + profil.toUpperCase(), 16, 206);
-			x.fillStyle = "#6f767c"; x.font = "600 12px Nunito, sans-serif"; x.fillText("Signé le " + date, 16, 232);
-			x.strokeStyle = "#16324f"; x.lineWidth = 2; for(const ox of [24, 140]){ x.beginPath(); x.moveTo(ox, 280); for(let i = 0; i < 6; i++) x.quadraticCurveTo(ox + 8 + i*14, 262 + (i % 2)*30, ox + 14 + i*14, 278); x.stroke(); }
-			x.save(); x.translate(190, 230); x.rotate(-.3); x.strokeStyle = x.fillStyle = ok ? "#23704a" : "#b3261e"; x.lineWidth = 3; x.strokeRect(-46, -16, 92, 32); x.font = "800 14px Nunito, sans-serif"; x.textAlign = "center"; x.fillText(ok ? "CONFORME" : "À REVOIR", 0, 5); x.restore();
+			x.fillStyle = "#fff"; x.textAlign = "center"; fitFont(x, "PROFIL CLIENT", w - 24, 18); x.fillText("PROFIL CLIENT", w/2, 25);
+			x.textAlign = "left"; x.fillStyle = "#2b3a44";
+			["M. et Mme Martin", "Objectifs : retraite, enfants,", "protection du conjoint", "Horizon : 6 ans et plus", "Tolérance au risque : faible", "Connaissances : livrets, AV"].forEach((l, i) => { fitFont(x, l, w - 32, 14, 700); x.fillText(l, 16, 64 + i*22); });
+			const pr = "Profil retenu : " + profil.toUpperCase(); fitFont(x, pr, w - 32, 16); x.fillStyle = ok ? "#23704a" : "#b3261e"; x.fillText(pr, 16, 204);
+			x.fillStyle = "#6f767c"; x.font = "600 12px Nunito, sans-serif"; x.fillText("Signé le " + date, 16, 230);
+			// les deux signatures en bas à gauche, le tampon en bas à droite : rien ne se chevauche
+			x.strokeStyle = "#16324f"; x.lineWidth = 2; for(const [ox, oy] of [[18, 268], [18, 312]]){ x.beginPath(); x.moveTo(ox, oy); for(let i = 0; i < 6; i++) x.quadraticCurveTo(ox + 8 + i*12, oy - 16 + (i % 2)*28, ox + 12 + i*12, oy - 2); x.stroke(); }
+			x.save(); x.translate(186, 292); x.rotate(-.25); x.strokeStyle = x.fillStyle = ok ? "#23704a" : "#b3261e"; x.lineWidth = 3; x.strokeRect(-46, -16, 92, 32); x.font = "800 14px Nunito, sans-serif"; x.textAlign = "center"; x.fillText(ok ? "CONFORME" : "À REVOIR", 0, 5); x.restore();
 		});
 		if(doc.paper.material.map) doc.paper.material.map.dispose();
 		doc.paper.material.map = t; doc.paper.material.needsUpdate = true;
@@ -756,21 +769,26 @@ function world(canvas){
 
 	/* --- caméra : elle vole d'un endroit à l'autre, en arc quand on plonge dans l'univers du client --- */
 	let cam = null;
-	function look(px, py, pz, tx, ty, tz, dur = 1.3, arc = 0){
-		const t1 = new THREE.Vector3(tx, ty, tz), fit = Math.min(1.8, Math.max(1, 1.2/camera.aspect));
-		cam = { p0:camera.position.clone(), t0:controls.target.clone(), p1:new THREE.Vector3(px, py, pz).sub(t1).multiplyScalar(fit).add(t1), t1, k:0, dur, arc };
+	// r : demi-largeur de la scène à garder dans le cadre. Sur écran large comme sur téléphone, la caméra recule
+	// jusqu'à ce que toute la largeur tienne (et pas seulement la hauteur)
+	function look(px, py, pz, tx, ty, tz, dur = 1.3, arc = 0, r = 0){
+		const t1 = new THREE.Vector3(tx, ty, tz), p = new THREE.Vector3(px, py, pz), d = p.distanceTo(t1);
+		const visW = d*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*VW/VH;
+		const fit = Math.min(2.6, Math.max(1.2, 1.2/camera.aspect, r ? r/visW : 0));
+		cam = { p0:camera.position.clone(), t0:controls.target.clone(), p1:p.sub(t1).multiplyScalar(fit).add(t1), t1, k:0, dur, arc };
 		light(t1.clone().setY(0));
 	}
+	// [position de la caméra, point visé, demi-largeur à garder visible]
 	const VIEWS = {
-		agence:[-.5, 15, 15.5, -.5, 0, -1],
-		bureau:[5, 3.1, 1.4, 5, 1.3, -4.2],
-		karim:[U.karim.x + 3, 5.5, 22, U.karim.x, -1.6, 0],
-		lefevre:[U.lefevre.x + 1, 10.5, 12, U.lefevre.x - .2, .5, -1.2],
-		couple:[U.couple.x + 1.5, 8, U.couple.z + 14, U.couple.x + .5, .9, U.couple.z],
-		duval:[U.duval.x + 1, 9, U.duval.z + 21, U.duval.x, 2.8, U.duval.z + 1.5],
-		martin:[U.martin.x + 1.5, 8.5, U.martin.z + 17, U.martin.x, 2.2, U.martin.z + .5]
+		agence:[-.5, 15, 15.5, -.5, 0, -.5, 12.8],
+		bureau:[5, 3.1, 1.4, 5, 1.3, -4.2, 2.6],
+		karim:[U.karim.x + 3, 5.5, 22, U.karim.x, -1.4, 0, 10],
+		lefevre:[U.lefevre.x + 1, 10.5, 12, U.lefevre.x - .2, .8, -1.2, 9.5],
+		couple:[U.couple.x + 1, 10, U.couple.z + 16, U.couple.x + .3, 2, U.couple.z, 11],
+		duval:[U.duval.x + 1, 10.5, U.duval.z + 24, U.duval.x, 3.1, U.duval.z + 3, 12],
+		martin:[U.martin.x + 1.5, 8.5, U.martin.z + 17, U.martin.x, 2.4, U.martin.z + .5, 10]
 	};
-	const view = (v, dur = 1.3, arc = 0) => look(...VIEWS[v], dur, arc);
+	const view = (v, dur = 1.3, arc = 0) => { const [px, py, pz, tx, ty, tz, r] = VIEWS[v]; look(px, py, pz, tx, ty, tz, dur, arc, r); };
 
 	/* --- boucle --- */
 	let raf = 0, last = performance.now();
@@ -1047,6 +1065,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 	const done = id => S.score[CLIENTS[id].theme] != null;
 	function agenda(){
 		gen++; S.cur = null; S.where = null; S.busy = false; W.onPick = null; chips();
+		bubble.classList.add("off");          // pas de réplique d'un rendez-vous précédent qui traîne
 		const left = ORDER.filter(id => !done(id));
 		if(!left.length) return S.mgmt == null ? manage() : finale();
 		stage("Mon agenda"); W.view("agence", 1.6);
@@ -1204,7 +1223,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 		// l'année de Karim défile sur la maquette : la pile de pièces, ce qui reste chaque mois après les remboursements
 		const pay = { good:460, mid:1090, ko:1780 }[k];
 		card.querySelector("[data-res]").innerHTML = `<p class="ca-p" style="margin-top:12px">📅 Regarde l'année de Karim défiler sur la maquette : la pile de pièces, c'est ce qu'il lui reste chaque mois.</p>`;
-		W.look(W.U.karim.x - 1, 7.5, 14.5, W.U.karim.x - 1, 2.6, W.U.karim.z + .5, 1.4);
+		W.look(W.U.karim.x - 1, 7.5, 14.5, W.U.karim.x - 1, 2.6, W.U.karim.z + .5, 1.4, 0, 4.5);
 		W.cashYear(pay, () => {
 			card.querySelector("[data-res]").innerHTML = `<p class="ca-p" style="margin-top:12px"><span class="ca-tag ${k}">${k === "good" ? "✓ Un prêt à sa mesure : jamais à découvert" : "✗ Une mensualité trop lourde : découvert en été"}</span><br>${txt}</p>
 				<button class="ca-go" data-a="karimEnd">Voir le bilan du rendez-vous</button>`;
@@ -1593,7 +1612,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 		W.resetPeople(); for(const id in { karim:1, lefevre:1, ines:1, tom:1, duval:1, martin:1 }) W.P[id].g.visible = false;
 		[["leo", -3.4, -2.2], ["nadia", -1.6, -1.7], ["samir", .2, -2.2]].forEach(([id, x, z]) => { W.place(id, { x:0, z:0 }, x, 0, z, .1); W.P[id].setMood("neutre"); });
 		W.walk("toi", [[3, -.6], [-1.6, .6]], () => W.P.toi.g.rotation.y = Math.PI, Math.PI);
-		W.look(-1.6, 6.5, 5.6, -1.6, .8, -2.2, 2);
+		W.look(-1.6, 6.5, 5.6, -1.6, .8, -2.2, 2, 0, 3.6);
 		later(500, () => say(null, "Belle journée ! Demain je suis en formation : c'est toi qui diriges l'agence. Trois situations t'attendent."));
 		show(`<div class="ca-boss"><i>🏢</i><span><b>Directeur d'agence d'un jour</b><small>Un des débouchés du master : diriger une agence et son équipe.</small></span></div>
 			<p class="ca-p">Sophie te confie l'agence et son équipe : <b>Léo, Nadia et Samir</b>. Un directeur d'agence ne gère pas seulement des clients : il fait grandir ses conseillers, arbitre, et porte les objectifs de la banque sans oublier le devoir de conseil.</p>
