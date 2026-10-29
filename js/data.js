@@ -1,15 +1,18 @@
-/* Données du campus : formations (récap fges.fr, 5 oct. 2026), lieux et ambiances.
+/* Données du campus : formations (récap fges.fr, 29 oct. 2026), lieux et ambiances.
    niveau : prep | L | LP | M | DU   ·   lieu : falise | wenov | ha */
 
 const U = "https://www.fges.fr/formations/";
 export const FORMATIONS = [
 	["apes","APES · Année préparatoire aux études scientifiques","FGES","prep","falise",24,"1 an · formation initiale","Une année pour prendre pied en sciences avant la licence. 94 % de réussite.","apes-annee-de-preparation-aux-etudes-scientifiques/"],
 	["sv","Licence Sciences de la Vie","FGES","L","falise",100,"L1-L3 · 1 stage par an","Biologie, écologie, génétique… et une sortie terrain à Ambleteuse.","licence-science-de-la-vie/"],
+	["veto","Prépa concours B Véto et Agro","FGES","L","falise",0,"Parcours de la Licence Sciences de la Vie","Préparer les concours des écoles vétérinaires et d'agronomie, en même temps que la licence.","licence-science-de-la-vie/"],
 	["mh","Licence Management & Humanités","FGES","L","falise",40,"L1-L3 · 1 stage par an","La gestion et la philosophie dans le même cursus.","humanites-management/"],
 	["gestion","Licence Gestion","FGES","L","falise",180,"L1-L3 · 1 stage par an","Marketing, finance, RH : apprendre à piloter une entreprise.","licence-de-gestion/"],
 	["ecofi","Licence Économie-Finance","FGES","L","falise",200,"L1-L3 · 1 stage par an","Des marchés financiers à l'économétrie, avec des maths solides.","licence-economie-finance/"],
 	["cupge","Prépa Grandes Écoles de Commerce","FGES","L","falise",220,"Prépa + licence","Une licence et une prépa pour viser HEC, ESCP ou l'EDHEC.","prepa-grandes-ecoles-de-commerce/"],
+	["d2","Prépa D2 Économie-Gestion","FGES","L","falise",40,"Rentrée 2027 · avec Marcq Institution","Une licence et une prépa pour viser l'ENS Paris-Saclay et les magistères, 50 % en anglais.","prepa-d2/"],
 	["lieg","Licence Internationale Économie & Gestion","FGES","L","falise",180,"L1-L3 · 100 % en anglais","Une L3 dans l'une des 200 universités partenaires.","licence-internationale-deconomie-et-de-gestion/"],
+	["aese","Licence Administration Économique, Sociale et Environnementale","FGES","L","falise",60,"L1-L3 · avec l'ESSLIL","Économie, gestion et transitions : vers la RSE, l'ESS ou les concours de la fonction publique.","licence-administration-economique-sociale-environnementale/"],
 	["cfa","Licence Comptabilité-Finance-Audit","ISEA","L","falise",50,"L1-L3 · L3 en alternance","Les chiffres de l'entreprise, avec 83 % d'intervenants du métier.","licence-comptabilite-finance-audit/"],
 	["lpabf","Licence Pro Assurance-Banque-Finance","FGES","LP","falise",40,"1 an · alternance","Une L3 pro en alternance pour devenir conseiller bancaire.","licence-professionnelle-assurance-banque-finance/"],
 	["info","Licence Informatique","EDN","L","wenov",50,"L1-L3 · L3 en alternance possible","Data, cyber ou réalité virtuelle, et un Projet Gaming dès la L1.","licence-sciences-du-numerique/"],
@@ -22,16 +25,17 @@ export const FORMATIONS = [
 	["cca","Master Comptabilité, Contrôle et Audit","ISEA","M","falise",30,"Alternance 2 ans","La voie vers l'expertise comptable. 93 % en emploi à 6 mois.","master-comptabilite-controle-audit/"],
 	["dgp","Master Droit & Gestion du Patrimoine","ISEA","M","falise",30,"Alternance 2 ans","Conseiller en gestion de patrimoine, banquier privé.","master-droit-gestion-du-patrimoine/"],
 	["cgao","Master Contrôle de Gestion & Audit Organisationnel","ISEA","M","falise",30,"Alternance 2 ans","Contrôle de gestion, SAP et Power BI. 100 % en emploi.","master-controle-de-gestion-et-audit-organisationnel/"],
+	["mre","Master Management des Risques de l'Entreprise","FGES","M","falise",60,"Nouveau 2026 · alternance ou initial","Risk manager, analyste crédit, contrôleur interne.","master-management-des-risques-de-lentreprise/"],
 	["me","Master Management des Entreprises","FGES","M","wenov",30,"Alternance 2 ans","Piloter une business unit et conduire le changement.","master-management-des-entreprises/"],
 	["frd","Master Finance Responsable & Durable","FGES","M","wenov",25,"M1 stage · M2 alternance","Finance de marché et ESG, avec une préparation au CFA.","master-finance-responsable-durable/"],
 	["mbif","Master Management des Banques et Institutions Financières","FGES","M","wenov",30,"Alternance 2 ans","Chargé d'affaires, conseiller patrimonial, directeur d'agence.","master-management-des-banques-et-institutions-financieres/"],
-	["iasi","Master Informatique Appliquée et Systèmes Intelligents","EDN","M","wenov",30,"Nouveau 2026 · alternance 2 ans","Full stack, cloud et IA : l'ingénieur logiciel complet.","master-informatique-appliquee-et-systemes-intelligents"],
+	["iasi","Master Informatique Appliquée et Systèmes Intelligents","EDN","M","wenov",30,"Nouveau 2026 · alternance 2 ans","Full stack, cloud et IA : l'ingénieur logiciel complet.","master-informatique-appliquee-et-systemes-intelligents/"],
 	["dia","Master Data & Intelligence Artificielle","EDN","M","wenov",30,"Alternance 2 ans","Machine learning, deep learning et IA agentique.","master-data-intelligence-artificielle/"],
 	["cyber","Master Cyber","EDN","M","wenov",30,"Alternance 2 ans","Pentest, forensic et développement sécurisé.","master-cyber/"],
-	["jn","Master Jumeaux Numériques","EDN","M","wenov",20,"Alternance 2 ans","Simulation, 3D et IoT, avec la Gendarmerie nationale.","master-jumeaux-numeriques"],
+	["jn","Master Jumeaux Numériques","EDN","M","wenov",20,"Alternance 2 ans","Simulation, 3D et IoT, avec la Gendarmerie nationale.","master-jumeaux-numeriques/"],
 	["dmb","Master Data Management in Biosciences","EDN","M","wenov",20,"100 % en anglais · alternance","La data science au service de la santé.","master-data-management-in-biosciences/"],
-	["ebmd","Master E-Business & Marketing Digital","EDN","M","wenov",25,"Alternance 2 ans","UX, SEO, e-commerce et croissance.","master-ux-marketing-digital/"],
-	["mtn","Master Management & Transformation Numérique","EDN","M","wenov",20,"Alternance 2 ans","Conduire la transformation digitale des entreprises.","master-management-in-biosciences/"],
+	["ebmd","Master E-Business & Marketing Digital","EDN","M","wenov",25,"Alternance 2 ans","UX, SEO, e-commerce et croissance.","master-e-business-et-marketing-digital/"],
+	["mtn","Master Management & Transformation Numérique","EDN","M","wenov",20,"Alternance 2 ans","Conduire la transformation digitale des entreprises.","master-management-transformation-numerique/"],
 	["duia","DU IA au service des entreprises","EDN","DU","wenov",0,"10 vendredis · 2 490 €","De l'histoire de l'IA à l'IA générative.","du-lia-au-service-des-entreprises/"],
 	["duric","DU Renseignement & Investigation Cyber","EDN","DU","wenov",0,"102 h · 3 950 €","Avec le Campus Cyber.","du-renseignement-investigation-cyber/"],
 	["ducse","DU Cybersécurité en Entreprise","EDN","DU","wenov",0,"12 journées · 3 200 €","Gouvernance, risques, conformité, sans profil technique.","du-cybersecurite-en-entreprise-gouvernance-risques-et-conformite/"],

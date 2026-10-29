@@ -28,14 +28,14 @@ const ENT = {
 	EDN:  { name:"EDN", long:"École du Numérique", color:"#d6a227", ink:"#1f1a10" }
 };
 const DISP = "Fraunces, Georgia, serif", BODY = "Nunito, system-ui, sans-serif";
-// formations nouvelles, annoncées dans le film avant d'avoir leur fiche dans le campus
-const NOUVELLES = [
-	{ id:"veto", name:"Prépa Véto", level:"prepa", school:"FGES" },
-	{ id:"d2", name:"Prépa D2", level:"prepa", school:"FGES" },
-	{ id:"aese", name:"Licence AESe", level:"L", school:"FGES" },
-	{ id:"mre", name:"Master MRE", level:"M", school:"FGES" }
-];
-const TOUTES = [...FORMATIONS, ...NOUVELLES], NB = TOUTES.length, NEUVE = new Set(NOUVELLES.map(f => f.id));
+// formations nouvelles : nom court et niveau affichés dans le film, mention « nouvelle formation »
+const NOUVELLES = {
+	veto: { name:"Prépa Véto", level:"prepa" },
+	d2: { name:"Prépa D2", level:"prepa" },
+	aese: { name:"Licence AESe", level:"L" },
+	mre: { name:"Master MRE", level:"M" }
+};
+const TOUTES = FORMATIONS.map(f => NOUVELLES[f.id] ? { ...f, ...NOUVELLES[f.id] } : f), NB = TOUTES.length, NEUVE = new Set(Object.keys(NOUVELLES));
 const F = Object.fromEntries(TOUTES.map(f => [f.id, f]));
 const LEVEL = { prep:"Année préparatoire", prepa:"Prépa", L:"Licence", LP:"Licence pro", M:"Master", DU:"Diplôme universitaire" };
 const STEPS = {
