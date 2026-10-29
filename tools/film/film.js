@@ -44,8 +44,12 @@ const STEPS = {
 	sv:["L1 · Identifier les espèces", "L2 · Génétique de Mendel", "L3 · Choisir sa spécialité"],
 	spi:["L1 · Piloter le bras robot", "L2 · Programmer et régler", "L3 · Vision par ordinateur"],
 	info:["L1 · Un niveau et un héros en Python", "L1 · Les scores en ligne en SQL", "L2 · Réalité virtuelle et 5 000 joueurs"],
-	dmb:["M1 · Données et séquençage", "M1 · Statistiques et IA", "M2 · Compte rendu clinique"]
+	dmb:["M1 · Données et séquençage", "M1 · Statistiques et IA", "M2 · Compte rendu clinique"],
+	dgp:["M1 · Contrat de mariage et donation", "M1 · Successions et fiscalité", "M2 · Conseiller une famille"],
+	mbif:["M1 · Écouter et analyser un client", "M1 · Crédit et taux d'endettement", "M2 · Diriger une agence"]
 };
+// intitulés raccourcis sur les cartes des mini-jeux, quand la grille passe à 4 colonnes
+const COURT = { mbif:"Master Banques & Institutions Financières", dgp:"Master Droit & Gestion du Patrimoine" };
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const seg = (t, a, b) => clamp((t - a)/(b - a));
 const sine = x => -(Math.cos(Math.PI*x) - 1)/2;
@@ -296,20 +300,24 @@ function jeux(c, t, d){
 	const a = life(t, 0, d, .3, .6);
 	rise(c, "Un mini-jeu par formation", 160, 238, seg(t, .4, 1.2), { size:72, fam:DISP, a });
 	rise(c, "Quelques minutes pour vivre ce que font vraiment les étudiants.", 162, 300, seg(t, .7, 1.5), { size:32, weight:700, color:MUTED, a });
-	const ready = FORMATIONS.filter(f => GAMES[f.id]), cw = 520, ch = 270, gx = 40, gy = 36, x0 = (W - 3*cw - 2*gx)/2, y0 = 370;
+	// grille calculée sur le nombre de jeux : 3 colonnes jusqu'à 6 jeux, 4 au-delà
+	const ready = FORMATIONS.filter(f => GAMES[f.id]), nc = ready.length > 6 ? 4 : 3, gx = nc > 3 ? 28 : 40, gy = 36, ch = 270;
+	const cw = nc > 3 ? 410 : 520, x0 = (W - nc*cw - (nc - 1)*gx)/2, y0 = 370;
 	ready.forEach((f, i) => {
 		const g = GAME_INFO[GAMES[f.id]], e = ENT[f.school], t0 = 1.6 + i*.3, p = out5(seg(t, t0, t0 + .8))*a; if(p <= 0) return;
-		const x = x0 + (i % 3)*(cw + gx), y = y0 + Math.floor(i/3)*(ch + gy) + (1 - p)*40;
+		const x = x0 + (i % nc)*(cw + gx), y = y0 + Math.floor(i/nc)*(ch + gy) + (1 - p)*40;
 		c.save(); c.globalAlpha = p;
 		rr(c, x, y, cw, ch, 20); c.fillStyle = "rgba(255,255,255,.97)"; c.fill();
 		c.fillStyle = e.color; c.fillRect(x, y, cw, 8);
-		font(c, 400, 54, "system-ui, 'Apple Color Emoji', sans-serif"); c.textBaseline = "alphabetic"; c.fillText(g.icon, x + 30, y + 86);
-		text(c, g.title, x + 110, y + 64, { size:fitSize(c, g.title, cw - 140, 32, 700, DISP), fam:DISP, color:INK });
-		text(c, f.name, x + 110, y + 96, { size:fitSize(c, f.name, cw - 140, 19, 700), weight:700, color:"#5b6580" });
+		// sur 4 colonnes : icône plus petite, et nom court pour les intitulés trop longs
+		const ic = nc > 3 ? 44 : 54, tx = nc > 3 ? 88 : 110, nom = nc > 3 && COURT[f.id] || f.name;
+		font(c, 400, ic, "system-ui, 'Apple Color Emoji', sans-serif"); c.textBaseline = "alphabetic"; c.fillText(g.icon, x + 26, y + 82);
+		text(c, g.title, x + tx, y + 64, { size:fitSize(c, g.title, cw - tx - 24, 32, 700, DISP), fam:DISP, color:INK });
+		text(c, nom, x + tx, y + 96, { size:fitSize(c, nom, cw - tx - 24, 19, 700), weight:700, color:"#5b6580" });
 		(STEPS[f.id] || []).forEach((s, j) => {
 			const q = seg(t, t0 + .5 + j*.18, t0 + .9 + j*.18);
 			c.save(); c.globalAlpha = p*q; rr(c, x + 30, y + 128 + j*44, cw - 60, 36, 10); c.fillStyle = "#f1f3f8"; c.fill(); c.restore();
-			text(c, s, x + 46, y + 153 + j*44, { size:19, weight:700, color:INK, a:p*q });
+			text(c, s, x + 46, y + 153 + j*44, { size:fitSize(c, s, cw - 92, 19, 700), weight:700, color:INK, a:p*q });
 		});
 		c.restore();
 	});
@@ -503,6 +511,49 @@ export async function tourner({ sortie = "docs/validation-web/media/campus-3d.mp
 		const recu = await fetch(recepteur + "?sortie=" + encodeURIComponent(sortie), { method:"POST", body:blob }).then(r => r.text());
 		ETAT = { phase:"fini", duree:TOTAL, images:N, taille:blob.size, recu, ecoule:Math.round((Date.now() - t0)/1000) };
 	} catch(e){ ETAT = { phase:"erreur", erreur:String(e && e.stack || e) }; }
+	return ETAT;
+}
+/* Retouche : retourne seulement certains plans (sans le son), chacun dans tools/film/_plan-<i>.mp4,
+   puis  python tools/film/raccord.py  les recolle dans le film existant. Pour un nouveau mini-jeu :
+   F.retoucher(F.plansJeux(["dgp", "mbif"]))  (la scène des jeux et les grilles où figurent ces formations).
+   Le tournage étant image par image, un plan retourné tombe exactement à sa place. */
+export const plansJeux = (ids = Object.keys(GAMES)) => SHOTS.map((s, i) => (s.ov === "jeux" || s.grid?.list.some(id => ids.includes(id))) ? i : -1).filter(i => i >= 0);
+export async function retoucher(plans = plansJeux(), { debit = 4_500_000, recepteur = "http://127.0.0.1:8767/film" } = {}){
+	const faits = [];
+	try {
+		ETAT = { phase:"installation" };
+		const cv = await installer(), C = window.campus;
+		const { Muxer, ArrayBufferTarget } = await import("https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.mjs");
+		const mc = new MessageChannel(), souffle = () => new Promise(r => { mc.port1.onmessage = r; mc.port2.postMessage(0); });
+		for(const i of plans){
+			const S = SHOTS[i], f0 = Math.round(S.t0*FPS), f1 = Math.round((S.t0 + S.d)*FPS);
+			const mux = new Muxer({ target:new ArrayBufferTarget(), fastStart:"in-memory", video:{ codec:"avc", width:W, height:H, frameRate:FPS } });
+			let fail = null;
+			const venc = new VideoEncoder({ output:(ch, meta) => mux.addVideoChunk(ch, meta), error:e => fail = e });
+			const vcfg = { codec:"avc1.640028", width:W, height:H, bitrate:debit, framerate:FPS, latencyMode:"quality", avc:{ format:"avc" }, hardwareAcceleration:"prefer-hardware" };
+			if(!(await VideoEncoder.isConfigSupported(vcfg)).supported) delete vcfg.hardwareAcceleration;
+			venc.configure(vcfg);
+			// une seconde de campus avant la première image du plan
+			cur = null; for(let k = 0; k < 30; k++) image(C, f0/FPS, 1000/FPS);
+			for(let f = f0; f < f1; f++){
+				if(fail) throw fail;
+				image(C, f/FPS, 1000/FPS);
+				const vf = new VideoFrame(cv, { timestamp:Math.round((f - f0)*1e6/FPS), duration:Math.round(1e6/FPS) });
+				venc.encode(vf, { keyFrame:(f - f0) % (FPS*2) === 0 }); vf.close();
+				while(venc.encodeQueueSize > 6) await new Promise(r => venc.addEventListener("dequeue", r, { once:true }));
+				if(f % 10 === 0){ ETAT = { phase:"images", plan:i, image:f - f0, total:f1 - f0, faits:faits.length, sur:plans.length }; await souffle(); }
+			}
+			await venc.flush(); venc.close(); if(fail) throw fail;
+			mux.finalize();
+			const sortie = `tools/film/_plan-${i}.mp4`;
+			await fetch(recepteur + "?sortie=" + encodeURIComponent(sortie), { method:"POST", body:new Blob([mux.target.buffer], { type:"video/mp4" }) }).then(r => r.text());
+			faits.push({ plan:i, debut:f0/FPS, fin:f1/FPS, fichier:sortie });
+		}
+		const avant = await fetch("/tools/film/_plans.json", { cache:"no-store" }).then(r => r.ok ? r.json() : { plans:[] }).catch(() => ({ plans:[] }));
+		const liste = JSON.stringify({ fps:FPS, plans:[...avant.plans.filter(p => !plans.includes(p.plan)), ...faits] });
+		await fetch(recepteur + "?sortie=" + encodeURIComponent("tools/film/_plans.json"), { method:"POST", body:liste });
+		ETAT = { phase:"fini", plans:faits };
+	} catch(e){ ETAT = { phase:"erreur", erreur:String(e && e.stack || e), plans:faits }; }
 	return ETAT;
 }
 // affiche : une image du film, en JPEG

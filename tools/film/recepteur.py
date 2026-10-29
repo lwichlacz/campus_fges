@@ -9,7 +9,7 @@ class H(http.server.BaseHTTPRequestHandler):
     def do_POST(self):
         q = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(self.path).query))
         dest = (ROOT / q.get("sortie", "docs/validation-web/media/campus-3d.mp4")).resolve()
-        if ROOT not in dest.parents or dest.suffix not in (".mp4", ".webm", ".jpg"):
+        if ROOT not in dest.parents or dest.suffix not in (".mp4", ".webm", ".jpg", ".json"):
             self.send_response(400); self.cors(); self.end_headers(); return
         n = int(self.headers["Content-Length"]); dest.write_bytes(self.rfile.read(n))
         self.send_response(200); self.cors(); self.end_headers(); self.wfile.write(f"écrit {dest.relative_to(ROOT)} ({n} octets)".encode())
