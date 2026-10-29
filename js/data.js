@@ -58,7 +58,7 @@ export const RENDEZ_VOUS = [
 ];
 
 /* Mini-jeux disponibles : id de formation → id du jeu */
-export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine" };
+export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires" };
 /* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */
 export const GAME_INFO = {
 	comptoir:{ fid:"gestion", title:"Le Comptoir", icon:"☕", where:"falise", whereLabel:"Atrium de Michel Falise", dur:"6 min",
@@ -70,6 +70,8 @@ export const GAME_INFO = {
 		pitch:"La trésorerie d'une PME fond sans raison : trie les pièces, rapproche la banque, analyse le budget… et démasque le fraudeur." },
 	patrimoine:{ fid:"dgp", title:"Le Dossier Deslaurier", icon:"📜", where:"falise", whereLabel:"Bâtiment Michel Falise (ISEA)", dur:"10 min",
 		pitch:"Un jeu de cartes chez le notaire : conseille la famille Deslaurier de 1959 à aujourd'hui. Contrat de mariage, donation, assurance-vie, SCI… chaque carte jouée envoie l'argent à la famille, au fisc, ou finit en dispute. Et gare aux coups du sort !" },
+	affaires:{ fid:"mbif", title:"Une journée de chargé d'affaires", icon:"🤝", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12 min",
+		pitch:"Dans ton agence, cinq clients qui sont d'abord des personnes. Fais émerger l'iceberg des besoins d'un boulanger, repère les signaux faibles chez une veuve, construis le pont de la confiance avec un jeune couple, accompagne une PME pendant huit ans et bâtis la solution d'une famille sans faire tomber la tour." },
 	robot:{ fid:"spi", title:"Cellule robotique Wenov", icon:"🦾", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"7 min",
 		pitch:"Pilote un vrai bras robot en 3D, programme le cycle d'une ligne de production, puis donne-lui des yeux pour trier les pièces." },
 	gaming:{ fid:"info", title:"Game Jam 48 h", icon:"🎮", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12 min",
