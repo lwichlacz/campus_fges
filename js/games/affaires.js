@@ -1,4 +1,4 @@
-/* « Une journée de chargé d'affaires » — mini-jeu du Master Management des Banques et Institutions Financières (MBIF).
+/* « Une journée du chargé d'affaires » — mini-jeu du Master Management des Banques et Institutions Financières (MBIF).
    Le geste métier du chargé d'affaires en cinq rendez-vous, un par thème : l'écoute, la sensibilité, la bienveillance,
    l'accompagnement et l'expertise. On ne découvre pas un portefeuille de clients, on découvre des personnes.
    Une agence en maquette 3D (coupe de maison de poupée) ; à chaque rendez-vous, la caméra plonge dans l'univers du client :
@@ -992,7 +992,7 @@ const PRODUCTS = [
 export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEvent, openLead }){
 	if(!document.getElementById("ca-css")){ const st = document.createElement("style"); st.id = "ca-css"; st.textContent = CSS; document.head.appendChild(st); }
 	const play = n => audio && audio.play(n);
-	const root = document.createElement("div"); root.className = "ca"; root.setAttribute("role", "dialog"); root.setAttribute("aria-modal", "true"); root.setAttribute("aria-label", "Mini-jeu Une journée de chargé d'affaires");
+	const root = document.createElement("div"); root.className = "ca"; root.setAttribute("role", "dialog"); root.setAttribute("aria-modal", "true"); root.setAttribute("aria-label", "Mini-jeu Une journée du chargé d'affaires");
 	root.innerHTML = `<canvas aria-hidden="true"></canvas><div class="ca-top"><span class="ca-chip ca-stage" id="caStage">Agence</span><button class="ca-x" aria-label="Quitter le jeu">×</button></div>
 		<div class="ca-meters" aria-live="polite"><span class="ca-m"><small>🕘 Heure</small><b data-m="h">8 h 55</b></span><span class="ca-m" data-mood hidden><small data-who>Client</small><b data-m="mood">😐 Neutre</b></span><span class="ca-m" data-score hidden><small data-sk>Score</small><b data-m="score">0</b></span></div>
 		<div class="ca-hint">↻ Fais tourner la maquette</div>
@@ -1043,7 +1043,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 	function intro(){
 		stage("Agence Vauban"); W.view("agence", 2.2);
 		later(800, () => say(null, "Bienvenue à l'agence ! Tes clients t'attendent déjà… Un conseil : écoute-les vraiment."));
-		show(`<div class="ca-k">Mini-jeu · ${formation.name}</div><h2 class="ca-h">Une journée de chargé d'affaires</h2>
+		show(`<div class="ca-k">Mini-jeu · ${formation.name}</div><h2 class="ca-h">Une journée du chargé d'affaires</h2>
 			<p class="ca-p">Tu es <b>chargé d'affaires</b> à l'agence Vauban. Dans ta salle d'attente, des clients (fictifs) : un boulanger, une retraitée, un jeune couple, un patron de PME, une famille. Derrière chaque dossier, il y a <b>une personne, une histoire, un projet</b>.</p>
 			<p class="ca-p">Chaque rendez-vous met à l'épreuve un geste du métier :</p>
 			<ul class="ca-themes">${THEMES.map(([, n, ic], i) => `<li>${ic} <b>${n}</b> · ${["comprendre avant de conseiller", "percevoir au-delà des demandes", "instaurer la confiance", "être présent dans la durée", "apporter la réponse juste"][i]}</li>`).join("")}</ul>

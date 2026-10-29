@@ -304,16 +304,16 @@ PAGES = {
 		},
 	},
 	"mbif": {
-		"title": "Relecture Une journée de chargé d'affaires",
+		"title": "Relecture Une journée du chargé d'affaires",
 		"accent": ("#16324f", "#e2ecf3", "#8fb6dc", "#1a2733"),
 		"cfg": {
-			"id": "mbif", "game": "Une journée de chargé d'affaires (Master Management des Banques et Institutions Financières)", "short": "Une journée de chargé d'affaires",
-			"h1": "Une journée de chargé d'affaires : votre relecture",
+			"id": "mbif", "game": "Une journée du chargé d'affaires (Master Management des Banques et Institutions Financières)", "short": "Une journée du chargé d'affaires",
+			"h1": "Une journée du chargé d'affaires : votre relecture",
 			"lead": "Le mini-jeu du Master Management des Banques et Institutions Financières, dans le campus 3D de la FGES, construit à partir de la proposition « Un geste métier : Univers Chargé d'Affaires et expertise financière ». Le joueur est chargé d'affaires à l'agence Vauban (fictive) : cinq rendez-vous, un par geste métier (l'écoute, la sensibilité, la bienveillance, l'accompagnement, l'expertise), chacun dans l'univers du client en maquette 3D. À chaque scène s'ajoute une touche d'expertise financière (compte de résultat, taux d'endettement, signaux de risque, profil de risque, vigilance). La journée se termine par un défi de directeur d'agence. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux candidats.",
 			"facts": ["Environ 15 min (2 à 3 min par rendez-vous)", "5 rendez-vous dans l'ordre choisi, puis un défi de manager", "Une agence et cinq univers en maquette 3D", "Clients, chiffres et agence fictifs"],
 			"url": SITE + "?jeu=mbif",
-			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Une journée de chargé d'affaires. Le jeu est aussi à Wenov.",
-			"card": {"icon": "🤝", "title": "Une journée de chargé d'affaires", "formation": "Master Management des Banques et Institutions Financières", "steps": [
+			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Une journée du chargé d'affaires. Le jeu est aussi à Wenov.",
+			"card": {"icon": "🤝", "title": "Une journée du chargé d'affaires", "formation": "Master Management des Banques et Institutions Financières", "steps": [
 				["9 h", "Karim, boulanger · l'écoute"], ["10 h 30", "Mme Lefèvre · la sensibilité"], ["14 h", "Inès et Tom · la bienveillance"],
 				["15 h 30", "Duval Textiles · l'accompagnement"], ["17 h", "Famille Martin · l'expertise"], ["18 h", "Directeur d'agence d'un jour"]]},
 			"publicHint": "Des étudiants de L3 (économie, gestion, banque, AES) qui envisagent le master, et des lycéens curieux lors des journées portes ouvertes.",
@@ -425,7 +425,7 @@ GAMES = [
 	{"id": "info", "icon": "🎮", "title": "Game Jam 48 h", "formation": "Licence Informatique", "dur": "12 min"},
 	{"id": "dgp", "icon": "📜", "title": "Le Dossier Deslaurier", "formation": "Master Droit & Gestion du Patrimoine", "dur": "10 min"},
 	{"id": "dmb", "icon": "🧬", "title": "From Blood to Decision", "formation": "Master Data Management in Biosciences", "dur": "12-15 min"},
-	{"id": "mbif", "icon": "🤝", "title": "Une journée de chargé d'affaires", "formation": "Master Management des Banques et Institutions Financières", "dur": "15 min"},
+	{"id": "mbif", "icon": "🤝", "title": "Une journée du chargé d'affaires", "formation": "Master Management des Banques et Institutions Financières", "dur": "15 min"},
 ]
 # une seule page pour tous les jeux (relecture/#dmb, #sv…), servie par GitHub Pages avec le site ;
 # les réponses partent vers le script Google (pages.json : « endpoint », l'URL …/exec du déploiement)
