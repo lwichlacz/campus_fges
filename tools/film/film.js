@@ -33,7 +33,7 @@ const NOUVELLES = {
 	veto: { name:"Prépa Véto", level:"prepa" },
 	d2: { name:"Prépa D2", level:"prepa" },
 	aese: { name:"Licence AESe", level:"L" },
-	mre: { name:"Master MRE", level:"M" }
+	mre: { level:"M" }                     // nom complet, à la demande de l'équipe du master
 };
 const TOUTES = FORMATIONS.map(f => NOUVELLES[f.id] ? { ...f, ...NOUVELLES[f.id] } : f), NB = TOUTES.length, NEUVE = new Set(Object.keys(NOUVELLES));
 const F = Object.fromEntries(TOUTES.map(f => [f.id, f]));
