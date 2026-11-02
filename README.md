@@ -40,7 +40,7 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/render.js` | Rendu : regroupement des objets, ciel, post-traitement, vent, eau, fenêtres, météo |
 | `js/landmarks.js` | Plaques de rue, panneaux « M » vers les stations, lieux réels |
 | `js/monuments.js` | Églises, cathédrale, beffroi et tours sur l'horizon |
-| `js/data.js` | Formations, lieux, liens, ambiances |
+| `js/data.js` | Formations, lieux, liens, ambiances, journées types « Vis ma vie d'étudiant » (`DAYS`, à faire valider avec `docs/validation-journees.md`) |
 | `js/details.js` | Fiches détaillées des formations (programme, débouchés, admission) |
 | `js/atrium.js` · `js/chapelle.js` | Les intérieurs visitables |
 | `js/games/comptoir.js` | Mini-jeu « Le Comptoir » (Licence Gestion) ; variante « caisse » avec `?caisse` |

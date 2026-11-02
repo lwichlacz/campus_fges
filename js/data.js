@@ -90,6 +90,44 @@ export const PROFILES = {
 	pro:   { icon:"💼", label:"En poste", levels:["DU"] }
 };
 
+/* Les journées types (« Vis ma vie d'étudiant ») : la visite guidée suit un personnage fictif, heure par heure.
+   Une étape = un lieu (at : PLACES, LIFE ou lieu du quartier Euratechnologies) ou un intérieur (in : atrium, chapelle,
+   bibli, wenovin), une heure (elle règle la lumière : jour, heure dorée dès 17 h, nuit dès 19 h 30), deux phrases au plus.
+   look : le portrait dessiné dans l'encadré de la visite.
+   BROUILLON à faire valider par chaque formation : docs/validation-journees.md */
+export const DAYS = {
+	licence: {
+		icon:"🎒", who:"Léa", level:"L1 Licence Gestion", fid:"gestion", zone:"vauban", profile:"lycee",
+		look:{ bg:"#ffd9a8", skin:"#f2c9a5", hair:"#7a4a2c", top:"#21b6ce", style:"long" },
+		pitch:"Une journée de cours à Vauban, du métro du matin à la résidence du soir.",
+		steps:[
+			{ at:"cormontaigne", h:"8 h 10", t:"Léa sort du métro à Cormontaigne. Une dizaine de minutes à pied par le boulevard Vauban, et la voilà sur le campus." },
+			{ at:"falise", h:"8 h 30", t:"Premier cours en amphi au bâtiment Michel Falise : introduction à la gestion. En L1, on découvre le marketing, la finance et les RH." },
+			{ in:"atrium", h:"10 h 15", t:"Pause dans le grand atrium vitré de Michel Falise : le temps de relire ses notes avec deux amies de son groupe de TD." },
+			{ at:"resto", h:"12 h 15", t:"Déjeuner au resto U avec son groupe. Le plateau ne coûte pas cher, et tout le monde se retrouve là à midi." },
+			{ in:"bibli", h:"13 h 30", t:"À la BU, Léa prépare un exposé de marketing avec trois camarades. Des ouvrages à portée de main, et le calme pour avancer." },
+			{ at:"falise", h:"15 h 00", t:"Retour à Michel Falise pour un TD en petit groupe : une étude de cas sur une vraie entreprise, avec l'enseignant qui passe de table en table." },
+			{ at:"sport", h:"17 h 15", t:"Fin des cours : direction la salle Norbert Segard pour un cours collectif d'All Sport." },
+			{ at:"maison", h:"18 h 45", t:"Réunion d'association à la Maison de l'étudiant : Léa aide à organiser le prochain gala." },
+			{ at:"residence", h:"20 h 00", t:"Retour à sa résidence, à quelques minutes du campus. Demain, cours dès 9 h." }
+		]
+	},
+	master: {
+		icon:"🎓", who:"Hugo", level:"M1 Master Data & IA, en alternance", fid:"dia", zone:"eura", profile:"bac3",
+		look:{ bg:"#c9e6ef", skin:"#a8714d", hair:"#2b2028", top:"#1e305e", style:"short", glasses:true },
+		pitch:"Une journée à l'école à Wenov, entre cours, projet et entreprises du quartier.",
+		steps:[
+			{ at:"metro", h:"8 h 20", t:"Hugo descend à Canteleu – Euratechnologies, sur la ligne 2. Wenov est à quelques minutes à pied." },
+			{ in:"wenovin", h:"8 h 45", t:"Cours de machine learning à Wenov, en promotion de trente. On code dès la première heure, sur des données réelles." },
+			{ at:"blan", h:"12 h 15", t:"Déjeuner au Blan-Lafont, au cœur d'Euratechnologies. Ici, on croise des start-up, des développeurs et d'anciens de la promo." },
+			{ in:"wenovin", h:"13 h 45", t:"Projet en équipe l'après-midi : construire un modèle de prédiction à partir d'un cas d'entreprise, puis le présenter au groupe." },
+			{ at:"frenchtech", h:"17 h 00", t:"Les entreprises du quartier recrutent des alternants en data : Hugo a trouvé la sienne à deux rues de l'école." },
+			{ at:"berges", h:"17 h 45", t:"Un peu d'air le long de la Deûle avant de rentrer, à pied ou à vélo par les berges." },
+			{ at:"factory", h:"18 h 30", t:"Retour à la Student Factory, à côté de Wenov. Demain, Hugo retrouve son équipe en entreprise : en alternance, il partage son temps entre l'école et l'entreprise." }
+		]
+	}
+};
+
 export const PLACES = {
 	ha: {
 		icon:"🏛️", name:"Hôtel Académique", kicker:"60 boulevard Vauban",

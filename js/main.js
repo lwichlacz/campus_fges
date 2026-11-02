@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=a857c623c2";
 import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=a857c623c2";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=a857c623c2";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=a857c623c2";
 import { MAP } from "./vauban.js?v=a857c623c2";
 import { buildLandmarks } from "./landmarks.js?v=a857c623c2";
 import { buildMonuments } from "./monuments.js?v=a857c623c2";
@@ -1797,6 +1797,7 @@ scene.environmentIntensity = ENV_I;
    ===================================================================== */
 let seasonKey = store.get("season", "automne"); if(!SEASONS[seasonKey]) seasonKey = "automne";
 let timeMode = store.get("time", "auto"); if(!["auto","jour","doree","nuit"].includes(timeMode)) timeMode = "auto";
+let dayTime = null;      // l'ambiance imposée par une journée type en cours (le réglage du visiteur reste intact)
 let season = SEASONS[seasonKey], night = false;
 const realNight = () => { const h = new Date().getHours(); return h < 7 || h >= 19; };
 const realGolden = () => new Date().getHours() === 18;          // la dernière heure avant la nuit
@@ -1882,8 +1883,9 @@ function stepLight(dt){
 }
 function applyAmbiance(instant, dur = 1.8){
 	season = SEASONS[seasonKey];
-	night = timeMode === "nuit" || (timeMode === "auto" && realNight());
-	golden = !night && (timeMode === "doree" || (timeMode === "auto" && realGolden()));
+	const tm = dayTime || timeMode;      // une journée type impose l'heure de son étape
+	night = tm === "nuit" || (tm === "auto" && realNight());
+	golden = !night && (tm === "doree" || (tm === "auto" && realGolden()));
 	const S = season, L = night ? NIGHT : golden ? GOLDEN : S.day;
 	paintSky(L.skyTop, L.skyBot);
 	document.body.style.background = L.fog;
@@ -1939,14 +1941,14 @@ function renderAmbiancePop(){
 $("ambiance").addEventListener("click", e => {
 	const s = e.target.closest("[data-season]"), t = e.target.closest("[data-time]"), w = e.target.closest("[data-weather]");
 	if(s){ seasonKey = s.dataset.season; store.set("season", seasonKey); }
-	if(t){ timeMode = t.dataset.time; store.set("time", timeMode); }
+	if(t){ timeMode = t.dataset.time; store.set("time", timeMode); dayTime = null; }      // le visiteur reprend la main sur l'heure
 	if(w){ weatherMode = w.dataset.weather; store.set("weather", weatherMode); }
 	if(s || t || w){ Audio.play("pop"); applyAmbiance(); }
 	const q = e.target.closest("[data-quality]");
 	if(q){ Audio.play("pop"); qualityMode = q.dataset.quality; store.set("quality", qualityMode); setQuality(qualityMode === "auto" ? guessQuality() : qualityMode); }
 	if(e.target.closest("[data-replay]")){ $("ambiance").hidden = true; closePanel(); if(mode !== "ext") exitInterior(true); else playIntro(); }
 });
-setInterval(() => { if(timeMode === "auto" && (realNight() !== night || (!night && realGolden() !== golden))) applyAmbiance(false, 8); }, 60000);     // crépuscule lent
+setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night || (!night && realGolden() !== golden))) applyAmbiance(false, 8); }, 60000);     // crépuscule lent
 
 /* =====================================================================
    Intérieurs : atrium (Falise) et chapelle (Hôtel Académique)
@@ -2389,7 +2391,8 @@ function goEura(id, vs){
 		const first = !store.get("euraToured", false);
 		const p = interiors.eura.places[id || "wenov"];
 		playCine(interiors.eura.arrival, "arrive", V(...p.cam), V(...p.target), () => {
-			if(first){ store.set("euraToured", true); startTour(); }
+			if(dayAfterRide){ const k = dayAfterRide; dayAfterRide = null; startTour(false, k); }
+			else if(first){ store.set("euraToured", true); startTour(); }
 			else if(id) focusEura(id);
 			else toast(WELCOME.eura, 4200);
 		});
@@ -2771,8 +2774,17 @@ function lieuxView(){
 		`<h3>Vie de campus</h3>` + Object.entries(LIFE).filter(([,p]) => p.pin).map(([id,p]) => row(id, p, p.kicker, found.has(id))).join("");
 	return [head, body];
 }
+// le bouton Visite propose la visite libre du campus et les journées types (la plus proche du profil en premier)
+function visiteView(){
+	const head = `<div class="kick">Visites guidées</div><h2>Laisse-toi guider</h2><p>La caméra t'emmène de lieu en lieu. Touche ⏸ à tout moment pour prendre la main.</p>`;
+	const days = Object.entries(DAYS).sort(([, a], [, b]) => (b.profile === profile) - (a.profile === profile));
+	const body = `<button class="lieu" data-day="tour"><span class="ic">🧭</span><span><b>${mode === "eura" ? "Le tour du quartier Euratechnologies" : "Le tour du campus Vauban"}</b><small>Les bâtiments et les lieux de vie, un par un</small></span></button>
+		<h3>Vis ma vie d'étudiant</h3>` + days.map(([k, d]) => `<button class="lieu" data-day="${k}"><span class="ic">${d.icon}</span><span><b>Une journée avec ${d.who}, ${d.level}</b><small>${d.pitch}</small></span></button>`).join("") +
+		`<div class="empty">${Object.values(DAYS).map(d => d.who).join(" et ")} sont des personnages imaginaires : leurs journées racontent le quotidien de la formation.</div>`;
+	return [head, body];
+}
 function syncDock(){
-	const on = { formations: current === "nav:formations", lieux: current === "nav:lieux", jeux: current === "nav:jeux", carnet: current === "carnet", visite: !!tour };
+	const on = { formations: current === "nav:formations", lieux: current === "nav:lieux", jeux: current === "nav:jeux", carnet: current === "carnet", visite: !!tour || current === "nav:visite" };
 	document.querySelectorAll("[data-dock]").forEach(b => b.setAttribute("aria-pressed", String(!!on[b.dataset.dock])));
 }
 function openPanel(id){
@@ -2786,6 +2798,8 @@ function openPanel(id){
 		body = `<div id="flist"></div>`;
 	} else if(id === "nav:lieux"){
 		[head, body] = lieuxView();
+	} else if(id === "nav:visite"){
+		[head, body] = visiteView();
 	} else if(id === "nav:jeux"){
 		[head, body] = jeuxView();
 	} else if(id === "nav:metro"){
@@ -2854,6 +2868,7 @@ $("panel").addEventListener("click", e => {
 		else if(k === "eura") goEura(null, arg); else if(k === "walk") walkTo(arg); else enterInterior(go.dataset.go);
 		return; }
 	const pl = e.target.closest("[data-place]"); if(pl){ selectPlace(pl.dataset.place); return; }
+	const dy = e.target.closest("[data-day]"); if(dy){ closePanel(); startTour(false, dy.dataset.day === "tour" ? null : dy.dataset.day); return; }
 	if(e.target.closest("[data-carnet]")) openPanel("carnet");
 	if(e.target.closest("[data-plaquette]")) openLead([...favs]);
 	const ld = e.target.closest("[data-lead]"); if(ld) openLead([ld.dataset.lead]);
@@ -3000,7 +3015,7 @@ document.querySelectorAll("[data-dock]").forEach(b => b.addEventListener("click"
 	const k = b.dataset.dock;
 	Audio.play("pop");
 	if(coach) endCoach();
-	if(k === "visite"){ tour ? stopTour() : startTour(); return; }
+	if(k === "visite"){ if(tour) stopTour(); else if(current === "nav:visite") closePanel(); else openPanel("nav:visite"); return; }
 	const view = k === "formations" ? "nav:formations" : k === "lieux" ? "nav:lieux" : k === "jeux" ? "nav:jeux" : "carnet";
 	if(tour) stopTour();
 	if(current === view){ closePanel(); return; }
@@ -3149,46 +3164,109 @@ const STOP = 9;
 let tour = null;
 const firstSentence = t => { const m = t.match(/^.{20,240}?[.!?](?=\s|$)/); if(m) return m[0]; const c = t.slice(0, 200); return c.slice(0, c.lastIndexOf(" ")) + "…"; };
 const EURA_TOUR = ["wenov", "cyber", "blan", "berges", "pionnieres", "factory", "frenchtech", "metro"];
-function startTour(idle){
-	if(mode === "wenovin"){ exitInterior(false, () => startTour(idle)); return; }
-	if(mode !== "ext" && mode !== "eura"){ exitInterior(false, () => startTour(idle)); return; }
+let dayAfterRide = null;     // journée type à lancer à l'arrivée du métro à Euratechnologies
+/* dk : une journée type (DAYS) ; sans dk, la visite libre du lieu où l'on se trouve. Une journée se joue dans sa zone
+   (Vauban ou Euratechnologies) : on y va d'abord, en métro s'il le faut. */
+function startTour(idle, dk){
+	const day = dk && DAYS[dk];
+	if(mode === "wenovin"){ exitInterior(false, () => startTour(idle, dk)); return; }
+	if(mode !== "ext" && mode !== "eura"){ exitInterior(false, () => startTour(idle, dk)); return; }
+	if(day && day.zone === "eura" && mode !== "eura"){ dayAfterRide = dk; goEura(); return; }
+	if(day && day.zone !== "eura" && mode === "eura"){ exitInterior(false, () => startTour(idle, dk)); return; }
 	closePanel(); setHover(null);
-	tour = { stops: mode === "eura" ? EURA_TOUR.filter(id => interiors.eura.places[id]) : TOUR_IDS.filter(id => (PLACES[id] || LIFE[id]) && (PLACES[id] || LIFE[id]).target), i:-1, t:0, paused:false };
+	const here = id => mode === "eura" ? interiors.eura.places[id] : (PLACES[id] || LIFE[id]) && (PLACES[id] || LIFE[id]).target;
+	tour = { day, stops: day ? day.steps.filter(s => s.in ? INSIDE.some(([k]) => k === s.in) : here(s.at)) : mode === "eura" ? EURA_TOUR.filter(here) : TOUR_IDS.filter(here), i:-1, t:0, dur:STOP, paused:false, busy:false };
 	$("tour").hidden = false;
+	$("tour").classList.toggle("day", !!day);
+	$("tourFace").innerHTML = day ? portrait(day.look) : "";
 	goStop(0);
 	syncDock();
-	if(!idle) toast("Visite guidée : laisse-toi porter, ou touche ⏸ pour prendre la main", 3200);
+	if(day) toast(`Une journée avec ${day.who} : laisse-toi porter, ou touche ⏸ pour prendre la main`, 3200);
+	else if(!idle) toast("Visite guidée : laisse-toi porter, ou touche ⏸ pour prendre la main", 3200);
+}
+const stopAt = s => typeof s === "string" ? s : s.at || s.in;
+/* Le lieu où doit se jouer une étape : un intérieur (s.in), ou le dehors de la zone de la journée.
+   On y passe par les mêmes fondus que le visiteur (sortir de l'atrium, entrer dans Wenov…). */
+function moveTo(want, then){
+	if(mode === want) return then();
+	const inside = m => m !== "ext" && m !== "eura";
+	if(inside(mode)) exitInterior(false, () => moveTo(want, then));      // d'abord ressortir (de Wenov, on ressort dans le quartier)
+	else enterInterior(want, then, true);
+}
+// heure de l'étape → ambiance : jour jusqu'à 17 h, heure dorée jusqu'à 19 h 30, nuit ensuite
+const hourMood = h => { const [hh, mm] = h.split("h").map(x => parseInt(x) || 0), t = hh + mm/60; return t < 17 ? "jour" : t < 19.5 ? "doree" : "nuit"; };
+function setDayTime(m){
+	if(m === dayTime) return;
+	dayTime = m; applyAmbiance(false, 3);
 }
 function goStop(i){
-	const n = tour.stops.length;
-	tour.i = (i + n) % n; tour.t = 0;
-	const id = tour.stops[tour.i], p = PLACES[id] || LIFE[id];
-	flyToPlace(id, 2.6);
-	$("tourK").textContent = mode === "eura" ? "Quartier Euratechnologies" : PLACES[id] ? "Bâtiment des formations" : "Vie de campus";
-	$("tourDots").textContent = `${tour.i + 1} / ${n}`;
+	const n = tour.stops.length, day = tour.day;
+	if(day && i >= n){ endDay(); return; }       // une journée ne tourne pas en boucle : elle finit le soir
+	tour.i = day ? Math.max(0, i) : (i + n) % n; tour.t = 0;
+	const s = tour.stops[tour.i];
+	if(day){
+		setDayTime(hourMood(s.h));
+		const want = s.in || (day.zone === "eura" ? "eura" : "ext");
+		if(mode !== want){ tour.busy = true; moveTo(want, () => { if(!tour) return; tour.busy = false; showStop(s); }); return; }
+	}
+	showStop(s);
+}
+function showStop(s){
+	const n = tour.stops.length, day = tour.day, id = stopAt(s);
+	const In = s.in && INSIDE.find(([k]) => k === s.in), p = In ? { icon:In[1], name:In[2] } : PLACES[id] || LIFE[id] || interiors.eura.places[id];
+	if(!In) flyToPlace(id, 2.6);
+	$("tourK").textContent = day ? `${day.icon} ${day.who} · ${day.level}` : mode === "eura" ? "Quartier Euratechnologies" : PLACES[id] ? "Bâtiment des formations" : "Vie de campus";
+	$("tourDots").textContent = day ? `${s.h} · ${tour.i + 1}/${n}` : `${tour.i + 1} / ${n}`;
 	$("tourT").textContent = `${p.icon} ${p.name}`;
-	$("tourP").textContent = firstSentence(p.text);
+	$("tourP").textContent = day ? s.t : firstSentence(p.text);
+	tour.dur = day ? Math.max(STOP, s.t.length / 15) : STOP;      // le temps de lire la phrase de l'étape
+	if(In) return;      // l'intérieur se compte à l'entrée (enterInterior)
 	if(mode === "eura") euraStamp(id); else markVisited(id, true);
 }
+/* Portrait illustré du personnage d'une journée, dessiné en SVG (pas d'image externe) :
+   look = { bg, skin, hair, top, style:"long"|"short", glasses } */
+function portrait(L){
+	const hair = L.style === "long"
+		? `<path d="M15 33c0-12 7-20 17-20s17 8 17 20v17h-6V33c-3-5-9-8-11-12-2 4-8 8-11 9v20h-6z" fill="${L.hair}"/>`
+		: `<path d="M18 29c-1-9 5-16 14-16s15 6 14 16c-2-4-5-6-8-6-3 2-9 2-12 0-4 0-6 2-8 6z" fill="${L.hair}"/><circle cx="21" cy="21" r="5" fill="${L.hair}"/><circle cx="29" cy="16" r="5" fill="${L.hair}"/><circle cx="38" cy="16" r="5" fill="${L.hair}"/><circle cx="44" cy="22" r="4.5" fill="${L.hair}"/>`;
+	const glasses = L.glasses ? `<g fill="none" stroke="#2b2233" stroke-width="1.6"><circle cx="26.5" cy="33" r="4.2"/><circle cx="37.5" cy="33" r="4.2"/><path d="M30.7 33h2.6"/></g>` : "";
+	return `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="${L.bg}"/>
+		<path d="M10 64c2-12 10-17 22-17s20 5 22 17z" fill="${L.top}"/><rect x="28" y="40" width="8" height="9" rx="3" fill="${L.skin}"/>
+		${L.style === "long" ? hair : ""}<ellipse cx="32" cy="32" rx="12" ry="13" fill="${L.skin}"/>${L.style === "long" ? `<path d="M20 30c2-8 7-12 12-12s10 4 12 12c-5-2-9-5-12-9-3 4-7 7-12 9z" fill="${L.hair}"/>` : hair}
+		<circle cx="26.5" cy="33" r="1.6" fill="#2b2233"/><circle cx="37.5" cy="33" r="1.6" fill="#2b2233"/>
+		<circle cx="23.5" cy="38" r="2.3" fill="#f08a7a" opacity=".45"/><circle cx="40.5" cy="38" r="2.3" fill="#f08a7a" opacity=".45"/>
+		<path d="M28.5 39.5q3.5 3 7 0" fill="none" stroke="#2b2233" stroke-width="1.6" stroke-linecap="round"/>${glasses}</svg>`;
+}
+// fin de journée : la fiche de la formation du personnage prend le relais
+function endDay(){
+	const d = tour.day;
+	stopTour();
+	openPanel("f:" + d.fid);
+	setTimeout(() => toast(`Fin de la journée de ${d.who} 🌙 Voici sa formation.`, 3600), 1600);      // après le message du tampon de la dernière étape
+}
 function pauseTour(v){ if(!tour) return; tour.paused = v; $("tourPause").textContent = v ? "▶" : "⏸"; $("tourPause").setAttribute("aria-label", v ? "Reprendre" : "Pause"); if(v) controls.autoRotate = false; }
-function stopTour(){ if(!tour) return; tour = null; $("tour").hidden = true; controls.autoRotate = false; syncDock(); }
+function stopTour(){
+	if(!tour) return;
+	tour = null; $("tour").hidden = true; controls.autoRotate = false; syncDock();
+	if(dayTime){ dayTime = null; applyAmbiance(false, 3); }      // retour à l'ambiance choisie par le visiteur
+}
 $("tour").addEventListener("click", e => {
-	const b = e.target.closest("[data-tour]"); if(!b || !tour) return;
+	const b = e.target.closest("[data-tour]"); if(!b || !tour || tour.busy) return;      // pas d'étape suivante pendant un fondu
 	const a = b.dataset.tour;
 	if(a === "next") goStop(tour.i + 1);
 	else if(a === "prev") goStop(tour.i - 1);
 	else if(a === "pause") pauseTour(!tour.paused);
 	else if(a === "stop") stopTour();
-	else if(a === "open"){ const id = tour.stops[tour.i]; pauseTour(true); openPanel(id); }
+	else if(a === "open"){ const id = stopAt(tour.stops[tour.i]); pauseTour(true); openPanel(id); }
 });
 function updateTour(dt){
-	if(!tour || fly || intro) return;
+	if(!tour || fly || intro || tour.busy) return;
 	if(!tour.paused){
 		tour.t += dt;
 		controls.autoRotate = !reduceMotion; controls.autoRotateSpeed = .5;
-		if(tour.t > STOP) goStop(tour.i + 1);
+		if(tour.t > tour.dur) goStop(tour.i + 1);
 	}
-	$("tourBar").style.width = Math.min(100, tour.t/STOP*100).toFixed(1) + "%";
+	if(tour) $("tourBar").style.width = Math.min(100, tour.t/tour.dur*100).toFixed(1) + "%";
 }
 
 /* =====================================================================
