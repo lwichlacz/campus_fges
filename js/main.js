@@ -2023,6 +2023,7 @@ function enterInterior(id, then, quiet){
 	Promise.all([loadInterior(id), new Promise(r => setTimeout(r, 420))]).then(() => {
 		setTimeout(() => f.classList.remove("on"), 80);
 		placeIn(id);
+		if(INSIDE.some(([k]) => k === id) && !inside.has(id)){ inside.add(id); store.set("inside", [...inside]); discovered(); }
 		const I = interiors[id];
 		const tgt = I.home.target.clone(), pos = I.home.pos.clone().sub(tgt).multiplyScalar(innerWidth < innerHeight ? 1.5 : .82).add(tgt);
 		if(innerWidth < innerHeight && id === "atrium"){ tgt.x -= 4; pos.x -= 4; }
@@ -2142,6 +2143,8 @@ let medals = store.get("medals", {});        // { comptoir:"Bien", … } : la me
 let medalsSub = store.get("medalsSub", {});  // { jardin:{ biotech:"Bien" } } : les parcours réussis d'un jeu à parcours
 const MENTION_RANK = ["De justesse", "Assez bien", "Bien", "Très bien"];
 let found = new Set(store.get("found", []));
+let inside = new Set(store.get("inside", []));     // intérieurs déjà visités (atrium, chapelle, BU, Wenov)
+const INSIDE = [["atrium", "✨", "L'atrium de Michel Falise"], ["chapelle", "⛪", "La chapelle universitaire"], ["bibli", "📚", "La bibliothèque universitaire"], ["wenovin", "💡", "L'intérieur de Wenov"]];
 let entered = false, current = null;
 let musicWanted = store.get("music", true);
 
@@ -2153,6 +2156,7 @@ function toast(msg, ms=3200){
 const buzz = ms => { try { if(touch && !reduceMotion && navigator.userActivation?.hasBeenActive !== false) navigator.vibrate?.(ms); } catch(e){} };
 function refreshHud(){
 	$("carnetN").textContent = favs.size;
+	discovered(true);
 	$("btnProfile").innerHTML = profile ? `${PROFILES[profile].icon} <span class="lbl">${PROFILES[profile].label}</span>` : "👤";
 	$("btnMusic").textContent = Audio.on ? "🎵" : "🔇";
 	$("btnMusic").setAttribute("aria-pressed", String(Audio.on));
@@ -2325,7 +2329,7 @@ function focusEura(id, open = true){
 }
 function euraStamp(id){
 	if(!EURA_STAMPS.includes(id) || euraStamps.has(id)) return;
-	euraStamps.add(id); store.set("euraStamps", [...euraStamps]);
+	euraStamps.add(id); store.set("euraStamps", [...euraStamps]); discovered();
 	for(const pin of pins) if(pin.place === id) pin.el.querySelector("s").textContent = "✓";
 	const n = euraStamps.size, p = PLACES[id] || LIFE[id];
 	setTimeout(() => {
@@ -2605,6 +2609,46 @@ function haBody(){
 	return `<h3>Formation continue</h3>${listFor("ha").map(formationCard).join("")}
 		<div class="empty">Les autres DU sont au bâtiment Michel Falise (ISEA) et à Wenov (cyber, IA).</div>${tip}`;
 }
+/* Découverte du campus : la part des lieux, des intérieurs et des mini-jeux déjà vus, en un seul pourcentage.
+   Chaque famille propose sa prochaine étape, pour donner envie d'aller voir ce qui reste. */
+function discovery(){
+	// les épingles n'existent qu'une fois le quartier construit ; on suggère d'abord les lieux à mini-jeu, les stations de métro en dernier
+	const life = Object.keys(LIFE).filter(id => LIFE[id].pin && LIFE[id].zone !== "eura").sort((a, b) => !!GAME_AT[b] - !!GAME_AT[a] || !!LIFE[a].metro - !!LIFE[b].metro);
+	const lieux = [...Object.keys(PLACES).filter(id => id !== "wenov"), ...life];
+	const eura = EURA_STAMPS;
+	const gk = Object.keys(GAME_INFO);
+	const parts = [
+		{ icon:"🏛️", label:"Lieux de Vauban", got:lieux.filter(id => stamps.has(id) || found.has(id)).length, total:lieux.length,
+			next:(id => id && { name:(PLACES[id] || LIFE[id]).name, attr:`data-place="${id}"` })(lieux.find(id => !stamps.has(id) && !found.has(id))) },
+		{ icon:"✨", label:"Intérieurs", got:INSIDE.filter(([k]) => inside.has(k)).length, total:INSIDE.length,
+			next:(i => i && { name:i[2], attr:i[0] === "wenovin" ? `data-place="wenov"` : `data-go="${i[0]}"` })(INSIDE.find(([k]) => !inside.has(k))) },
+		{ icon:"💡", label:"Euratechnologies", got:eura.filter(id => euraStamps.has(id)).length, total:eura.length,
+			next:(id => id && { name:(PLACES[id] || LIFE[id]).name, attr:`data-place="${id}"` })(eura.find(id => !euraStamps.has(id))) },
+		{ icon:"🎮", label:"Mini-jeux réussis", got:gk.filter(k => medals[k]).length, total:gk.length,
+			next:(k => k && { name:GAME_INFO[k].title, attr:`data-game="${GAME_INFO[k].fid}"` })(gk.find(k => !medals[k])) }
+	];
+	const got = parts.reduce((s, p) => s + p.got, 0), total = parts.reduce((s, p) => s + p.total, 0);
+	return { parts, pct:Math.round(100 * got / total) };
+}
+function discoveryHTML(){
+	const { parts, pct } = discovery();
+	const next = parts.find(p => p.next);
+	return `<div class="disco"><div class="disco-top"><b>Campus découvert</b><span>${pct} %</span></div>
+		<div class="disco-bar" role="progressbar" aria-label="Campus découvert" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>
+		<ul>${parts.map(p => `<li class="${p.got === p.total ? "got" : ""}"><span aria-hidden="true">${p.icon}</span>${p.label}<b>${p.got}/${p.total}</b></li>`).join("")}</ul>
+		${next ? `<button class="disco-next" ${next.next.attr}><small>Prochaine découverte</small>${next.icon} ${next.next.name} <span aria-hidden="true">→</span></button>` : `<div class="disco-done">🎉 Tu as tout découvert. Bravo !</div>`}</div>`;
+}
+// à chaque découverte : la jauge du bouton Carnet suit, et un message salue chaque quart franchi (une seule fois)
+function discovered(quiet){
+	const { pct } = discovery();
+	const b = document.querySelector('.dock [data-dock="carnet"]');
+	if(b){ b.style.setProperty("--p", pct + "%"); b.title = `Mon carnet · campus découvert à ${pct} %`; }
+	const q = Math.floor(pct / 25) * 25, best = store.get("discoBest", 0);
+	if(q > best){
+		store.set("discoBest", q);
+		if(q && !quiet) setTimeout(() => toast(q === 100 ? "🎉 Campus découvert à 100 % : tu connais la FGES par cœur !" : `🧭 Campus découvert à ${q} % · la suite dans ton carnet 📒`, 3400), 4200);     // après le message du tampon
+	}
+}
 function carnetBody(){
 	const list = F.filter(f => favs.has(f.id));
 	const st = Object.keys(PLACES).map(id => `<div class="stamp ${stamps.has(id) ? "got" : ""}"><i>${PLACES[id].icon}</i>${PLACES[id].name.replace("Bâtiment ","")}</div>`).join("");
@@ -2612,7 +2656,8 @@ function carnetBody(){
 	const lf = lifeIds.map(id => `<span class="lifechip ${found.has(id) ? "got" : ""}" title="${LIFE[id].name}">${LIFE[id].icon}</span>`).join("");
 	const gk = Object.keys(GAME_INFO), won = gk.filter(k => medals[k]);
 	const md = gk.map(k => `<button class="medal ${medals[k] ? "got" : ""}" data-game="${GAME_INFO[k].fid}" title="${GAME_INFO[k].title}"><i>${medals[k] ? "🏅" : GAME_INFO[k].icon}</i><b>${GAME_INFO[k].title}</b><small>${medals[k] ? "Mention " + medals[k] : "À jouer"}${GAME_INFO[k].parcours ? ` · ${Object.keys(medalsSub[k] || {}).length}/${GAME_INFO[k].parcours.length} parcours` : ""}</small></button>`).join("");
-	return `<h3>Mes médailles (${won.length}/${gk.length})</h3><div class="medals">${md}</div>
+	return `${discoveryHTML()}
+		<h3>Mes médailles (${won.length}/${gk.length})</h3><div class="medals">${md}</div>
 		<h3>Tampons de visite</h3><div class="stamps">${st}</div>
 		${euraStamps.size >= EURA_STAMPS.length ? `<button class="badgebtn" data-openbadge><i>🏅</i><span><b>Badge Explorateur Euratechnologies</b><small>Revoir et partager mon badge</small></span></button>` : ""}
 		<h3>Tampons Euratechnologies (${EURA_STAMPS.filter(id => euraStamps.has(id)).length}/${EURA_STAMPS.length})</h3><div class="stamps">${EURA_STAMPS.map(id => { const p = PLACES[id] || LIFE[id]; return `<div class="stamp ${euraStamps.has(id) ? "got" : ""}"><i>${p.icon}</i>${p.name.replace("Campus ", "").replace("Les squares des pionnières", "Pionnières")}</div>`; }).join("")}</div>
@@ -2839,6 +2884,7 @@ function openGame(fid){
 			gamePaused = false;
 			if(fid === JEU) relecture?.event("close");
 			const suggest = () => { justWon = kind; openPanel("nav:jeux"); };
+			if(won) discovered();
 			if(won && kind === "comptoir"){
 				const party = () => { interiors.atrium.celebrate(); Audio.play("win"); toast("🎓 Bravo, diplômé·e ! Toute l'atrium fête ta réussite !", 4500); setTimeout(suggest, 4200); };
 				if(mode === "atrium") party(); else enterInterior("atrium", party);
@@ -2874,10 +2920,10 @@ function markVisited(id){
 	const p = PLACES[id] || LIFE[id];
 	const mark = () => { for(const pin of pins) if(pin.place === id) pin.el.querySelector("s").textContent = "✓"; };
 	if(PLACES[id] && !stamps.has(id)){
-		stamps.add(id); store.set("stamps", [...stamps]); mark();
+		stamps.add(id); store.set("stamps", [...stamps]); mark(); discovered();
 		setTimeout(() => { Audio.play("stamp"); buzz([20, 60, 30]); toast(stamps.size === 3 ? "Tour du campus terminé ! Ouvre ton carnet 📒" : `Tampon obtenu : ${p.name} (${stamps.size}/3)`, 3000); }, 900);
 	} else if(LIFE[id] && !found.has(id)){
-		found.add(id); store.set("found", [...found]); mark();
+		found.add(id); store.set("found", [...found]); mark(); discovered();
 		const total = Object.keys(LIFE).filter(k => LIFE[k].pin).length;
 		setTimeout(() => toast(`Lieu de vie découvert : ${p.name} (${found.size}/${total})`, 2600), 900);
 	}
