@@ -358,6 +358,65 @@ PAGES = {
 			],
 		},
 	},
+	"ebmd": {
+		"title": "Relecture Courée, la boutique en 3D",
+		"accent": ("#b23a24", "#fbebe6", "#ff9b84", "#3a1d17"),
+		"cfg": {
+			"id": "ebmd", "game": "Courée, la boutique en 3D (Master E-Business & Marketing Digital)", "short": "Courée, la boutique en 3D",
+			"h1": "Courée, la boutique en 3D : votre relecture",
+			"lead": "Le mini-jeu du Master E-Business & Marketing Digital de l'École du Numérique, dans le campus 3D de la FGES. Le joueur arrive en alternance chez Courée, une jeune marque lilloise fictive de sweats brodés, et fait décoller son site jusqu'au Black Friday. Le site est montré de l'intérieur, comme une boutique en 3D : les visiteurs arrivent par les canaux d'acquisition, parcourent les pages… et font demi-tour quand quelque chose les gêne. Les chiffres sont illustratifs : nous avons besoin de votre regard sur les contenus et leur justesse.",
+			"facts": ["Environ 12 min", "6 étapes, dont un Black Friday en direct", "Le site vu de l'intérieur, en 3D", "Public : candidats bac+3", "Marque et chiffres fictifs"],
+			"url": SITE + "?jeu=ebmd",
+			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Courée, la boutique en 3D. Le jeu est aussi dans Wenov, épingle « Studio e-commerce ».",
+			"videoSteps": ["Tunnel", "SEO", "Cookies", "Acquisition", "CRM", "Black Friday"],
+			"card": {"icon": "🛍️", "title": "Courée, la boutique en 3D", "formation": "Master E-Business & Marketing Digital", "steps": [
+				["1", "Réparer le tunnel de commande (UX, accessibilité)"], ["2", "Grimper dans les résultats de recherche (SEO)"], ["3", "Une bannière cookies conforme (RGPD)"],
+				["4", "Répartir 3 000 € de publicité (ROAS)"], ["5", "Le bon message à chaque segment (CRM)"], ["6", "Tenir le Black Friday en direct"]]},
+			"publicHint": "Des étudiants de L3 (gestion, marketing, numérique) qui envisagent le master.",
+			"dureeHint": "Durée prévue : environ 12 minutes.",
+			"sections": [
+				{"t": "Le principe", "items": [
+					c("maquette", "Le site vu comme une boutique en 3D est-il parlant ?", "Six portails (recherche, publicité, réseaux sociaux, influence, e-mail, accès direct) amènent des visiteurs colorés ; au-dessus de chaque pièce (accueil, catalogue, fiche produit, caisse), le taux de passage. Les acheteurs repartent avec un sac, un colis part de l'entrepôt."),
+					c("ines", "Inès, la head of growth qui commente par messages, est-elle un bon fil conducteur ?", "Un message d'accueil à chaque étape, une réaction selon la note, et « le conseil d'Inès » quand l'étape n'est pas réussie."),
+					c("cours", "Les grands thèmes du master sont-ils bien nommés ?", "UX design, UI et accessibilité ; Référencement naturel (SEO) ; Droit du numérique et RGPD ; Acquisition et croissance ; Web analytics ; CRM et relation client ; Performance de site et marketing mobile ; E-business et logistique.")]},
+				{"t": "1 · Le tunnel de commande", "sub": "UX, UI et accessibilité", "items": [
+					c("ux_elements", "Les éléments à corriger et leur poids sont-ils justes ?", "4 corrections au maximum. Compte obligatoire +7 points de paiement, frais surprises +7, formulaire de 14 champs +4, bouton gris peu contrasté +4, pop-up de remise sur la caisse +3. Pièges à garder : récapitulatif du panier, avis vérifiés (−2 si retirés)."),
+					c("ux_wcag", "La mention de l'accessibilité est-elle juste ?", "Bouton blanc sur gris : contraste d'environ 1,3:1, alors que les règles WCAG demandent au moins 4,5:1. La carte de chaleur montre les clics répétés (« rage clicks »)."),
+					q("ux_autre", "Un autre frein classique du tunnel de commande à ajouter (moyens de paiement, délai de livraison, sécurité) ?")]},
+				{"t": "2 · Le référencement", "sub": "SEO", "items": [
+					c("seo_choix", "Les trois choix (titre, méta-description, adresse) sont-ils bien notés ?", "Bon titre : « Sweat brodé Vauban, fabriqué à Lille | Courée ». Pièges : « Produit 12 – Accueil », titre bourré de « sweat ». Adresse lisible /sweat-brode-vauban contre une adresse technique ou bourrée de mots-clés."),
+					c("seo_meta", "La règle « le titre fait classer, la description fait cliquer » est-elle formulée comme vous l'enseignez ?", "Le classement dépend du titre et de l'adresse (position 2, 4, 7 ou page 2) ; la méta-description change seulement le taux de clic (×1,3 si bonne, ×0,9 si vide, ×0,7 si criarde)."),
+					c("seo_temps", "Le message « en vrai, il faut des semaines, du contenu et des liens » suffit-il à nuancer ?")]},
+				{"t": "3 · La bannière cookies", "sub": "Droit du numérique et RGPD", "items": [
+					c("rgpd_regles", "Les règles de conformité sont-elles justes ?", "Refuser aussi simple qu'accepter ; cases décochées ; aucun traceur publicitaire avant le choix ; outil de mesure d'audience exempté possible sans consentement ; newsletter à cocher soi-même (la case précochée « offres de Courée et de ses partenaires » ne vaut pas consentement)."),
+					c("rgpd_fantomes", "Les « fantômes » (visiteurs qui refusent mais achètent quand même) sont-ils une bonne image ?", "Taux d'acceptation illustratifs : 55 % avec un vrai bouton Refuser, 75 % avec un lien discret, 90 % sans refus."),
+					c("rgpd_cnil", "Le rappel des amendes est-il juste ?", "Décembre 2021 : 150 M€ pour Google et 60 M€ pour Facebook, parce que refuser les cookies y était plus compliqué qu'accepter."),
+					c("rgpd_suite", "La conséquence plus tard est-elle pertinente ?", "Une newsletter précochée rend la liste peu fiable : l'e-mail rapporte beaucoup moins à l'étape 4, et le segment « abonnés » est signalé à l'étape 5.")]},
+				{"t": "4 · Le budget d'acquisition", "sub": "Acquisition et web analytics", "items": [
+					c("acq_canaux", "Les ordres de grandeur par canal sont-ils crédibles pour une petite marque ?", "Pour 500 € (panier moyen 52 €) : annonces sur les moteurs 830 visites à 3,2 % (ROAS 2,8) ; réseaux sociaux 2 000 visites à 0,7 % (1,5) ; créatrice lilloise de 12 000 abonnés 1 500 visites à 2,2 % (3,4) ; e-mail aux abonnés 1 200 visites à 5 % (6,2) ; bannières 1 500 visites à 0,5 % (0,8). Chaque tranche suivante rapporte moins."),
+					c("acq_roas", "La question d'analyse est-elle juste ?", "« Courée garde environ 50 % de marge : quel canal couper en premier ? » Réponse : le canal au ROAS le plus bas sous 2, ou aucun s'ils sont tous au-dessus."),
+					c("acq_influence", "La mention « collaboration commerciale » obligatoire pour l'influence est-elle bien formulée ?"),
+					q("acq_manque", "Un canal à ajouter (marketplaces, comparateurs, affiliation, SEA Shopping) ?")]},
+				{"t": "5 · Le CRM", "sub": "CRM et relation client", "items": [
+					c("crm_segments", "Les associations segment → message sont-elles celles que vous enseignez ?", "Paniers abandonnés → rappel avec avis (sans remise d'emblée) ; fidèles → avant-première ; clients d'un seul produit → bonnet assorti (vente croisée) ; abonnés sans commande → bienvenue et histoire de la marque. Piège : « −30 % sur tout, tout le temps »."),
+					c("crm_relance", "Le délai de relance d'un panier abandonné est-il juste ?", "1 heure (meilleur), le lendemain (moins bien), une semaine (trop tard).")]},
+				{"t": "6 · Le Black Friday", "sub": "Performance, stock, logistique, avis", "items": [
+					c("bf_format", "Le format en direct (80 secondes, 4 alertes de 14 s, pire choix si le temps s'écoule) convient-il ?", "Trafic ×8 et conversion ×1,5 pendant la journée ; la maquette se remplit, les colis s'empilent dans l'entrepôt."),
+					c("bf_choix", "Les meilleures réponses sont-elles justes ?", "Site lent sur mobile : compresser les images et activer le cache ; rupture du produit phare : précommande et publicité basculée ; entrepôt débordé : annoncer honnêtement « expédié sous 4 jours » ; avis 1★ viral : réponse publique et geste commercial."),
+					c("bf_droit", "Les qualifications juridiques sont-elles formulées prudemment ?", "Fausse rareté (« Plus que 3 pièces ! ») : pratique commerciale trompeuse. Supprimer un avis négatif : fausse l'information des clients, interdit."),
+					c("bf_google", "La statistique « selon Google, plus de la moitié des visites mobiles sont abandonnées au-delà de 3 s » peut-elle être citée ainsi ?")]},
+				{"t": "Fin de partie", "items": [
+					c("mention", "Les rangs sont-ils bien calibrés ?", "Sur 18 étoiles (6 étapes) : 16 et plus « Head of Growth en puissance » (Très bien), 13 et plus « Chef·fe de projet e-commerce » (Bien), 10 et plus « Alternant·e prometteur·se » (Assez bien), sinon « Stagiaire à suivre de près »."),
+					c("metiers", "Les métiers cités vous conviennent-ils ?", "Chef de projet e-commerce, consultant SEO, trafic manager, responsable CRM."),
+					c("ton", "Le ton « start-up lilloise » vous convient-il pour présenter le master ?")]},
+			],
+			"open": [
+				{"k": "etape", "q": "Une étape à ajouter (UX research, A/B test, marketplace, marketing mobile, IA générative) ?"},
+				{"k": "alternance", "q": "Une situation vécue en alternance par vos étudiants à mettre en scène ?"},
+				{"k": "manque", "q": "Qu'est-ce qui manque pour donner envie de rejoindre le master ?"},
+			],
+		},
+	},
 	"info": {
 		"title": "Relecture Game Jam 48 h",
 		"accent": ("#5b3fd0", "#ece8fd", "#a996ff", "#2a2350"),
@@ -426,6 +485,7 @@ GAMES = [
 	{"id": "dgp", "icon": "📜", "title": "Le Dossier Deslaurier", "formation": "Master Droit & Gestion du Patrimoine", "dur": "10 min"},
 	{"id": "dmb", "icon": "🧬", "title": "From Blood to Decision", "formation": "Master Data Management in Biosciences", "dur": "12-15 min"},
 	{"id": "mbif", "icon": "🤝", "title": "Une journée du chargé d'affaires", "formation": "Master Management des Banques et Institutions Financières", "dur": "15 min"},
+	{"id": "ebmd", "icon": "🛍️", "title": "Courée, la boutique en 3D", "formation": "Master E-Business & Marketing Digital", "dur": "12 min"},
 ]
 # une seule page pour tous les jeux (relecture/#dmb, #sv…), servie par GitHub Pages avec le site ;
 # les réponses partent vers le script Google (pages.json : « endpoint », l'URL …/exec du déploiement)
