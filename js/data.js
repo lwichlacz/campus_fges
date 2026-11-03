@@ -62,7 +62,7 @@ export const RENDEZ_VOUS = [
 ];
 
 /* Mini-jeux disponibles : id de formation → id du jeu */
-export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires" };
+export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires", ebmd: "boutique" };
 /* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */
 export const GAME_INFO = {
 	comptoir:{ fid:"gestion", title:"Le Comptoir", icon:"☕", where:"falise", whereLabel:"Atrium de Michel Falise", dur:"6 min",
@@ -76,6 +76,8 @@ export const GAME_INFO = {
 		pitch:"Un jeu de cartes chez le notaire : conseille la famille Deslaurier de 1959 à aujourd'hui. Contrat de mariage, donation, assurance-vie, SCI… chaque carte jouée envoie l'argent à la famille, au fisc, ou finit en dispute. Et gare aux coups du sort !" },
 	affaires:{ fid:"mbif", title:"Une journée du chargé d'affaires", icon:"🤝", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12 min",
 		pitch:"Dans ton agence, cinq clients qui sont d'abord des personnes. Fais émerger l'iceberg des besoins d'un boulanger, repère les signaux faibles chez une veuve, construis le pont de la confiance avec un jeune couple, accompagne une PME pendant huit ans et bâtis la solution d'une famille sans faire tomber la tour." },
+	boutique:{ fid:"ebmd", title:"Courée, la boutique en 3D", icon:"🛍️", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12 min",
+		pitch:"Fais décoller le site d'une jeune marque lilloise : répare le tunnel de commande, grimpe sur les moteurs de recherche, monte une bannière cookies conforme, répartis 3 000 € de pub, cible tes clients… puis tiens le choc du Black Friday en direct. Et regarde tes visiteurs parcourir la boutique en 3D !" },
 	robot:{ fid:"spi", title:"Cellule robotique Wenov", icon:"🦾", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"7 min",
 		pitch:"Pilote un vrai bras robot en 3D, programme le cycle d'une ligne de production, puis donne-lui des yeux pour trier les pièces." },
 	gaming:{ fid:"info", title:"Game Jam 48 h", icon:"🎮", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12 min",
