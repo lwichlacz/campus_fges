@@ -3,7 +3,7 @@
    Prologue : le déverrouiller (l'indice est au dos). Acte 1 : dans l'appli Courée Admin, on voit le site en direct,
    les visiteurs qui abandonnent, et on corrige les pages au doigt avant le point ventes de 14 h. */
 
-const ACT = 150, EVERY = .8, LOAD0 = 1.0, PRICE = 52, CODE = "2021";
+const ACT = 120, EVERY = .8, LOAD0 = 1.0, PRICE = 52, CODE = "2021";
 const STARS = [.35, .5, .62], MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
 
 const NEEDS = { taille:.25, frais:.23, confiance:.16, presse:.1, decide:.08, curieux:.18 };
@@ -153,6 +153,8 @@ const CSS = `
 .tp-stat .cv small{display:block;font:600 11px Inter,sans-serif;color:var(--mut);margin-top:2px}.tp-stat .cv small.up{color:var(--ok)}
 .tp-stat .tm{margin-left:auto;text-align:right;font:600 11px Inter,sans-serif;color:var(--mut)}.tp-stat .tm b{display:block;font:700 17px "Space Grotesk",sans-serif;color:var(--ink)}
 .tp-stat .tm.urgent b{color:var(--ko)}
+.tp-stat .tm{cursor:pointer;border-radius:10px;padding:2px 6px;margin-right:-6px}.tp-stat .tm:hover{background:var(--soft)}
+.tp-stat .tm.ff b:after{content:" ⏩";color:var(--vio);animation:tpPulse2 .8s infinite}
 .tp-tbar{height:3px;border-radius:3px;background:#ece9f4;margin-top:6px;overflow:hidden}.tp-tbar i{display:block;height:100%;width:0;background:var(--vio);transition:width .5s}.tp-tbar.urgent i{background:var(--ko)}
 .tp-fun{display:flex;gap:4px;margin-top:8px;background:var(--soft);border-radius:12px;padding:3px}
 .tp-fun button{flex:1;border:0;background:none;border-radius:9px;padding:6px 4px;font:600 12.5px Inter,sans-serif;color:var(--ink2);cursor:pointer;position:relative}
@@ -501,11 +503,12 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 
 	/* ---------- Acte 1 : le site en direct ---------- */
 	let pages, popup, live, heat, people, t, spawnT, running, ended, stats, page, endT, events, said;
+	let lastEdit = 0, fast = false;
 	people = [];
 	function resetAct(){
 		pages = START.map(a => a.slice()); popup = true; live = {}; heat = {}; people.forEach(p => p.el.remove()); people = [];
 		t = 0; spawnT = 1.2; running = false; ended = false; page = 0; endT = 0; events = []; said = new Set();
-		stats = { vis:0, ord:0, done:[], reasons:{}, reach:[0, 0, 0], at:{}, samples:[] }; story.best = 0; story.tip = -99;
+		stats = { vis:0, ord:0, done:[], reasons:{}, reach:[0, 0, 0], at:{}, samples:[] }; lastEdit = 0; fast = false; story.best = 0; story.tip = -99;
 		flowEl.forEach(f => { f.innerHTML = ""; }); dotsEl.forEach(f => { f.innerHTML = ""; }); $$(".tp-pop").forEach(p => p.remove());
 		$$(".tp-tile").forEach(x => x.classList.remove("used"));
 		[0, 1, 2].forEach(renderPage); setPage(0); kpis();
@@ -655,7 +658,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	function coach(){
 		const c = document.createElement("div"); c.className = "tp-coach";
 		c.innerHTML = `<div><h3>Le site, en direct</h3><p>Chaque pastille est un visiteur qui parcourt le site de Courée : fiche produit → panier → paiement. Il est 11 h, et Marc attend les chiffres à 14 h.</p>
-			<ul><li>🔴 <span>Quand un visiteur abandonne, il dit pourquoi et la page <b>rougit</b> à cet endroit.</span></li><li>👆 <span><b>Touche</b> un élément pour voir qui a abandonné là. <b>Glisse</b> sur le côté pour changer de page.</span></li><li>🗑 <span><b>Attrape</b> ce qui gêne et jette-le vers le bas.</span></li></ul>
+			<ul><li>🔴 <span>Quand un visiteur abandonne, il dit pourquoi et la page <b>rougit</b> à cet endroit.</span></li><li>👆 <span><b>Touche</b> un élément pour voir qui a abandonné là. <b>Glisse</b> sur le côté pour changer de page.</span></li><li>🗑 <span><b>Attrape</b> ce qui gêne et jette-le vers le bas.</span></li><li>⏩ <span>Le temps file tout seul quand tu ne touches à rien. <b>Touche le chrono</b> pour avancer jusqu'à 14 h.</span></li></ul>
 			<button class="tp-btn" data-a="go">Ouvrir le site aux visiteurs</button></div>`;
 		V("admin").appendChild(c);
 		c.querySelector("[data-a=go]").addEventListener("click", () => { c.remove(); running = true; play("chime"); hint("Observe d'abord : où les visiteurs abandonnent-ils ?", 4000); });
@@ -715,7 +718,13 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		const n = elNode(d.id); if(fresh){ n.classList.add("new", "dep"); setTimeout(() => n.classList.remove("dep", "new"), 1200); }
 		play("stamp"); buzz(15); log(`${BLOCKS[d.id].n} → ${PAGES[d.s][0]}`); feedback(d.id, d.s);
 	}
-	function log(txt){ events.push([t, txt]); }
+	function log(txt){ events.push([t, txt]); lastEdit = t; fast = false; }
+	// le temps file tout seul quand on ne touche plus à rien (ou d'un toucher sur le chrono)
+	function speed(){
+		const auto = !drag && t > 25 && (t - lastEdit > 10 || story.best >= 3), sp = fast || auto ? (story.best >= 3 ? 5 : 3.5) : 1;
+		const tb = root.querySelector('[data-k="tbox"]'); if(tb) tb.classList.toggle("ff", sp > 1);
+		return sp;
+	}
 	function revealBlocks(){
 		if(story.blocks) return; story.blocks = 1;
 		const a = V("admin"); later(700, () => { a.classList.add("blocks"); drawer.classList.add("arrive"); fitPages(); play("chime"); hint("De nouveaux blocs : glisse-les sur la page", 4000); later(1200, () => drawer.classList.remove("arrive")); });
@@ -784,6 +793,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 
 	scrEl.addEventListener("click", e => {
 		if(e.target.closest("[data-go]")){ thread = null; go(e.target.closest("[data-go]").dataset.go); play("pop"); return; }
+		if(e.target.closest('[data-k="tbox"]') && running){ fast = !fast; play("pop"); hint(fast ? "Avance rapide jusqu'à 14 h ⏩" : "Retour au temps normal", 2000); return; }
 		const pg = e.target.closest("[data-pg]"); if(pg){ setPage(+pg.dataset.pg); play("pop"); return; }
 		const app = e.target.closest("[data-app]");
 		if(app && view === "home"){
@@ -877,7 +887,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	function loop(ts){
 		if(closed) return;
 		const dt = Math.min(.1, (ts - (lastTs || ts))/1000); lastTs = ts;
-		if(running && !ended){ let r = dt; while(r > 0){ const s = Math.min(.05, r); step(s); r -= s; } kpis(); }
+		if(running && !ended){ const sp = speed(); let r = dt*sp; while(r > 0){ const s = Math.min(.05, r); step(s); r -= s; } kpis(); }
 		for(const p of people) p.el.style.transform = `translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px)`;
 		setClock();
 		raf = requestAnimationFrame(loop);
