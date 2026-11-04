@@ -144,20 +144,23 @@ const CSS = `
 .tp-ban b{display:flex;justify-content:space-between;font-size:13.5px}.tp-ban b small{font-weight:500;color:var(--mut);font-size:11.5px}
 /* Courée Admin */
 .tp-adm{background:#f4f3f8;color:var(--ink)}
-.tp-admh{position:absolute;left:0;right:0;top:0;height:184px;padding:50px 14px 0;background:#fff;border-bottom:1px solid var(--line);z-index:3}
-.tp-admh .t{display:flex;align-items:center;justify-content:space-between}
-.tp-admh .t b{font:700 17px "Space Grotesk",sans-serif}.tp-admh .live{font:700 11px Inter,sans-serif;color:var(--ko);display:flex;align-items:center;gap:5px}.tp-admh .live:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ko);animation:tpPulse2 1s infinite}
-.tp-admh .back{font:500 14px Inter,sans-serif;color:var(--vio);cursor:pointer}
-.tp-kpis{display:flex;gap:6px;margin-top:6px}
-.tp-kpis div{flex:1;background:var(--soft);border-radius:12px;padding:4px 8px}.tp-kpis small{display:block;font-size:10.5px;color:var(--mut)}.tp-kpis b{font:700 17px "Space Grotesk",sans-serif}
-.tp-kpis div.big{background:var(--ink);color:#fff}.tp-kpis div.big small{color:#bdb8d0}.tp-kpis div.big b{font-size:20px}.tp-kpis b.up{color:#5ff0b4}
-.tp-fun{display:flex;align-items:center;gap:4px;margin-top:7px}
-.tp-fun button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:3px 4px;font:600 11px Inter,sans-serif;color:var(--ink2);cursor:pointer;position:relative}
-.tp-fun button small{display:block;font-weight:500;font-size:10.5px;color:var(--mut)}
+.tp-admh{position:absolute;left:0;right:0;top:0;height:206px;padding:48px 12px 0;background:#fff;border-bottom:1px solid var(--line);z-index:3}
+.tp-admh .t{display:flex;align-items:center;gap:8px;height:30px}
+.tp-admh .t b{flex:1;font:700 18px "Space Grotesk",sans-serif;letter-spacing:-.01em}.tp-admh .live{font:700 10.5px Inter,sans-serif;color:var(--ko);display:flex;align-items:center;gap:5px;background:#fdeced;border-radius:999px;padding:3px 9px}.tp-admh .live:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ko);animation:tpPulse2 1s infinite}
+.tp-admh .back{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--soft);font:600 20px/1 Inter,sans-serif;color:var(--vio);cursor:pointer}
+.tp-kpis{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:6px;margin-top:6px}
+.tp-kpis>div{position:relative;background:var(--soft);border-radius:14px;padding:6px 10px;overflow:hidden}.tp-kpis small{display:block;font:600 11px Inter,sans-serif;color:var(--mut)}.tp-kpis b{display:block;font:700 20px/1.15 "Space Grotesk",sans-serif}
+.tp-kpis>div.big{background:var(--ink);color:#fff}.tp-kpis div.big small{color:#bdb8d0}.tp-kpis div.big b{font-size:24px}
+.tp-kpis em{display:block;font:600 10.5px Inter,sans-serif;font-style:normal;color:#bdb8d0;white-space:nowrap}.tp-kpis em.up{color:#5ff0b4}
+.tp-kpis .tbar{position:absolute;left:0;right:0;bottom:0;height:4px;background:#e6e3ef}.tp-kpis .tbar i{display:block;height:100%;width:0;background:var(--vio);transition:width .5s}
+.tp-kpis>div.urgent .tbar i{background:var(--ko)}.tp-kpis>div.urgent b{color:var(--ko)}
+.tp-fun{display:flex;align-items:stretch;margin-top:8px}
+.tp-fun button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:4px;font:700 12px Inter,sans-serif;color:var(--ink);cursor:pointer;position:relative;text-align:center}
+.tp-fun button small{display:block;font:500 11px Inter,sans-serif;color:var(--mut)}
 .tp-fun button.on{background:var(--vio);border-color:var(--vio);color:#fff}.tp-fun button.on small{color:#dcd8ff}
-.tp-fun button.hot:after{content:"";position:absolute;right:5px;top:5px;width:7px;height:7px;border-radius:50%;background:var(--ko);animation:tpPulse2 1s infinite}
-.tp-fun i{font-style:normal;color:var(--mut);font-size:11px}
-.tp-vp{position:absolute;left:0;right:0;top:184px;bottom:84px;overflow:hidden}
+.tp-fun>i{width:42px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;font:700 10.5px Inter,sans-serif;font-style:normal;color:var(--mut)}.tp-fun>i:before{content:"→";font-size:13px;line-height:1}.tp-fun>i.bad{color:var(--ko)}
+.tp-leg{display:flex;flex-wrap:wrap;gap:3px 10px;margin-top:7px;font:500 10.5px Inter,sans-serif;color:var(--ink2)}.tp-leg span{display:flex;align-items:center;gap:4px}.tp-leg span i{width:9px;height:9px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+.tp-vp{position:absolute;left:0;right:0;top:206px;bottom:98px;overflow:hidden}
 .tp-track{display:flex;height:100%;transition:transform .35s cubic-bezier(.3,.8,.3,1)}
 .tp-pg{flex:none;width:390px;height:100%;padding:8px 12px 0;position:relative}
 .tp-site{position:relative;height:100%;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -2px 14px rgba(40,30,90,.08);overflow:hidden}
@@ -167,7 +170,8 @@ const CSS = `
 .tp-inner{position:absolute;left:0;top:28px;width:366px;transform-origin:0 0}
 .tp-flow{display:flex;flex-direction:column;gap:8px;padding:8px 12px 12px}
 .tp-el{position:relative;border-radius:11px}
-.tp-el[data-mv]{cursor:grab}.tp-el.mine{outline:1.5px dashed rgba(91,75,255,.5);outline-offset:2px}
+.tp-el[data-mv]{cursor:grab}.tp-el[data-mv]:after{content:"⠿";position:absolute;right:3px;top:3px;font:700 12px/1 Inter,sans-serif;color:#a7a2bb;background:rgba(255,255,255,.85);border-radius:5px;padding:2px 3px;z-index:2;pointer-events:none}
+.tp-el.wig,.tp-pop.wig{animation:tpWig 1.8s ease-in-out infinite}.tp-el.mine{outline:1.5px dashed rgba(91,75,255,.5);outline-offset:2px}
 .tp-el .heat{position:absolute;inset:-5px;border-radius:13px;pointer-events:none;background:radial-gradient(closest-side,rgba(229,72,77,.6),rgba(229,72,77,.15) 70%,transparent);opacity:0;transition:opacity .4s}
 .tp-el .cnt{position:absolute;right:-4px;top:-8px;background:var(--ko);color:#fff;font:700 10px Inter,sans-serif;border-radius:999px;padding:0 6px;line-height:16px;display:none;z-index:2}
 .tp-el.dep{opacity:.55}.tp-el.dep:after{content:"Mise en ligne…";position:absolute;inset:0;display:grid;place-items:center;font:700 11px Inter,sans-serif;color:var(--vio);background:repeating-linear-gradient(45deg,rgba(91,75,255,.08) 0 8px,rgba(91,75,255,.16) 8px 16px);border-radius:11px}
@@ -175,9 +179,9 @@ const CSS = `
 .tp-el.lift,.tp-pop.lift{opacity:.2}
 .tp-el.flash{animation:tpFlash 1.2s ease 2}
 .s-hdr{display:flex;justify-content:space-between;align-items:center;font-size:13px}.s-hdr b{font:700 16px "DM Serif Display",serif}.s-hdr span{color:var(--mut)}
-.s-vid{border-radius:11px;overflow:hidden;background:#1b1925;color:#fff}.s-vid div{height:92px;display:grid;place-items:center;font-size:28px;background:linear-gradient(135deg,#3b2a55,#b23a24)}.s-vid span{display:block;padding:4px 10px;font-size:11.5px}.s-vid b{display:block;font-size:12px}.s-vid small{color:#bdb8d0}
-.s-photo{height:150px;border-radius:12px;background:linear-gradient(160deg,#f6ede3,#ead9c8);display:grid;place-items:center}
-.s-photo .sw{position:relative;width:118px;height:110px}
+.s-vid{border-radius:11px;overflow:hidden;background:#1b1925;color:#fff}.s-vid div{height:64px;display:grid;place-items:center;font-size:28px;background:linear-gradient(135deg,#3b2a55,#b23a24)}.s-vid span{display:block;padding:4px 10px;font-size:11.5px}.s-vid b{display:block;font-size:12px}.s-vid small{color:#bdb8d0}
+.s-photo{height:116px;border-radius:12px;background:linear-gradient(160deg,#f6ede3,#ead9c8);display:grid;place-items:center}
+.s-photo .sw{position:relative;width:118px;height:110px;transform:scale(.8)}
 .s-photo .sw:before{content:"";position:absolute;left:20px;right:20px;top:8px;bottom:0;background:var(--brick);border-radius:18px 18px 8px 8px}
 .s-photo .sw i{position:absolute;left:0;right:0;top:12px;height:48px;background:var(--brick);border-radius:16px}
 .s-photo .sw span{position:absolute;left:0;right:0;top:50px;text-align:center;font:700 11px "Space Grotesk",sans-serif;letter-spacing:.2em;color:#f8e9dc}
@@ -192,7 +196,7 @@ const CSS = `
 .s-blk{display:flex;gap:10px;align-items:center;font-size:20px;border-radius:11px;padding:8px 11px;border:1px solid var(--line)}.s-blk span{font-size:12px;line-height:1.3}.s-blk b{display:block;font-size:13px}.s-blk small{color:var(--ink2)}
 .s-blk.g{background:#f0eeff;border-color:#dcd7ff}.s-blk.f{background:#fff4e8;border-color:#fbdcb9}.s-blk.a{background:#fffbe6;border-color:#f6e7a3}.s-blk.s{background:#e9f8f1;border-color:#bfe9d4}.s-blk.x{background:#e8f3fd;border-color:#bcdcf7}
 .tp-pop{position:absolute;left:24px;right:24px;top:150px;z-index:3;background:#fff;border-radius:16px;padding:14px;box-shadow:0 0 0 999px rgba(20,18,30,.38),0 14px 40px rgba(0,0,0,.35);text-align:center;font-size:13px;cursor:grab}
-.tp-pop b{display:block;font:700 22px "Space Grotesk",sans-serif;color:var(--brick)}.tp-pop i{display:block;font-style:normal;border:1px solid var(--line);border-radius:8px;padding:6px;margin:8px 0;color:var(--mut)}.tp-pop em{display:block;font-style:normal;background:var(--brick);color:#fff;border-radius:9px;padding:7px;font-weight:600}.tp-pop u{position:absolute;right:10px;top:6px;text-decoration:none;color:var(--mut);font-size:10px}
+.tp-pop b{display:block;font:700 22px "Space Grotesk",sans-serif;color:var(--brick)}.tp-pop i{display:block;font-style:normal;border:1px solid var(--line);border-radius:8px;padding:6px;margin:8px 0;color:var(--mut)}.tp-pop em{display:block;font-style:normal;background:var(--brick);color:#fff;border-radius:9px;padding:7px;font-weight:600}.tp-pop u{position:absolute;right:4px;top:3px;width:28px;height:28px;display:grid;place-items:center;text-decoration:none;color:var(--mut);font-size:14px;cursor:pointer;border-radius:50%}.tp-pop u:hover{background:var(--soft)}
 .tp-pop .cnt{position:absolute;right:-4px;top:-8px;background:var(--ko);color:#fff;font:700 10px Inter,sans-serif;border-radius:999px;padding:0 6px;line-height:16px;display:none}
 .tp-dots{position:absolute;inset:0;pointer-events:none;z-index:4}
 .tp-dot{position:absolute;left:0;top:0;width:19px;height:19px;margin:-9.5px 0 0 -9.5px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:background .2s,opacity .5s}
@@ -200,17 +204,17 @@ const CSS = `
 .tp-say{position:absolute;left:0;top:0;transform:translate(-50%,-135%);white-space:nowrap;font:600 11px Inter,sans-serif;background:var(--ko);color:#fff;border-radius:9px;padding:3px 8px;pointer-events:none;z-index:5;animation:tpSay 1.8s ease forwards}
 .tp-say.ok{background:var(--ok)}.tp-say.grey{background:#8b879a}
 .tp-ins{position:absolute;left:10px;right:10px;height:5px;border-radius:5px;background:var(--vio);box-shadow:0 0 0 4px rgba(91,75,255,.2);z-index:5;display:none;pointer-events:none}
-.tp-drawer{position:absolute;left:0;right:0;bottom:0;height:84px;overflow:hidden;z-index:6;background:#fff;border-top:1px solid var(--line);border-radius:22px 22px 0 0;box-shadow:0 -10px 30px rgba(40,30,90,.1);transition:height .35s cubic-bezier(.3,.8,.3,1)}
-.tp-drawer.open{height:330px}
-.tp-drawer .hd{height:56px;display:flex;align-items:center;justify-content:center;gap:8px;font:700 14px Inter,sans-serif;color:var(--vio);cursor:pointer}
-.tp-drawer .hd:before{content:"";position:absolute;left:50%;top:7px;width:40px;height:5px;margin-left:-20px;border-radius:5px;background:#dcd9e6}
-.tp-drawer:not(.open) .tiles,.tp-drawer:not(.open) .cap{visibility:hidden}
-.tp-drawer .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 12px}
-.tp-tile{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:9px 8px;cursor:grab;touch-action:none;display:flex;flex-direction:column;gap:2px;min-height:96px}
-.tp-tile i{font-style:normal;font-size:22px}.tp-tile b{font:600 12px/1.2 Inter,sans-serif}.tp-tile small{font-size:10.5px;color:var(--mut)}
-.tp-tile.used{opacity:.35;pointer-events:none}
-.tp-drawer .cap{padding:8px 16px 0;font-size:11.5px;color:var(--mut);text-align:center}
-.tp-drawer.trash{background:#fdeced;border-color:var(--ko)}.tp-drawer.trash .hd{color:var(--ko)}
+.tp-drawer{position:absolute;left:0;right:0;bottom:0;height:98px;z-index:6;background:#fff;border-top:1px solid var(--line);box-shadow:0 -10px 30px rgba(40,30,90,.08);padding:7px 8px 0}
+.tp-drawer .cap{margin:0 0 5px;text-align:center;font:600 10.5px Inter,sans-serif;color:var(--mut);letter-spacing:.04em}
+.tp-drawer .tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.tp-tile{background:var(--soft);border:1.5px solid var(--line);border-radius:14px;padding:5px 3px 4px;cursor:grab;touch-action:none;display:flex;flex-direction:column;align-items:center;gap:1px;text-align:center;transition:transform .15s,opacity .2s}
+.tp-tile:hover{transform:translateY(-2px);border-color:#cfc9f5}
+.tp-tile i{font-style:normal;font-size:20px;line-height:1.1}.tp-tile b{font:600 10px/1.15 Inter,sans-serif}
+.tp-tile.used{opacity:.3;pointer-events:none}
+.tp-drawer.trash .tiles,.tp-drawer.trash .cap{visibility:hidden}
+.tp-drawer.trash{background:#fdeced;border-top:2px dashed var(--ko)}
+.tp-drawer.trash:after{content:"🗑  Lâche ici pour retirer de la page";position:absolute;inset:0 0 18px;display:grid;place-items:center;font:700 14px Inter,sans-serif;color:var(--ko)}
+.tp-drawer.trash.over{background:#f9c9cb}
 .tp-ghost{position:absolute;left:0;top:0;z-index:12;width:300px;pointer-events:none;transform:translate(-50%,-60%) rotate(-3deg);filter:drop-shadow(0 14px 22px rgba(40,30,90,.35));opacity:.95}
 .tp-ghost .tp-pop{position:static;box-shadow:none}
 .tp-card{position:absolute;left:20px;right:20px;z-index:13;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:0 18px 40px rgba(40,30,90,.25);font-size:13.5px;animation:tpUp .25s ease both}
@@ -243,6 +247,7 @@ const CSS = `
 .tp-end h4{margin:12px 0 2px;font:700 14px Inter,sans-serif}
 .tp-chart{width:100%;height:100px;display:block;margin:4px 0 6px}
 .tp-course{background:var(--soft);border-radius:12px;padding:9px 12px;margin-top:6px;font-size:13px;color:var(--ink2)}.tp-course b{display:block;color:var(--ink)}
+@keyframes tpWig{0%,70%,100%{transform:none}76%{transform:rotate(-1deg)}84%{transform:rotate(1deg)}92%{transform:rotate(-.5deg)}}
 @keyframes tpBuzz{0%,100%{transform:none}10%,50%,90%{transform:translateX(-4px) rotate(-.6deg)}30%,70%{transform:translateX(4px) rotate(.6deg)}}
 @keyframes tpDrop{from{opacity:0;transform:translateY(-16px) scale(.96)}}
 @keyframes tpLift{to{opacity:0;transform:translateY(-20px)}}
@@ -256,6 +261,8 @@ const CSS = `
 @keyframes tpFlash{50%{box-shadow:0 0 0 4px var(--ko)}}
 @keyframes tpSay{0%{opacity:0;transform:translate(-50%,-95%)}12%{opacity:1;transform:translate(-50%,-135%)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-175%)}}
 @media (max-width:900px){.tp-side{display:none}}
+@media (min-width:901px){.tp-hint{display:none}}
+.tp-side .cur{margin-top:18px;background:#fff;color:var(--ink);font:600 15px/1.4 Inter,sans-serif;border-radius:16px;padding:12px 16px;box-shadow:0 12px 34px rgba(0,0,0,.35);opacity:0;transform:translateX(-8px);transition:opacity .3s,transform .3s}.tp-side .cur.on{opacity:1;transform:none}
 @media (max-width:560px){.tp{background:#000}.tp-x{right:8px;top:46px;width:28px;height:28px;font-size:15px;background:rgba(0,0,0,.35)}.tp-admh .t:first-child{padding-right:34px}.tp-hint{bottom:100px;font-size:12px;max-width:88vw;white-space:normal;text-align:center}}
 `;
 
@@ -309,12 +316,12 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 				<section class="tp-view tp-appv off" data-v="notes"></section>
 				<section class="tp-view tp-appv off" data-v="agenda"></section>
 				<section class="tp-view tp-adm off" data-v="admin">
-					<div class="tp-admh"><div class="t"><span class="back" data-go="home">‹ Accueil</span><span class="live">EN DIRECT</span></div>
-						<div class="t"><b>Courée Admin · le site en direct</b></div>
-						<div class="tp-kpis"><div class="big"><small>Conversion</small><b data-k="conv">–</b></div><div><small>Commandes</small><b data-k="ord">0</b></div><div><small>CA du jour</small><b data-k="ca">0 €</b></div></div>
-						<div class="tp-fun">${PAGES.map(([n], i) => `${i ? "<i>›</i>" : ""}<button data-pg="${i}">${n}<small data-fn="${i}">0</small></button>`).join("")}</div></div>
+					<div class="tp-admh"><div class="t"><span class="back" data-go="home" aria-label="Accueil">‹</span><b>Courée Admin</b><span class="live">EN DIRECT</span></div>
+						<div class="tp-kpis"><div class="big"><small>Conversion</small><b data-k="conv">–</b><em data-k="delta">les visiteurs arrivent…</em></div><div><small>Commandes</small><b data-k="ord">0</b><em style="color:var(--mut)" data-k="ca">0 €</em></div><div data-k="tbox"><small>Point à 14 h</small><b data-k="left">3 h</b><i class="tbar"><i></i></i></div></div>
+						<div class="tp-fun">${PAGES.map(([n], i) => `${i ? `<i data-dr="${i}"></i>` : ""}<button data-pg="${i}">${n}<small data-fn="${i}">0</small></button>`).join("")}</div>
+						<div class="tp-leg">${[["taille", "Taille ?"], ["frais", "Frais ?"], ["confiance", "Confiance ?"], ["presse", "Pressé"], ["decide", "Décidé"], ["curieux", "Curieux"]].map(([k, n]) => `<span><i style="background:${COL[k]}"></i>${n}</span>`).join("")}</div></div>
 					<div class="tp-vp"><div class="tp-track">${PAGES.map(([n, url], i) => `<div class="tp-pg"><div class="tp-site" data-site="${i}"><div class="tp-url">🔒 ${url}${i ? "" : `<span class="tp-load">⚡ 1,0 s</span>`}</div><div class="tp-inner"><div class="tp-flow"></div><div class="tp-ins"></div><div class="tp-dots"></div></div></div></div>`).join("")}</div></div>
-					<div class="tp-drawer"><div class="hd">＋ Ajouter un bloc à la page</div><div class="tiles">${Object.entries(BLOCKS).map(([k, b]) => `<div class="tp-tile" data-b="${k}"><i>${b.ic}</i><b>${b.n}</b><small>+${fmtS(b.w)}</small></div>`).join("")}</div><p class="cap">Glisse un bloc sur la page, à l'endroit voulu.</p></div>
+					<div class="tp-drawer"><p class="cap">GLISSE UN BLOC SUR LA PAGE ↑</p><div class="tiles">${Object.entries(BLOCKS).map(([k, b]) => `<div class="tp-tile" data-b="${k}"><i>${b.ic}</i><b>${b.n}</b></div>`).join("")}</div></div>
 				</section>
 				<section class="tp-view tp-call off" data-v="call"></section>
 				<section class="tp-view tp-end off" data-v="end"></section>
@@ -343,7 +350,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	}
 	const local = e => { const r = scrEl.getBoundingClientRect(); return [(e.clientX - r.left)/(r.width/390), (e.clientY - r.top)/(r.height/844)]; };
 	let hintT = 0;
-	function hint(t, ms = 3200){ clearTimeout(hintT); if(!t){ hintEl.classList.remove("on"); return; } hintEl.textContent = t; hintEl.classList.add("on"); sideCur.textContent = "👉 " + t; if(ms) hintT = setTimeout(() => hintEl.classList.remove("on"), ms); }
+	function hint(t, ms = 3200){ clearTimeout(hintT); const off = () => { hintEl.classList.remove("on"); sideCur.classList.remove("on"); }; if(!t) return off(); hintEl.textContent = t; sideCur.textContent = "👉 " + t; hintEl.classList.add("on"); sideCur.classList.add("on"); if(ms) hintT = setTimeout(off, ms); }
 
 	/* ---------- état général ---------- */
 	let view = "lock", clockMin = 11*60 + 2, battery = 34, closed = false, raf = 0, lastTs = 0;
@@ -517,6 +524,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 			const h = heat[n.dataset.el], hv = n.querySelector(".heat"), c = n.querySelector(".cnt");
 			if(hv) hv.style.opacity = h ? Math.min(1, h.v*.2).toFixed(2) : 0;
 			if(c){ c.style.display = h && h.n ? "block" : "none"; if(h) c.textContent = "✕ " + h.n; }
+			n.classList.toggle("wig", !!(n.dataset.mv && !isBlock(n.dataset.el) && h && h.v > 1.6));
 		}
 	}
 	const isLive = id => !isBlock(id) || (live[id] !== undefined && t >= live[id]);
@@ -565,7 +573,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		const a = stats.at[at] || (stats.at[at] = {}); a[r] = (a[r] || 0) + 1;
 		if(soft) return;
 		const h = heat[at] || (heat[at] = { v:0, n:0 }); h.v += 1; h.n++; paintHeat();
-		if(t - lastBan > 2.4){ lastBan = t; const s = at === "popup" ? 0 : screenOf(at); banner({ ic:REASONS[r][0], c:"#e5484d", who:`${p.name} a quitté le site`, txt:`« ${REASONS[r][2]} » · ${PAGES[Math.max(0, s)][0]}`, go:"admin", page:Math.max(0, s), el:at }); }
+		if(view !== "admin" && t - lastBan > 7){ lastBan = t; const s = at === "popup" ? 0 : screenOf(at); banner({ ic:REASONS[r][0], c:"#e5484d", who:`${p.name} a quitté le site`, txt:`« ${REASONS[r][2]} » · ${PAGES[Math.max(0, s)][0]}`, go:"admin", page:Math.max(0, s), el:at }); }
 		guide(r);
 	}
 	function buy(p){ p.out = true; p.gone = 1.2; p.el.classList.add("buy"); sayDot(p, `+${PRICE} € · commande !`, "ok"); stats.ord++; stats.done.push(1); play("stamp"); }
@@ -604,7 +612,12 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	}
 	function kpis(){
 		const c = conv(), e = root.querySelector('[data-k="conv"]'); e.textContent = c === null ? "–" : pct(c); e.classList.toggle("up", c !== null && c >= STARS[0]);
-		root.querySelector('[data-k="ord"]').textContent = stats.ord; root.querySelector('[data-k="ca"]').textContent = (stats.ord*PRICE).toLocaleString("fr-FR") + " €";
+		root.querySelector('[data-k="ord"]').textContent = stats.ord; root.querySelector('[data-k="ca"]').textContent = (stats.ord*PRICE).toLocaleString("fr-FR") + " € de CA";
+		const f = stats.done.slice(0, 30), c0 = f.length >= 8 ? f.reduce((a, b) => a + b, 0)/f.length : null, de = root.querySelector('[data-k="delta"]');
+		if(c !== null && c0 !== null && stats.done.length >= 70){ const d = Math.round((c - c0)*100); de.textContent = `${d >= 0 ? "+" : ""}${d} pts depuis 11 h`; de.classList.toggle("up", d > 0); } else de.textContent = c === null ? "les visiteurs arrivent…" : "point de départ";
+		const left = Math.max(0, 14*60 - clockMin); root.querySelector('[data-k="left"]').textContent = left >= 60 ? `${Math.floor(left/60)} h ${String(Math.floor(left%60)).padStart(2, "0")}` : `${Math.ceil(left)} min`;
+		root.querySelector('[data-k="tbox"] .tbar i').style.width = Math.min(100, t/ACT*100) + "%"; root.querySelector('[data-k="tbox"]').classList.toggle("urgent", left < 40);
+		for(let i = 1; i < 3; i++){ const a = stats.reach[i - 1], r = a ? stats.reach[i]/a : null, el = root.querySelector(`[data-dr="${i}"]`); el.textContent = r === null ? "" : pct(Math.min(1, r)); el.classList.toggle("bad", r !== null && a > 8 && r < .4); }
 		for(let i = 0; i < 3; i++){
 			root.querySelector(`[data-fn="${i}"]`).textContent = `${stats.reach[i]} visiteur${stats.reach[i] > 1 ? "s" : ""}`;
 			const hot = pages[i].concat(i === 0 && popup ? ["popup"] : []).some(id => heat[id] && heat[id].v > 1.2);
@@ -630,11 +643,11 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	const ghost = document.createElement("div"); ghost.className = "tp-ghost"; ghost.style.display = "none"; scrEl.appendChild(ghost);
 	const inside = (e, r) => e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom;
 	function startDrag(e, id, from){
-		closeCard(); play("pop"); drawer.classList.remove("open");
+		closeCard(); play("pop");
 		drag = { id, from, s:-1, i:-1 };
 		ghost.innerHTML = id === "popup" ? elNode("popup").outerHTML.replace("tp-pop", "tp-pop g") : `<div class="tp-el">${elHTML(id)}</div>`;
 		ghost.style.display = "block";
-		if(from !== null){ const n = elNode(id); n && n.classList.add("lift"); drawer.classList.add("trash"); drawer.querySelector(".hd").textContent = "🗑 Lâche ici pour retirer de la page"; }
+		if(from !== null){ const n = elNode(id); n && n.classList.add("lift"); drawer.classList.add("trash"); }
 		moveDrag(e);
 	}
 	function moveDrag(e){
@@ -645,8 +658,8 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		const edge = lx < 26 ? -1 : lx > 364 ? 1 : 0;
 		if(edge && inside(e, vp)){ if(!edgeT) edgeT = performance.now(); else if(performance.now() - edgeT > 450){ edgeT = 0; const np = Math.max(0, Math.min(2, page + edge)); if(np !== page){ setPage(np); play("pop"); } } } else edgeT = 0;
 		drag.s = -1;
-		const trashR = drawer.getBoundingClientRect();
-		if(drag.from !== null && inside(e, trashR)){ hint("Lâche : retiré de la page"); return; }
+		const overTrash = drag.from !== null && inside(e, drawer.getBoundingClientRect()); drawer.classList.toggle("over", overTrash);
+		if(overTrash){ hint("Lâche : retiré de la page"); return; }
 		if(!isBlock(drag.id)){ hint("Jette-le vers le bas pour le retirer"); drag.s = drag.from; return; }
 		if(!inside(e, vp)){ hint(drag.from !== null ? "Jette-le vers le bas pour le retirer" : "Glisse le bloc sur la page"); return; }
 		const s = page, kids = [...flowEl[s].children].filter(n => n.dataset.el !== drag.id); let i = kids.length;
@@ -660,17 +673,16 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	}
 	function endDrag(e){
 		const d = drag; drag = null; ghost.style.display = "none"; insEl.forEach(n => { n.style.display = "none"; }); hint("");
-		drawer.classList.remove("trash"); drawer.querySelector(".hd").textContent = "＋ Ajouter un bloc à la page";
+		drawer.classList.remove("trash", "over");
 		$$(".lift").forEach(n => n.classList.remove("lift"));
 		const trash = d.from !== null && inside(e, drawer.getBoundingClientRect());
 		if(!isBlock(d.id)){
 			if(!trash) return;
-			if(d.id === "popup"){ popup = false; renderPage(0); log("Pop-up retiré"); }
+			if(d.id === "popup") return removePopup();
 			else { pages[d.from] = pages[d.from].filter(x => x !== d.id); renderPage(d.from); loadTime(); log(`${BASE[d.id].n} retiré`); }
 			play("good"); buzz(20);
 			if(d.id === "video") say("ines", "La fiche se charge en 1 seconde maintenant ⚡ Sur mobile, chaque seconde compte.", 900);
 			if(d.id === "compte") say("ines", "Commande en invité ✔ On proposera de créer un compte après le paiement.", 900);
-			if(d.id === "popup") say("ines", "Bye bye le pop-up ✔ La newsletter, on la proposera après l'achat.", 900);
 			return;
 		}
 		if(d.from !== null) pages[d.from] = pages[d.from].filter(x => x !== d.id);
@@ -683,6 +695,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		play("stamp"); buzz(15); log(`${BLOCKS[d.id].n} → ${PAGES[d.s][0]}`); feedback(d.id, d.s);
 	}
 	function log(txt){ events.push([t, txt]); }
+	function removePopup(){ if(!popup) return; popup = false; closeCard(); renderPage(0); log("Pop-up retiré"); play("good"); buzz(20); say("ines", "Bye bye le pop-up ✔ La newsletter, on la proposera après l'achat.", 900); }
 	function feedback(id, s){
 		const L = pages[s], i = L.indexOf(id), cta = L.findIndex(x => BASE[x] && BASE[x].cta);
 		const k = "fb" + id + s + i; if(said.has(k)) return; said.add(k);
@@ -713,6 +726,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		if(e.target.closest(".tp-homebar")){ swipe = { x:e.clientX, y:e.clientY, kind:"home" }; return; }
 		if(view !== "admin" || !running) return;
 		const tile = e.target.closest(".tp-tile"); if(tile){ e.preventDefault(); tilePress = { x:e.clientX, y:e.clientY, id:tile.dataset.b }; if(e.pointerType === "mouse"){ const id = tilePress.id; tilePress = null; startDrag(e, id, null); } return; }
+		if(e.target.closest(".tp-pop u")){ e.preventDefault(); removePopup(); return; }
 		const n = e.target.closest(".tp-vp [data-el]");
 		if(n){ e.preventDefault(); press = { x:e.clientX, y:e.clientY, id:n.dataset.el, n }; return; }
 		if(e.target.closest(".tp-vp")) swipe = { x:e.clientX, y:e.clientY, kind:"page" };
@@ -747,7 +761,6 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	scrEl.addEventListener("click", e => {
 		if(e.target.closest("[data-go]")){ thread = null; go(e.target.closest("[data-go]").dataset.go); play("pop"); return; }
 		const pg = e.target.closest("[data-pg]"); if(pg){ setPage(+pg.dataset.pg); play("pop"); return; }
-		if(e.target.closest(".tp-drawer .hd") && !drag){ drawer.classList.toggle("open"); play("pop"); return; }
 		const app = e.target.closest("[data-app]");
 		if(app && view === "home"){
 			const a = app.dataset.app; play("pop");
