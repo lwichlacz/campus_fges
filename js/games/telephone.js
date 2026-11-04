@@ -1,7 +1,9 @@
 /* Le téléphone de Camille (prototype, Master E-Business & Marketing Digital).
    Un téléphone oublié vibre sur un banc jaune du patio de Wenov : c'est celui de Camille, l'e-commerce manager de Courée.
    Prologue : le déverrouiller (l'indice est au dos). Acte 1 : dans l'appli Courée Admin, on voit le site en direct,
-   les visiteurs qui abandonnent, et on corrige les pages au doigt avant le point ventes de 14 h. */
+   les visiteurs qui abandonnent, et on corrige les pages au doigt avant le point ventes de 14 h.
+   Acte 2 : dans l'appli Recherche (Trouvo, moteur inventé), on regarde les recherches en direct et on glisse
+   les bons mots dans le titre et la description de Courée pour remonter dans les résultats avant 18 h. */
 
 const ACT = 120, EVERY = .8, LOAD0 = 1.0, PRICE = 52, CODE = "2021";
 const STARS = [.35, .5, .62], MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -77,7 +79,7 @@ const CSS = `
 .tp-homebar{position:absolute;left:50%;bottom:8px;width:140px;height:5px;margin-left:-70px;border-radius:5px;background:rgba(255,255,255,.75);z-index:16;cursor:pointer}
 .tp-homebar:before{content:"";position:absolute;left:-30px;right:-30px;top:-14px;bottom:-8px}
 .tp-homebar.dark{background:rgba(20,18,30,.55)}
-.tp-view{position:absolute;inset:0;transition:transform .35s cubic-bezier(.3,.8,.3,1),opacity .3s}
+.tp-view{position:absolute;inset:0;overflow:hidden;transition:transform .35s cubic-bezier(.3,.8,.3,1),opacity .3s}
 .tp-view.off{opacity:0;pointer-events:none;transform:scale(.94)}
 /* écran verrouillé */
 .tp-lock{background:radial-gradient(circle at 30% 20%,#e9805f,transparent 55%),radial-gradient(circle at 80% 70%,#5b4bff,transparent 55%),linear-gradient(160deg,#b23a24,#3b1e2c 70%);color:#fff;overflow:hidden}
@@ -278,6 +280,39 @@ const CSS = `
 @keyframes tpRing{50%{box-shadow:0 0 0 22px rgba(255,255,255,.08)}}
 @keyframes tpFlash{50%{box-shadow:0 0 0 4px var(--ko)}}
 @keyframes tpSay{0%{opacity:0;transform:translate(-50%,-95%)}12%{opacity:1;transform:translate(-50%,-135%)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-175%)}}
+/* Acte 2 : Trouvo */
+.tp-srch{background:#f4f3f8;color:var(--ink)}
+.tp-srch .tp-admh{height:194px}
+.tp-sbar{margin-top:9px;height:40px;border-radius:20px;background:#fff;border:1.5px solid var(--line);box-shadow:0 2px 8px rgba(40,30,90,.06);display:flex;align-items:center;gap:8px;padding:0 14px;font:500 15px Inter,sans-serif}
+.tp-sbar .q span{transition:color .3s}.tp-sbar .q span.miss{color:var(--ko);text-decoration:underline wavy var(--ko);text-underline-offset:4px}
+.tp-sbar .cur{width:2px;height:18px;background:var(--vio);animation:tpPulse2 1s infinite;margin-left:-6px}
+.tp-res{position:absolute;left:0;right:0;top:194px;bottom:0;overflow:hidden}
+.tp-srch.blocks .tp-res{bottom:118px}
+.tp-r{position:absolute;left:10px;right:10px;top:0;background:#fff;border-radius:14px;padding:7px 12px 8px;box-shadow:0 1px 4px rgba(40,30,90,.07);transition:transform .55s cubic-bezier(.3,.9,.3,1),opacity .3s;opacity:0}
+.tp-r .u{font:500 11px Inter,sans-serif;color:var(--mut)}.tp-r .h{font:600 14.5px/1.3 Inter,sans-serif;color:#2b44c9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tp-r .d{font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-r.me{border:2px solid var(--vio);box-shadow:0 8px 22px rgba(91,75,255,.18);z-index:2}.tp-r.me.top{border-color:var(--ok)}
+.tp-r.me .lbl{display:flex;justify-content:space-between;font:500 11px Inter,sans-serif;color:var(--mut)}.tp-r.me .lbl b{color:var(--vio)}.tp-r.me.top .lbl b{color:var(--ok)}
+.tp-r.me [data-s="cnt"].over{color:var(--ko);font-weight:700}
+.tp-r.me .zt,.tp-r.me .zd{display:flex;flex-wrap:wrap;gap:4px;min-height:32px;padding:3px;margin:2px -3px 0;border-radius:9px;border:1.5px dashed #d9d5ee;align-items:center}
+.tp-r.me .zt{font:600 14.5px Inter,sans-serif;color:#2b44c9}.tp-r.me .zd{font-size:12.5px;color:var(--ink2)}
+.tp-r.me .zt.over,.tp-r.me .zd.over{border-color:var(--vio);background:#efedff}
+.tp-r.me em{font-style:normal;color:var(--mut)}.tp-r.me em.ph{font-size:12px}
+.tp-w{display:inline-flex;align-items:center;padding:4px 9px;border-radius:9px;background:#eef0fb;cursor:grab;touch-action:none;white-space:nowrap;font:600 12.5px Inter,sans-serif;color:var(--ink);transition:opacity .2s,background .3s}
+.tp-r.me .zt .tp-w{font-size:14px;color:#2b44c9}
+.tp-w.bad{background:#fdeced;color:var(--ko)!important}.tp-w.promo{background:#fff0d6}
+.tp-w.cut{opacity:.35;text-decoration:line-through}
+.tp-w.m{background:#fff1b8}
+.tp-wbar .tp-w.used{opacity:.25;pointer-events:none}
+.tp-wbar .tp-w.hot{box-shadow:0 0 0 2px var(--ko);animation:tpWig 1.4s ease-in-out infinite}
+.tp-pg2{position:absolute;left:10px;right:10px;top:0;text-align:center;font:600 11px Inter,sans-serif;color:var(--mut);border-top:1.5px dashed #cfcbe0;padding-top:4px;transition:transform .55s cubic-bezier(.3,.9,.3,1)}
+.tp-sdot{position:absolute;left:0;top:0;width:16px;height:16px;margin:-8px;border-radius:50%;background:#8f84ff;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25);z-index:4;transition:transform .7s cubic-bezier(.4,0,.4,1),opacity .4s,background .3s;pointer-events:none}
+.tp-sdot.ok{background:var(--ok)}
+.tp-wbar{height:118px}
+.tp-wbar .tiles{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.tp-srch:not(.blocks) .tp-wbar:not(.trash){transform:translateY(105%)}
+.tp-wbar.arrive .tp-w{animation:tpDrop .5s ease both}
+.tp-ghost2{position:absolute;left:0;top:0;z-index:12;pointer-events:none;transform:translate(-50%,-80%) rotate(-3deg);background:#fff;border:2px solid var(--vio);border-radius:10px;padding:5px 11px;font:600 14px Inter,sans-serif;color:#2b44c9;box-shadow:0 12px 26px rgba(40,30,90,.3)}
+.tp-ghost2.bad{border-color:var(--ko);color:var(--ko)}
 @media (max-width:900px){.tp-side{display:none}}
 @media (min-width:901px){.tp-hint{display:none}}
 .tp-side .cur{margin-top:18px;background:#fff;color:var(--ink);font:600 15px/1.4 Inter,sans-serif;border-radius:16px;padding:12px 16px;box-shadow:0 12px 34px rgba(0,0,0,.35);opacity:0;transform:translateX(-8px);transition:opacity .3s,transform .3s}.tp-side .cur.on{opacity:1;transform:none}
@@ -340,6 +375,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 					<div class="tp-vp"><div class="tp-track">${PAGES.map(([n, url], i) => `<div class="tp-pg"><div class="tp-site" data-site="${i}"><div class="tp-url">🔒 ${url}${i ? "" : `<span class="tp-load">⚡ 1,0 s</span>`}</div><div class="tp-inner"><div class="tp-flow"></div><div class="tp-ins"></div><div class="tp-dots"></div></div></div></div>`).join("")}</div></div>
 					<div class="tp-drawer"><p class="cap">GLISSE UN BLOC SUR LA PAGE ↑</p><div class="tiles">${Object.entries(BLOCKS).map(([k, b]) => `<div class="tp-tile" data-b="${k}"><i>${b.ic}</i><b>${b.n}</b></div>`).join("")}</div></div>
 				</section>
+				<section class="tp-view tp-srch off" data-v="search"></section>
 				<section class="tp-view tp-call off" data-v="call"></section>
 				<section class="tp-view tp-end off" data-v="end"></section>
 				<div class="tp-banners"></div>
@@ -352,6 +388,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	const $ = s => root.querySelector(s), $$ = s => [...root.querySelectorAll(s)];
 	const wrap = $(".tp-wrap"), flip = $(".tp-flip"), scrEl = $(".tp-scr"), status = $(".tp-status"), homebar = $(".tp-homebar"), hintEl = $(".tp-hint"), sideCur = $(".tp-side .cur");
 	const V = k => root.querySelector(`[data-v="${k}"]`);
+	root.addEventListener("scroll", e => { const n = e.target; if(n === scrEl || n.classList && (n.classList.contains("tp-adm") || n.classList.contains("tp-srch") || n.classList.contains("tp-res") || n.classList.contains("tp-vp"))){ n.scrollTop = 0; n.scrollLeft = 0; } }, true);
 	const track = $(".tp-track"), sites = $$(".tp-site"), inner = $$(".tp-inner"), flowEl = $$(".tp-flow"), dotsEl = $$(".tp-dots"), insEl = $$(".tp-ins"), loadEl = $(".tp-load"), drawer = $(".tp-drawer");
 	let K = 1;
 
@@ -383,6 +420,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		if(v === "notes") renderNotes();
 		if(v === "agenda") renderAgenda();
 		if(v === "admin") enterAdmin();
+		if(v === "search") enterSearch();
 		closeCard();
 	}
 
@@ -800,7 +838,8 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 			const a = app.dataset.app; play("pop");
 			if(a === "messages"){ thread = null; go("messages"); return; }
 			if(a === "notes" || a === "agenda" || a === "admin"){ go(a); return; }
-			if(a.startsWith("acte")) return hint({ acte2:"Acte 2 · Courée a disparu de Google (bientôt)", acte3:"Acte 3 · Le budget pub brûle (bientôt)", acte4:"Acte 4 · Mail, newsletter et cookies (bientôt)" }[a]);
+			if(a === "acte2" && unlocked2){ go("search"); return; }
+			if(a.startsWith("acte")) return hint({ acte2:"Termine d'abord le point de 14 h avec Marc", acte3:"Acte 3 · Le budget pub brûle (bientôt)", acte4:"Acte 4 · Mail, newsletter et cookies (bientôt)" }[a]);
 			if(a === "photos") return hint("Les photos de Camille… on va rester discret 🙈");
 			return hint("Pas le moment : Courée a besoin de toi !");
 		}
@@ -831,7 +870,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		const L = [
 			"Allô ? C'est Camille ! Inès m'a tout raconté… tu as trouvé mon téléphone sur le banc du patio 😅",
 			stars >= 2 ? `Et la conversion est passée de ${pct(c0)} à ${pct(c1)} ?! J'essayais depuis des semaines. Marc est bluffé.` : stars ? `La conversion est passée de ${pct(c0)} à ${pct(c1)}. C'est déjà mieux que ce matin, merci !` : `On est passés de ${pct(c0)} à ${pct(c1)}… Le tunnel fuit encore, mais tu as vu où ça coince : c'est le plus dur.`,
-			"Mauvaise nouvelle : je suis coincée à Euratech jusqu'à ce soir. Et Marc me dit que Courée a disparu de la première page de Google…",
+			"Mauvaise nouvelle : je suis coincée à Euratech jusqu'à ce soir. Et Marc me dit que Courée a disparu de Trouvo, le moteur de recherche…",
 			"Tu peux garder mon téléphone encore un peu ? 🙏"
 		];
 		v.innerHTML = `<div class="who" style="margin-top:90px">Camille</div><div class="sub">00:0${L.length}</div><div class="tp-lines"></div>`;
@@ -866,10 +905,10 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 			<div class="tp-big"><span>${pct(c0)}</span><i>→</i><b>${pct(c1)}</b></div><p class="tp-sub">de conversion entre 11 h et 14 h · ${stats.ord} commandes</p>
 			${chart()}
 			<h4>À retenir</h4><ul>${tips.map(([i, s]) => `<li><i>${i}</i><span>${s}</span></li>`).join("")}</ul>
-			<button class="tp-btn" data-a="replay">Rejouer l'acte 1</button>
+			<button class="tp-btn" data-a="act2">Acte 2 · Courée a disparu de la recherche →</button>
+			<button class="tp-alt" data-a="replay">Rejouer l'acte 1</button>
 			<details class="tp-more"><summary>Pourquoi les visiteurs sont partis</summary>${lost.length ? `<ul>${lost.map(([r, n]) => `<li><i>${REASONS[r][0]}</i><span style="flex:1">${REASONS[r][1]}</span><b>${n}</b></li>`).join("")}</ul>` : ""}<p>Dans la vraie vie, un site e-commerce convertit souvent 1 à 3 % de ses visiteurs, et environ 7 paniers sur 10 sont abandonnés.</p></details>
 			<details class="tp-more"><summary>Le métier de Camille et les cours du master</summary><p>E-commerce manager, UX designer, chargé·e d'optimisation de la conversion (CRO), web analyst.</p><div class="tp-course"><b>📚 UX design et ergonomie</b>Observer les visiteurs, comprendre où ils bloquent, simplifier le parcours.</div><div class="tp-course"><b>📚 Web analytics</b>Lire un tunnel de conversion pour décider quoi corriger.</div></details>
-			<button class="tp-alt" disabled>Acte 2 · Courée a disparu de Google (bientôt)</button>
 			${openLead ? `<button class="tp-alt" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
 			${formation && formation.url ? `<a class="tp-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master E-Business & Marketing Digital ↗</a>` : ""}
 			${toggleFav ? `<button class="tp-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>` : ""}
@@ -877,17 +916,231 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	}
 	V("end").addEventListener("click", e => {
 		const a = e.target.closest("[data-a]"); if(!a) return; const k = a.dataset.a;
+		if(k === "act2"){ startAct2(); return; }
+		if(k === "replay2"){ resetAct2(); s2.coached = 1; go("search"); s2.running = true; return; }
 		if(k === "replay"){ resetAct(); story.act = 0; story.popMarc = story.convMsg = story.late = 0; go("admin"); return; }
 		if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
 		if(k === "lead"){ close(); openLead && openLead(); return; }
 		if(k === "quit") close();
 	});
 
+	/* ---------- Acte 2 : Courée a disparu de la recherche (appli Trouvo) ---------- */
+	const W2 = {
+		sweat:{ t:"Sweat", k:"sweat" }, lille:{ t:"Lille", k:"lille" }, brode:{ t:"brodé", k:"brode" }, mif:{ t:"made in France", k:"mif" },
+		cadeau:{ t:"cadeau", k:"cadeau" }, bio:{ t:"coton bio", k:"bio" },
+		liv:{ t:"Livraison 48 h", boost:.3 }, ret:{ t:"Retours gratuits", boost:.2 }, avis:{ t:"★ 4,7 · 312 avis", boost:.45 },
+		promo:{ t:"PROMO −50 % !!!", promo:1 },
+		accueil:{ t:"Accueil", bad:1 }, bienv:{ t:"Bienvenue sur notre site !", bad:1 }
+	};
+	const STRIP2 = ["sweat", "lille", "brode", "mif", "cadeau", "bio", "liv", "ret", "avis", "promo"];
+	const QUERIES = [
+		{ p:[["sweat", "sweat"], ["lille", "lille"]], w:3 }, { p:[["sweat", "sweat"], ["brodé", "brode"]], w:2 }, { p:[["sweat", "sweat"], ["made in france", "mif"]], w:2 },
+		{ p:[["idée", null], ["cadeau", "cadeau"], ["lille", "lille"]], w:1.5 }, { p:[["sweat", "sweat"], ["coton bio", "bio"]], w:1.5 }
+	];
+	QUERIES.forEach(x => { x.q = x.p.map(a => a[0]).join(" "); x.k = x.p.filter(a => a[1]).map(a => a[1]); });
+	const COMPS = [
+		{ u:"marche.com › mode", h:"Marché.com – Sweats homme et femme pas chers", d:"Des milliers de sweats livrés demain.", k:{ sweat:1 }, q:.9 },
+		{ u:"comptoirdunord.fr", h:"Le Comptoir du Nord · Souvenirs et cadeaux de Lille", d:"Boutique de souvenirs du Vieux-Lille.", k:{ lille:1, cadeau:1 }, q:.7 },
+		{ u:"ateliertricolore.fr", h:"Atelier Tricolore · Sweats made in France", d:"Fabriqués dans les Vosges depuis 1987.", k:{ sweat:1, mif:1 }, q:.7 },
+		{ u:"brodeuse-et-fils.fr", h:"Brodeuse & Fils · Broderie personnalisée", d:"Brodez vos initiales sur vos vêtements.", k:{ brode:1 }, q:.6 },
+		{ u:"cotonvert.fr", h:"Coton Vert · Vêtements en coton bio", d:"Mode responsable et certifiée.", k:{ bio:1 }, q:.65 },
+		{ u:"lille-tourisme.fr", h:"Que faire à Lille ? · Office de tourisme", d:"Visites, musées et bonnes adresses.", k:{ lille:1 }, q:.8 },
+		{ u:"forum-mode.fr › sweats", h:"Quel sweat choisir ? · Forum Mode", d:"312 réponses · discussion de 2019", k:{ sweat:.5 }, q:.5 },
+		{ u:"sweatexpress.fr", h:"Sweat Express · Sweats unis à 9,90 €", d:"Basiques en promotion toute l'année.", k:{ sweat:1 }, q:.4 }
+	];
+	const ACT2 = 100, TITLE_MAX = 32, DESC_MAX = 80, STARS2 = [.15, .3, .45], CTR = [.3, .17, .11, .07, .05];
+	let s2 = null, unlocked2 = false, stars1 = 0;
+	const textOf = L => L.map(id => W2[id].t).join(" ");
+	function fitList(L, max){ let n = 0, out = []; for(const id of L){ n += (out.length ? 1 : 0) + W2[id].t.length; out.push(n <= max); } return out; }
+	function resetAct2(){
+		const keep = s2 && s2.revealed;
+		s2 = { t:0, phase:0, running:false, ended:false, title:["accueil"], desc:["bienv"], q:null, clicks:[], first:null, lastEdit:0, fast:false, best:0, tip:-99, revealed:!!keep, pos0:{}, pos1:{}, events:[], samples:[], said:new Set(), queue:[] };
+	}
+	function myScore(q){
+		const tf = fitList(s2.title, TITLE_MAX), df = fitList(s2.desc, DESC_MAX);
+		const has = k => s2.title.some((id, i) => tf[i] && W2[id].k === k) ? 1 : s2.desc.some((id, i) => df[i] && W2[id].k === k) ? .5 : 0;
+		const rel = q.k.reduce((a, k) => a + has(k), 0)/q.k.length;
+		let qual = .45 + (pages && !pages[0].includes("video") ? .15 : 0) + (s2.desc.includes("avis") ? .05 : 0);
+		const promo = s2.title.includes("promo") || s2.desc.includes("promo");
+		return rel*(promo ? .45 : 1)*.75 + qual*.25;
+	}
+	function ranking(q){
+		const R = COMPS.map((c, i) => ({ i, s:q.k.reduce((a, k) => a + (c.k[k] || 0), 0)/q.k.length*.75 + c.q*.25 }));
+		R.push({ i:"me", s:myScore(q) + .001 });
+		return R.sort((a, b) => b.s - a.s).map(r => r.i);
+	}
+	const myPos = q => ranking(q).indexOf("me") + 1;
+	function attract(){ let a = 1; for(const id of s2.desc.concat(s2.title)) if(W2[id].boost) a += W2[id].boost; return a; }
+	function buildSearch(){
+		const v = V("search");
+		v.innerHTML = `<div class="tp-admh"><div class="t"><span class="back" data-go="home" aria-label="Accueil">‹</span><b>Trouvo</b><span class="live">EN DIRECT</span></div>
+			<div class="tp-stat"><div class="cv"><b data-s="share">–</b><small data-s="delta">des clics vont chez Courée</small></div><div class="tm" data-s="tbox">avant le Black Friday<b data-s="left">4 h</b></div></div><div class="tp-tbar"><i></i></div>
+			<div class="tp-sbar">🔎 <span class="q"></span><i class="cur"></i></div></div>
+			<div class="tp-res">${COMPS.map((c, i) => `<div class="tp-r" data-r="${i}"><div class="u">${c.u}</div><div class="h">${c.h}</div><div class="d">${c.d}</div></div>`).join("")}
+				<div class="tp-pg2">Page 2 · presque personne ne clique ici</div>
+				<div class="tp-r me" data-r="me"><div class="lbl"><span>🧶 couree.fr › sweat · <b data-s="pos"></b></span><span data-s="cnt"></span></div><div class="zt"></div><div class="zd"></div></div></div>
+			<div class="tp-drawer tp-wbar"><p class="cap">GLISSE DES MOTS DANS LE TITRE OU LA DESCRIPTION ↑</p><div class="tiles">${STRIP2.map(id => `<span class="tp-w${W2[id].promo ? " promo" : ""}" data-w="${id}">${W2[id].t}</span>`).join("")}</div></div>`;
+		v.dataset.built = 1;
+	}
+	function renderMe(){
+		const v = V("search"), q = s2.q, tf = fitList(s2.title, TITLE_MAX), df = fitList(s2.desc, DESC_MAX);
+		const chip = (id, ok) => `<span class="tp-w${W2[id].bad ? " bad" : ""}${ok ? "" : " cut"}${q && W2[id].k && q.k.includes(W2[id].k) ? " m" : ""}" data-w="${id}" data-in="1">${W2[id].t}</span>`;
+		v.querySelector(".zt").innerHTML = s2.title.map((id, i) => chip(id, tf[i])).join("") + (tf.includes(false) ? `<em>…</em>` : "") || `<em class="ph">titre vide</em>`;
+		v.querySelector(".zd").innerHTML = s2.desc.map((id, i) => chip(id, df[i])).join("") || `<em class="ph">description vide</em>`;
+		const n = textOf(s2.title).length, c = v.querySelector('[data-s="cnt"]'); c.textContent = `titre ${n}/${TITLE_MAX}`; c.classList.toggle("over", n > TITLE_MAX);
+		v.querySelectorAll(".tp-wbar .tp-w").forEach(x => x.classList.toggle("used", s2.title.includes(x.dataset.w) || s2.desc.includes(x.dataset.w)));
+	}
+	function layoutRes(){
+		const v = V("search"); if(!s2.q) return;
+		const R = ranking(s2.q), cards = {}; v.querySelectorAll(".tp-r").forEach(n => { cards[n.dataset.r] = n; });
+		const area = v.querySelector(".tp-res").clientHeight || 520; let y = 8;
+		const mi = R.indexOf("me");
+		R.forEach((id, i) => { if(i >= 5) return; const n = cards[id]; n.style.transform = `translateY(${y}px)`; n.style.opacity = 1; y += n.offsetHeight + 6; });
+		const pg = v.querySelector(".tp-pg2"); pg.style.transform = `translateY(${y + 2}px)`; y += 26;
+		if(mi >= 5){ cards.me.style.transform = `translateY(${y}px)`; cards.me.style.opacity = 1; }
+		R.forEach((id, i) => { if(i >= 5 && id !== "me"){ cards[id].style.transform = `translateY(${area + 40}px)`; cards[id].style.opacity = 0; } });
+		v.querySelector('[data-s="pos"]').textContent = `position ${mi + 1}`; cards.me.classList.toggle("top", mi < 3);
+		// un seul signal : le premier mot recherché qui manque à Courée
+		const tf = fitList(s2.title, TITLE_MAX), miss = s2.q.k.find(k => !s2.title.some((id, i) => tf[i] && W2[id].k === k));
+		v.querySelector(".tp-sbar .q").innerHTML = s2.q.p.map(([w, k]) => `<span class="${k && k === miss && mi > 2 ? "miss" : ""}">${w}</span>`).join(" ");
+		v.querySelectorAll(".tp-wbar .tp-w").forEach(x => x.classList.toggle("hot", mi > 2 && !!miss && W2[x.dataset.w].k === miss && !x.classList.contains("used")));
+	}
+	function newPhase(){
+		let r = Math.random()*QUERIES.reduce((a, q) => a + q.w, 0), q = QUERIES[0]; for(const x of QUERIES){ r -= x.w; if(r <= 0){ q = x; break; } }
+		s2.q = q; s2.phase = 3.4; s2.queue = [.8, 1.2, 1.6, 2.0].map(d => d + rnd(-.1, .1));
+		if(!(q.q in s2.pos0)) s2.pos0[q.q] = myPos(q);
+		renderMe(); layoutRes(); play("pop");
+	}
+	function searcher(){
+		const v = V("search"), R = ranking(s2.q), a = attract();
+		const w = R.map((id, i) => (i < 5 ? CTR[i] : .008)*(id === "me" ? a : 1)); let r = Math.random(), pick = -1;
+		for(let i = 0; i < w.length; i++){ r -= w[i]; if(r <= 0){ pick = i; break; } }
+		const d = document.createElement("div"); d.className = "tp-sdot"; const x0 = rnd(60, 330); d.style.transform = `translate(${x0}px,-10px)`; v.querySelector(".tp-res").appendChild(d);
+		if(pick < 0){ requestAnimationFrame(() => { d.style.opacity = 0; }); setTimeout(() => d.remove(), 500); return; }
+		const id = R[pick], me = id === "me"; s2.clicks.push(me ? 1 : 0);
+		const card = v.querySelector(`.tp-r[data-r="${id}"]`), m = /translateY\(([-\d.]+)px\)/.exec(card.style.transform), y = (m ? +m[1] : 0) + 22;
+		requestAnimationFrame(() => requestAnimationFrame(() => { d.style.transform = `translate(${rnd(80, 310)}px,${y}px)`; if(me) d.classList.add("ok"); }));
+		setTimeout(() => { d.style.opacity = 0; if(me){ const b = document.createElement("div"); b.className = "tp-say ok"; b.textContent = "+1 visite"; b.style.left = "300px"; b.style.top = y + "px"; v.querySelector(".tp-res").appendChild(b); setTimeout(() => b.remove(), 1600); play("stamp"); } }, 750);
+		setTimeout(() => d.remove(), 1300);
+	}
+	const share = () => { const c = s2.clicks.slice(-50); return c.length >= 8 ? c.reduce((a, b) => a + b, 0)/c.length : null; };
+	function step2(dt){
+		s2.t += dt; clockMin = 14*60 + 10 + Math.min(1, s2.t/ACT2)*230; battery = 22 - Math.min(1, s2.t/ACT2)*9;
+		if(s2.t < ACT2){ s2.phase -= dt; s2.queue = s2.queue.filter(x => { if(3.4 - s2.phase >= x){ searcher(); return false; } return true; }); if(s2.phase <= 0) newPhase(); }
+		else if(!s2.ended){ s2.ended = true; s2.running = false; later(900, endAct2); }
+		if(Math.floor(s2.t) !== Math.floor(s2.t - dt)) s2.samples.push([s2.t, share()]);
+		if(s2.first === null && s2.clicks.length >= 12) s2.first = s2.clicks.slice(0, 12).reduce((a, b) => a + b, 0)/12;
+		tips2();
+	}
+	function tip2(k, txt, who = "ines"){ if(s2.said.has(k) || s2.t - s2.tip < 18) return; s2.said.add(k); s2.tip = s2.t; say(who, txt, 500); }
+	function tips2(){
+		const n = textOf(s2.title).length;
+		if(s2.t > 4) tip2("promoMarc", "Mettez PROMO −50 % dans le titre ! Ça marche partout 😎", "marc");
+		if(n > TITLE_MAX) tip2("long", "Sur mobile, Trouvo coupe les titres trop longs : les mots après le « … » ne comptent plus. Mets les plus importants au début.");
+		if(s2.title.includes("promo") || s2.desc.includes("promo")) tip2("promo", "Aïe : Trouvo pénalise les titres racoleurs. On recule… On ne fait pas −50 % de toute façon 😅");
+		if(myPos(QUERIES[0]) <= 3 && attract() < 1.3 && s2.t > 30) tip2("ctr", "On est bien placés ! Mais est-ce qu'on donne envie de cliquer ? Les avis ou la livraison dans la description, ça aide.");
+		if(s2.t > 45 && !s2.title.includes("lille") && !s2.desc.includes("lille")) tip2("lille", "Les gens cherchent surtout « sweat lille »… et on ne dit nulle part qu'on est lillois !");
+	}
+	function kpis2(){
+		const v = V("search"), c = share(), e = v.querySelector('[data-s="share"]'); e.textContent = c === null ? "–" : pct(c);
+		const left = Math.max(0, 18*60 - clockMin), tb = v.querySelector('[data-s="tbox"]');
+		v.querySelector('[data-s="left"]').textContent = left >= 60 ? `${Math.floor(left/60)} h ${String(Math.floor(left%60)).padStart(2, "0")}` : `${Math.ceil(left)} min`;
+		v.querySelector(".tp-tbar i").style.width = Math.min(100, s2.t/ACT2*100) + "%"; tb.classList.toggle("urgent", left < 40); v.querySelector(".tp-tbar").classList.toggle("urgent", left < 40);
+		const st = c === null || s2.clicks.length < 16 ? 0 : STARS2.filter(x => c >= x).length;
+		if(st > s2.best){ s2.best = st; const w = document.createElement("div"); w.className = "tp-win";
+			w.innerHTML = `<div><b>${pct(c)}</b><i>${"★".repeat(st)}${"☆".repeat(3 - st)}</i><small>${["", "Courée revient dans la recherche !", "Les visites repartent 📈", "Courée en tête des recherches !"][st]}</small></div>`;
+			v.appendChild(w); setTimeout(() => w.remove(), 2500); e.classList.remove("boom"); void e.offsetWidth; e.classList.add("boom"); play("good"); buzz([30, 50, 30]); }
+		tb.classList.toggle("ff", speed2() > 1);
+	}
+	function speed2(){ return s2.fast || (!drag2 && s2.t > 20 && (s2.t - s2.lastEdit > 10 || s2.best >= 3)) ? (s2.best >= 3 ? 5 : 3.5) : 1; }
+	function edit2(txt){ s2.events.push([s2.t, txt]); s2.lastEdit = s2.t; s2.fast = false; renderMe(); layoutRes(); }
+	function reveal2(){ if(s2.revealed) return; s2.revealed = true; later(600, () => { V("search").classList.add("blocks"); const b = V("search").querySelector(".tp-wbar"); b.classList.add("arrive"); later(1200, () => b.classList.remove("arrive")); play("chime"); hint("Des mots à glisser dans ton résultat", 3500); }); }
+	function enterSearch(){
+		if(!V("search").dataset.built){ buildSearch(); }
+		if(s2.revealed) V("search").classList.add("blocks");
+		pulseApp("acte2", false); badge("acte2", 0);
+		requestAnimationFrame(() => { renderMe(); if(!s2.q) newPhase(); else layoutRes(); });
+		if(!s2.coached){ s2.coached = 1; const c = document.createElement("div"); c.className = "tp-coach";
+			c.innerHTML = `<div><h3>Trouvo, en direct</h3><p>Chaque recherche tapée sur Trouvo s'affiche en haut, et les résultats se classent selon les mots qu'ils contiennent. Presque tout le monde clique dans les 3 premiers.</p>
+				<ul><li>🧶 <span>Notre résultat est tout en bas. Son titre ? « Accueil »… 🤦</span></li><li>✋ <span><b>Jette</b> les mots inutiles vers le bas, puis <b>glisse</b> les bons mots dans le titre ou la description.</span></li><li>⏩ <span>Le temps file tout seul quand tu ne touches à rien. <b>Touche le chrono</b> pour avancer.</span></li></ul>
+				<button class="tp-btn" data-a="go2">Regarder les recherches</button></div>`;
+			V("search").appendChild(c); c.querySelector("[data-a=go2]").addEventListener("click", () => { c.remove(); s2.running = true; play("chime"); hint("Regarde où tombe Courée… et ce que les gens tapent", 4000); }); }
+		later(30000, () => { if(s2.running) reveal2(); });
+	}
+	// glisser-déposer des mots
+	let drag2 = null, press2 = null;
+	const ghost2 = document.createElement("div"); ghost2.className = "tp-ghost2"; ghost2.style.display = "none"; scrEl.appendChild(ghost2);
+	V("search").addEventListener("pointerdown", e => {
+		if(!s2.running) return;
+		const w = e.target.closest(".tp-w"); if(!w || w.classList.contains("used") && !w.dataset.in) return;
+		e.preventDefault(); press2 = { x:e.clientX, y:e.clientY, id:w.dataset.w, from:w.dataset.in ? (w.closest(".zt") ? "title" : "desc") : null };
+	});
+	function zoneAt(e){ const v = V("search"); for(const [z, sel] of [["title", ".zt"], ["desc", ".zd"]]){ const n = v.querySelector(sel); if(inside(e, n.getBoundingClientRect())) return z; } return null; }
+	addEventListener("pointermove", e => {
+		if(press2 && !drag2 && Math.hypot(e.clientX - press2.x, e.clientY - press2.y) > 6){ drag2 = press2; press2 = null; ghost2.textContent = W2[drag2.id].t; ghost2.className = "tp-ghost2" + (W2[drag2.id].bad ? " bad" : ""); ghost2.style.display = "block"; if(drag2.from) V("search").querySelector(".tp-wbar").classList.add("trash"); play("pop"); }
+		if(!drag2) return;
+		const [lx, ly] = local(e); ghost2.style.left = lx + "px"; ghost2.style.top = ly + "px";
+		const z = zoneAt(e), v = V("search"), bar = v.querySelector(".tp-wbar");
+		v.querySelector(".zt").classList.toggle("over", z === "title"); v.querySelector(".zd").classList.toggle("over", z === "desc");
+		bar.classList.toggle("over", !!drag2.from && inside(e, bar.getBoundingClientRect()));
+		hint(z === "title" ? "Lâche : dans le titre (c'est lui qui compte le plus)" : z === "desc" ? "Lâche : dans la description (compte moins, mais donne envie de cliquer)" : drag2.from ? "Jette-le vers le bas pour le retirer" : "Glisse-le dans le titre ou la description", 0);
+	});
+	addEventListener("pointerup", e => {
+		press2 = null; if(!drag2) return;
+		const d = drag2; drag2 = null; ghost2.style.display = "none"; hint("");
+		const v = V("search"), bar = v.querySelector(".tp-wbar"); bar.classList.remove("trash", "over"); v.querySelectorAll(".over").forEach(n => n.classList.remove("over"));
+		const z = zoneAt(e);
+		if(d.from) s2[d.from] = s2[d.from].filter(x => x !== d.id);
+		if(!z){ if(d.from){ play("pop"); edit2("−" + W2[d.id].t); if(W2[d.id].bad) reveal2(); } return; }
+		const L = s2[z]; let i = L.length;
+		const chips = [...v.querySelectorAll(z === "title" ? ".zt .tp-w" : ".zd .tp-w")].filter(n => n.dataset.w !== d.id);
+		for(let j = 0; j < chips.length; j++){ const r = chips[j].getBoundingClientRect(); if(e.clientY < r.bottom && e.clientX < r.left + r.width/2){ i = L.indexOf(chips[j].dataset.w); break; } }
+		L.splice(i < 0 ? L.length : i, 0, d.id); play("stamp"); buzz(15); edit2(`${W2[d.id].t} → ${z === "title" ? "titre" : "description"}`);
+		if(W2[d.id].boost && z === "title") tip2("boostTitle", "Ça, c'est plutôt pour la description : sous le titre, ça donne envie de cliquer.");
+	});
+	V("search").addEventListener("click", e => { if(e.target.closest('[data-s="tbox"]') && s2.running){ s2.fast = !s2.fast; play("pop"); hint(s2.fast ? "Avance rapide jusqu'à 18 h ⏩" : "Retour au temps normal", 2000); } });
+	function startAct2(){
+		unlocked2 = true; stars1 = Math.max(stars1, results().stars); clockMin = 14*60 + 10; battery = 22;
+		const a = $('[data-app="acte2"]'); a.classList.remove("lock"); a.insertAdjacentHTML("beforeend", "<s></s>");
+		go("home"); pulseApp("admin", false); pulseApp("acte2", true); badge("acte2", 1);
+		later(700, () => say("ines", "Camille avait raison : on a disparu de Trouvo 😱 Ouvre l'appli Recherche, je t'explique là-bas.", 600));
+		later(1800, () => { if(view === "home") hint("Ouvre l'appli Recherche 🔎", 0); });
+	}
+	function endAct2(){
+		const c0 = s2.first || 0, c1 = share() || 0, stars = STARS2.filter(s => c1 >= s).length;
+		onEvent && onEvent("win", MENTIONS[Math.max(stars, stars1)]);
+		play(stars >= 2 ? "good" : "chime");
+		QUERIES.forEach(q => { s2.pos1[q.q] = myPos(q); });
+		const tips = [];
+		if(textOf(s2.title).length > TITLE_MAX) tips.push(["✂️", "Ton titre était trop long : sur mobile, la fin est coupée. Les mots importants se mettent au début."]);
+		if(s2.title.includes("promo") || s2.desc.includes("promo")) tips.push(["🚫", "« PROMO −50 % !!! » a fait reculer Courée : les moteurs pénalisent les titres racoleurs et trompeurs."]);
+		if(pages && pages[0].includes("video")) tips.push(["🐢", "La fiche produit est restée lente (la vidéo 4K) : la vitesse compte aussi pour le classement."]);
+		tips.push(["🔑", "On écrit avec les mots que les gens tapent vraiment (« sweat lille »), pas avec ceux de la marque."]);
+		tips.push(["👆", "Être bien placé ne suffit pas : les avis et la livraison dans la description donnent envie de cliquer."]);
+		tips.splice(3);
+		const v = V("end"); go("end");
+		v.innerHTML = `<div class="in"><p class="k">Acte 2 terminé · le référencement</p><div class="stars">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</div>
+			<h2>${stars === 3 ? "Courée en tête des recherches." : stars ? "Courée est de retour." : "Courée reste invisible."}</h2>
+			<div class="tp-big"><span>${pct(c0)}</span><i>→</i><b>${pct(c1)}</b></div><p class="tp-sub">des clics de recherche vont chez Courée</p>
+			<h4>Tes positions sur Trouvo</h4><ul>${QUERIES.map(q => `<li><i>🔎</i><span style="flex:1">${q.q}</span><span style="color:var(--mut)">${s2.pos0[q.q] || "–"}</span>&nbsp;→&nbsp;<b style="color:${s2.pos1[q.q] <= 3 ? "var(--ok)" : "var(--ink)"}">${s2.pos1[q.q]}</b></li>`).join("")}</ul>
+			<h4>À retenir</h4><ul>${tips.map(([i, s]) => `<li><i>${i}</i><span>${s}</span></li>`).join("")}</ul>
+			<button class="tp-btn" data-a="replay2">Rejouer l'acte 2</button>
+			<details class="tp-more"><summary>Comment marche un moteur de recherche ?</summary><p>Il compare les mots tapés avec ceux des pages, surtout le titre. Il tient aussi compte de la qualité du site (vitesse, fiabilité). La description n'aide pas beaucoup le classement, mais c'est elle qui donne envie de cliquer. Dans la vraie vie, le premier résultat reçoit environ un quart à un tiers des clics.</p></details>
+			<details class="tp-more"><summary>Les métiers et les cours du master</summary><p>Consultant·e SEO, content manager, traffic manager, chef·fe de projet e-commerce.</p><div class="tp-course"><b>📚 Référencement naturel (SEO)</b>Choisir ses mots-clés, optimiser titres et descriptions, suivre ses positions.</div><div class="tp-course"><b>📚 Rédaction web</b>Écrire pour les internautes et pour les moteurs.</div></details>
+			<button class="tp-alt" disabled>Acte 3 · Le budget pub brûle (bientôt)</button>
+			${openLead ? `<button class="tp-alt" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
+			${formation && formation.url ? `<a class="tp-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master E-Business & Marketing Digital ↗</a>` : ""}
+			${toggleFav ? `<button class="tp-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>` : ""}
+			<button class="tp-alt" data-a="quit">Reposer le téléphone sur le banc</button></div>`;
+	}
+	resetAct2();
+
 	/* ---------- boucle ---------- */
 	function loop(ts){
 		if(closed) return;
 		const dt = Math.min(.1, (ts - (lastTs || ts))/1000); lastTs = ts;
 		if(running && !ended){ const sp = speed(); let r = dt*sp; while(r > 0){ const s = Math.min(.05, r); step(s); r -= s; } kpis(); }
+		if(s2.running && !s2.ended && view === "search"){ let r = dt*speed2(); while(r > 0 && !s2.ended){ const s = Math.min(.05, r); step2(s); r -= s; } kpis2(); }
 		for(const p of people) p.el.style.transform = `translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px)`;
 		setClock();
 		raf = requestAnimationFrame(loop);
@@ -905,6 +1158,8 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		place:(id, s, i) => { pages[s].splice(i, 0, id); live[id] = t; $(`.tp-tile[data-b="${id}"]`).classList.add("used"); renderPage(s); loadTime(); log(id); },
 		remove:id => { if(id === "popup"){ popup = false; renderPage(0); } else { const s = screenOf(id); pages[s] = pages[s].filter(x => x !== id); renderPage(s); loadTime(); } log("-" + id); },
 		state:() => ({ t, ended, view, vis:stats.vis, ord:stats.ord, conv:conv(40), first:stats.done.slice(0, 30).reduce((a, b) => a + b, 0)/30, reasons:{ ...stats.reasons }, pages:pages.map(p => p.slice()), load:loadTime() }),
+		act2:() => startAct2(), reset2:() => { resetAct2(); s2.coached = 1; }, s2:() => s2, sim2:sec => { s2.running = true; for(let k = 0; k < sec/.05 && !s2.ended; k++) step2(.05); kpis2(); },
+		set2:(title, desc) => { s2.title = title; s2.desc = desc; edit2("test"); }, pos2:() => QUERIES.map(q => [q.q, myPos(q)]),
 		reset:() => { resetAct(); story.popMarc = story.convMsg = story.late = 0; }
 	};
 
