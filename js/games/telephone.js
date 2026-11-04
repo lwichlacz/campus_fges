@@ -144,23 +144,23 @@ const CSS = `
 .tp-ban b{display:flex;justify-content:space-between;font-size:13.5px}.tp-ban b small{font-weight:500;color:var(--mut);font-size:11.5px}
 /* Courée Admin */
 .tp-adm{background:#f4f3f8;color:var(--ink)}
-.tp-admh{position:absolute;left:0;right:0;top:0;height:206px;padding:48px 12px 0;background:#fff;border-bottom:1px solid var(--line);z-index:3}
+.tp-admh{position:absolute;left:0;right:0;top:0;height:172px;padding:48px 12px 0;background:#fff;border-bottom:1px solid var(--line);z-index:3}
 .tp-admh .t{display:flex;align-items:center;gap:8px;height:30px}
 .tp-admh .t b{flex:1;font:700 18px "Space Grotesk",sans-serif;letter-spacing:-.01em}.tp-admh .live{font:700 10.5px Inter,sans-serif;color:var(--ko);display:flex;align-items:center;gap:5px;background:#fdeced;border-radius:999px;padding:3px 9px}.tp-admh .live:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ko);animation:tpPulse2 1s infinite}
 .tp-admh .back{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--soft);font:600 20px/1 Inter,sans-serif;color:var(--vio);cursor:pointer}
-.tp-kpis{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:6px;margin-top:6px}
-.tp-kpis>div{position:relative;background:var(--soft);border-radius:14px;padding:6px 10px;overflow:hidden}.tp-kpis small{display:block;font:600 11px Inter,sans-serif;color:var(--mut)}.tp-kpis b{display:block;font:700 20px/1.15 "Space Grotesk",sans-serif}
-.tp-kpis>div.big{background:var(--ink);color:#fff}.tp-kpis div.big small{color:#bdb8d0}.tp-kpis div.big b{font-size:24px}
-.tp-kpis em{display:block;font:600 10.5px Inter,sans-serif;font-style:normal;color:#bdb8d0;white-space:nowrap}.tp-kpis em.up{color:#5ff0b4}
-.tp-kpis .tbar{position:absolute;left:0;right:0;bottom:0;height:4px;background:#e6e3ef}.tp-kpis .tbar i{display:block;height:100%;width:0;background:var(--vio);transition:width .5s}
-.tp-kpis>div.urgent .tbar i{background:var(--ko)}.tp-kpis>div.urgent b{color:var(--ko)}
-.tp-fun{display:flex;align-items:stretch;margin-top:8px}
-.tp-fun button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:4px;font:700 12px Inter,sans-serif;color:var(--ink);cursor:pointer;position:relative;text-align:center}
-.tp-fun button small{display:block;font:500 11px Inter,sans-serif;color:var(--mut)}
-.tp-fun button.on{background:var(--vio);border-color:var(--vio);color:#fff}.tp-fun button.on small{color:#dcd8ff}
-.tp-fun>i{width:42px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;font:700 10.5px Inter,sans-serif;font-style:normal;color:var(--mut)}.tp-fun>i:before{content:"→";font-size:13px;line-height:1}.tp-fun>i.bad{color:var(--ko)}
-.tp-leg{display:flex;flex-wrap:wrap;gap:3px 10px;margin-top:7px;font:500 10.5px Inter,sans-serif;color:var(--ink2)}.tp-leg span{display:flex;align-items:center;gap:4px}.tp-leg span i{width:9px;height:9px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
-.tp-vp{position:absolute;left:0;right:0;top:206px;bottom:98px;overflow:hidden}
+.tp-stat{display:flex;align-items:center;gap:10px;margin-top:6px;height:42px}
+.tp-stat .cv b{font:700 30px/1 "Space Grotesk",sans-serif;letter-spacing:-.02em}.tp-stat .cv b.up{color:var(--ok)}
+.tp-stat .cv small{display:block;font:600 11px Inter,sans-serif;color:var(--mut);margin-top:2px}.tp-stat .cv small.up{color:var(--ok)}
+.tp-stat .tm{margin-left:auto;text-align:right;font:600 11px Inter,sans-serif;color:var(--mut)}.tp-stat .tm b{display:block;font:700 17px "Space Grotesk",sans-serif;color:var(--ink)}
+.tp-stat .tm.urgent b{color:var(--ko)}
+.tp-tbar{height:3px;border-radius:3px;background:#ece9f4;margin-top:6px;overflow:hidden}.tp-tbar i{display:block;height:100%;width:0;background:var(--vio);transition:width .5s}.tp-tbar.urgent i{background:var(--ko)}
+.tp-fun{display:flex;gap:4px;margin-top:8px;background:var(--soft);border-radius:12px;padding:3px}
+.tp-fun button{flex:1;border:0;background:none;border-radius:9px;padding:6px 4px;font:600 12.5px Inter,sans-serif;color:var(--ink2);cursor:pointer;position:relative}
+.tp-fun button.on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(40,30,90,.15)}
+.tp-fun button.hot:after{content:"";position:absolute;right:8px;top:50%;margin-top:-4px;width:8px;height:8px;border-radius:50%;background:var(--ko);animation:tpPulse2 1s infinite}
+.tp-dot{background:#8f84ff!important}
+.tp-el .cnt,.tp-pop .cnt{display:none!important}
+.tp-vp{position:absolute;left:0;right:0;top:172px;bottom:98px;overflow:hidden}
 .tp-track{display:flex;height:100%;transition:transform .35s cubic-bezier(.3,.8,.3,1)}
 .tp-pg{flex:none;width:390px;height:100%;padding:8px 12px 0;position:relative}
 .tp-site{position:relative;height:100%;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -2px 14px rgba(40,30,90,.08);overflow:hidden}
@@ -170,7 +170,7 @@ const CSS = `
 .tp-inner{position:absolute;left:0;top:28px;width:366px;transform-origin:0 0}
 .tp-flow{display:flex;flex-direction:column;gap:8px;padding:8px 12px 12px}
 .tp-el{position:relative;border-radius:11px}
-.tp-el[data-mv]{cursor:grab}.tp-el[data-mv]:after{content:"⠿";position:absolute;right:3px;top:3px;font:700 12px/1 Inter,sans-serif;color:#a7a2bb;background:rgba(255,255,255,.85);border-radius:5px;padding:2px 3px;z-index:2;pointer-events:none}
+.tp-el[data-mv]{cursor:grab}
 .tp-el.wig,.tp-pop.wig{animation:tpWig 1.8s ease-in-out infinite}.tp-el.mine{outline:1.5px dashed rgba(91,75,255,.5);outline-offset:2px}
 .tp-el .heat{position:absolute;inset:-5px;border-radius:13px;pointer-events:none;background:radial-gradient(closest-side,rgba(229,72,77,.6),rgba(229,72,77,.15) 70%,transparent);opacity:0;transition:opacity .4s}
 .tp-el .cnt{position:absolute;right:-4px;top:-8px;background:var(--ko);color:#fff;font:700 10px Inter,sans-serif;border-radius:999px;padding:0 6px;line-height:16px;display:none;z-index:2}
@@ -317,9 +317,8 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 				<section class="tp-view tp-appv off" data-v="agenda"></section>
 				<section class="tp-view tp-adm off" data-v="admin">
 					<div class="tp-admh"><div class="t"><span class="back" data-go="home" aria-label="Accueil">‹</span><b>Courée Admin</b><span class="live">EN DIRECT</span></div>
-						<div class="tp-kpis"><div class="big"><small>Conversion</small><b data-k="conv">–</b><em data-k="delta">les visiteurs arrivent…</em></div><div><small>Commandes</small><b data-k="ord">0</b><em style="color:var(--mut)" data-k="ca">0 €</em></div><div data-k="tbox"><small>Point à 14 h</small><b data-k="left">3 h</b><i class="tbar"><i></i></i></div></div>
-						<div class="tp-fun">${PAGES.map(([n], i) => `${i ? `<i data-dr="${i}"></i>` : ""}<button data-pg="${i}">${n}<small data-fn="${i}">0</small></button>`).join("")}</div>
-						<div class="tp-leg">${[["taille", "Taille ?"], ["frais", "Frais ?"], ["confiance", "Confiance ?"], ["presse", "Pressé"], ["decide", "Décidé"], ["curieux", "Curieux"]].map(([k, n]) => `<span><i style="background:${COL[k]}"></i>${n}</span>`).join("")}</div></div>
+						<div class="tp-stat"><div class="cv"><b data-k="conv">–</b><small data-k="delta">de conversion</small></div><div class="tm" data-k="tbox">avant le point de 14 h<b data-k="left">3 h</b></div></div><div class="tp-tbar"><i></i></div>
+						<div class="tp-fun">${PAGES.map(([n], i) => `<button data-pg="${i}">${n}</button>`).join("")}</div></div>
 					<div class="tp-vp"><div class="tp-track">${PAGES.map(([n, url], i) => `<div class="tp-pg"><div class="tp-site" data-site="${i}"><div class="tp-url">🔒 ${url}${i ? "" : `<span class="tp-load">⚡ 1,0 s</span>`}</div><div class="tp-inner"><div class="tp-flow"></div><div class="tp-ins"></div><div class="tp-dots"></div></div></div></div>`).join("")}</div></div>
 					<div class="tp-drawer"><p class="cap">GLISSE UN BLOC SUR LA PAGE ↑</p><div class="tiles">${Object.entries(BLOCKS).map(([k, b]) => `<div class="tp-tile" data-b="${k}"><i>${b.ic}</i><b>${b.n}</b></div>`).join("")}</div></div>
 				</section>
@@ -564,7 +563,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		p.wait = w;
 	}
 	function moveTo(p, s){ p.el.remove(); dotsEl[s].appendChild(p.el); p.s = s; p.idx = -1; p.y = 10; p.x = rnd(40, 320); stats.reach[s]++; next(p); }
-	function sayDot(p, txt, cls){ const b = document.createElement("div"); b.className = "tp-say " + (cls || ""); b.textContent = txt; b.style.left = Math.max(80, Math.min(286, p.x)) + "px"; b.style.top = p.y + "px"; dotsEl[p.s].appendChild(b); setTimeout(() => b.remove(), 1800); }
+	function sayDot(p, txt, cls){ if(dotsEl[p.s].querySelector(".tp-say")) return; const b = document.createElement("div"); b.className = "tp-say " + (cls || ""); b.textContent = txt; b.style.left = Math.max(80, Math.min(286, p.x)) + "px"; b.style.top = p.y + "px"; dotsEl[p.s].appendChild(b); setTimeout(() => b.remove(), 1800); }
 	let lastBan = -9;
 	function quit(p, r, at, soft){
 		p.out = true; p.gone = 1.6; p.moving = false;
@@ -612,14 +611,12 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	}
 	function kpis(){
 		const c = conv(), e = root.querySelector('[data-k="conv"]'); e.textContent = c === null ? "–" : pct(c); e.classList.toggle("up", c !== null && c >= STARS[0]);
-		root.querySelector('[data-k="ord"]').textContent = stats.ord; root.querySelector('[data-k="ca"]').textContent = (stats.ord*PRICE).toLocaleString("fr-FR") + " € de CA";
-		const f = stats.done.slice(0, 30), c0 = f.length >= 8 ? f.reduce((a, b) => a + b, 0)/f.length : null, de = root.querySelector('[data-k="delta"]');
-		if(c !== null && c0 !== null && stats.done.length >= 70){ const d = Math.round((c - c0)*100); de.textContent = `${d >= 0 ? "+" : ""}${d} pts depuis 11 h`; de.classList.toggle("up", d > 0); } else de.textContent = c === null ? "les visiteurs arrivent…" : "point de départ";
-		const left = Math.max(0, 14*60 - clockMin); root.querySelector('[data-k="left"]').textContent = left >= 60 ? `${Math.floor(left/60)} h ${String(Math.floor(left%60)).padStart(2, "0")}` : `${Math.ceil(left)} min`;
-		root.querySelector('[data-k="tbox"] .tbar i').style.width = Math.min(100, t/ACT*100) + "%"; root.querySelector('[data-k="tbox"]').classList.toggle("urgent", left < 40);
-		for(let i = 1; i < 3; i++){ const a = stats.reach[i - 1], r = a ? stats.reach[i]/a : null, el = root.querySelector(`[data-dr="${i}"]`); el.textContent = r === null ? "" : pct(Math.min(1, r)); el.classList.toggle("bad", r !== null && a > 8 && r < .4); }
+		const f = stats.done.slice(0, 30), c0 = f.length >= 8 ? f.reduce((a, b) => a + b, 0)/f.length : null, de = root.querySelector('[data-k="delta"]'); let d = 0;
+		if(c !== null && c0 !== null && stats.done.length >= 70){ d = Math.round((c - c0)*100); de.textContent = `de conversion · ${d >= 0 ? "+" : ""}${d} pts`; } else de.textContent = "de conversion";
+		de.classList.toggle("up", d > 0);
+		const left = Math.max(0, 14*60 - clockMin), tb = root.querySelector('[data-k="tbox"]'); root.querySelector('[data-k="left"]').textContent = left >= 60 ? `${Math.floor(left/60)} h ${String(Math.floor(left%60)).padStart(2, "0")}` : `${Math.ceil(left)} min`;
+		root.querySelector(".tp-tbar i").style.width = Math.min(100, t/ACT*100) + "%"; tb.classList.toggle("urgent", left < 40); root.querySelector(".tp-tbar").classList.toggle("urgent", left < 40);
 		for(let i = 0; i < 3; i++){
-			root.querySelector(`[data-fn="${i}"]`).textContent = `${stats.reach[i]} visiteur${stats.reach[i] > 1 ? "s" : ""}`;
 			const hot = pages[i].concat(i === 0 && popup ? ["popup"] : []).some(id => heat[id] && heat[id].v > 1.2);
 			root.querySelector(`[data-pg="${i}"]`).classList.toggle("hot", hot && i !== page);
 		}
