@@ -131,6 +131,16 @@ export function createWenovIn({ background }){
 		box(scene, 2.2, .45, .7, yellow, x, 0, z, 0);
 		const s = makePerson(scene, true); s.g.position.set(x - .5, -.15, z + (ry ? -.35 : .35)); s.g.rotation.y = ry; seated.push({ ...s, ph:r()*6 });
 	}
+	// sur le banc jaune près du studio e-commerce, un téléphone oublié vibre : c'est le point de départ du mini-jeu
+	const pickables = [], phone = new THREE.Group(); phone.position.set(8.75, .46, 6.45); phone.rotation.y = .35; scene.add(phone);
+	const phoneScreen = new THREE.MeshStandardMaterial({ color:"#1b1930", emissive:"#8f84ff", emissiveIntensity:.4, roughness:.3 });
+	box(phone, .34, .04, .66, dark, 0, 0, 0);
+	{ const scr = new THREE.Mesh(new THREE.PlaneGeometry(.29, .6), phoneScreen); scr.rotation.x = -Math.PI/2; scr.position.y = .045; phone.add(scr); }
+	const phoneRing = new THREE.Mesh(new THREE.RingGeometry(.55, .66, 32), new THREE.MeshBasicMaterial({ color:"#8f84ff", transparent:true, opacity:.6, depthWrite:false }));
+	phoneRing.rotation.x = -Math.PI/2; phoneRing.position.y = .05; phone.add(phoneRing);
+	{ const hit = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.2, 1.4), new THREE.MeshBasicMaterial({ visible:false })); hit.position.y = .4; phone.add(hit); }
+	phone.traverse(o => { if(o.isMesh){ o.userData.spot = "telephone"; pickables.push(o); } });
+
 	for(const [x, z] of [[-1, -1], [4, 1.5], [-6, -5]]){
 		for(const a of [0, Math.PI*.9]){ const s = makePerson(scene); s.g.position.set(x + Math.sin(a)*.8, 0, z + Math.cos(a)*.8); s.g.rotation.y = a + Math.PI; people.push({ ...s, ph:r()*6 }); }
 	}
@@ -226,6 +236,9 @@ export function createWenovIn({ background }){
 		for(const s of seated){ s.body.rotation.z = Math.sin(t*1.1 + s.ph)*.03; s.hat.position.y = 1.82 + Math.max(0, Math.sin(t*1.7 + s.ph))*.03; }
 		for(const s of people){ s.body.rotation.z = Math.sin(t*1.3 + s.ph)*.04; }
 		alert.visible = Math.sin(t*4) > -.2;
+		// le téléphone vibre par salves et son écran s'allume à chaque notification
+		{ const b = t % 2.6, on = b < .7; phone.position.x = 8.75 + (on ? Math.sin(t*90)*.015 : 0); phoneScreen.emissiveIntensity = on ? 1.6 : .4;
+			const k = (t % 1.3)/1.3; phoneRing.scale.setScalar(1 + k*1.6); phoneRing.material.opacity = .6*(1 - k); }
 		// le bras du plateau travaille : il va chercher une pièce sur le tapis et la ramène (attire l'œil vers le mini-jeu)
 		if(robotArm){
 			const k = t*.8, a = .9 + Math.sin(k*2)*.22, { arm, up, fo, band } = robotArm;
@@ -240,7 +253,7 @@ export function createWenovIn({ background }){
 	}
 	const spot = (x, z) => ({ target:[x, 1.2, z], cam:[x + 3, 30, z + 15] });      // en plongée, au-dessus des passerelles
 	return {
-		scene, update, setNight,
+		scene, update, setNight, pickables,
 		home:{ pos:new THREE.Vector3(4, 50, 40), target:new THREE.Vector3(0, 1, -3) },
 		limits:{ minDistance:12, maxDistance:85, minPolarAngle:.35, maxPolarAngle:1.32, box:[-20, 20, -15, 15] },
 		spots:{ salle:spot(-11, zN + 2), cyber:spot(11, zN + 2), hiptown:spot(-HX + 4, 3) },
@@ -251,6 +264,7 @@ export function createWenovIn({ background }){
 			{ id:"hiptown", icon:"☕", name:"Coworking et café", pos:[-HX + 4, 5, 3] },
 			{ id:"robot", icon:"🦾", name:"Plateau robotique · mini-jeu", pos:[HX - 4, 4.6, -4] },
 			{ id:"boutique", icon:"🛍️", name:"Studio e-commerce · mini-jeu (Master E-Business)", pos:[6, 4.6, PZ + 4] },
+			{ id:"telephone", icon:"📱", name:"Un téléphone vibre sur ce banc… · prototype (Master E-Business)", pos:[8.75, 2.6, 6.45] },
 			{ id:"biolab", icon:"🧬", name:"Laboratoire bio-data · mini-jeu (en anglais)", pos:[-4, 4.6, PZ + 4] },
 			{ id:"sortir", icon:"🚪", name:"Ressortir dans le quartier", pos:[HX - 4, 4.4, 12] }
 		]

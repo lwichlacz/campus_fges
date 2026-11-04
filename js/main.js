@@ -1965,7 +1965,8 @@ const GAME_LOADERS = {
 	biodata:() => import("./games/biodata.js?v=bb496394d2").then(m => m.openBiodata),
 	patrimoine:() => import("./games/patrimoine.js?v=bb496394d2").then(m => m.openPatrimoine),
 	affaires:() => import("./games/affaires.js?v=bb496394d2").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=bb496394d2").then(m => m.openBoutique)
+	boutique:() => import("./games/boutique.js?v=bb496394d2").then(m => m.openBoutique),
+	telephone:() => import("./games/telephone.js?v=bb496394d2").then(m => m.openTelephone)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2486,6 +2487,7 @@ function interiorAction(id){
 		else if(id === "biolab") openGame("dmb");
 		else if(id === "gaming") openGame("info");
 		else if(id === "boutique") openGame("ebmd");
+		else if(id === "telephone") openGame("ebmd", "telephone");
 		else { const I = interiors.wenovin, p = I.spots[id]; if(p) flyTo(V(...p.cam), V(...p.target), 1.2); openPanel(id === "salle" ? "wenov" : id); Audio.play("pop"); }
 		return;
 	}
@@ -2879,14 +2881,14 @@ function toggleFav(id){
 	if(favs.has(id)) favs.delete(id); else { favs.add(id); toast("Ajouté à ton carnet 📒", 1600); Audio.play("pop"); }
 	store.set("favs", [...favs]); refreshHud();
 }
-function openGame(fid){
+function openGame(fid, loader){
 	const f = F.find(x => x.id === fid);
-	const kind = GAMES[fid];
-	if(!f || !GAME_LOADERS[kind]) return;
+	const kind = GAMES[fid], load = GAME_LOADERS[loader || kind];      // loader : une autre version du jeu de la formation (prototype)
+	if(!f || !load) return;
 	$("ambiance").hidden = true;
 	let won = false, mention = null;
 	gamePaused = true;
-	GAME_LOADERS[kind]().then(open => open({
+	load().then(open => open({
 		openLead:() => openLead([fid]),
 		formation:f, audio:Audio,
 		isFav:() => favs.has(fid), toggleFav:() => toggleFav(fid),
