@@ -1966,7 +1966,7 @@ const GAME_LOADERS = {
 	patrimoine:() => import("./games/patrimoine.js?v=bb496394d2").then(m => m.openPatrimoine),
 	affaires:() => import("./games/affaires.js?v=bb496394d2").then(m => m.openAffaires),
 	boutique:() => import("./games/boutique.js?v=bb496394d2").then(m => m.openBoutique),
-	telephone:() => import("./games/telephone.js?v=bb496394d2").then(m => m.openTelephone)
+	telephone:() => import("./games/dossier.js?v=dc01").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
