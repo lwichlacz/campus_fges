@@ -164,10 +164,10 @@ const CSS = `
 .tp-track{display:flex;height:100%;transition:transform .35s cubic-bezier(.3,.8,.3,1)}
 .tp-pg{flex:none;width:390px;height:100%;padding:8px 12px 0;position:relative}
 .tp-site{position:relative;height:100%;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -2px 14px rgba(40,30,90,.08);overflow:hidden}
-.tp-url{height:28px;display:flex;align-items:center;justify-content:center;gap:6px;font:500 11px ui-monospace,Menlo,monospace;color:var(--ink2);background:#f0eef5}
-.tp-load{position:absolute;right:8px;top:5px;font:700 10px Inter,sans-serif;color:var(--ok);background:var(--okb);border-radius:999px;padding:1px 7px}
+.tp-url{position:absolute;right:0;top:0;z-index:5;font-size:0;height:0}
+.tp-load{position:absolute;right:8px;top:8px;white-space:nowrap;font:700 10px Inter,sans-serif;color:var(--ok);background:var(--okb);border-radius:999px;padding:1px 7px}
 .tp-load.slow{color:#fff;background:var(--ko);animation:tpPulse2 1s infinite}
-.tp-inner{position:absolute;left:0;top:28px;width:366px;transform-origin:0 0}
+.tp-inner{position:absolute;left:0;top:0;width:366px;transform-origin:0 0}
 .tp-flow{display:flex;flex-direction:column;gap:8px;padding:8px 12px 12px}
 .tp-el{position:relative;border-radius:11px}
 .tp-el[data-mv]{cursor:grab}
@@ -204,7 +204,7 @@ const CSS = `
 .tp-say{position:absolute;left:0;top:0;transform:translate(-50%,-135%);white-space:nowrap;font:600 11px Inter,sans-serif;background:var(--ko);color:#fff;border-radius:9px;padding:3px 8px;pointer-events:none;z-index:5;animation:tpSay 1.8s ease forwards}
 .tp-say.ok{background:var(--ok)}.tp-say.grey{background:#8b879a}
 .tp-ins{position:absolute;left:10px;right:10px;height:5px;border-radius:5px;background:var(--vio);box-shadow:0 0 0 4px rgba(91,75,255,.2);z-index:5;display:none;pointer-events:none}
-.tp-drawer{position:absolute;left:0;right:0;bottom:0;height:98px;z-index:6;background:#fff;border-top:1px solid var(--line);box-shadow:0 -10px 30px rgba(40,30,90,.08);padding:7px 8px 0}
+.tp-drawer{position:absolute;left:0;right:0;bottom:0;height:98px;z-index:6;transition:transform .45s cubic-bezier(.3,1.3,.5,1);background:#fff;border-top:1px solid var(--line);box-shadow:0 -10px 30px rgba(40,30,90,.08);padding:7px 8px 0}
 .tp-drawer .cap{margin:0 0 5px;text-align:center;font:600 10.5px Inter,sans-serif;color:var(--mut);letter-spacing:.04em}
 .tp-drawer .tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .tp-tile{background:var(--soft);border:1.5px solid var(--line);border-radius:14px;padding:5px 3px 4px;cursor:grab;touch-action:none;display:flex;flex-direction:column;align-items:center;gap:1px;text-align:center;transition:transform .15s,opacity .2s}
@@ -215,6 +215,19 @@ const CSS = `
 .tp-drawer.trash{background:#fdeced;border-top:2px dashed var(--ko)}
 .tp-drawer.trash:after{content:"🗑  Lâche ici pour retirer de la page";position:absolute;inset:0 0 18px;display:grid;place-items:center;font:700 14px Inter,sans-serif;color:var(--ko)}
 .tp-drawer.trash.over{background:#f9c9cb}
+.tp-pop.hot,.tp-el.hot{box-shadow:0 0 0 3px rgba(229,72,77,.85),0 0 34px rgba(229,72,77,.5);border-radius:12px}
+.tp-win{position:absolute;left:0;right:0;top:250px;z-index:9;display:grid;place-items:center;pointer-events:none}
+.tp-win div{background:var(--ink);color:#fff;border-radius:28px;padding:18px 30px 16px;text-align:center;box-shadow:0 24px 60px rgba(20,10,60,.45);animation:tpWin 2.4s cubic-bezier(.2,1.4,.4,1) both}
+.tp-win b{display:block;font:700 64px/1 "Space Grotesk",sans-serif;letter-spacing:-.04em;color:#5ff0b4}
+.tp-win i{display:block;font-style:normal;font-size:24px;color:#f5b301;letter-spacing:4px;margin:6px 0 2px}
+.tp-win small{font:600 13px Inter,sans-serif;color:#d8d4ea}
+@keyframes tpWin{0%{opacity:0;transform:scale(.4)}14%{opacity:1;transform:scale(1.06)}22%{transform:scale(1)}82%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.9) translateY(-20px)}}
+.tp-stat .cv b.boom{animation:tpBoom .9s ease}
+@keyframes tpBoom{30%{transform:scale(1.35);color:var(--ok)}}
+.tp-adm:not(.blocks) .tp-drawer:not(.trash){transform:translateY(105%)}
+.tp-adm:not(.blocks) .tp-vp{bottom:0}
+.tp-drawer.trash{transition:none}
+.tp-drawer.arrive .tp-tile{animation:tpDrop .5s ease both}.tp-drawer.arrive .tp-tile:nth-child(2){animation-delay:.08s}.tp-drawer.arrive .tp-tile:nth-child(3){animation-delay:.16s}.tp-drawer.arrive .tp-tile:nth-child(4){animation-delay:.24s}.tp-drawer.arrive .tp-tile:nth-child(5){animation-delay:.32s}
 .tp-ghost{position:absolute;left:0;top:0;z-index:12;width:300px;pointer-events:none;transform:translate(-50%,-60%) rotate(-3deg);filter:drop-shadow(0 14px 22px rgba(40,30,90,.35));opacity:.95}
 .tp-ghost .tp-pop{position:static;box-shadow:none}
 .tp-card{position:absolute;left:20px;right:20px;z-index:13;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:0 18px 40px rgba(40,30,90,.25);font-size:13.5px;animation:tpUp .25s ease both}
@@ -246,6 +259,9 @@ const CSS = `
 .tp-end ul{margin:4px 0 12px;padding:0}.tp-end li{list-style:none;display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--soft);font-size:13.5px;color:var(--ink2)}.tp-end li i{font-style:normal;width:22px;flex:none;text-align:center}
 .tp-end h4{margin:12px 0 2px;font:700 14px Inter,sans-serif}
 .tp-chart{width:100%;height:100px;display:block;margin:4px 0 6px}
+.tp-big{display:flex;align-items:baseline;gap:12px;margin:14px 0 0;font-family:"Space Grotesk",sans-serif}.tp-big span{font-size:28px;font-weight:700;color:var(--mut)}.tp-big i{font-style:normal;font-size:22px;color:var(--mut)}.tp-big b{font-size:54px;line-height:1;letter-spacing:-.04em;color:var(--ok)}
+.tp-sub{margin:2px 0 6px;font-size:13px;color:var(--mut)}
+.tp-more{border-top:1px solid var(--soft);padding:10px 0;font-size:13.5px;color:var(--ink2)}.tp-more summary{cursor:pointer;font:600 14px Inter,sans-serif;color:var(--ink)}.tp-more p{margin:8px 0 0}
 .tp-course{background:var(--soft);border-radius:12px;padding:9px 12px;margin-top:6px;font-size:13px;color:var(--ink2)}.tp-course b{display:block;color:var(--ink)}
 @keyframes tpWig{0%,70%,100%{transform:none}76%{transform:rotate(-1deg)}84%{transform:rotate(1deg)}92%{transform:rotate(-.5deg)}}
 @keyframes tpBuzz{0%,100%{transform:none}10%,50%,90%{transform:translateX(-4px) rotate(-.6deg)}30%,70%{transform:translateX(4px) rotate(.6deg)}}
@@ -448,7 +464,8 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 			later(delay, () => { typing = null; THREADS[th].msgs.push(["in", txt]); if(!(view === "messages" && thread === th)){ THREADS[th].unread++; badge("messages", Object.values(THREADS).reduce((a, x) => a + x.unread, 0)); banner({ ic:"💬", c:"#22b35e", who:THREADS[th].name, txt, go:"thread:" + th }); } else { renderMessages(); play("pop"); } res(); });
 		});
 	}
-	const story = { met:0, help:0, act:0, popMarc:0, convMsg:0 };
+	const story = { met:0, help:0, act:0, popMarc:0, convMsg:0, tip:-99, blocks:0, best:0 };
+	const BLOCKR = new Set(["taille", "form", "frais", "confiance"]);
 	async function meetInes(){
 		await say("ines", "Quoi ?! 😳", 900);
 		await say("ines", "Camille est en rendez-vous à Euratech jusqu'à 14 h… et à 14 h, Marc veut un point sur les ventes.", 1600);
@@ -488,7 +505,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	function resetAct(){
 		pages = START.map(a => a.slice()); popup = true; live = {}; heat = {}; people.forEach(p => p.el.remove()); people = [];
 		t = 0; spawnT = 1.2; running = false; ended = false; page = 0; endT = 0; events = []; said = new Set();
-		stats = { vis:0, ord:0, done:[], reasons:{}, reach:[0, 0, 0], at:{}, samples:[] };
+		stats = { vis:0, ord:0, done:[], reasons:{}, reach:[0, 0, 0], at:{}, samples:[] }; story.best = 0; story.tip = -99;
 		flowEl.forEach(f => { f.innerHTML = ""; }); dotsEl.forEach(f => { f.innerHTML = ""; }); $$(".tp-pop").forEach(p => p.remove());
 		$$(".tp-tile").forEach(x => x.classList.remove("used"));
 		[0, 1, 2].forEach(renderPage); setPage(0); kpis();
@@ -513,17 +530,19 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		fitPages(); paintHeat();
 	}
 	function fitPages(){
-		inner.forEach((n, s) => { const avail = (sites[s].clientHeight || 600) - 28, h = flowEl[s].offsetHeight || 1, k = Math.min(1, avail/h); n.style.transform = `scale(${k})`; n.style.width = (366/k) + "px"; });
+		inner.forEach((n, s) => { const avail = (sites[s].clientHeight || 600) - 4, h = flowEl[s].offsetHeight || 1, k = Math.min(1, avail/h); n.style.transform = `scale(${k})`; n.style.width = (366/k) + "px"; });
 	}
 	function loadTime(){ let l = LOAD0; pages[0].forEach(id => { const d = BASE[id] || BLOCKS[id]; if(d.w) l += d.w; }); if(loadEl){ loadEl.textContent = `⚡ ${fmtS(l)}`; loadEl.classList.toggle("slow", l > 2.2); } return l; }
 	const bounce = () => Math.max(0, Math.min(.6, (loadTime() - 2.2)*.32));
 	function midY(s, id){ const n = flowEl[s].querySelector(`[data-el="${id}"]`); if(!n) return 60; return n.offsetTop + n.offsetHeight/2; }
 	function paintHeat(){
-		for(const n of $$(".tp-flow [data-el], .tp-pop")){
-			const h = heat[n.dataset.el], hv = n.querySelector(".heat"), c = n.querySelector(".cnt");
-			if(hv) hv.style.opacity = h ? Math.min(1, h.v*.2).toFixed(2) : 0;
-			if(c){ c.style.display = h && h.n ? "block" : "none"; if(h) c.textContent = "✕ " + h.n; }
-			n.classList.toggle("wig", !!(n.dataset.mv && !isBlock(n.dataset.el) && h && h.v > 1.6));
+		const nodes = $$(".tp-flow [data-el], .tp-pop"); let top = null, best = .8;
+		for(const n of nodes){ const h = heat[n.dataset.el]; if(h && h.v > best){ best = h.v; top = n; } }
+		for(const n of nodes){
+			const hv = n.querySelector(".heat"), on = n === top;
+			if(hv) hv.style.opacity = on ? Math.min(1, .35 + best*.15).toFixed(2) : 0;
+			n.classList.toggle("wig", on && !!n.dataset.mv && !isBlock(n.dataset.el));
+			n.classList.toggle("hot", on);
 		}
 	}
 	const isLive = id => !isBlock(id) || (live[id] !== undefined && t >= live[id]);
@@ -581,13 +600,13 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		const M = {
 			lent:"Des visiteurs partent avant même que la fiche s'affiche 🐢 Regarde le temps de chargement en haut de la page… la vidéo 4K de Marc pèse 48 Mo.",
 			popup:"Ce pop-up −10 % cache le produit et fait fuir du monde. Tu peux l'<b>attraper et le jeter</b> (vers le bas).",
-			taille:"Plein de gens hésitent sur la taille. Il y a un <b>guide des tailles</b> dans les blocs (＋ en bas), à mettre à côté du choix de taille.",
+			taille:"Plein de gens hésitent sur la taille. Il y a un <b>guide des tailles</b> dans les blocs en bas, à mettre à côté du choix de taille.",
 			compte:"Obliger à créer un compte, ça fait fuir. <b>Attrape ce bloc et jette-le</b> : on peut commander en invité.",
 			form:"Les pressés fuient devant les 14 champs. Un <b>paiement express</b> au-dessus du formulaire ?",
 			frais:"Les frais découverts au dernier moment, c'est LA 1re cause d'abandon de panier. Il faut les <b>annoncer plus tôt</b>.",
 			confiance:"Au moment de payer, certains doutent. <b>Des avis clients</b> avant, ou un <b>paiement sécurisé</b> sur la page Paiement, aideraient."
 		};
-		if(M[r] && stats.reasons[r] >= 2 && !said.has(r)){ said.add(r); say("ines", M[r], 600); }
+		if(M[r] && stats.reasons[r] >= 2 && !said.has(r) && t - story.tip > 22){ said.add(r); story.tip = t; if(BLOCKR.has(r)) revealBlocks(); say("ines", M[r], 600); }
 	}
 	function step(dt){
 		t += dt; clockMin = 11*60 + 5 + Math.min(1, t/ACT)*175; battery = 34 - Math.min(1, t/ACT)*12;
@@ -605,15 +624,14 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 	function storyBeats(){
 		const c = conv(30);
 		if(t > 40 && !story.popMarc && !popup){ story.popMarc = 1; say("marc", "Qui a retiré MON pop-up −10 % ?! 😤", 400); }
-		if(t > 60 && c !== null && c >= .35 && !story.convMsg){ story.convMsg = 1; say("ines", `La conversion monte : ${pct(c)} ! Je montre la courbe à Marc 📈`, 400); }
-		if(story.convMsg === 1 && t > 90 && story.popMarc){ story.convMsg = 2; say("marc", "Bon. Les chiffres parlent. On garde ça comme ça 😶", 400); }
-		if(Math.abs(t - 120) < 2.5 && !story.late){ story.late = 1; say("ines", "Plus que quelques minutes avant 14 h ⏱️", 300); }
 	}
 	function kpis(){
 		const c = conv(), e = root.querySelector('[data-k="conv"]'); e.textContent = c === null ? "–" : pct(c); e.classList.toggle("up", c !== null && c >= STARS[0]);
 		const f = stats.done.slice(0, 30), c0 = f.length >= 8 ? f.reduce((a, b) => a + b, 0)/f.length : null, de = root.querySelector('[data-k="delta"]'); let d = 0;
 		if(c !== null && c0 !== null && stats.done.length >= 70){ d = Math.round((c - c0)*100); de.textContent = `de conversion · ${d >= 0 ? "+" : ""}${d} pts`; } else de.textContent = "de conversion";
 		de.classList.toggle("up", d > 0);
+		const st = c === null || stats.done.length < 50 ? 0 : STARS.filter(x => c >= x).length;
+		if(st > story.best){ story.best = st; celebrate(c, st); }
 		const left = Math.max(0, 14*60 - clockMin), tb = root.querySelector('[data-k="tbox"]'); root.querySelector('[data-k="left"]').textContent = left >= 60 ? `${Math.floor(left/60)} h ${String(Math.floor(left%60)).padStart(2, "0")}` : `${Math.ceil(left)} min`;
 		root.querySelector(".tp-tbar i").style.width = Math.min(100, t/ACT*100) + "%"; tb.classList.toggle("urgent", left < 40); root.querySelector(".tp-tbar").classList.toggle("urgent", left < 40);
 		for(let i = 0; i < 3; i++){
@@ -621,15 +639,23 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 			root.querySelector(`[data-pg="${i}"]`).classList.toggle("hot", hot && i !== page);
 		}
 	}
+	function celebrate(c, st){
+		const w = document.createElement("div"); w.className = "tp-win";
+		w.innerHTML = `<div><b>${pct(c)}</b><i>${"★".repeat(st)}${"☆".repeat(3 - st)}</i><small>${["", "La conversion décolle !", "Inès montre la courbe à Marc 📈", "Record de Courée !"][st]}</small></div>`;
+		V("admin").appendChild(w); setTimeout(() => w.remove(), 2500);
+		const e = root.querySelector('[data-k="conv"]'); e.classList.remove("boom"); void e.offsetWidth; e.classList.add("boom");
+		play("good"); buzz([30, 50, 30]);
+	}
 	function enterAdmin(){
 		pulseApp("admin", false); badge("admin", 0); hint("");
 		requestAnimationFrame(fitPages);
 		if(!story.act){ story.act = 1; coach(); }
+		later(45000, () => { if(running) revealBlocks(); });
 	}
 	function coach(){
 		const c = document.createElement("div"); c.className = "tp-coach";
 		c.innerHTML = `<div><h3>Le site, en direct</h3><p>Chaque pastille est un visiteur qui parcourt le site de Courée : fiche produit → panier → paiement. Il est 11 h, et Marc attend les chiffres à 14 h.</p>
-			<ul><li>🔴 <span>Quand un visiteur abandonne, il dit pourquoi et la page <b>rougit</b> à cet endroit.</span></li><li>👆 <span><b>Touche</b> un élément pour voir qui a abandonné là. <b>Glisse</b> sur le côté pour changer de page.</span></li><li>＋ <span><b>Glisse</b> un bloc depuis le bas de l'écran sur la page.</span></li><li>🗑 <span><b>Attrape</b> ce qui gêne et jette-le vers le bas.</span></li></ul>
+			<ul><li>🔴 <span>Quand un visiteur abandonne, il dit pourquoi et la page <b>rougit</b> à cet endroit.</span></li><li>👆 <span><b>Touche</b> un élément pour voir qui a abandonné là. <b>Glisse</b> sur le côté pour changer de page.</span></li><li>🗑 <span><b>Attrape</b> ce qui gêne et jette-le vers le bas.</span></li></ul>
 			<button class="tp-btn" data-a="go">Ouvrir le site aux visiteurs</button></div>`;
 		V("admin").appendChild(c);
 		c.querySelector("[data-a=go]").addEventListener("click", () => { c.remove(); running = true; play("chime"); hint("Observe d'abord : où les visiteurs abandonnent-ils ?", 4000); });
@@ -677,9 +703,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 			if(!trash) return;
 			if(d.id === "popup") return removePopup();
 			else { pages[d.from] = pages[d.from].filter(x => x !== d.id); renderPage(d.from); loadTime(); log(`${BASE[d.id].n} retiré`); }
-			play("good"); buzz(20);
-			if(d.id === "video") say("ines", "La fiche se charge en 1 seconde maintenant ⚡ Sur mobile, chaque seconde compte.", 900);
-			if(d.id === "compte") say("ines", "Commande en invité ✔ On proposera de créer un compte après le paiement.", 900);
+			play("pop"); revealBlocks();
 			return;
 		}
 		if(d.from !== null) pages[d.from] = pages[d.from].filter(x => x !== d.id);
@@ -692,7 +716,11 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		play("stamp"); buzz(15); log(`${BLOCKS[d.id].n} → ${PAGES[d.s][0]}`); feedback(d.id, d.s);
 	}
 	function log(txt){ events.push([t, txt]); }
-	function removePopup(){ if(!popup) return; popup = false; closeCard(); renderPage(0); log("Pop-up retiré"); play("good"); buzz(20); say("ines", "Bye bye le pop-up ✔ La newsletter, on la proposera après l'achat.", 900); }
+	function revealBlocks(){
+		if(story.blocks) return; story.blocks = 1;
+		const a = V("admin"); later(700, () => { a.classList.add("blocks"); drawer.classList.add("arrive"); fitPages(); play("chime"); hint("De nouveaux blocs : glisse-les sur la page", 4000); later(1200, () => drawer.classList.remove("arrive")); });
+	}
+	function removePopup(){ if(!popup) return; popup = false; closeCard(); renderPage(0); log("Pop-up retiré"); play("pop"); revealBlocks(); }
 	function feedback(id, s){
 		const L = pages[s], i = L.indexOf(id), cta = L.findIndex(x => BASE[x] && BASE[x].cta);
 		const k = "fb" + id + s + i; if(said.has(k)) return; said.add(k);
@@ -701,7 +729,6 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		if(id === "secure" && s !== 2) return say("ines", "Le cadenas rassure surtout <b>au moment de payer</b> : sur la page Paiement.", 700);
 		if(id === "express" && (s !== 2 || i > pages[2].indexOf("form"))) return say("ines", "Le paiement express doit être <b>sur la page Paiement, au-dessus du formulaire</b>.", 700);
 		if(id === "frais" && s === 2) return say("ines", "Sur la page Paiement, c'est déjà trop tard : les frais doivent se voir <b>avant</b>.", 700);
-		if(id === "avis") return say("ines", "Les avis rassurent… mais le widget pèse un peu sur le chargement. Garde un œil sur le chrono ⚡", 900);
 	}
 	function cardFor(id, anchor){
 		closeCard();
@@ -820,21 +847,18 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 		if(pages[0].includes("video")) tips.push(["🐢", `La vidéo 4K est restée : la fiche met ${fmtS(loadTime())} à charger. Sur mobile, chaque seconde fait fuir des visiteurs.`]);
 		if(popup) tips.push(["🙅", "Le pop-up est resté : il cache le produit. La newsletter se propose après l'achat, pas avant."]);
 		if(pages[1].includes("compte")) tips.push(["🔐", "Le compte obligatoire est resté. Commander en invité est l'un des leviers de conversion les plus simples."]);
-		tips.push(["💶", "Les frais découverts au dernier moment sont la 1re cause d'abandon de panier : on les annonce dès la fiche produit ou le panier."]);
-		tips.push(["📍", "Un bon bloc au mauvais endroit ne sert à rien : on rassure là où le doute apparaît (la taille au choix de la taille, la sécurité au paiement)."]);
-		tips.push(["📈", "Un chiffre bat une opinion : c'est la courbe de conversion qui a convaincu Marc, pas un avis."]);
+		tips.push(["📍", "On rassure là où le doute apparaît : la taille au choix de la taille, les frais avant le paiement, la sécurité au paiement."]);
+		tips.push(["📈", "Un chiffre bat une opinion : c'est la courbe qui a convaincu Marc."]);
+		tips.splice(3);
 		const v = V("end"); go("end");
 		v.innerHTML = `<div class="in"><p class="k">Acte 1 terminé · le tunnel de commande</p><div class="stars">${"★".repeat(stars)}${"☆".repeat(3 - stars)}</div>
 			<h2>${stars === 3 ? "Tunnel réparé. Marc est bluffé." : stars ? "Le site va mieux." : "Le tunnel fuit encore."}</h2>
-			<div class="tp-cmp"><div><small>Conversion à 11 h</small><b>${pct(c0)}</b></div><div class="ok"><small>À 14 h</small><b>${pct(c1)}</b></div><div><small>Commandes</small><b>${stats.ord}</b><small>${(stats.ord*PRICE).toLocaleString("fr-FR")} €</small></div></div>
-			<h4>La conversion de 11 h à 14 h <small style="font-weight:400;color:var(--mut)">(pointillés : tes modifications)</small></h4>${chart()}
-			${lost.length ? `<h4>Pourquoi les visiteurs sont partis</h4><ul>${lost.map(([r, n]) => `<li><i>${REASONS[r][0]}</i><span style="flex:1">${REASONS[r][1]}</span><b>${n}</b></li>`).join("")}</ul>` : ""}
-			<h4>Ce que Camille aurait noté</h4><ul>${tips.map(([i, s]) => `<li><i>${i}</i><span>${s}</span></li>`).join("")}</ul>
-			<p style="font-size:13px;color:var(--ink2)">Dans la vraie vie, un site e-commerce convertit souvent 1 à 3 % de ses visiteurs, et environ 7 paniers sur 10 sont abandonnés. Ici, on ne suit que les visiteurs venus pour ce sweat.</p>
-			<h4>Le métier de Camille, et les tiens peut-être</h4><p style="font-size:13.5px;color:var(--ink2);margin:0">E-commerce manager, UX designer, chargé·e d'optimisation de la conversion (CRO), web analyst.</p>
-			<div class="tp-course"><b>📚 UX design et ergonomie</b>Observer les visiteurs, comprendre où ils bloquent, simplifier le parcours.</div>
-			<div class="tp-course"><b>📚 Web analytics</b>Lire un tunnel de conversion et une carte de chaleur pour décider quoi corriger.</div>
+			<div class="tp-big"><span>${pct(c0)}</span><i>→</i><b>${pct(c1)}</b></div><p class="tp-sub">de conversion entre 11 h et 14 h · ${stats.ord} commandes</p>
+			${chart()}
+			<h4>À retenir</h4><ul>${tips.map(([i, s]) => `<li><i>${i}</i><span>${s}</span></li>`).join("")}</ul>
 			<button class="tp-btn" data-a="replay">Rejouer l'acte 1</button>
+			<details class="tp-more"><summary>Pourquoi les visiteurs sont partis</summary>${lost.length ? `<ul>${lost.map(([r, n]) => `<li><i>${REASONS[r][0]}</i><span style="flex:1">${REASONS[r][1]}</span><b>${n}</b></li>`).join("")}</ul>` : ""}<p>Dans la vraie vie, un site e-commerce convertit souvent 1 à 3 % de ses visiteurs, et environ 7 paniers sur 10 sont abandonnés.</p></details>
+			<details class="tp-more"><summary>Le métier de Camille et les cours du master</summary><p>E-commerce manager, UX designer, chargé·e d'optimisation de la conversion (CRO), web analyst.</p><div class="tp-course"><b>📚 UX design et ergonomie</b>Observer les visiteurs, comprendre où ils bloquent, simplifier le parcours.</div><div class="tp-course"><b>📚 Web analytics</b>Lire un tunnel de conversion pour décider quoi corriger.</div></details>
 			<button class="tp-alt" disabled>Acte 2 · Courée a disparu de Google (bientôt)</button>
 			${openLead ? `<button class="tp-alt" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
 			${formation && formation.url ? `<a class="tp-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master E-Business & Marketing Digital ↗</a>` : ""}
