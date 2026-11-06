@@ -2,7 +2,7 @@
 PAGE — LICENCE SCIENCES DE LA VIE · FGES DA FGES 2026 — max-width 1260px — Inter 14px — Tiempos titres
 Bandeau hero · plus de bleu clair · responsive mobile
 BLOCS SÉPARÉS pour modification indépendante
-+ Campus 3D : bouton dans le BLOC 1, carte dans le BLOC 2
++ Campus 3D : bouton dans le BLOC 1, bandeau fin dans le BLOC 2
 ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -231,6 +231,11 @@ BLOCS SÉPARÉS pour modification indépendante
       background: #0f3168;
       color: #ffffff !important;
     }
+    #lsv-hero .lh-btn-campus svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
     #lsv-hero .lh-btn-campus:hover {
       background: #21b7cb;
       color: #0f3168 !important;
@@ -371,7 +376,7 @@ BLOCS SÉPARÉS pour modification indépendante
             rel="noopener"
             class="lh-btn lh-btn-campus"
           >
-            🎮 Tester la licence en 3D · 7 min
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>Tester la licence en 3D · 7 min
           </a>
         </div>
       </div>
@@ -397,179 +402,50 @@ BLOCS SÉPARÉS pour modification indépendante
   </div>
 </section>
 
-<!-- ══════ BLOC 2 — CAMPUS 3D ══════ -->
-<section id="lsv-campus3d" style="all:initial;display:block;background-color:#ffffff;">
+<!-- ══════ BLOC 2 — CAMPUS 3D · Licence Sciences de la Vie — bandeau à coller sous les chiffres clés de la fiche ══════
+     Généré par tools/fiches/bandeaux.py : ne pas modifier à la main, relancer le script. -->
+<section id="c3d-sv" style="all:initial;display:block;background-color:#ffffff;">
   <style>
-    #lsv-campus3d *,
-    #lsv-campus3d *::before,
-    #lsv-campus3d *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    #c3d-sv *, #c3d-sv *::before, #c3d-sv *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    #c3d-sv .c3-inner { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: #1a2a3a; -webkit-font-smoothing: antialiased; max-width: 1260px; margin: 0 auto; padding: 22px 24px 8px; width: 100%; }
+    #c3d-sv .c3-strip { display: flex; align-items: center; gap: 22px; padding: 12px 22px 12px 12px; border: 1px solid #dde7f0; border-radius: 12px; background: #f5fbfd; text-decoration: none; color: inherit; transition: border-color .2s, box-shadow .2s; }
+    #c3d-sv .c3-strip:hover { border-color: #21b7cb; box-shadow: 0 8px 24px rgba(33, 183, 203, .14); }
+    #c3d-sv .c3-strip:focus-visible { outline: 3px solid #21b7cb; outline-offset: 3px; }
+    #c3d-sv .c3-thumb { flex: none; width: 150px; aspect-ratio: 1200 / 783; border-radius: 8px; overflow: hidden; background: #cfeaf0; }
+    #c3d-sv .c3-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s; }
+    #c3d-sv .c3-strip:hover .c3-thumb img { transform: scale(1.06); }
+    #c3d-sv .c3-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+    #c3d-sv .c3-kicker { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #21b7cb; }
+    #c3d-sv .c3-title { font-family: 'Tiempos Headline', 'Georgia', 'Times New Roman', serif; font-size: 21px; font-weight: 400; line-height: 1.2; color: #0f3168; letter-spacing: -.01em; }
+    #c3d-sv .c3-title em { font-style: italic; color: #21b7cb; }
+    #c3d-sv .c3-text { font-size: 13px; line-height: 1.5; font-weight: 300; color: #2d3a4a; }
+    #c3d-sv .c3-btn { flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; border: 1px solid #21b7cb; color: #0f3168; background: #ffffff; transition: background .2s, color .2s; }
+    #c3d-sv .c3-btn svg { width: 14px; height: 14px; fill: currentColor; }
+    #c3d-sv .c3-strip:hover .c3-btn { background: #21b7cb; color: #ffffff; }
+    @media (max-width: 760px) {
+      #c3d-sv .c3-strip { flex-wrap: wrap; gap: 14px; padding: 12px; }
+      #c3d-sv .c3-thumb { width: 110px; }
+      #c3d-sv .c3-txt { flex-basis: calc(100% - 124px); }
+      #c3d-sv .c3-title { font-size: 18px; }
+      #c3d-sv .c3-text { display: none; }
+      #c3d-sv .c3-btn { flex: 1 1 100%; justify-content: center; }
     }
-    #lsv-campus3d {
-      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-      font-size: 14px;
-      color: #1a2a3a;
-      -webkit-font-smoothing: antialiased;
-    }
-    #lsv-campus3d .c3-inner {
-      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-      font-size: 14px;
-      color: #1a2a3a;
-      max-width: 1260px;
-      margin: 0 auto;
-      padding: 32px 24px 8px;
-      width: 100%;
-    }
-    #lsv-campus3d .c3-card {
-      display: grid;
-      grid-template-columns: 1.05fr 1fr;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #0f3168;
-      color: #ffffff;
-      text-decoration: none;
-      box-shadow: 0 16px 44px rgba(15, 49, 104, .22);
-    }
-    #lsv-campus3d .c3-media {
-      position: relative;
-      min-height: 260px;
-      background: #1d3f78;
-      overflow: hidden;
-    }
-    #lsv-campus3d .c3-media img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform .5s;
-    }
-    #lsv-campus3d .c3-card:hover .c3-media img {
-      transform: scale(1.04);
-    }
-    #lsv-campus3d .c3-chip {
-      position: absolute;
-      left: 18px;
-      bottom: 18px;
-      background: #ffffff;
-      color: #0f3168;
-      font-size: 11.5px;
-      font-weight: 700;
-      padding: 7px 12px;
-      border-radius: 999px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
-    }
-    #lsv-campus3d .c3-content {
-      padding: 40px 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 12px;
-      border-top: 3px solid #21b7cb;
-    }
-    #lsv-campus3d .c3-kicker {
-      font-size: 10.5px;
-      font-weight: 700;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: #21b7cb;
-    }
-    #lsv-campus3d .c3-title {
-      font-family: 'Tiempos Headline', 'Georgia', 'Times New Roman', serif;
-      font-size: clamp(24px, 2.6vw, 34px);
-      font-weight: 300;
-      line-height: 1.1;
-      letter-spacing: -.015em;
-      color: #ffffff;
-    }
-    #lsv-campus3d .c3-title em {
-      font-style: italic;
-      color: #21b7cb;
-    }
-    #lsv-campus3d .c3-text {
-      font-size: 14px;
-      line-height: 1.7;
-      font-weight: 300;
-      color: #d6e4f2;
-      max-width: 440px;
-    }
-    #lsv-campus3d .c3-btn {
-      align-self: flex-start;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      padding: 12px 22px;
-      font-size: 12.5px;
-      font-weight: 700;
-      letter-spacing: .03em;
-      border-radius: 6px;
-      background: #21b7cb;
-      color: #0f3168;
-      transition: background .2s, color .2s, transform .15s;
-    }
-    #lsv-campus3d .c3-card:hover .c3-btn,
-    #lsv-campus3d .c3-card:focus-visible .c3-btn {
-      background: #ffffff;
-      transform: translateY(-2px);
-    }
-    #lsv-campus3d .c3-card:focus-visible {
-      outline: 3px solid #21b7cb;
-      outline-offset: 4px;
-    }
-    #lsv-campus3d .c3-note {
-      font-size: 11.5px;
-      color: #9fb6d0;
-    }
-    @media (max-width: 860px) {
-      #lsv-campus3d .c3-card {
-        grid-template-columns: 1fr;
-      }
-      #lsv-campus3d .c3-media {
-        min-height: 0;
-        aspect-ratio: 782 / 510;
-      }
-      #lsv-campus3d .c3-content {
-        padding: 30px 28px;
-      }
-    }
-    @media (max-width: 560px) {
-      #lsv-campus3d .c3-inner {
-        padding: 24px 16px 8px;
-      }
-      #lsv-campus3d .c3-content {
-        padding: 26px 20px;
-      }
-      #lsv-campus3d .c3-btn {
-        align-self: stretch;
-        justify-content: center;
-      }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      #lsv-campus3d * { transition: none !important; }
-    }
+    @media (max-width: 560px) { #c3d-sv .c3-inner { padding: 18px 16px 8px; } }
+    @media (prefers-reduced-motion: reduce) { #c3d-sv * { transition: none !important; } }
   </style>
 
   <div class="c3-inner">
-    <a class="c3-card"
-       href="https://lwichlacz.github.io/campus_fges/?jeu=sv&amp;utm_source=fges.fr&amp;utm_medium=fiche&amp;utm_campaign=sv"
-       target="_blank" rel="noopener">
-      <div class="c3-media">
-        <img src="https://lwichlacz.github.io/campus_fges/img/fiches/jardin.jpg"
-             width="1200" height="783"
-             alt="Le campus Vauban en 3D, avec le jardin botanique Nicolas Boulay derrière l'Hôtel Académique" loading="lazy">
-        <span class="c3-chip">▶ Jouable sur téléphone</span>
-      </div>
-      <div class="c3-content">
+    <a class="c3-strip" href="https://lwichlacz.github.io/campus_fges/?jeu=sv&amp;utm_source=fges.fr&amp;utm_medium=fiche&amp;utm_campaign=sv" target="_blank" rel="noopener">
+      <span class="c3-thumb">
+        <img src="https://lwichlacz.github.io/campus_fges/img/fiches/jardin.jpg" width="1200" height="783"
+             alt="Mission Jardin Boulay, dans le campus FGES en 3D" loading="lazy">
+      </span>
+      <span class="c3-txt">
         <span class="c3-kicker">Campus 3D · Mission Jardin Boulay · 7 min</span>
-        <h2 class="c3-title">Avant de candidater, <em>vis une journée</em> en Sciences de la Vie</h2>
-        <p class="c3-text">Identifie les petites bêtes du jardin, refais l'expérience de Mendel… puis choisis ta spécialisation de L3.</p>
-        <span class="c3-btn">Lancer la mission →</span>
-        <span class="c3-note">Gratuit, sans inscription. La plaquette t'attend à la fin.</span>
-      </div>
+        <span class="c3-title">Avant de candidater, <em>vis une journée</em> en Sciences de la Vie</span>
+        <span class="c3-text">Identifie les petites bêtes du jardin, refais l&#x27;expérience de Mendel… puis choisis ta spécialisation de L3. Gratuit, sans inscription.</span>
+      </span>
+      <span class="c3-btn"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>Lancer la mission</span>
     </a>
   </div>
 </section>

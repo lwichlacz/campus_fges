@@ -104,6 +104,20 @@ Toujours un **lien simple** (même onglet ou nouvel onglet), jamais une iframe. 
 Identifiants des formations qui ont un jeu (`?jeu=`) : `gestion`, `sv`, `cfa`, `spi`, `info` (licences) ;
 `dmb`, `dgp`, `mbif`, `ebmd` (masters). À compléter au fil des nouveaux jeux (`GAMES` dans `js/data.js`).
 
+**Fiches formation (Elementor)** : chaque fiche qui a un jeu reçoit un **bandeau Campus 3D** (vignette du lieu,
+titre, bouton « Lancer la mission »), à coller dans le widget HTML du haut de la fiche, juste sous les chiffres
+clés, sans toucher au widget des onglets. Les blocs prêts à coller sont dans `docs/bandeaux/` ; ouvrir
+`docs/bandeaux/index.html` pour les voir tous et copier le code d'un clic. Exemple complet :
+`docs/fiche-sv-complete.html` (titre, bandeau principal avec le bouton « Tester la licence en 3D », bandeau Campus 3D).
+
+**Routine à chaque nouveau mini-jeu** (le vérificateur refuse un jeu qui n'a pas sa vignette ou son bandeau) :
+1. ajouter son cadrage dans `tools/fiches/captures.js` (lieu, caméra, cible) ;
+2. `python tools/fiches/recepteur.py`, puis dans le campus ouvert avec `?debug` :
+   `const V = await import("/tools/fiches/captures.js"); await V.essai("<jeu>"); await V.une("<jeu>")`
+   → `img/fiches/<jeu>.jpg` ;
+3. `python tools/wordpress/build.py` puis `python tools/fiches/bandeaux.py` → `docs/bandeaux/<formation>.html` ;
+4. pousser (la vignette doit être en ligne), puis coller le bandeau sur la fiche de la formation.
+
 Dans WordPress, le plus simple : le **bloc « Campus 3D »** de l'extension (carte, bouton ou lien, formation au
 choix) ; il fabrique le bon lien tout seul. L'onglet **Campus sur le site** de l'extension reprend ce tableau et
 génère les liens et les QR codes.

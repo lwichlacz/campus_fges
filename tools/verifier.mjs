@@ -65,6 +65,20 @@ else ok(`un seul numéro de version (${[...versions][0] || "aucun"})`);
 	try { have = JSON.parse(readFileSync(join(ROOT, "formations.json"), "utf8")).formations.map(f => `${f.id}|${f.name}|${f.game ? f.game.title : ""}`).join("\n"); } catch(e){}
 	if(have !== want) bad("formations.json n'est plus à jour : lancer python tools/wordpress/build.py");
 	else ok("formations.json à jour pour l'extension WordPress");
+
+	// chaque mini-jeu a sa vignette (img/fiches) et son bandeau pour la fiche de fges.fr (docs/bandeaux), à jour
+	const vues = readFileSync(join(ROOT, "tools", "fiches", "captures.js"), "utf8");
+	const manques = [];
+	for(const [fid, gid] of Object.entries(d.GAMES)){
+		const g = d.GAME_INFO[gid];
+		if(!new RegExp(`^\\s*${gid}\\s*:`, "m").test(vues)) manques.push(`cadrage de « ${gid} » dans tools/fiches/captures.js`);
+		if(!existsSync(join(ROOT, "img", "fiches", gid + ".jpg"))) manques.push(`img/fiches/${gid}.jpg (tools/fiches/captures.js)`);
+		const f = join(ROOT, "docs", "bandeaux", fid + ".html");
+		const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
+		if(!existsSync(f) || !readFileSync(f, "utf8").includes(`Campus 3D · ${esc(g.title)} · ${esc(g.dur)}`)) manques.push(`docs/bandeaux/${fid}.html (python tools/fiches/bandeaux.py)`);
+	}
+	if(manques.length) bad("bandeaux des fiches formation incomplets : " + manques.join(" ; "));
+	else ok(`vignette et bandeau pour les ${Object.keys(d.GAMES).length} mini-jeux`);
 }
 
 if(RAPIDE){ finish(); }

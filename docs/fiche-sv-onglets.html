@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Licence Sciences de la Vie — FGES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Tiempos+Headline:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div style="max-width:1260px;margin:0 auto;padding:48px 24px 0;width:100%;font-family:'Inter','Helvetica Neue',Arial,sans-serif;">
+  <h2 style="font-family:'Tiempos Headline','Georgia','Times New Roman',serif !important;font-size:clamp(22px,2.8vw,32px);font-weight:300;line-height:1.2;color:#0f3168;letter-spacing:-.01em;margin-bottom:12px;font-style:italic;">Les informations clés sur la formation</h2>
+  <div style="width:48px;height:3px;background:#21b7cb;border-radius:2px;"></div>
+</div>
+
+<section id="sv-tabs" style="all:initial;display:block;background-color:#ffffff;">
+<style>
+#sv-tabs,#sv-tabs *{font-family:'Inter','Helvetica Neue',Arial,sans-serif !important;}
+#sv-tabs *,#sv-tabs *::before,#sv-tabs *::after{box-sizing:border-box;margin:0;padding:0;}
+#sv-tabs{font-size:14px;color:#1a2a3a;-webkit-font-smoothing:antialiased;}
+#sv-tabs .sv-inner{max-width:1260px;margin:0 auto;padding:0 24px 80px;width:100%;}
+#sv-tabs .sv-radio{display:none;}
+#sv-tabs .sv-tabnav{display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid #dde7f0;margin-bottom:48px;}
+#sv-tabs .sv-tabbtn{display:inline-block;cursor:pointer;font-size:14px;font-weight:700;color:#5a6a7e;padding:16px 24px;border:1px solid #dde7f0;border-bottom:none;background:#f4f8fb;border-radius:8px 8px 0 0;transition:all .2s;user-select:none;margin-bottom:-1px;}
+#sv-tabs .sv-tabbtn:hover{color:#0f3168;background:#e0f6fa;border-color:#21b7cb;}
+#sv-tabs #sv-t1:checked ~ .sv-tabnav label[for="sv-t1"],
+#sv-tabs #sv-t2:checked ~ .sv-tabnav label[for="sv-t2"],
+#sv-tabs #sv-t3:checked ~ .sv-tabnav label[for="sv-t3"],
+#sv-tabs #sv-t4:checked ~ .sv-tabnav label[for="sv-t4"],
+#sv-tabs #sv-t5:checked ~ .sv-tabnav label[for="sv-t5"]{color:#0f3168;background:#fff;border-color:#21b7cb;border-bottom:3px solid #21b7cb;}
+#sv-tabs .sv-panel{display:none;}
+#sv-tabs #sv-t1:checked ~ .sv-panels .sv-panel-1,
+#sv-tabs #sv-t2:checked ~ .sv-panels .sv-panel-2,
+#sv-tabs #sv-t3:checked ~ .sv-panels .sv-panel-3,
+#sv-tabs #sv-t4:checked ~ .sv-panels .sv-panel-4,
+#sv-tabs #sv-t5:checked ~ .sv-panels .sv-panel-5{display:block;}
+
+#sv-tabs .sv-title,#sv-tabs .sv-title *,#sv-tabs .sv-subtitle,#sv-tabs .sv-subtitle *,#sv-tabs .sv-stat-number,#sv-tabs .sv-stat-number *,#sv-tabs .sv-testi-quote{font-family:'Tiempos Headline','Georgia','Times New Roman',serif !important;}
+#sv-tabs .sv-title{font-size:clamp(26px,3.6vw,42px);font-weight:300;line-height:1.15;color:#0f3168;letter-spacing:-.018em;margin-bottom:20px;}
+#sv-tabs .sv-title em,#sv-tabs .sv-subtitle em{font-style:italic;color:#21b7cb;}
+#sv-tabs .sv-subtitle{font-size:clamp(18px,2.2vw,24px);font-weight:300;line-height:1.2;color:#0f3168;letter-spacing:-.01em;margin:36px 0 16px;}
+#sv-tabs .sv-body{font-size:14px;line-height:1.8;color:#2d3a4a;font-weight:300;margin-bottom:16px;max-width:900px;}
+#sv-tabs .sv-body strong{font-weight:600;color:#0f3168;}
+#sv-tabs .sv-body a{color:#17808f;font-weight:600;text-decoration:none;}
+@media(min-width:768px){#sv-tabs .sv-body{text-align:justify;}}
+
+#sv-tabs .sv-acc-check{display:none;}
+#sv-tabs .sv-acc{border:1px solid #dde7f0;border-radius:10px;margin-bottom:12px;overflow:hidden;}
+#sv-tabs .sv-acc-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;font-size:14px;font-weight:700;color:#0f3168;background:#f4f8fb;user-select:none;gap:16px;transition:background .2s;}
+#sv-tabs .sv-acc-header:hover{background:#e0f6fa;}
+#sv-tabs .sv-acc-icon{font-size:20px;color:#21b7cb;transition:transform .25s;flex-shrink:0;line-height:1;}
+#sv-tabs .sv-acc-body{display:none;padding:24px;}
+#sv-tabs .sv-acc-body p{font-size:14px;line-height:1.8;color:#2d3a4a;font-weight:300;margin-bottom:12px;}
+#sv-tabs .sv-acc-body p:last-child{margin-bottom:0;}
+#sv-tabs input.sv-acc-check:checked ~ .sv-acc-body{display:block;}
+#sv-tabs input.sv-acc-check:checked ~ .sv-acc-header .sv-acc-icon{transform:rotate(45deg);}
+
+#sv-tabs .sv-sec{border:1px solid #dde7f0;border-radius:10px;margin-bottom:16px;overflow:hidden;}
+#sv-tabs .sv-sec-header{padding:16px 20px;font-size:15px;font-weight:700;color:#0f3168;background:#f4f8fb;}
+#sv-tabs .sv-sec-body{padding:24px;}
+#sv-tabs .sv-sec-body p{font-size:14px;line-height:1.8;color:#2d3a4a;font-weight:300;margin-bottom:12px;}
+#sv-tabs .sv-sec-body p:last-child{margin-bottom:0;}
+#sv-tabs .sv-sec-body ul{margin:4px 0 12px 18px;}
+#sv-tabs .sv-sec-body li{font-size:14px;line-height:1.8;color:#2d3a4a;font-weight:300;}
+
+#sv-tabs .sv-table-wrap{overflow-x:auto;margin:8px 0 8px;}
+#sv-tabs table.sv-table{border-collapse:collapse;width:100%;font-size:13px;}
+#sv-tabs table.sv-table th,#sv-tabs table.sv-table td{border:1px solid #dde7f0;padding:10px 14px;text-align:left;}
+#sv-tabs table.sv-table th{background:#0f3168;color:#fff;font-weight:700;font-size:11px;letter-spacing:.04em;text-transform:uppercase;}
+#sv-tabs table.sv-table td{color:#2d3a4a;font-weight:300;}
+#sv-tabs table.sv-table td.sv-bcc{background:#e0f6fa;color:#0f3168;font-weight:700;}
+#sv-tabs table.sv-table tr:nth-child(even) td:not(.sv-bcc){background:#f4f8fb;}
+#sv-tabs table.sv-table td:first-child{font-weight:500;color:#0f3168;max-width:440px;}
+#sv-tabs table.sv-table td:last-child{text-align:center;font-weight:600;color:#17808f;white-space:nowrap;}
+#sv-tabs table.sv-table th:last-child{text-align:center;}
+
+#sv-tabs .sv-video-wrap{position:relative;width:100%;max-width:700px;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#0f3168 center/cover no-repeat;box-shadow:0 8px 28px rgba(15,49,104,.16);margin:16px 0 32px;cursor:pointer;}
+#sv-tabs .sv-video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+#sv-tabs .sv-video-wrap-vertical{position:relative;width:100%;max-width:300px;aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#0f3168 center/cover no-repeat;box-shadow:0 8px 28px rgba(15,49,104,.16);margin:16px 0 32px;cursor:pointer;}
+#sv-tabs .sv-video-wrap-vertical iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+#sv-tabs .sv-video-wrap-vertical::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.3) 0%,transparent 50%);pointer-events:none;}
+#sv-tabs .sv-video-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:transform .2s;z-index:2;}
+#sv-tabs .sv-video-wrap:hover .sv-video-play,#sv-tabs .sv-video-wrap-vertical:hover .sv-video-play{transform:translate(-50%,-50%) scale(1.08);}
+#sv-tabs .sv-video-play svg{width:22px;height:22px;fill:#0f3168;margin-left:4px;}
+#sv-tabs .sv-video-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.3) 0%,transparent 50%);pointer-events:none;}
+
+#sv-tabs .sv-plus-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:24px 0 32px;}
+#sv-tabs .sv-plus-card{border:1px solid #dde7f0;border-radius:12px;padding:20px;background:#fff;transition:box-shadow .2s,transform .2s;font-size:13px;line-height:1.65;color:#2d3a4a;font-weight:300;}
+#sv-tabs .sv-plus-card:hover{box-shadow:0 8px 24px rgba(15,49,104,.10);transform:translateY(-3px);}
+
+#sv-tabs .sv-callout{border-left:4px solid #21b7cb;background:#e0f6fa;border-radius:0 10px 10px 0;padding:16px 20px;margin:0 0 32px;}
+#sv-tabs .sv-callout-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#17808f;margin-bottom:6px;}
+#sv-tabs .sv-callout-text{font-size:13px;line-height:1.7;color:#2d3a4a;font-weight:300;}
+
+#sv-tabs .sv-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:8px 0 24px;}
+#sv-tabs .sv-stats-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:8px 0 32px;}
+#sv-tabs .sv-stat-card{border-radius:12px;padding:22px 18px;text-align:center;background:linear-gradient(135deg,#0f3168 0%,#15407a 100%);color:#fff;}
+#sv-tabs .sv-stat-number{font-size:clamp(26px,3vw,34px);font-weight:300;line-height:1;margin-bottom:8px;}
+#sv-tabs .sv-stat-number em{font-style:italic;color:#a5e3ec;}
+#sv-tabs .sv-stat-label{font-size:12px;font-weight:300;line-height:1.5;opacity:.9;}
+
+#sv-tabs .sv-stages{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0 32px;}
+#sv-tabs .sv-stage{flex:1;min-width:200px;border-radius:12px;padding:18px 20px;background:linear-gradient(135deg,#0f3168 0%,#15407a 100%);color:#fff;}
+#sv-tabs .sv-stage-level{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-bottom:6px;}
+#sv-tabs .sv-stage-desc{font-size:13px;line-height:1.6;font-weight:300;}
+
+#sv-tabs .sv-cta{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:999px;background:#21b7cb;color:#fff;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 8px 20px rgba(33,183,203,.30);transition:background .2s,transform .2s;}
+#sv-tabs .sv-cta:hover{background:#0f3168;transform:translateY(-2px);}
+#sv-tabs .sv-cta-row{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 24px;align-items:center;}
+
+#sv-tabs .sv-masters-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:24px 0;}
+#sv-tabs .sv-master-card{display:flex;flex-direction:column;text-decoration:none;border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.07);border:1px solid #dde7f0;transition:transform .25s,box-shadow .25s;}
+#sv-tabs .sv-master-card:hover{transform:translateY(-5px);box-shadow:0 14px 32px rgba(0,0,0,.12);}
+#sv-tabs .sv-master-img{aspect-ratio:16/9;overflow:hidden;background:#e0f6fa;}
+#sv-tabs .sv-master-img img{width:100%;height:100%;object-fit:cover;display:block;}
+#sv-tabs .sv-master-title{font-size:14px;font-weight:700;color:#1a1a1a;padding:14px 14px 8px;line-height:1.3;min-height:44px;}
+#sv-tabs .sv-master-cta{margin:0 14px 14px;padding:9px 14px;border-radius:999px;background:#21b7cb;color:#fff;font-weight:700;font-size:13px;text-align:center;}
+
+#sv-tabs .sv-contact-card{display:flex;align-items:center;gap:16px;max-width:380px;}
+#sv-tabs .sv-contact-card img{width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;box-shadow:0 4px 12px rgba(15,49,104,.14);}
+#sv-tabs .sv-contact-name{font-size:15px;font-weight:700;color:#0f3168;}
+#sv-tabs .sv-contact-role{font-size:12px;color:#5a6a7e;margin-bottom:5px;}
+#sv-tabs .sv-contact-card a{font-size:13px;font-weight:600;color:#17808f;text-decoration:none;}
+
+#sv-tabs .sv-testi-grid{display:flex;flex-direction:column;gap:16px;margin:24px 0;}
+#sv-tabs .sv-testi{border:1px solid #dde7f0;border-left:4px solid #21b7cb;border-radius:0 14px 14px 0;padding:22px 24px;background:#fff;}
+#sv-tabs .sv-testi-quote{font-size:16px;font-weight:300;font-style:italic;line-height:1.6;color:#2d3a4a;margin-bottom:10px;}
+#sv-tabs .sv-testi-name{font-size:13px;font-weight:700;color:#0f3168;}
+#sv-tabs .sv-testi-role{font-size:12px;font-weight:300;color:#5a6a7e;}
+
+#sv-tabs ul.sv-list{margin:0 0 20px 0;list-style:none;max-width:900px;}
+#sv-tabs ul.sv-list li{position:relative;padding:0 0 10px 22px;font-size:14px;line-height:1.7;color:#2d3a4a;font-weight:300;}
+#sv-tabs ul.sv-list li::before{content:'';position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:#21b7cb;}
+#sv-tabs .sv-divider{height:1px;background:linear-gradient(to right,#21b7cb,#dde7f0 60%,transparent);margin:36px 0;}
+
+@media(max-width:1024px){#sv-tabs .sv-masters-grid{grid-template-columns:repeat(2,1fr);}#sv-tabs .sv-stats-grid-4{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:767px){
+#sv-tabs .sv-tabbtn{padding:12px 16px;font-size:12px;}
+#sv-tabs .sv-masters-grid,#sv-tabs .sv-plus-grid,#sv-tabs .sv-stats-grid,#sv-tabs .sv-stats-grid-4{grid-template-columns:1fr;}
+#sv-tabs .sv-stages{flex-direction:column;}
+}
+</style>
+
+<div class="sv-inner">
+  <input type="radio" name="sv-tab" id="sv-t1" class="sv-radio" checked>
+  <input type="radio" name="sv-tab" id="sv-t2" class="sv-radio">
+  <input type="radio" name="sv-tab" id="sv-t3" class="sv-radio">
+  <input type="radio" name="sv-tab" id="sv-t4" class="sv-radio">
+  <input type="radio" name="sv-tab" id="sv-t5" class="sv-radio">
+
+  <div class="sv-tabnav">
+    <label for="sv-t1" class="sv-tabbtn">Présentation</label>
+    <label for="sv-t2" class="sv-tabbtn">Programme</label>
+    <label for="sv-t3" class="sv-tabbtn">Admission</label>
+    <label for="sv-t4" class="sv-tabbtn">Carrière</label>
+    <label for="sv-t5" class="sv-tabbtn">Contact & témoignages</label>
+  </div>
+
+  <div class="sv-panels">
+
+    <!-- PANEL 1 — PRÉSENTATION -->
+    <div class="sv-panel sv-panel-1">
+      <h2 class="sv-title">Une licence pour<br><em>les sciences du vivant</em></h2>
+      <p class="sv-body">La licence Sciences de la Vie forme à des métiers dans les domaines de la biologie, de l'environnement, de l'agroalimentaire, des biotechnologies, de la recherche, de l'enseignement supérieur...</p>
+
+      <div class="sv-subtitle">Chiffres <em>clés</em></div>
+      <div class="sv-stats-grid">
+        <div class="sv-stat-card"><div class="sv-stat-number">115</div><div class="sv-stat-label">Étudiants par promo en L1 (25-26)</div></div>
+        <div class="sv-stat-card"><div class="sv-stat-number"><em>100%</em></div><div class="sv-stat-label">De réussite en L3 (25-26)</div></div>
+        <div class="sv-stat-card"><div class="sv-stat-number"><em>100%</em></div><div class="sv-stat-label">En activité (24-25)</div></div>
+      </div>
+      <div class="sv-callout">
+        <div class="sv-callout-label">Répartition de l'activité (24-25)</div>
+        <div class="sv-callout-text">93% en études &nbsp;·&nbsp; 5% en projet personnel &nbsp;·&nbsp; 2% en emploi</div>
+      </div>
+
+      <div class="sv-subtitle">Les <em>atouts</em></div>
+      <div class="sv-plus-grid">
+        <div class="sv-plus-card">3 stages ou CDD de 4 à 6 semaines minimum chaque année</div>
+        <div class="sv-plus-card">1 stage terrain à Ambleteuse en L2</div>
+        <div class="sv-plus-card">Mobilité à l'international possible, 1 ou 2 semestres en L3</div>
+        <div class="sv-plus-card">1 certification : passage du TOEIC (anglais) en L3</div>
+      </div>
+
+      <div class="sv-subtitle">Pourquoi choisir <em>cette Licence ?</em></div>
+      <ul class="sv-list">
+        <li>Pour être accompagné dans le choix de son projet professionnel et de sa poursuite d'études dans les sciences du vivant ou dans d'autres filières</li>
+        <li>Pour faire carrière dans les domaines de la biologie, de l'environnement, de l'agroalimentaire, de l'enseignement supérieur, des biotechnologies…</li>
+        <li>Pour acquérir un profil pluridisciplinaire en lien direct avec l'environnement professionnel ciblé (recherche, entreprise, laboratoires)</li>
+      </ul>
+
+      <div class="sv-divider"></div>
+      <div class="sv-subtitle">Un parcours <em>personnalisé</em></div>
+      <p class="sv-body">1 parcours au choix, à choisir sur Parcoursup* ou dès la rentrée**.</p>
+
+      <div class="sv-acc">
+        <input type="checkbox" id="sv-acc-specialisation" class="sv-acc-check">
+        <label for="sv-acc-specialisation" class="sv-acc-header">Parcours de spécialisation ** <span class="sv-acc-icon">+</span></label>
+        <div class="sv-acc-body">
+          <p>Management (L1/L2) · Formation Humaine (L1/L2) · Ingénieur (L3) · Biotechnologies (L3) · Écologie Opérationnelle (L3)</p>
+        </div>
+      </div>
+
+      <div class="sv-acc">
+        <input type="checkbox" id="sv-acc-prepa" class="sv-acc-check">
+        <label for="sv-acc-prepa" class="sv-acc-header">Prépa concours B Véto et Agro * <span class="sv-acc-icon">+</span></label>
+        <div class="sv-acc-body">
+          <p>Destiné à l'étudiant souhaitant un accompagnement spécifique vers les concours d'entrée des écoles vétérinaires et d'ingénieurs agronomes.</p>
+          <div class="sv-cta-row">
+            <a class="sv-cta" href="https://www.fges.fr/prepa-cupge-veto-agro/" target="_blank" rel="noopener">Découvrez la page Prépa concours Véto et Agro</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="sv-subtitle">La Licence en <em>vidéo</em></div>
+      <div class="sv-video-wrap-vertical"
+        style="background-image:url('https://img.youtube.com/vi/4JUiMiarqBg/hqdefault.jpg');"
+        onclick="this.style.backgroundImage='none';this.innerHTML='<iframe src=\'https://www.youtube.com/embed/4JUiMiarqBg?autoplay=1\' title=\'Présentation de la Licence Sciences de la Vie\' allow=\'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\' allowfullscreen></iframe>';"
+        role="button" aria-label="Lancer la vidéo de présentation">
+        <span class="sv-video-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+      </div>
+    </div>
+
+    <!-- PANEL 2 — PROGRAMME -->
+    <div class="sv-panel sv-panel-2">
+      <h2 class="sv-title">Programme <em>pédagogique</em></h2>
+
+      <div class="sv-callout">
+        <div class="sv-callout-label">Légende</div>
+        <div class="sv-callout-text">* Parcours Formation Humaine L1 & L2 &nbsp;·&nbsp; ** Parcours Management L1 & L2 &nbsp;·&nbsp; *** Matière au choix (Embryologie OU Microbiologie alimentaire) en L2. Les spécialisations de L3 sont à part et ne portent pas ces symboles.</div>
+      </div>
+
+      <div class="sv-acc">
+        <input type="checkbox" id="sv-acc-l1" class="sv-acc-check">
+        <label for="sv-acc-l1" class="sv-acc-header"> Licence 1 <span class="sv-acc-icon">+</span></label>
+        <div class="sv-acc-body"><div class="sv-table-wrap"><table class="sv-table">
+          <tr><th>Matière</th><th>ECTS</th></tr>
+          <tr><td colspan="2" class="sv-bcc">BC1</td></tr>
+          <tr><td>Biologie S1 & S2 (Cours & TP)</td><td>9</td></tr>
+          <tr><td>Chimie générale S1 & S2 (Cours & TP)</td><td>8</td></tr>
+          <tr><td>Mathématiques</td><td>3</td></tr>
+          <tr><td>Biochimie S1 & S2</td><td>6</td></tr>
+          <tr><td>Génie des procédés agroalimentaires</td><td>2</td></tr>
+          <tr><td>Remise à niveau en mathématiques</td><td>1</td></tr>
+          <tr><td colspan="2" class="sv-bcc">BC2</td></tr>
+          <tr><td>Introduction à la biologie marine</td><td>1</td></tr>
+          <tr><td>Géologie descriptive</td><td>2</td></tr>
+          <tr><td>Physique S1 & S2 (Cours & TP)</td><td>6</td></tr>
+          <tr><td>De l'origine de la vie à l'Homme</td><td>1</td></tr>
+          <tr><td>Méthodologie scientifique</td><td>1</td></tr>
+          <tr><td>Physiologie animale</td><td>3</td></tr>
+          <tr><td colspan="2" class="sv-bcc">BC3</td></tr>
+          <tr><td>Projet personnel et professionnel S1 & S2 **</td><td>1</td></tr>
+          <tr><td>Découverte de l'entreprise **</td><td>2</td></tr>
+          <tr><td>La RSE et le DD en entreprise **</td><td>2</td></tr>
+          <tr><td colspan="2" class="sv-bcc">BC4</td></tr>
+          <tr><td>Développement Durable et Responsable S1 & S2</td><td>4</td></tr>
+          <tr><td colspan="2" class="sv-bcc">BC5</td></tr>
+          <tr><td>Anglais S1 & S2</td><td>4</td></tr>
+          <tr><td>Informatique</td><td>2</td></tr>
+          <tr><td>Formation humaine S1 & S2 *</td><td>4</td></tr>
+        </table></div></div>
+      </div>
+
+      <div class="sv-acc">
+        <input type="checkbox" id="sv-acc-l2" class="sv-acc-check">
+        <label for="sv-acc-l2" class="sv-acc-header"> Licence 2 <span class="sv-acc-icon">+</span></label>
+        <div class="sv-acc-body"><div class="sv-table-wrap"><table class="sv-table">
+          <tr><th>Matière</th><th>ECTS</th></tr>
+          <tr><td colspan="2" class="sv-bcc">BC1</td></tr>
+          <tr><td>Zoologie des invertébrés (Cours & TP)</td><td>4</td></tr>
+          <tr><td>Physiologie végétale (Cours & TP)</td><td>3</td></tr>
+          <tr><td>Génétique mendélienne</td><td>3</td></tr>
+          <tr><td>Chimie organique (Cours & TP)</td><td>4</td></tr>
+          <tr><td>Géomorphologie – Hydrologie</td><td>2</td></tr>
+          <tr><td>Génie alimentaire</td><td>2</td></tr>
+          <tr><td>Principes d'écologie</td><td>3</td></tr>
+          <tr><td>Qualité de l'eau</td><td>1</td></tr>
+          <tr><td>Botanique (Cours & TP)</td><td>4</td></tr>
+          <tr><td>Physiologie animale</td><td>2</td></tr>
+          <tr><td>Altération – Pédologie</td><td>2</td></tr>
+          <tr><td>Biochimie</td><td>3</td></tr>
+          <tr><td>Physique</td><td>2</td></tr>
+          <tr><td>Microbiologie alimentaire ***</td><td>2</td></tr>
+          <tr><td>Embryologie ***</td><td>2</td></tr>
+          <tr><td>Adaptation aux milieux marins</td><td>2</td></tr>
+          <tr><td colspan="2" class="sv-bcc">BC2</td></tr>
+          <tr><td>Démarche scientifique</td><td>2</td></tr>
+          <tr><td>Évolution biologique</td><td>—</td></tr>
+          <tr><td>Introduction à la biodiversité</td><td>1</td></tr>
+          <tr><td>Box certificative BC2</td><td>1</td></tr>
+          <tr><td colspan="2" class="sv-bcc">BC3</td></tr>
+          <tr><td>Professionnalisation</td><td>2</td></tr>
+          <tr><td>Stage terrain à Ambleteuse</td><td>2</td></tr>
+          <tr><td>Management S3 & S4 **</td><td>3</td></tr>
+          <tr><td colspan="2" class="sv-bcc">BC4</td></tr>
+          <tr><td>Projet d'initiative</td><td>3</td></tr>
+          <tr><td colspan="2" class="sv-bcc">BC5</td></tr>
+          <tr><td>Anglais S4 & S5</td><td>4</td></tr>
+          <tr><td>Informatique</td><td>1</td></tr>
+          <tr><td>Communication personnelle et interpersonnelle S3 & S4 *</td><td>3</td></tr>
+        </table></div>
+        <div class="sv-callout" style="margin-top:16px;">
+          <div class="sv-callout-label">Choix en L2 ***</div>
+          <div class="sv-callout-text">Une seule matière parmi : Embryologie (2 ECTS) ou Microbiologie alimentaire (2 ECTS).</div>
+        </div>
+        </div>
+      </div>
+
+      <div class="sv-acc">
+        <input type="checkbox" id="sv-acc-l3" class="sv-acc-check">
+        <label for="sv-acc-l3" class="sv-acc-header"> Licence 3 <span class="sv-acc-icon">+</span></label>
+        <div class="sv-acc-body">
+          <p>Matières communes à tous les étudiants de L3 :</p>
+          <div class="sv-table-wrap"><table class="sv-table">
+          <tr><th>Matière</th><th>ECTS</th></tr>
+          <tr><td colspan="2" class="sv-bcc">BC1</td></tr>
+          <tr><td>Techniques biochimiques (Cours & TP)</td><td>3</td></tr>
+          <tr><td>Botanique des angiospermes (Cours & TP)</td><td>2</td></tr>
+          <tr><td>Génétique des populations</td><td>3</td></tr>
+          <tr><td>Sélection végétale</td><td>2</td></tr>
+          <tr><td>Immunologie</td><td>3</td></tr>
+          <tr><td>Biochimie – Enzymologie</td><td>2</td></tr>
+          <tr><td>Biochimie</td><td>3</td></tr>
+          <tr><td>Génétique moléculaire (Cours & TP)</td><td>2</td></tr>
+          <tr><td>Physiologie végétale</td><td>2</td></tr>
+          <tr><td>Physiologie de la reproduction</td><td>2</td></tr>
+          <tr><td>Zoologie des vertébrés</td><td>2</td></tr>
+          <tr><td>Box certificative BC1</td><td>1</td></tr>
+          <tr><td colspan="2" class="sv-bcc">BC3</td></tr>
+          <tr><td>Professionnalisation</td><td>2</td></tr>
+          <tr><td>Analyse de données / Logiciel R</td><td>2</td></tr>
+          <tr><td>Box certificative BC3</td><td>1</td></tr>
+          <tr><td colspan="2" class="sv-bcc">BC4</td></tr>
+          <tr><td>Délibérer, agir, choisir</td><td>1</td></tr>
+          <tr><td>Box certificative BC4</td><td>1</td></tr>
+          <tr><td colspan="2" class="sv-bcc">BC5</td></tr>
+          <tr><td>Anglais</td><td>3</td></tr>
+          <tr><td>Informatique</td><td>2</td></tr>
+          <tr><td>Box certificative BC5</td><td>1</td></tr>
+          </table></div>
+
+          <div class="sv-subtitle" style="margin-top:24px;">Spécialisation de <em>L3</em></div>
+          <p>Le parcours de spécialisation est ensuite choisi parmi 3 possibilités :</p>
+          <div class="sv-table-wrap"><table class="sv-table">
+          <tr><th>Ingénieur</th><th>Biotechnologies</th><th>Écologie Opérationnelle</th></tr>
+          <tr><td>Innovation agroalimentaire</td><td>Système nerveux</td><td>Écologie des milieux marins</td></tr>
+          <tr><td>Microbiologie</td><td>Bioinformatique</td><td>Ornithologie</td></tr>
+          <tr><td>Filières agroalimentaires</td><td>Culture in vitro</td><td>Entomologie</td></tr>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL 3 — ADMISSION -->
+    <div class="sv-panel sv-panel-3">
+      <h2 class="sv-title">À qui s'adresse<br><em>cette Licence ?</em></h2>
+
+      <div class="sv-sec">
+        <div class="sv-sec-header">Licence 1</div>
+        <div class="sv-sec-body">
+          <p>Lycéens issus d'un bac général toutes spécialités confondues, en particulier les spécialités suivantes :</p>
+          <ul><li>Mathématiques</li><li>Sciences de la Vie et de la Terre</li><li>Mathématiques complémentaires</li><li>Physique-Chimie</li></ul>
+        </div>
+      </div>
+      <div class="sv-cta-row">
+        <a class="sv-cta" href="https://dossierappel.parcoursup.fr/Candidats/public/fiches/afficherFicheFormation?g_ta_cod=28854&amp;typeBac=0&amp;originePc=0" target="_blank" rel="noopener">Candidater sur Parcoursup</a>
+      </div>
+
+      <div class="sv-sec">
+        <div class="sv-sec-header">Candidature en Licence 2 ou Licence 3</div>
+        <div class="sv-sec-body">
+          <p>Étudiants titulaires d'une L1 ou L2 en Biologie, Santé (ou diplômes équivalents), en classes préparatoires scientifiques BCPST, ou titulaires d'un BTS ou DUT/BUT proche du domaine d'études.</p>
+        </div>
+      </div>
+      <div class="sv-cta-row">
+        <a class="sv-cta" href="https://agora.univ-catholille.fr/isacademia/!formInscrs.connection?ww_c_formulaire=CANDIDATURE" target="_blank" rel="noopener">Candidater en admission parallèle</a>
+      </div>
+
+      <p class="sv-body">Vous ne savez pas par où commencer ? Découvrez comment candidater sur notre page <a href="https://www.fges.fr/candidater/" target="_blank" rel="noopener">« Candidater »</a>.</p>
+
+      <div class="sv-cta-row">
+        <a class="sv-cta" href="https://www.fges.fr/candidater/frais-de-scolarite-fges/" target="_blank" rel="noopener">Simuler mes frais de scolarité</a>
+      </div>
+    </div>
+
+    <!-- PANEL 4 — CARRIÈRE -->
+    <div class="sv-panel sv-panel-4">
+      <h2 class="sv-title">Poursuite d'études<br><em>et débouchés</em></h2>
+
+      <div class="sv-subtitle">À la <em>FGES</em></div>
+      <div class="sv-masters-grid">
+        <a class="sv-master-card" href="https://fges.fr/formations/master-ecologie-operationnelle/" target="_blank" rel="noopener">
+          <div class="sv-master-img"><img src="https://www.fges.fr/wp-content/uploads/2025/01/Master-Ecologie-Operationnelle.png" alt="Master Écologie Opérationnelle" loading="lazy"></div>
+          <div class="sv-master-title">Master Écologie Opérationnelle</div><div class="sv-master-cta">En savoir +</div>
+        </a>
+        <a class="sv-master-card" href="https://fges.fr/formations/master-management-du-developpement-durable/" target="_blank" rel="noopener">
+          <div class="sv-master-img"><img src="https://www.fges.fr/wp-content/uploads/2025/01/Master-Developpement-Durable.png" alt="Master Management du développement durable" loading="lazy"></div>
+          <div class="sv-master-title">Master Management du développement durable</div><div class="sv-master-cta">En savoir +</div>
+        </a>
+        <a class="sv-master-card" href="https://fges.fr/formations/master-data-management-in-biosciences/" target="_blank" rel="noopener">
+          <div class="sv-master-img"><img src="https://www.fges.fr/wp-content/uploads/2025/01/Master-Daa-Management-in-Biosciences.png" alt="Master Data Management in Biosciences" loading="lazy"></div>
+          <div class="sv-master-title">Master Data Management in Biosciences</div><div class="sv-master-cta">En savoir +</div>
+        </a>
+      </div>
+
+      <div class="sv-divider"></div>
+      <div class="sv-subtitle">Dans une <em>autre université</em></div>
+      <p class="sv-body">Masters en biologie, santé, agroalimentaire, écologie, microbiologie, biotechnologies, biologie cellulaire et moléculaire, neurosciences, éthologie, immunologie, génétique...</p>
+      <p class="sv-body">Une poursuite d'études est également possible dans les écoles d'ingénieurs : ISA (Junia), ISARA, UniLaSalle, Polytech Lille-Paris, EBI, ENSTBB, UTC, Agrocampus Ouest, AgroParisTech...</p>
+
+      <div class="sv-divider"></div>
+      <div class="sv-subtitle">Débouchés métiers <em>si poursuite en master</em></div>
+      <ul class="sv-list">
+        <li>Ingénieur d'études ou de recherche en laboratoire</li>
+        <li>Ingénieur de la santé</li>
+        <li>Expert d'études climatiques</li>
+        <li>Chargé d'études scientifiques environnementales</li>
+        <li>Chercheur</li>
+        <li>Enseignant-chercheur</li>
+      </ul>
+    </div>
+
+    <!-- PANEL 5 — CONTACT & TÉMOIGNAGES -->
+    <div class="sv-panel sv-panel-5">
+      <h2 class="sv-title">La parole à<br><em>nos étudiants</em></h2>
+
+      <div class="sv-testi-grid">
+        <div class="sv-testi">
+          <div class="sv-testi-quote">« Depuis que je suis petite, je rêve de faire de la biologie. La licence Sciences de la Vie proposée à la FGES, avec son cursus généraliste les deux premières années et sa spécialisation de 3ème année, m'a permis d'affiner mon choix au fur et à mesure des années. »</div>
+          <div class="sv-testi-name">Victoria</div>
+          <div class="sv-testi-role">Promo 2020</div>
+        </div>
+        <div class="sv-testi">
+          <div class="sv-testi-quote">« Après une année en classe préparatoire BCPST et une année en faculté vétérinaire, j'ai rejoint la FGES en L2. J'ai tout de suite accroché avec l'ensemble de l'équipe pédagogique : on nous écoute, on nous aide, on nous oriente pour la suite de nos études. »</div>
+          <div class="sv-testi-name">François</div>
+          <div class="sv-testi-role">Promo 2019</div>
+        </div>
+      </div>
+
+      <div class="sv-subtitle">La Licence en <em>vidéo</em></div>
+      <div class="sv-video-wrap"
+        style="background-image:url('https://img.youtube.com/vi/tMhPSvNtH5M/hqdefault.jpg');"
+        onclick="this.style.backgroundImage='none';this.innerHTML='<iframe src=\'https://www.youtube.com/embed/tMhPSvNtH5M?autoplay=1\' title=\'Témoignages Licence Sciences de la Vie\' allow=\'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\' allowfullscreen></iframe>';"
+        role="button" aria-label="Lancer la vidéo de témoignages">
+        <span class="sv-video-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+      </div>
+
+      <div class="sv-divider"></div>
+      <div class="sv-subtitle">Responsable <em>pédagogique</em></div>
+      <div class="sv-contact-card">
+        <img src="https://www.fges.fr/wp-content/uploads/2025/08/Coralie-Site.png" alt="Coralie Talma">
+        <div>
+          <div class="sv-contact-name">Coralie Talma</div>
+          <div class="sv-contact-role">Responsable pédagogique</div>
+          <a href="mailto:coralie.talma@univ-catholille.fr">Contacter</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+</body>
+</html>
