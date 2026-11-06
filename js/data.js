@@ -52,7 +52,7 @@ export const PLAQUETTES = {
 export const CATALOGUE_PLAQUETTES = "https://www.calameo.com/accounts/7206845";
 /* Relais du formulaire en production (plugin WordPress fourni dans tools/wordpress/).
    Vide : le site utilise le relais local (tools/serve.py), ou le mode démo une fois en ligne. */
-export const LEAD_ENDPOINT = "";     // ex. "https://www.fges.fr/wp-json/campus-fges/v1/lead"
+export const LEAD_ENDPOINT = "https://www.fges.fr/wp-json/campus-fges/v1/lead";
 
 /* Rendez-vous sur le campus : le prochain à venir s'affiche dans le mot d'accueil. À tenir à jour (fges.fr, univ-catholille.fr). */
 export const RENDEZ_VOUS = [
