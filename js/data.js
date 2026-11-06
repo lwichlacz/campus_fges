@@ -17,7 +17,6 @@ export const FORMATIONS = [
 	["lpabf","Licence Pro Assurance-Banque-Finance","FGES","LP","falise",40,"1 an · alternance","Une L3 pro en alternance pour devenir conseiller bancaire.","licence-professionnelle-assurance-banque-finance/"],
 	["info","Licence Informatique","EDN","L","wenov",50,"L1-L3 · L3 en alternance possible","Data, cyber ou réalité virtuelle, et un Projet Gaming dès la L1.","licence-sciences-du-numerique/"],
 	["spi","Licence Sciences pour l'Ingénieur","EDN","L","wenov",30,"Nouveau 2026 · L1-L3","Robots, objets connectés et systèmes embarqués.","licence-informatique-industrielle-objets-connectes-et-robotique/"],
-	["mn","Licence Management & Numérique","EDN","L","wenov",30,"L1-L3 · 1 stage par an","Manager la transition digitale ou lancer sa start-up.","licence-management-numerique/"],
 	["ecoop","Master Écologie Opérationnelle","FGES","M","falise",25,"M1 initial · M2 alternance possible","Devenir écologue de terrain : 190 h de cours dehors.","master-ecologie-operationnelle/"],
 	["mdd","Master Management du Développement Durable","FGES","M","falise",30,"M1 stage · M2 alternance","Responsable RSE, chargé de mission climat, consultant.","master-management-du-developpement-durable/"],
 	["im","Master International Management","FGES","M","falise",30,"100 % en anglais · M2 alternance","Le management à l'international, avec des doubles diplômes.","master-international-management/"],
