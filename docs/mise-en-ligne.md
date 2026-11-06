@@ -107,7 +107,8 @@ Identifiants des formations qui ont un jeu (`?jeu=`) : `gestion`, `sv`, `cfa`, `
 **Fiches formation (Elementor)** : chaque fiche qui a un jeu reçoit un **bandeau Campus 3D** (vignette du lieu,
 titre, bouton « Lancer la mission »), à coller dans le widget HTML du haut de la fiche, juste sous les chiffres
 clés, sans toucher au widget des onglets. Les blocs prêts à coller sont dans `docs/bandeaux/` ; ouvrir
-`docs/bandeaux/index.html` pour les voir tous et copier le code d'un clic. Exemple complet :
+`docs/bandeaux/index.html` pour les voir tous et copier le code d'un clic. Chaque bandeau prend la couleur de son
+école, comme le reste de la fiche : turquoise FGES, bordeaux ISEA, or EDN (`ECOLES` dans `tools/fiches/bandeaux.py`). Exemple complet :
 `docs/fiche-sv-complete.html` (titre, bandeau principal avec le bouton « Tester la licence en 3D », bandeau Campus 3D).
 
 **Routine à chaque nouveau mini-jeu** (le vérificateur refuse un jeu qui n'a pas sa vignette ou son bandeau) :

@@ -31,6 +31,16 @@ ACCROCHE = {
 }
 
 
+# couleurs de chaque école, relevées sur ses fiches de fges.fr (le bleu marine #0f3168 est commun aux trois)
+# acc : bordures, fond du bouton au survol · txt : petit texte et italique du titre (lisible sur fond clair)
+# pale : fond du bandeau · ombre : halo au survol · survol : texte du bouton au survol
+ECOLES = {
+    "FGES": {"acc": "#21b7cb", "txt": "#21b7cb", "pale": "#f5fbfd", "ombre": "rgba(33, 183, 203, .14)", "survol": "#ffffff"},
+    "ISEA": {"acc": "#872850", "txt": "#872850", "pale": "#fbf5f8", "ombre": "rgba(135, 40, 80, .14)", "survol": "#ffffff"},
+    "EDN":  {"acc": "#cb971a", "txt": "#96711a", "pale": "#fdf8ec", "ombre": "rgba(203, 151, 26, .16)", "survol": "#0f3168"},
+}
+
+
 def sujet(f):
     """« en Sciences de la Vie », « en Master Droit & Gestion du Patrimoine »"""
     n = f["name"]
@@ -43,26 +53,27 @@ def bloc(f):
     lien = f"{CAMPUS}?jeu={fid}&amp;utm_source=fges.fr&amp;utm_medium=fiche&amp;utm_campaign={fid}"
     texte = ACCROCHE.get(fid, g["pitch"])
     e = html.escape
-    return f"""<!-- ══════ CAMPUS 3D · {e(f['name'])} — bandeau à coller sous les chiffres clés de la fiche ══════
+    c = ECOLES.get(f["school"], ECOLES["FGES"])
+    return f"""<!-- ══════ CAMPUS 3D · {e(f['name'])} ({f['school']}) — bandeau à coller sous les chiffres clés de la fiche ══════
      Généré par tools/fiches/bandeaux.py : ne pas modifier à la main, relancer le script. -->
 <section id="{sid}" style="all:initial;display:block;background-color:#ffffff;">
   <style>
     #{sid} *, #{sid} *::before, #{sid} *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
-    #{sid} .c3-inner {{ font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: #1a2a3a; -webkit-font-smoothing: antialiased; max-width: 1260px; margin: 0 auto; padding: 22px 24px 8px; width: 100%; }}
-    #{sid} .c3-strip {{ display: flex; align-items: center; gap: 22px; padding: 12px 22px 12px 12px; border: 1px solid #dde7f0; border-radius: 12px; background: #f5fbfd; text-decoration: none; color: inherit; transition: border-color .2s, box-shadow .2s; }}
-    #{sid} .c3-strip:hover {{ border-color: #21b7cb; box-shadow: 0 8px 24px rgba(33, 183, 203, .14); }}
-    #{sid} .c3-strip:focus-visible {{ outline: 3px solid #21b7cb; outline-offset: 3px; }}
+    #{sid} .c3-inner {{ --c3-acc: {c['acc']}; --c3-txt: {c['txt']}; --c3-pale: {c['pale']}; --c3-ombre: {c['ombre']}; --c3-survol: {c['survol']}; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: #1a2a3a; -webkit-font-smoothing: antialiased; max-width: 1260px; margin: 0 auto; padding: 22px 24px 8px; width: 100%; }}
+    #{sid} .c3-strip {{ display: flex; align-items: center; gap: 22px; padding: 12px 22px 12px 12px; border: 1px solid #dde7f0; border-radius: 12px; background: var(--c3-pale); text-decoration: none; color: inherit; transition: border-color .2s, box-shadow .2s; }}
+    #{sid} .c3-strip:hover {{ border-color: var(--c3-acc); box-shadow: 0 8px 24px var(--c3-ombre); }}
+    #{sid} .c3-strip:focus-visible {{ outline: 3px solid var(--c3-acc); outline-offset: 3px; }}
     #{sid} .c3-thumb {{ flex: none; width: 150px; aspect-ratio: 1200 / 783; border-radius: 8px; overflow: hidden; background: #cfeaf0; }}
     #{sid} .c3-thumb img {{ width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s; }}
     #{sid} .c3-strip:hover .c3-thumb img {{ transform: scale(1.06); }}
     #{sid} .c3-txt {{ flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }}
-    #{sid} .c3-kicker {{ font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #21b7cb; }}
+    #{sid} .c3-kicker {{ font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--c3-txt); }}
     #{sid} .c3-title {{ font-family: 'Tiempos Headline', 'Georgia', 'Times New Roman', serif; font-size: 21px; font-weight: 400; line-height: 1.2; color: #0f3168; letter-spacing: -.01em; }}
-    #{sid} .c3-title em {{ font-style: italic; color: #21b7cb; }}
+    #{sid} .c3-title em {{ font-style: italic; color: var(--c3-txt); }}
     #{sid} .c3-text {{ font-size: 13px; line-height: 1.5; font-weight: 300; color: #2d3a4a; }}
-    #{sid} .c3-btn {{ flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; border: 1px solid #21b7cb; color: #0f3168; background: #ffffff; transition: background .2s, color .2s; }}
+    #{sid} .c3-btn {{ flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; border-radius: 6px; border: 1px solid var(--c3-acc); color: #0f3168; background: #ffffff; transition: background .2s, color .2s; }}
     #{sid} .c3-btn svg {{ width: 14px; height: 14px; fill: currentColor; }}
-    #{sid} .c3-strip:hover .c3-btn {{ background: #21b7cb; color: #ffffff; }}
+    #{sid} .c3-strip:hover .c3-btn {{ background: var(--c3-acc); color: var(--c3-survol); }}
     @media (max-width: 760px) {{
       #{sid} .c3-strip {{ flex-wrap: wrap; gap: 14px; padding: 12px; }}
       #{sid} .c3-thumb {{ width: 110px; }}
