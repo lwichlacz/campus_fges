@@ -76,9 +76,11 @@ else ok(`un seul numéro de version (${[...versions][0] || "aucun"})`);
 		const f = join(ROOT, "docs", "bandeaux", fid + ".html");
 		const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
 		if(!existsSync(f) || !readFileSync(f, "utf8").includes(`Campus 3D · ${esc(g.title)} · ${esc(g.dur)}`)) manques.push(`docs/bandeaux/${fid}.html (python tools/fiches/bandeaux.py)`);
+		const fb = join(ROOT, "docs", "bandeaux", fid + "-bouton.html");
+		if(!existsSync(fb) || !readFileSync(fb, "utf8").includes(`en 3D · ${esc(g.dur)}`)) manques.push(`docs/bandeaux/${fid}-bouton.html (python tools/fiches/bandeaux.py)`);
 	}
 	if(manques.length) bad("bandeaux des fiches formation incomplets : " + manques.join(" ; "));
-	else ok(`vignette et bandeau pour les ${Object.keys(d.GAMES).length} mini-jeux`);
+	else ok(`vignette, bouton et bandeau pour les ${Object.keys(d.GAMES).length} mini-jeux`);
 }
 
 if(RAPIDE){ finish(); }

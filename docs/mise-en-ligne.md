@@ -104,10 +104,12 @@ Toujours un **lien simple** (même onglet ou nouvel onglet), jamais une iframe. 
 Identifiants des formations qui ont un jeu (`?jeu=`) : `gestion`, `sv`, `cfa`, `spi`, `info` (licences) ;
 `dmb`, `dgp`, `mbif`, `ebmd` (masters). À compléter au fil des nouveaux jeux (`GAMES` dans `js/data.js`).
 
-**Fiches formation (Elementor)** : chaque fiche qui a un jeu reçoit un **bandeau Campus 3D** (vignette du lieu,
-titre, bouton « Lancer la mission »), à coller dans le widget HTML du haut de la fiche, juste sous les chiffres
-clés, sans toucher au widget des onglets. Les blocs prêts à coller sont dans `docs/bandeaux/` ; ouvrir
-`docs/bandeaux/index.html` pour les voir tous et copier le code d'un clic. Chaque bandeau prend la couleur de son
+**Fiches formation (Elementor)** : chaque fiche qui a un jeu reçoit deux codes, tous deux dans le widget HTML du
+haut de la fiche (jamais dans le widget des onglets) : le **bouton « Tester la licence (le master) en 3D »**, à
+ajouter à la fin de la rangée de boutons du bandeau principal (`<div class="lh-btns">`, après « Contactez-nous »),
+et le **bandeau Campus 3D** (vignette du lieu, titre, bouton « Lancer la mission »), juste sous les chiffres clés.
+Les codes prêts à coller sont dans `docs/bandeaux/` (`<formation>-bouton.html` et `<formation>.html`) ; ouvrir
+`docs/bandeaux/index.html` pour les voir tous et copier chaque code d'un clic. Chaque bandeau prend la couleur de son
 école, comme le reste de la fiche : turquoise FGES, bordeaux ISEA, or EDN (`ECOLES` dans `tools/fiches/bandeaux.py`). Exemple complet :
 `docs/fiche-sv-complete.html` (titre, bandeau principal avec le bouton « Tester la licence en 3D », bandeau Campus 3D).
 

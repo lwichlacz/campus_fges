@@ -10,11 +10,40 @@ article header{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;paddi
 article h2{margin:0;font-size:15px;color:#0f3168} article header span{color:#5d6779;flex:1}
 article button{border:0;border-radius:6px;background:#0f3168;color:#fff;font:600 12px Inter,sans-serif;padding:8px 14px;cursor:pointer}
 article button:focus-visible{outline:3px solid #21b7cb;outline-offset:2px}
+article h3{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:16px 24px 0;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5d6779}
+.demo{display:flex;flex-wrap:wrap;gap:10px;margin:12px 24px 0}
+.faux{display:inline-flex;align-items:center;padding:12px 22px;font:700 12.5px Inter,sans-serif;border-radius:6px;border:1px solid #c9d4df;color:#8a95a5}
 </style></head><body><main>
 <h1>Bandeaux Campus 3D</h1>
-<p class="m">Un bandeau par fiche formation, à coller dans le widget HTML de la fiche, juste sous les chiffres clés. Généré par tools/fiches/bandeaux.py.</p>
-<article><header><h2>Licence Sciences de la Vie</h2><span>Mission Jardin Boulay</span>
-<button type="button" data-f="sv">Copier le code</button></header>
+<p class="m">Pour chaque fiche formation, deux codes : <b>1.</b> le bouton « Tester en 3D », à ajouter à la fin de la rangée de boutons du bandeau principal (<code>&lt;div class="lh-btns"&gt;</code>) ;
+<b>2.</b> le bandeau, à coller dans le même widget HTML, juste sous les chiffres clés. Ne pas toucher au widget des onglets. Généré par tools/fiches/bandeaux.py.</p>
+<article><header><h2>Licence Sciences de la Vie</h2><span>Mission Jardin Boulay · FGES</span></header>
+<h3>1. Bouton du bandeau principal <button type="button" data-c="btn-sv">Copier le code du bouton</button></h3>
+<div class="lh-btns demo"><span class="faux">Brochure</span><span class="faux">Contactez-nous</span><!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de <div class="lh-btns"> (après « Contactez-nous ») -->
+<style>
+  .lh-btns a.c3d-btn-sv { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-sv svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-sv:hover { background: #21b7cb !important; border-color: #21b7cb; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-sv:focus-visible { outline: 3px solid #21b7cb; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-sv { justify-content: center; padding: 13px 18px; } }
+</style>
+<a href="https://lwichlacz.github.io/campus_fges/?jeu=sv&amp;utm_source=fges.fr&amp;utm_medium=fiche-entete&amp;utm_campaign=sv" target="_blank" rel="noopener" class="lh-btn c3d-btn-sv">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>Tester la licence en 3D · 7 min
+</a>
+</div>
+<textarea id="btn-sv" readonly hidden>&lt;!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de &lt;div class=&quot;lh-btns&quot;&gt; (après « Contactez-nous ») --&gt;
+&lt;style&gt;
+  .lh-btns a.c3d-btn-sv { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: &#x27;Inter&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-sv svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-sv:hover { background: #21b7cb !important; border-color: #21b7cb; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-sv:focus-visible { outline: 3px solid #21b7cb; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-sv { justify-content: center; padding: 13px 18px; } }
+&lt;/style&gt;
+&lt;a href=&quot;https://lwichlacz.github.io/campus_fges/?jeu=sv&amp;amp;utm_source=fges.fr&amp;amp;utm_medium=fiche-entete&amp;amp;utm_campaign=sv&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; class=&quot;lh-btn c3d-btn-sv&quot;&gt;
+  &lt;svg viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4 2.5v11l9.5-5.5z&quot;/&gt;&lt;/svg&gt;Tester la licence en 3D · 7 min
+&lt;/a&gt;
+</textarea>
+<h3>2. Bandeau sous les chiffres clés <button type="button" data-c="code-sv">Copier le code du bandeau</button></h3>
 <!-- ══════ CAMPUS 3D · Licence Sciences de la Vie (FGES) — bandeau à coller sous les chiffres clés de la fiche ══════
      Généré par tools/fiches/bandeaux.py : ne pas modifier à la main, relancer le script. -->
 <section id="c3d-sv" style="all:initial;display:block;background-color:#ffffff;">
@@ -109,8 +138,33 @@ article button:focus-visible{outline:3px solid #21b7cb;outline-offset:2px}
     &lt;/a&gt;
   &lt;/div&gt;
 &lt;/section&gt;
-</textarea></article><article><header><h2>Licence Gestion</h2><span>Le Comptoir</span>
-<button type="button" data-f="gestion">Copier le code</button></header>
+</textarea></article><article><header><h2>Licence Gestion</h2><span>Le Comptoir · FGES</span></header>
+<h3>1. Bouton du bandeau principal <button type="button" data-c="btn-gestion">Copier le code du bouton</button></h3>
+<div class="lh-btns demo"><span class="faux">Brochure</span><span class="faux">Contactez-nous</span><!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de <div class="lh-btns"> (après « Contactez-nous ») -->
+<style>
+  .lh-btns a.c3d-btn-gestion { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-gestion svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-gestion:hover { background: #21b7cb !important; border-color: #21b7cb; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-gestion:focus-visible { outline: 3px solid #21b7cb; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-gestion { justify-content: center; padding: 13px 18px; } }
+</style>
+<a href="https://lwichlacz.github.io/campus_fges/?jeu=gestion&amp;utm_source=fges.fr&amp;utm_medium=fiche-entete&amp;utm_campaign=gestion" target="_blank" rel="noopener" class="lh-btn c3d-btn-gestion">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>Tester la licence en 3D · 6 min
+</a>
+</div>
+<textarea id="btn-gestion" readonly hidden>&lt;!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de &lt;div class=&quot;lh-btns&quot;&gt; (après « Contactez-nous ») --&gt;
+&lt;style&gt;
+  .lh-btns a.c3d-btn-gestion { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: &#x27;Inter&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-gestion svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-gestion:hover { background: #21b7cb !important; border-color: #21b7cb; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-gestion:focus-visible { outline: 3px solid #21b7cb; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-gestion { justify-content: center; padding: 13px 18px; } }
+&lt;/style&gt;
+&lt;a href=&quot;https://lwichlacz.github.io/campus_fges/?jeu=gestion&amp;amp;utm_source=fges.fr&amp;amp;utm_medium=fiche-entete&amp;amp;utm_campaign=gestion&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; class=&quot;lh-btn c3d-btn-gestion&quot;&gt;
+  &lt;svg viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4 2.5v11l9.5-5.5z&quot;/&gt;&lt;/svg&gt;Tester la licence en 3D · 6 min
+&lt;/a&gt;
+</textarea>
+<h3>2. Bandeau sous les chiffres clés <button type="button" data-c="code-gestion">Copier le code du bandeau</button></h3>
 <!-- ══════ CAMPUS 3D · Licence Gestion (FGES) — bandeau à coller sous les chiffres clés de la fiche ══════
      Généré par tools/fiches/bandeaux.py : ne pas modifier à la main, relancer le script. -->
 <section id="c3d-gestion" style="all:initial;display:block;background-color:#ffffff;">
@@ -205,8 +259,33 @@ article button:focus-visible{outline:3px solid #21b7cb;outline-offset:2px}
     &lt;/a&gt;
   &lt;/div&gt;
 &lt;/section&gt;
-</textarea></article><article><header><h2>Licence Comptabilité-Finance-Audit</h2><span>L&#x27;Enquête de l&#x27;auditeur</span>
-<button type="button" data-f="cfa">Copier le code</button></header>
+</textarea></article><article><header><h2>Licence Comptabilité-Finance-Audit</h2><span>L&#x27;Enquête de l&#x27;auditeur · ISEA</span></header>
+<h3>1. Bouton du bandeau principal <button type="button" data-c="btn-cfa">Copier le code du bouton</button></h3>
+<div class="lh-btns demo"><span class="faux">Brochure</span><span class="faux">Contactez-nous</span><!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de <div class="lh-btns"> (après « Contactez-nous ») -->
+<style>
+  .lh-btns a.c3d-btn-cfa { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-cfa svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-cfa:hover { background: #872850 !important; border-color: #872850; color: #ffffff !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-cfa:focus-visible { outline: 3px solid #872850; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-cfa { justify-content: center; padding: 13px 18px; } }
+</style>
+<a href="https://lwichlacz.github.io/campus_fges/?jeu=cfa&amp;utm_source=fges.fr&amp;utm_medium=fiche-entete&amp;utm_campaign=cfa" target="_blank" rel="noopener" class="lh-btn c3d-btn-cfa">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>Tester la licence en 3D · 6 min
+</a>
+</div>
+<textarea id="btn-cfa" readonly hidden>&lt;!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de &lt;div class=&quot;lh-btns&quot;&gt; (après « Contactez-nous ») --&gt;
+&lt;style&gt;
+  .lh-btns a.c3d-btn-cfa { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: &#x27;Inter&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-cfa svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-cfa:hover { background: #872850 !important; border-color: #872850; color: #ffffff !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-cfa:focus-visible { outline: 3px solid #872850; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-cfa { justify-content: center; padding: 13px 18px; } }
+&lt;/style&gt;
+&lt;a href=&quot;https://lwichlacz.github.io/campus_fges/?jeu=cfa&amp;amp;utm_source=fges.fr&amp;amp;utm_medium=fiche-entete&amp;amp;utm_campaign=cfa&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; class=&quot;lh-btn c3d-btn-cfa&quot;&gt;
+  &lt;svg viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4 2.5v11l9.5-5.5z&quot;/&gt;&lt;/svg&gt;Tester la licence en 3D · 6 min
+&lt;/a&gt;
+</textarea>
+<h3>2. Bandeau sous les chiffres clés <button type="button" data-c="code-cfa">Copier le code du bandeau</button></h3>
 <!-- ══════ CAMPUS 3D · Licence Comptabilité-Finance-Audit (ISEA) — bandeau à coller sous les chiffres clés de la fiche ══════
      Généré par tools/fiches/bandeaux.py : ne pas modifier à la main, relancer le script. -->
 <section id="c3d-cfa" style="all:initial;display:block;background-color:#ffffff;">
@@ -301,8 +380,33 @@ article button:focus-visible{outline:3px solid #21b7cb;outline-offset:2px}
     &lt;/a&gt;
   &lt;/div&gt;
 &lt;/section&gt;
-</textarea></article><article><header><h2>Licence Informatique</h2><span>Game Jam 48 h</span>
-<button type="button" data-f="info">Copier le code</button></header>
+</textarea></article><article><header><h2>Licence Informatique</h2><span>Game Jam 48 h · EDN</span></header>
+<h3>1. Bouton du bandeau principal <button type="button" data-c="btn-info">Copier le code du bouton</button></h3>
+<div class="lh-btns demo"><span class="faux">Brochure</span><span class="faux">Contactez-nous</span><!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de <div class="lh-btns"> (après « Contactez-nous ») -->
+<style>
+  .lh-btns a.c3d-btn-info { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-info svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-info:hover { background: #cb971a !important; border-color: #cb971a; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-info:focus-visible { outline: 3px solid #cb971a; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-info { justify-content: center; padding: 13px 18px; } }
+</style>
+<a href="https://lwichlacz.github.io/campus_fges/?jeu=info&amp;utm_source=fges.fr&amp;utm_medium=fiche-entete&amp;utm_campaign=info" target="_blank" rel="noopener" class="lh-btn c3d-btn-info">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>Tester la licence en 3D · 12 min
+</a>
+</div>
+<textarea id="btn-info" readonly hidden>&lt;!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de &lt;div class=&quot;lh-btns&quot;&gt; (après « Contactez-nous ») --&gt;
+&lt;style&gt;
+  .lh-btns a.c3d-btn-info { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: &#x27;Inter&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-info svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-info:hover { background: #cb971a !important; border-color: #cb971a; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-info:focus-visible { outline: 3px solid #cb971a; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-info { justify-content: center; padding: 13px 18px; } }
+&lt;/style&gt;
+&lt;a href=&quot;https://lwichlacz.github.io/campus_fges/?jeu=info&amp;amp;utm_source=fges.fr&amp;amp;utm_medium=fiche-entete&amp;amp;utm_campaign=info&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; class=&quot;lh-btn c3d-btn-info&quot;&gt;
+  &lt;svg viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4 2.5v11l9.5-5.5z&quot;/&gt;&lt;/svg&gt;Tester la licence en 3D · 12 min
+&lt;/a&gt;
+</textarea>
+<h3>2. Bandeau sous les chiffres clés <button type="button" data-c="code-info">Copier le code du bandeau</button></h3>
 <!-- ══════ CAMPUS 3D · Licence Informatique (EDN) — bandeau à coller sous les chiffres clés de la fiche ══════
      Généré par tools/fiches/bandeaux.py : ne pas modifier à la main, relancer le script. -->
 <section id="c3d-info" style="all:initial;display:block;background-color:#ffffff;">
@@ -397,8 +501,33 @@ article button:focus-visible{outline:3px solid #21b7cb;outline-offset:2px}
     &lt;/a&gt;
   &lt;/div&gt;
 &lt;/section&gt;
-</textarea></article><article><header><h2>Licence Sciences pour l&#x27;Ingénieur</h2><span>Cellule robotique Wenov</span>
-<button type="button" data-f="spi">Copier le code</button></header>
+</textarea></article><article><header><h2>Licence Sciences pour l&#x27;Ingénieur</h2><span>Cellule robotique Wenov · EDN</span></header>
+<h3>1. Bouton du bandeau principal <button type="button" data-c="btn-spi">Copier le code du bouton</button></h3>
+<div class="lh-btns demo"><span class="faux">Brochure</span><span class="faux">Contactez-nous</span><!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de <div class="lh-btns"> (après « Contactez-nous ») -->
+<style>
+  .lh-btns a.c3d-btn-spi { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-spi svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-spi:hover { background: #cb971a !important; border-color: #cb971a; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-spi:focus-visible { outline: 3px solid #cb971a; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-spi { justify-content: center; padding: 13px 18px; } }
+</style>
+<a href="https://lwichlacz.github.io/campus_fges/?jeu=spi&amp;utm_source=fges.fr&amp;utm_medium=fiche-entete&amp;utm_campaign=spi" target="_blank" rel="noopener" class="lh-btn c3d-btn-spi">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>Tester la licence en 3D · 7 min
+</a>
+</div>
+<textarea id="btn-spi" readonly hidden>&lt;!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de &lt;div class=&quot;lh-btns&quot;&gt; (après « Contactez-nous ») --&gt;
+&lt;style&gt;
+  .lh-btns a.c3d-btn-spi { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: &#x27;Inter&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-spi svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-spi:hover { background: #cb971a !important; border-color: #cb971a; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-spi:focus-visible { outline: 3px solid #cb971a; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-spi { justify-content: center; padding: 13px 18px; } }
+&lt;/style&gt;
+&lt;a href=&quot;https://lwichlacz.github.io/campus_fges/?jeu=spi&amp;amp;utm_source=fges.fr&amp;amp;utm_medium=fiche-entete&amp;amp;utm_campaign=spi&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; class=&quot;lh-btn c3d-btn-spi&quot;&gt;
+  &lt;svg viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4 2.5v11l9.5-5.5z&quot;/&gt;&lt;/svg&gt;Tester la licence en 3D · 7 min
+&lt;/a&gt;
+</textarea>
+<h3>2. Bandeau sous les chiffres clés <button type="button" data-c="code-spi">Copier le code du bandeau</button></h3>
 <!-- ══════ CAMPUS 3D · Licence Sciences pour l&#x27;Ingénieur (EDN) — bandeau à coller sous les chiffres clés de la fiche ══════
      Généré par tools/fiches/bandeaux.py : ne pas modifier à la main, relancer le script. -->
 <section id="c3d-spi" style="all:initial;display:block;background-color:#ffffff;">
@@ -493,8 +622,33 @@ article button:focus-visible{outline:3px solid #21b7cb;outline-offset:2px}
     &lt;/a&gt;
   &lt;/div&gt;
 &lt;/section&gt;
-</textarea></article><article><header><h2>Master Droit &amp; Gestion du Patrimoine</h2><span>Le Dossier Deslaurier</span>
-<button type="button" data-f="dgp">Copier le code</button></header>
+</textarea></article><article><header><h2>Master Droit &amp; Gestion du Patrimoine</h2><span>Le Dossier Deslaurier · ISEA</span></header>
+<h3>1. Bouton du bandeau principal <button type="button" data-c="btn-dgp">Copier le code du bouton</button></h3>
+<div class="lh-btns demo"><span class="faux">Brochure</span><span class="faux">Contactez-nous</span><!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de <div class="lh-btns"> (après « Contactez-nous ») -->
+<style>
+  .lh-btns a.c3d-btn-dgp { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-dgp svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-dgp:hover { background: #872850 !important; border-color: #872850; color: #ffffff !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-dgp:focus-visible { outline: 3px solid #872850; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-dgp { justify-content: center; padding: 13px 18px; } }
+</style>
+<a href="https://lwichlacz.github.io/campus_fges/?jeu=dgp&amp;utm_source=fges.fr&amp;utm_medium=fiche-entete&amp;utm_campaign=dgp" target="_blank" rel="noopener" class="lh-btn c3d-btn-dgp">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>Tester le master en 3D · 10 min
+</a>
+</div>
+<textarea id="btn-dgp" readonly hidden>&lt;!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de &lt;div class=&quot;lh-btns&quot;&gt; (après « Contactez-nous ») --&gt;
+&lt;style&gt;
+  .lh-btns a.c3d-btn-dgp { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: &#x27;Inter&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-dgp svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-dgp:hover { background: #872850 !important; border-color: #872850; color: #ffffff !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-dgp:focus-visible { outline: 3px solid #872850; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-dgp { justify-content: center; padding: 13px 18px; } }
+&lt;/style&gt;
+&lt;a href=&quot;https://lwichlacz.github.io/campus_fges/?jeu=dgp&amp;amp;utm_source=fges.fr&amp;amp;utm_medium=fiche-entete&amp;amp;utm_campaign=dgp&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; class=&quot;lh-btn c3d-btn-dgp&quot;&gt;
+  &lt;svg viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4 2.5v11l9.5-5.5z&quot;/&gt;&lt;/svg&gt;Tester le master en 3D · 10 min
+&lt;/a&gt;
+</textarea>
+<h3>2. Bandeau sous les chiffres clés <button type="button" data-c="code-dgp">Copier le code du bandeau</button></h3>
 <!-- ══════ CAMPUS 3D · Master Droit &amp; Gestion du Patrimoine (ISEA) — bandeau à coller sous les chiffres clés de la fiche ══════
      Généré par tools/fiches/bandeaux.py : ne pas modifier à la main, relancer le script. -->
 <section id="c3d-dgp" style="all:initial;display:block;background-color:#ffffff;">
@@ -589,8 +743,33 @@ article button:focus-visible{outline:3px solid #21b7cb;outline-offset:2px}
     &lt;/a&gt;
   &lt;/div&gt;
 &lt;/section&gt;
-</textarea></article><article><header><h2>Master Management des Banques et Institutions Financières</h2><span>Une journée du chargé d&#x27;affaires</span>
-<button type="button" data-f="mbif">Copier le code</button></header>
+</textarea></article><article><header><h2>Master Management des Banques et Institutions Financières</h2><span>Une journée du chargé d&#x27;affaires · FGES</span></header>
+<h3>1. Bouton du bandeau principal <button type="button" data-c="btn-mbif">Copier le code du bouton</button></h3>
+<div class="lh-btns demo"><span class="faux">Brochure</span><span class="faux">Contactez-nous</span><!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de <div class="lh-btns"> (après « Contactez-nous ») -->
+<style>
+  .lh-btns a.c3d-btn-mbif { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-mbif svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-mbif:hover { background: #21b7cb !important; border-color: #21b7cb; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-mbif:focus-visible { outline: 3px solid #21b7cb; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-mbif { justify-content: center; padding: 13px 18px; } }
+</style>
+<a href="https://lwichlacz.github.io/campus_fges/?jeu=mbif&amp;utm_source=fges.fr&amp;utm_medium=fiche-entete&amp;utm_campaign=mbif" target="_blank" rel="noopener" class="lh-btn c3d-btn-mbif">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>Tester le master en 3D · 12 min
+</a>
+</div>
+<textarea id="btn-mbif" readonly hidden>&lt;!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de &lt;div class=&quot;lh-btns&quot;&gt; (après « Contactez-nous ») --&gt;
+&lt;style&gt;
+  .lh-btns a.c3d-btn-mbif { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: &#x27;Inter&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-mbif svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-mbif:hover { background: #21b7cb !important; border-color: #21b7cb; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-mbif:focus-visible { outline: 3px solid #21b7cb; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-mbif { justify-content: center; padding: 13px 18px; } }
+&lt;/style&gt;
+&lt;a href=&quot;https://lwichlacz.github.io/campus_fges/?jeu=mbif&amp;amp;utm_source=fges.fr&amp;amp;utm_medium=fiche-entete&amp;amp;utm_campaign=mbif&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; class=&quot;lh-btn c3d-btn-mbif&quot;&gt;
+  &lt;svg viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4 2.5v11l9.5-5.5z&quot;/&gt;&lt;/svg&gt;Tester le master en 3D · 12 min
+&lt;/a&gt;
+</textarea>
+<h3>2. Bandeau sous les chiffres clés <button type="button" data-c="code-mbif">Copier le code du bandeau</button></h3>
 <!-- ══════ CAMPUS 3D · Master Management des Banques et Institutions Financières (FGES) — bandeau à coller sous les chiffres clés de la fiche ══════
      Généré par tools/fiches/bandeaux.py : ne pas modifier à la main, relancer le script. -->
 <section id="c3d-mbif" style="all:initial;display:block;background-color:#ffffff;">
@@ -685,8 +864,33 @@ article button:focus-visible{outline:3px solid #21b7cb;outline-offset:2px}
     &lt;/a&gt;
   &lt;/div&gt;
 &lt;/section&gt;
-</textarea></article><article><header><h2>Master Data Management in Biosciences</h2><span>From Blood to Decision</span>
-<button type="button" data-f="dmb">Copier le code</button></header>
+</textarea></article><article><header><h2>Master Data Management in Biosciences</h2><span>From Blood to Decision · EDN</span></header>
+<h3>1. Bouton du bandeau principal <button type="button" data-c="btn-dmb">Copier le code du bouton</button></h3>
+<div class="lh-btns demo"><span class="faux">Brochure</span><span class="faux">Contactez-nous</span><!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de <div class="lh-btns"> (après « Contactez-nous ») -->
+<style>
+  .lh-btns a.c3d-btn-dmb { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-dmb svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-dmb:hover { background: #cb971a !important; border-color: #cb971a; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-dmb:focus-visible { outline: 3px solid #cb971a; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-dmb { justify-content: center; padding: 13px 18px; } }
+</style>
+<a href="https://lwichlacz.github.io/campus_fges/?jeu=dmb&amp;utm_source=fges.fr&amp;utm_medium=fiche-entete&amp;utm_campaign=dmb" target="_blank" rel="noopener" class="lh-btn c3d-btn-dmb">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>Tester le master en 3D · 12-15 min
+</a>
+</div>
+<textarea id="btn-dmb" readonly hidden>&lt;!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de &lt;div class=&quot;lh-btns&quot;&gt; (après « Contactez-nous ») --&gt;
+&lt;style&gt;
+  .lh-btns a.c3d-btn-dmb { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: &#x27;Inter&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-dmb svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-dmb:hover { background: #cb971a !important; border-color: #cb971a; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-dmb:focus-visible { outline: 3px solid #cb971a; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-dmb { justify-content: center; padding: 13px 18px; } }
+&lt;/style&gt;
+&lt;a href=&quot;https://lwichlacz.github.io/campus_fges/?jeu=dmb&amp;amp;utm_source=fges.fr&amp;amp;utm_medium=fiche-entete&amp;amp;utm_campaign=dmb&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; class=&quot;lh-btn c3d-btn-dmb&quot;&gt;
+  &lt;svg viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4 2.5v11l9.5-5.5z&quot;/&gt;&lt;/svg&gt;Tester le master en 3D · 12-15 min
+&lt;/a&gt;
+</textarea>
+<h3>2. Bandeau sous les chiffres clés <button type="button" data-c="code-dmb">Copier le code du bandeau</button></h3>
 <!-- ══════ CAMPUS 3D · Master Data Management in Biosciences (EDN) — bandeau à coller sous les chiffres clés de la fiche ══════
      Généré par tools/fiches/bandeaux.py : ne pas modifier à la main, relancer le script. -->
 <section id="c3d-dmb" style="all:initial;display:block;background-color:#ffffff;">
@@ -781,8 +985,33 @@ article button:focus-visible{outline:3px solid #21b7cb;outline-offset:2px}
     &lt;/a&gt;
   &lt;/div&gt;
 &lt;/section&gt;
-</textarea></article><article><header><h2>Master E-Business &amp; Marketing Digital</h2><span>Courée, la boutique en 3D</span>
-<button type="button" data-f="ebmd">Copier le code</button></header>
+</textarea></article><article><header><h2>Master E-Business &amp; Marketing Digital</h2><span>Courée, la boutique en 3D · EDN</span></header>
+<h3>1. Bouton du bandeau principal <button type="button" data-c="btn-ebmd">Copier le code du bouton</button></h3>
+<div class="lh-btns demo"><span class="faux">Brochure</span><span class="faux">Contactez-nous</span><!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de <div class="lh-btns"> (après « Contactez-nous ») -->
+<style>
+  .lh-btns a.c3d-btn-ebmd { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-ebmd svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-ebmd:hover { background: #cb971a !important; border-color: #cb971a; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-ebmd:focus-visible { outline: 3px solid #cb971a; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-ebmd { justify-content: center; padding: 13px 18px; } }
+</style>
+<a href="https://lwichlacz.github.io/campus_fges/?jeu=ebmd&amp;utm_source=fges.fr&amp;utm_medium=fiche-entete&amp;utm_campaign=ebmd" target="_blank" rel="noopener" class="lh-btn c3d-btn-ebmd">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg>Tester le master en 3D · 12 min
+</a>
+</div>
+<textarea id="btn-ebmd" readonly hidden>&lt;!-- CAMPUS 3D · bouton à coller dans le bandeau principal, à la fin de &lt;div class=&quot;lh-btns&quot;&gt; (après « Contactez-nous ») --&gt;
+&lt;style&gt;
+  .lh-btns a.c3d-btn-ebmd { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; font-family: &#x27;Inter&#x27;, &#x27;Helvetica Neue&#x27;, Arial, sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: .03em; text-decoration: none; border-radius: 6px; border: 1px solid #0f3168; background: #0f3168 !important; color: #ffffff !important; transition: background .2s, transform .15s, color .2s, border-color .2s; }
+  .lh-btns a.c3d-btn-ebmd svg { width: 12px; height: 12px; fill: currentColor; }
+  .lh-btns a.c3d-btn-ebmd:hover { background: #cb971a !important; border-color: #cb971a; color: #0f3168 !important; transform: translateY(-2px); }
+  .lh-btns a.c3d-btn-ebmd:focus-visible { outline: 3px solid #cb971a; outline-offset: 2px; }
+  @media (max-width: 760px) { .lh-btns a.c3d-btn-ebmd { justify-content: center; padding: 13px 18px; } }
+&lt;/style&gt;
+&lt;a href=&quot;https://lwichlacz.github.io/campus_fges/?jeu=ebmd&amp;amp;utm_source=fges.fr&amp;amp;utm_medium=fiche-entete&amp;amp;utm_campaign=ebmd&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; class=&quot;lh-btn c3d-btn-ebmd&quot;&gt;
+  &lt;svg viewBox=&quot;0 0 16 16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4 2.5v11l9.5-5.5z&quot;/&gt;&lt;/svg&gt;Tester le master en 3D · 12 min
+&lt;/a&gt;
+</textarea>
+<h3>2. Bandeau sous les chiffres clés <button type="button" data-c="code-ebmd">Copier le code du bandeau</button></h3>
 <!-- ══════ CAMPUS 3D · Master E-Business &amp; Marketing Digital (EDN) — bandeau à coller sous les chiffres clés de la fiche ══════
      Généré par tools/fiches/bandeaux.py : ne pas modifier à la main, relancer le script. -->
 <section id="c3d-ebmd" style="all:initial;display:block;background-color:#ffffff;">
@@ -880,9 +1109,9 @@ article button:focus-visible{outline:3px solid #21b7cb;outline-offset:2px}
 </textarea></article>
 </main>
 <script>
-document.querySelectorAll("button[data-f]").forEach(b => b.addEventListener("click", () => {
-  const t = document.getElementById("code-" + b.dataset.f);
-  const ok = () => { b.textContent = "Copié ✓"; setTimeout(() => b.textContent = "Copier le code", 1600); };
+document.querySelectorAll("button[data-c]").forEach(b => b.addEventListener("click", () => {
+  const t = document.getElementById(b.dataset.c), txt = b.textContent;
+  const ok = () => { b.textContent = "Copié ✓"; setTimeout(() => b.textContent = txt, 1600); };
   (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).then(ok, () => { t.hidden = false; t.select(); document.execCommand("copy"); t.hidden = true; ok(); });
 }));
 </script></body></html>
