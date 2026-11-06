@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Campus 3D sur les fiches</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,500;1,8..60,500&display=swap">
+<style>
+/* Maquette : la fiche formation telle qu'elle est sur fges.fr, avec les 4 emplacements du campus 3D numérotés */
+:root{
+  --navy:#14275c; --teal:#22adc2; --teal-pale:#e3f4f7; --line:#dfe6ee; --ink:#1d2433; --mut:#5d6779;
+  --paper:#fff; --desk:#eef1f5; --mark:#f0702e;
+  --serif:"Source Serif 4",Georgia,serif; --sans:Inter,system-ui,Segoe UI,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--desk);color:var(--ink);font:14px/1.5 var(--sans)}
+.wrap{max-width:1320px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left)) 60px}
+.intro{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;margin-bottom:20px}
+.intro h1{margin:0;font:500 28px/1.15 var(--serif);color:var(--navy)}
+.intro h1 i{color:var(--teal)}
+.intro p{margin:4px 0 0;color:var(--mut);max-width:640px}
+.toggle{display:flex;gap:8px;align-items:center;font-weight:600;color:var(--navy);cursor:pointer;user-select:none}
+.toggle input{width:18px;height:18px;accent-color:var(--mark)}
+
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;align-items:start}
+@media (max-width:1100px){.stage{grid-template-columns:1fr}.phone{justify-self:center}}
+.frame{background:var(--paper);border-radius:12px;box-shadow:0 12px 40px rgba(20,39,92,.12);overflow:hidden}
+.bar{display:flex;gap:6px;padding:9px 12px;background:#e4e8ee}
+.bar span{width:10px;height:10px;border-radius:50%;background:#c4cad3}
+.bar em{margin-left:12px;font:12px var(--sans);color:var(--mut);font-style:normal}
+
+/* --- Site --- */
+.site-h{display:flex;justify-content:space-between;align-items:center;padding:12px 36px}
+.logo{font:700 10px/1.1 var(--sans);color:var(--navy);display:flex;gap:8px;align-items:center}
+.logo b{width:26px;height:30px;border-radius:4px 4px 12px 12px;background:var(--navy)}
+.nav{display:flex;gap:20px;align-items:center;font-size:12px}
+.cta{background:var(--navy);color:#fff;padding:8px 16px;border-radius:4px;font:600 13px var(--serif)}
+.ticker{display:flex;align-items:center;gap:16px;background:var(--teal);color:#fff;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden}
+.ticker .k{background:var(--navy);padding:9px 14px;letter-spacing:.08em}
+.ticker .chip{background:#fff;color:var(--navy);padding:3px 8px;border-radius:2px}
+.ticker .new{background:var(--navy);color:#fff;padding:4px 10px;border-radius:2px}
+.page{padding:28px 36px 40px;position:relative}
+.crumb{font-size:10px;letter-spacing:.14em;font-weight:700;color:var(--teal);padding-bottom:10px;border-bottom:1px solid var(--line)}
+.page h2{font:500 40px/1.1 var(--serif);color:var(--navy);margin:18px 0 20px;letter-spacing:-.01em}
+.page h2 i{color:var(--teal)}
+.hero{display:grid;grid-template-columns:1fr 1fr;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(20,39,92,.1)}
+.photo{min-height:250px;background:linear-gradient(135deg,#c9b8a4,#8f7c6b 55%,#5b6f86);display:grid;place-items:center;color:#fff8;font-size:12px;font-weight:600}
+.hero-txt{background:linear-gradient(160deg,var(--teal-pale),#fff);border-top:3px solid var(--teal);padding:24px 26px;font-size:11px;color:var(--mut);display:flex;flex-direction:column;gap:10px}
+.seal{width:52px;height:56px;background:var(--navy);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.b{padding:8px 12px;border:1px solid var(--teal);border-radius:3px;font-weight:700;color:var(--navy);font-size:10.5px;background:#fff}
+.b.f{background:var(--teal);color:#fff}
+.b.g{background:var(--navy);border-color:var(--navy);color:#fff}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.tile{border:1px solid var(--line);border-top:3px solid var(--navy);border-radius:6px;padding:10px;text-align:center}
+.tile small{display:block;font-size:8.5px;letter-spacing:.1em;font-weight:700}
+.tile b{font:500 15px var(--serif);color:var(--navy)}
+
+/* --- Le bloc carte, couleurs du site --- */
+.carte{display:grid;grid-template-columns:1.05fr 1fr;margin-top:26px;border-radius:10px;overflow:hidden;background:var(--navy);color:#fff}
+.carte .img{min-height:220px;background:url(../img/carte.jpg) center/cover,#3b4c78;position:relative}
+.carte .img .play{position:absolute;left:16px;bottom:16px;background:#fff;color:var(--navy);font-weight:700;font-size:11px;padding:6px 10px;border-radius:99px}
+.carte .txt{padding:24px 28px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.carte .kick{font-size:10px;letter-spacing:.14em;font-weight:700;color:var(--teal)}
+.carte h3{margin:0;font:500 25px/1.15 var(--serif)}
+.carte h3 i{color:var(--teal)}
+.carte p{margin:0;font-size:12.5px;opacity:.85}
+.carte .go{align-self:flex-start;margin-top:6px;background:var(--teal);color:#fff;font-weight:700;padding:10px 18px;border-radius:3px;font-size:12px}
+.carte small{opacity:.6;font-size:10.5px}
+
+.infos h4{font:italic 500 24px var(--serif);color:var(--navy);margin:30px 0 10px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tab{border:1px solid var(--line);border-radius:5px 5px 0 0;padding:8px 14px;font-size:11px;font-weight:600;color:var(--mut)}
+.tab.on{border-color:var(--teal);color:var(--navy)}
+.tabbody{border-top:1px solid var(--line);padding:16px 0;font-size:12px;color:var(--mut);display:grid;grid-template-columns:2fr 1fr;gap:24px}
+.tabbody .lien{color:var(--navy);font-weight:700;text-decoration:underline;text-decoration-color:var(--teal);text-underline-offset:3px}
+.temoin{border-left:3px solid var(--teal);padding-left:12px}
+
+/* --- Repères --- */
+.n{position:relative}
+.pin{position:absolute;z-index:3;width:24px;height:24px;border-radius:50%;background:var(--mark);color:#fff;font:700 12px/24px var(--sans);text-align:center;box-shadow:0 0 0 4px #f0702e33}
+.hl{outline:2px dashed var(--mark);outline-offset:4px;border-radius:4px}
+body:not(.marks) .pin{display:none}
+body:not(.marks) .hl{outline:none}
+
+/* --- Téléphone --- */
+.phone{width:340px;max-width:100%;background:#111;border-radius:38px;padding:12px;box-shadow:0 12px 40px rgba(20,39,92,.2);position:sticky;top:16px}
+.screen{background:#fff;border-radius:28px;overflow:hidden;height:680px;position:relative}
+.scroll{height:100%;overflow:auto;padding-bottom:70px}
+.m-h{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+.m-h .cta{font-size:11px;padding:6px 10px}
+.m-page{padding:4px 16px}
+.m-page h2{font-size:28px;margin:10px 0 14px}
+.m-photo{height:150px;min-height:0;border-radius:8px 8px 0 0}
+.m-txt{border-radius:0 0 8px 8px;padding:16px}
+.m-tiles{grid-template-columns:1fr 1fr}
+.m-carte{grid-template-columns:1fr}
+.m-carte .img{min-height:0;aspect-ratio:782/510}
+.m-carte .txt{padding:18px}
+.m-carte h3{font-size:21px}
+.sticky{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 12px 14px;background:#fffffff2;border-top:1px solid var(--line);z-index:4}
+.sticky span{flex:1;text-align:center;padding:10px 6px;border-radius:4px;font-weight:700;font-size:11.5px}
+.sticky .s1{background:var(--teal);color:#fff}
+.sticky .s2{background:var(--navy);color:#fff}
+
+/* --- Légende --- */
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-top:32px}
+.card{background:var(--paper);border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card h3{margin:0;display:flex;gap:10px;align-items:center;font:600 15px var(--sans);color:var(--navy)}
+.card h3 .pin{position:static;flex:none;box-shadow:none;display:inline-block}
+.card p{margin:0;color:var(--mut)}
+.code{display:flex;gap:8px;align-items:center;background:#f5f7fa;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.code code{flex:1;min-width:0;overflow-wrap:anywhere;font:12px ui-monospace,Consolas,monospace;color:var(--navy)}
+.code button{flex:none;border:0;background:var(--navy);color:#fff;border-radius:4px;padding:5px 9px;font:600 11px var(--sans);cursor:pointer}
+.code button:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.rules{margin-top:16px;background:var(--paper);border-radius:10px;padding:18px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px 28px}
+.rules h3{grid-column:1/-1;margin:0 0 4px;font:600 15px var(--sans);color:var(--navy)}
+.rules p{margin:0;color:var(--mut)}
+.rules b{color:var(--ink)}
+@media (max-width:760px){.hero,.carte,.tabbody{grid-template-columns:1fr}.tiles{grid-template-columns:1fr 1fr}.nav span{display:none}.page,.site-h{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body class="marks">
+<div class="wrap">
+  <div class="intro">
+    <div>
+      <h1>Le campus 3D sur la fiche <i>Licence Sciences de la Vie</i></h1>
+      <p>Quatre emplacements, du plus visible au plus discret. Le bloc ② fait l'essentiel du travail ; les autres rattrapent ceux qui ne descendent pas jusque-là.</p>
+    </div>
+    <label class="toggle"><input type="checkbox" id="marks" checked> Afficher les repères</label>
+  </div>
+
+  <div class="stage">
+    <!-- Ordinateur -->
+    <div class="frame">
+      <div class="bar"><span></span><span></span><span></span><em>fges.fr/formations/licence-sciences-de-la-vie</em></div>
+      <div class="site-h">
+        <div class="logo"><b></b>GESTION, ÉCONOMIE,<br>SCIENCES</div>
+        <div class="nav"><span>La Fac &amp; ses écoles ⌄</span><span>Formations ⌄</span><span>Contact ⌄</span><span class="cta">Candidater</span></div>
+      </div>
+      <div class="ticker n">
+        <span class="k">ACTUS</span>
+        <span>Salon de l'Étudiant · Strasbourg · 20/21 nov.</span><span class="chip">S'inscrire</span>
+        <span class="pin" style="position:static;flex:none">④</span><span class="hl new" style="margin-left:-8px">🎮 Campus 3D : teste ta licence avant la JPO</span>
+        <span>Journée Portes Ouvertes · 28 nov.</span>
+      </div>
+      <div class="page">
+        <div class="crumb">FORMATIONS · LICENCE</div>
+        <h2>Licence <i>Sciences de la Vie</i></h2>
+        <div class="hero">
+          <div class="photo">Photo actuelle de la fiche</div>
+          <div class="hero-txt">
+            <div class="seal"></div>
+            <div>Diplôme national en convention avec <b>l'Université Polytechnique Hauts-de-France</b>.<br>Licence Sciences – Technologies – Santé / Mention Sciences de la Vie</div>
+            <div class="btns n">
+              <span class="b f">Brochure</span><span class="b">Postuler sur Parcoursup (L1)</span>
+              <span class="b">Postuler en admissions parallèles (L2 ou L3)</span><span class="b">Contactez-nous</span>
+              <span class="b g hl">🎮 Tester la licence en 3D · 7 min</span>
+              <span class="pin" style="position:static;align-self:center">①</span>
+            </div>
+          </div>
+        </div>
+        <div class="tiles">
+          <div class="tile"><small>CAMPUS</small><b>Vauban</b></div><div class="tile"><small>LANGUE</small><b>Français</b></div>
+          <div class="tile"><small>RYTHME</small><b>Un stage chaque année</b></div><div class="tile"><small>PLACES</small><b>100</b></div>
+        </div>
+
+        <div class="carte hl n">
+          <span class="pin" style="left:-10px;top:-10px">②</span>
+          <div class="img"><span class="play">▶ Jouable sur téléphone</span></div>
+          <div class="txt">
+            <span class="kick">CAMPUS 3D · MISSION JARDIN BOULAY · 7 MIN</span>
+            <h3>Avant de candidater, <i>vis une journée</i> en Sciences de la Vie</h3>
+            <p>Identifie les petites bêtes du jardin, refais l'expérience de Mendel… puis choisis ta spécialisation de L3.</p>
+            <span class="go">Lancer la mission</span>
+            <small>Gratuit, sans inscription. La plaquette t'attend à la fin.</small>
+          </div>
+        </div>
+
+        <div class="infos">
+          <h4>Les informations clés sur la formation</h4>
+          <div class="tabs"><span class="tab">Présentation</span><span class="tab">Programme</span><span class="tab">Admission</span><span class="tab">Carrière</span><span class="tab on">Contact &amp; témoignages</span></div>
+          <div class="tabbody">
+            <div class="temoin">« En L1, on passe beaucoup de temps au jardin botanique et en TP. On apprend vite à manipuler. »<br><b>Inès, L2 Sciences de la Vie</b></div>
+            <div class="n">Envie de voir les lieux avant de venir ?<br><span class="lien hl">Visiter le campus en 3D →</span> <span class="pin" style="position:static;display:inline-block;margin-left:6px">③</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Téléphone -->
+    <div class="phone">
+      <div class="screen">
+        <div class="scroll">
+          <div class="m-h"><div class="logo"><b></b>FGES</div><span class="cta">Candidater</span></div>
+          <div class="ticker"><span class="k">ACTUS</span><span class="new">🎮 Campus 3D</span><span>JPO 28 nov.</span></div>
+          <div class="m-page page" style="padding-top:14px">
+            <div class="crumb">FORMATIONS · LICENCE</div>
+            <h2>Licence <i>Sciences de la Vie</i></h2>
+            <div class="photo m-photo">Photo</div>
+            <div class="hero-txt m-txt">
+              <div>Diplôme national en convention avec l'UPHF.</div>
+              <div class="btns"><span class="b f">Brochure</span><span class="b">Parcoursup (L1)</span><span class="b g">🎮 Tester en 3D</span></div>
+            </div>
+            <div class="tiles m-tiles">
+              <div class="tile"><small>CAMPUS</small><b>Vauban</b></div><div class="tile"><small>PLACES</small><b>100</b></div>
+            </div>
+            <div class="carte m-carte hl n">
+              <span class="pin" style="left:-8px;top:-8px">②</span>
+              <div class="img"><span class="play">▶ 7 min</span></div>
+              <div class="txt">
+                <span class="kick">CAMPUS 3D · MISSION JARDIN BOULAY</span>
+                <h3>Avant de candidater, <i>vis une journée</i> en SV</h3>
+                <p>Petites bêtes du jardin, expérience de Mendel, choix de ta L3.</p>
+                <span class="go">Lancer la mission</span>
+              </div>
+            </div>
+            <div class="infos"><h4 style="font-size:20px">Les informations clés</h4></div>
+          </div>
+        </div>
+        <div class="sticky"><span class="s1">🎮 Tester en 3D</span><span class="s2">Candidater</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="card">
+      <h3><span class="pin">①</span>Bouton dans l'en-tête</h3>
+      <p>À côté de Brochure, avec le bouton de ton thème (pas celui de l'extension, pour garder le même style). Seul bouton plein bleu marine : il se voit sans voler la vedette à Parcoursup.</p>
+      <p>Lien à mettre sur le bouton (outil « Liens et QR codes » de l'extension, emplacement Fiche) :</p>
+      <div class="code"><code>https://lwichlacz.github.io/campus_fges/?jeu=sv&amp;utm_source=fges.fr&amp;utm_medium=fiche-entete&amp;utm_campaign=sv</code><button type="button">Copier</button></div>
+    </div>
+    <div class="card">
+      <h3><span class="pin">②</span>Carte sous les chiffres clés</h3>
+      <p>L'emplacement principal : juste après les 4 tuiles, avant les onglets. Le visiteur a compris ce qu'est la formation et cherche la suite. Bloc « Campus 3D » dans Gutenberg, ou ce code court :</p>
+      <div class="code"><code>[campus_3d formation="sv" style="carte" emplacement="fiche"]</code><button type="button">Copier</button></div>
+      <p>Pour les couleurs du site, dans Apparence › Personnaliser › CSS additionnel :</p>
+      <div class="code"><code>.cfges-carte,.cfges-btn{--cfges-accent:#22adc2}</code><button type="button">Copier</button></div>
+    </div>
+    <div class="card">
+      <h3><span class="pin">③</span>Lien dans « Contact &amp; témoignages »</h3>
+      <p>Pour ceux qui lisent tout et arrivent au bout des onglets. Une phrase et un lien, rien de plus.</p>
+      <div class="code"><code>[campus_3d formation="sv" style="lien" texte="Visiter le campus en 3D →" emplacement="fiche-onglet"]</code><button type="button">Copier</button></div>
+    </div>
+    <div class="card">
+      <h3><span class="pin">④</span>Bandeau ACTUS, jusqu'à la JPO</h3>
+      <p>Une entrée de plus dans le bandeau défilant, sur tout le site, du 10 au 28 novembre. À retirer après la JPO ou à remplacer par la date de janvier.</p>
+      <div class="code"><code>https://lwichlacz.github.io/campus_fges/?utm_source=fges.fr&amp;utm_medium=bandeau&amp;utm_campaign=jpo-nov-2026</code><button type="button">Copier</button></div>
+    </div>
+  </div>
+
+  <div class="rules">
+    <h3>Les règles qui gardent la page propre</h3>
+    <p><b>Une seule carte par page.</b> Le bouton ① et le lien ③ renvoient vers la même mission ; deux cartes, c'est de la publicité.</p>
+    <p><b>Jamais avant le titre ni dans la photo.</b> Le visiteur doit d'abord savoir où il est.</p>
+    <p><b>Pas d'iframe.</b> Le campus s'ouvre dans son propre onglet, en plein écran : c'est là qu'il tourne bien sur téléphone.</p>
+    <p><b>Barre du bas sur téléphone en option.</b> « Tester en 3D » à côté de « Candidater » ; seulement si ton thème a déjà une barre fixe.</p>
+    <p><b>Les formations sans jeu</b> reçoivent la carte sans <code>formation</code> : elle ouvre le campus entier.</p>
+    <p><b>Un <code>emplacement</code> différent par endroit.</b> Le tableau de bord te dira lequel amène des demandes.</p>
+  </div>
+</div>
+<script>
+document.getElementById('marks').addEventListener('change', e => document.body.classList.toggle('marks', e.target.checked));
+document.querySelectorAll('.code button').forEach(b => b.addEventListener('click', () => {
+  const t = b.previousElementSibling.textContent;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { b.textContent = 'Copié'; setTimeout(() => b.textContent = 'Copier', 1500); },
+    () => { const r = document.createRange(); r.selectNodeContents(b.previousElementSibling); const s = getSelection(); s.removeAllRanges(); s.addRange(r); });
+}));
+</script>
+</body>
+</html>

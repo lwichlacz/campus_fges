@@ -1,0 +1,575 @@
+<!-- ============================================================
+PAGE — LICENCE SCIENCES DE LA VIE · FGES DA FGES 2026 — max-width 1260px — Inter 14px — Tiempos titres
+Bandeau hero · plus de bleu clair · responsive mobile
+BLOCS SÉPARÉS pour modification indépendante
++ Campus 3D : bouton dans le BLOC 1, carte dans le BLOC 2
+============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Tiempos+Headline:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+
+<!-- ══════ BLOC 0 — TITRE DE PAGE ══════ -->
+<section id="lsv-page-title" style="all:initial;display:block;background-color:#ffffff;">
+  <style>
+    #lsv-page-title *,
+    #lsv-page-title *::before,
+    #lsv-page-title *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    #lsv-page-title {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      color: #1a2a3a;
+      -webkit-font-smoothing: antialiased;
+    }
+    #lsv-page-title .pt-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 48px 24px 0;
+      width: 100%;
+    }
+    #lsv-page-title .pt-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #dde7f0;
+      margin-bottom: 28px;
+    }
+    #lsv-page-title .pt-tag {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: #21b7cb;
+    }
+    #lsv-page-title .pt-title {
+      font-family: 'Tiempos Headline', 'Georgia', 'Times New Roman', serif;
+      font-size: clamp(32px, 6vw, 58px);
+      font-weight: 300;
+      line-height: 1.02;
+      color: #0f3168;
+      letter-spacing: -.025em;
+    }
+    #lsv-page-title .pt-title em {
+      font-style: italic;
+      color: #21b7cb;
+    }
+    @media (max-width: 560px) {
+      #lsv-page-title .pt-inner {
+        padding: 36px 16px 0;
+      }
+    }
+  </style>
+  <div class="pt-inner">
+    <div class="pt-top">
+      <span class="pt-tag">Formations · Licence</span>
+    </div>
+    <h1 class="pt-title">Licence <em>Sciences de la Vie</em></h1>
+  </div>
+</section>
+
+<!-- ══════ BLOC 1 — BANDEAU HERO ══════ -->
+<section id="lsv-hero" style="all:initial;display:block;background-color:#ffffff;">
+  <style>
+    #lsv-hero *,
+    #lsv-hero *::before,
+    #lsv-hero *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    #lsv-hero {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      color: #1a2a3a;
+      -webkit-font-smoothing: antialiased;
+    }
+    #lsv-hero .lh-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 32px 24px 0;
+      width: 100%;
+    }
+
+    /* Panneau hero */
+    #lsv-hero .lh-panel {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 16px 44px rgba(33, 183, 203, .16);
+      background: #eaf6fa;
+    }
+
+    /* Média image en paysage */
+    #lsv-hero .lh-media {
+      position: relative;
+      min-height: 280px;
+      background: #cfeaf0;
+    }
+    #lsv-hero .lh-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    #lsv-hero .lh-media::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(125deg, rgba(33, 183, 203, .10) 0%, rgba(15, 49, 104, .18) 100%);
+      pointer-events: none;
+    }
+
+    /* Contenu */
+    #lsv-hero .lh-content {
+      background: linear-gradient(160deg, #d4eef6 0%, #eaf6fa 55%, #d4eef6 100%);
+      border-bottom: 3px solid #0f3168;
+      padding: 44px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+    #lsv-hero .lh-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #21b7cb;
+    }
+
+    /* Badge diplôme */
+    #lsv-hero .lh-badge {
+      width: 88px;
+      height: auto;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 4px 10px rgba(15, 49, 104, .18));
+    }
+
+    /* Titre */
+    #lsv-hero .lh-title {
+      font-family: 'Tiempos Headline', 'Georgia', 'Times New Roman', serif;
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 300;
+      line-height: 1.08;
+      color: #0f3168;
+      letter-spacing: -.018em;
+      margin-bottom: 14px;
+    }
+    #lsv-hero .lh-title em {
+      font-style: italic;
+      color: #21b7cb;
+    }
+
+    /* Texte descriptif */
+    #lsv-hero .lh-text {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #2d3a4a;
+      font-weight: 300;
+      margin-bottom: 4px;
+      max-width: 440px;
+    }
+    #lsv-hero .lh-text strong {
+      font-weight: 600;
+      color: #0f3168;
+    }
+
+    /* Boutons */
+    #lsv-hero .lh-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    #lsv-hero .lh-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background .2s, transform .15s, color .2s, border-color .2s;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    #lsv-hero .lh-btn-primary {
+      background: #21b7cb;
+      color: #0f3168 !important;
+    }
+    #lsv-hero .lh-btn-primary:hover {
+      background: #0f3168;
+      color: #ffffff !important;
+      transform: translateY(-2px);
+    }
+    #lsv-hero .lh-btn-outline {
+      background: transparent;
+      color: #0f3168 !important;
+      border-color: #21b7cb;
+    }
+    #lsv-hero .lh-btn-outline:hover {
+      background: #21b7cb;
+      color: #ffffff !important;
+      border-color: #21b7cb;
+      transform: translateY(-2px);
+    }
+    /* Bouton Campus 3D : le seul bleu marine plein */
+    #lsv-hero .lh-btn-campus {
+      background: #0f3168;
+      color: #ffffff !important;
+    }
+    #lsv-hero .lh-btn-campus:hover {
+      background: #21b7cb;
+      color: #0f3168 !important;
+      transform: translateY(-2px);
+    }
+
+    /* Bande petites cartes sous le hero */
+    #lsv-hero .lh-facts {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 18px 0 0;
+    }
+    #lsv-hero .lh-fact {
+      background: #ffffff;
+      border: 1px solid #dde7f0;
+      border-top: 3px solid #0f3168;
+      border-radius: 10px;
+      padding: 18px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 84px;
+    }
+    #lsv-hero .lh-fact-label {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #0f3168;
+      margin-bottom: 6px;
+    }
+    #lsv-hero .lh-fact-value {
+      font-family: 'Tiempos Headline', 'Georgia', 'Times New Roman', serif;
+      font-size: 19px;
+      font-weight: 400;
+      color: #0f3168;
+      line-height: 1.15;
+    }
+
+    /* Responsive tablette */
+    @media (max-width: 860px) {
+      #lsv-hero .lh-panel {
+        grid-template-columns: 1fr;
+      }
+      #lsv-hero .lh-media {
+        min-height: 200px;
+        order: -1;
+      }
+      #lsv-hero .lh-content {
+        padding: 36px 28px;
+      }
+      #lsv-hero .lh-facts {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Responsive mobile */
+    @media (max-width: 560px) {
+      #lsv-hero .lh-inner {
+        padding: 24px 16px 0;
+      }
+      #lsv-hero .lh-content {
+        padding: 30px 20px;
+      }
+      #lsv-hero .lh-badge {
+        width: 72px;
+        margin-bottom: 16px;
+      }
+      #lsv-hero .lh-btns {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #lsv-hero .lh-btn {
+        justify-content: center;
+        padding: 13px 18px;
+      }
+      #lsv-hero .lh-facts {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+    }
+    @media (max-width: 380px) {
+      #lsv-hero .lh-facts {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <div class="lh-inner">
+    <div class="lh-panel">
+      <div class="lh-media">
+        <img
+          src="https://www.fges.fr/wp-content/uploads/2026/04/DSC08819-scaled.jpg"
+          alt="Étudiants de la Licence Sciences de la Vie FGES"
+          loading="lazy"
+          style="object-position: center center;"
+        >
+      </div>
+      <div class="lh-content">
+        <img
+          class="lh-badge"
+          src="https://www.fges.fr/wp-content/uploads/2024/06/LF_01_DNL.png"
+          alt="Diplôme national de licence contrôlé par l'État"
+          loading="lazy"
+        >
+        <p class="lh-text">Diplôme national en convention avec <strong>l’Université Polytechnique Hauts de France de Valenciennes</strong>.</p>
+        <p class="lh-text">Licence Sciences – Technologies – Santé / Mention Sciences de la Vie</p>
+        <div class="lh-btns">
+          <a href="#" class="popmake-21331 lh-btn lh-btn-primary">Brochure</a>
+          <a
+            href="https://dossierappel.parcoursup.fr/Candidats/public/fiches/afficherFicheFormation?g_ta_cod=28854&typeBac=0&originePc=0"
+            target="_blank"
+            rel="noopener"
+            class="lh-btn lh-btn-outline"
+          >
+            Postuler sur Parcoursup (L1)
+          </a>
+          <a
+            href="https://agora.univ-catholille.fr/isacademia/!formInscrs.connection?ww_c_formulaire=CANDIDATURE"
+            target="_blank"
+            rel="noopener"
+            class="lh-btn lh-btn-outline"
+          >
+            Postuler en admissions parallèles (L2 ou L3)
+          </a>
+          <a
+            href="https://www.fges.fr/contactez-nous/"
+            class="lh-btn lh-btn-outline"
+          >
+            Contactez-nous
+          </a>
+          <a
+            href="https://lwichlacz.github.io/campus_fges/?jeu=sv&utm_source=fges.fr&utm_medium=fiche-entete&utm_campaign=sv"
+            target="_blank"
+            rel="noopener"
+            class="lh-btn lh-btn-campus"
+          >
+            🎮 Tester la licence en 3D · 7 min
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="lh-facts">
+      <div class="lh-fact">
+        <div class="lh-fact-label">Campus</div>
+        <div class="lh-fact-value">Vauban</div>
+      </div>
+      <div class="lh-fact">
+        <div class="lh-fact-label">Langue</div>
+        <div class="lh-fact-value">Français</div>
+      </div>
+      <div class="lh-fact">
+        <div class="lh-fact-label">Rythme</div>
+        <div class="lh-fact-value">Initial - Un stage chaque année</div>
+      </div>
+      <div class="lh-fact">
+        <div class="lh-fact-label">Places disponibles</div>
+        <div class="lh-fact-value">100</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ BLOC 2 — CAMPUS 3D ══════ -->
+<section id="lsv-campus3d" style="all:initial;display:block;background-color:#ffffff;">
+  <style>
+    #lsv-campus3d *,
+    #lsv-campus3d *::before,
+    #lsv-campus3d *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    #lsv-campus3d {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      color: #1a2a3a;
+      -webkit-font-smoothing: antialiased;
+    }
+    #lsv-campus3d .c3-inner {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      color: #1a2a3a;
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 32px 24px 8px;
+      width: 100%;
+    }
+    #lsv-campus3d .c3-card {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #0f3168;
+      color: #ffffff;
+      text-decoration: none;
+      box-shadow: 0 16px 44px rgba(15, 49, 104, .22);
+    }
+    #lsv-campus3d .c3-media {
+      position: relative;
+      min-height: 260px;
+      background: #1d3f78;
+      overflow: hidden;
+    }
+    #lsv-campus3d .c3-media img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .5s;
+    }
+    #lsv-campus3d .c3-card:hover .c3-media img {
+      transform: scale(1.04);
+    }
+    #lsv-campus3d .c3-chip {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      background: #ffffff;
+      color: #0f3168;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 7px 12px;
+      border-radius: 999px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
+    }
+    #lsv-campus3d .c3-content {
+      padding: 40px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      border-top: 3px solid #21b7cb;
+    }
+    #lsv-campus3d .c3-kicker {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #21b7cb;
+    }
+    #lsv-campus3d .c3-title {
+      font-family: 'Tiempos Headline', 'Georgia', 'Times New Roman', serif;
+      font-size: clamp(24px, 2.6vw, 34px);
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: -.015em;
+      color: #ffffff;
+    }
+    #lsv-campus3d .c3-title em {
+      font-style: italic;
+      color: #21b7cb;
+    }
+    #lsv-campus3d .c3-text {
+      font-size: 14px;
+      line-height: 1.7;
+      font-weight: 300;
+      color: #d6e4f2;
+      max-width: 440px;
+    }
+    #lsv-campus3d .c3-btn {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 12px 22px;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      border-radius: 6px;
+      background: #21b7cb;
+      color: #0f3168;
+      transition: background .2s, color .2s, transform .15s;
+    }
+    #lsv-campus3d .c3-card:hover .c3-btn,
+    #lsv-campus3d .c3-card:focus-visible .c3-btn {
+      background: #ffffff;
+      transform: translateY(-2px);
+    }
+    #lsv-campus3d .c3-card:focus-visible {
+      outline: 3px solid #21b7cb;
+      outline-offset: 4px;
+    }
+    #lsv-campus3d .c3-note {
+      font-size: 11.5px;
+      color: #9fb6d0;
+    }
+    @media (max-width: 860px) {
+      #lsv-campus3d .c3-card {
+        grid-template-columns: 1fr;
+      }
+      #lsv-campus3d .c3-media {
+        min-height: 0;
+        aspect-ratio: 782 / 510;
+      }
+      #lsv-campus3d .c3-content {
+        padding: 30px 28px;
+      }
+    }
+    @media (max-width: 560px) {
+      #lsv-campus3d .c3-inner {
+        padding: 24px 16px 8px;
+      }
+      #lsv-campus3d .c3-content {
+        padding: 26px 20px;
+      }
+      #lsv-campus3d .c3-btn {
+        align-self: stretch;
+        justify-content: center;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #lsv-campus3d * { transition: none !important; }
+    }
+  </style>
+
+  <div class="c3-inner">
+    <a class="c3-card"
+       href="https://lwichlacz.github.io/campus_fges/?jeu=sv&amp;utm_source=fges.fr&amp;utm_medium=fiche&amp;utm_campaign=sv"
+       target="_blank" rel="noopener">
+      <div class="c3-media">
+        <img src="https://lwichlacz.github.io/campus_fges/img/fiches/jardin.jpg"
+             width="1200" height="783"
+             alt="Le campus Vauban en 3D, avec le jardin botanique Nicolas Boulay derrière l'Hôtel Académique" loading="lazy">
+        <span class="c3-chip">▶ Jouable sur téléphone</span>
+      </div>
+      <div class="c3-content">
+        <span class="c3-kicker">Campus 3D · Mission Jardin Boulay · 7 min</span>
+        <h2 class="c3-title">Avant de candidater, <em>vis une journée</em> en Sciences de la Vie</h2>
+        <p class="c3-text">Identifie les petites bêtes du jardin, refais l'expérience de Mendel… puis choisis ta spécialisation de L3.</p>
+        <span class="c3-btn">Lancer la mission →</span>
+        <span class="c3-note">Gratuit, sans inscription. La plaquette t'attend à la fin.</span>
+      </div>
+    </a>
+  </div>
+</section>

@@ -1,0 +1,178 @@
+<!-- ══════ BLOC 2 — CAMPUS 3D (à coller juste après le BLOC 1, avant les onglets) ══════
+     Pour une autre formation : changer jeu=sv et utm_campaign=sv dans le lien,
+     le titre du jeu, la durée et la phrase d'accroche (onglet « Campus sur le site » de l'extension). -->
+<section id="lsv-campus3d" style="all:initial;display:block;background-color:#ffffff;">
+  <style>
+    #lsv-campus3d *,
+    #lsv-campus3d *::before,
+    #lsv-campus3d *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    #lsv-campus3d {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      color: #1a2a3a;
+      -webkit-font-smoothing: antialiased;
+    }
+    #lsv-campus3d .c3-inner {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      color: #1a2a3a;
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 32px 24px 8px;
+      width: 100%;
+    }
+    #lsv-campus3d .c3-card {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #0f3168;
+      color: #ffffff;
+      text-decoration: none;
+      box-shadow: 0 16px 44px rgba(15, 49, 104, .22);
+    }
+    #lsv-campus3d .c3-media {
+      position: relative;
+      min-height: 260px;
+      background: #1d3f78;
+      overflow: hidden;
+    }
+    #lsv-campus3d .c3-media img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .5s;
+    }
+    #lsv-campus3d .c3-card:hover .c3-media img {
+      transform: scale(1.04);
+    }
+    #lsv-campus3d .c3-chip {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      background: #ffffff;
+      color: #0f3168;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 7px 12px;
+      border-radius: 999px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
+    }
+    #lsv-campus3d .c3-content {
+      padding: 40px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      border-top: 3px solid #21b7cb;
+    }
+    #lsv-campus3d .c3-kicker {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #21b7cb;
+    }
+    #lsv-campus3d .c3-title {
+      font-family: 'Tiempos Headline', 'Georgia', 'Times New Roman', serif;
+      font-size: clamp(24px, 2.6vw, 34px);
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: -.015em;
+      color: #ffffff;
+    }
+    #lsv-campus3d .c3-title em {
+      font-style: italic;
+      color: #21b7cb;
+    }
+    #lsv-campus3d .c3-text {
+      font-size: 14px;
+      line-height: 1.7;
+      font-weight: 300;
+      color: #d6e4f2;
+      max-width: 440px;
+    }
+    #lsv-campus3d .c3-btn {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 12px 22px;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      border-radius: 6px;
+      background: #21b7cb;
+      color: #0f3168;
+      transition: background .2s, color .2s, transform .15s;
+    }
+    #lsv-campus3d .c3-card:hover .c3-btn,
+    #lsv-campus3d .c3-card:focus-visible .c3-btn {
+      background: #ffffff;
+      transform: translateY(-2px);
+    }
+    #lsv-campus3d .c3-card:focus-visible {
+      outline: 3px solid #21b7cb;
+      outline-offset: 4px;
+    }
+    #lsv-campus3d .c3-note {
+      font-size: 11.5px;
+      color: #9fb6d0;
+    }
+    @media (max-width: 860px) {
+      #lsv-campus3d .c3-card {
+        grid-template-columns: 1fr;
+      }
+      #lsv-campus3d .c3-media {
+        min-height: 0;
+        aspect-ratio: 782 / 510;
+      }
+      #lsv-campus3d .c3-content {
+        padding: 30px 28px;
+      }
+    }
+    @media (max-width: 560px) {
+      #lsv-campus3d .c3-inner {
+        padding: 24px 16px 8px;
+      }
+      #lsv-campus3d .c3-content {
+        padding: 26px 20px;
+      }
+      #lsv-campus3d .c3-btn {
+        align-self: stretch;
+        justify-content: center;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #lsv-campus3d * { transition: none !important; }
+    }
+  </style>
+
+  <div class="c3-inner">
+    <a class="c3-card"
+       href="https://lwichlacz.github.io/campus_fges/?jeu=sv&amp;utm_source=fges.fr&amp;utm_medium=fiche&amp;utm_campaign=sv"
+       target="_blank" rel="noopener">
+      <div class="c3-media">
+        <img src="https://lwichlacz.github.io/campus_fges/img/fiches/jardin.jpg"
+             width="1200" height="783"
+             alt="Le campus Vauban en 3D, avec le jardin botanique Nicolas Boulay derrière l'Hôtel Académique" loading="lazy">
+        <span class="c3-chip">▶ Jouable sur téléphone</span>
+      </div>
+      <div class="c3-content">
+        <span class="c3-kicker">Campus 3D · Mission Jardin Boulay · 7 min</span>
+        <h2 class="c3-title">Avant de candidater, <em>vis une journée</em> en Sciences de la Vie</h2>
+        <p class="c3-text">Identifie les petites bêtes du jardin, refais l'expérience de Mendel… puis choisis ta spécialisation de L3.</p>
+        <span class="c3-btn">Lancer la mission →</span>
+        <span class="c3-note">Gratuit, sans inscription. La plaquette t'attend à la fin.</span>
+      </div>
+    </a>
+  </div>
+</section>
