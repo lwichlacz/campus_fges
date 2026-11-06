@@ -10,7 +10,7 @@ fges.fr (WordPress)                         campus.fges.fr (GitHub Pages)
 ├─ menu, accueil, fiches formation ──liens──▶ le campus 3D (index.html)
 ├─ page JPO                                   ├─ ?jeu=gestion  → un mini-jeu directement
 └─ /wp-json/campus-fges/v1/lead ◀──formulaire─┘ └─ liste.html    → version sans 3D
-        │ (extension « relais »)
+        │ (extension « Campus FGES 3D »)
         ▼
    CRM FGES  /api/webhooks/wordpress-form   (clé d'import, jamais dans le navigateur)
 ```
@@ -20,45 +20,50 @@ de cache et de minification de WordPress cassent ; dans une iframe, sur téléph
 avec le défilement de la page, le plein écran et le son sont bridés, et on perd les liens directs vers les
 jeux. On garde donc le campus en site statique, sur sa propre adresse, et WordPress y renvoie par des liens.
 
-## 1. Brancher le formulaire sur le CRM (avant tout le reste)
+## 1. Installer l'extension « Campus FGES 3D » et brancher le CRM (avant tout le reste)
 
 Aujourd'hui l'adresse du relais est vide : en ligne, le formulaire est en **mode démo** (il affiche la
-confirmation mais rien n'arrive au CRM).
+confirmation mais rien n'arrive au CRM). L'extension se règle entièrement dans le back-office, sans toucher
+à `wp-config.php`.
 
-1. **Installer l'extension.** Déposer [`tools/wordpress/campus-fges-relais.php`](../tools/wordpress/campus-fges-relais.php)
-   dans `wp-content/plugins/` (SFTP ou *Extensions → Ajouter → Téléverser*, après l'avoir zippé), puis activer
-   **« Campus FGES · relais du formulaire »**.
-2. **Ajouter les réglages dans `wp-config.php`**, au-dessus de la ligne `/* That's all, stop editing! */` :
-
-   ```php
-   define('CAMPUS_FGES_CRM_URL',   'https://adresse-du-crm');      // le CRM, joignable depuis le serveur WordPress
-   define('CAMPUS_FGES_CRM_TOKEN', 'la-clé-d-import');             // = IMPORT_TOKEN du .env du CRM (16 caractères minimum)
-   define('CAMPUS_FGES_CRM_LIVE',  false);                         // mode essai d'abord
-   define('CAMPUS_FGES_ORIGINS',   'https://lwichlacz.github.io'); // + 'https://campus.fges.fr' une fois l'étape 2 faite
-   ```
-
-3. **Vérifier que rien ne bloque l'API de WordPress.** Si une extension de sécurité (Wordfence, iThemes,
-   « Disable REST API »…) filtre `/wp-json/`, autoriser la route `campus-fges/v1`. Si une extension de cache est
-   active, exclure `/wp-json/` du cache.
-4. **Tester en mode essai** depuis un terminal :
-
-   ```bash
-   curl -s -X POST https://www.fges.fr/wp-json/campus-fges/v1/lead -H "Content-Type: application/json" -H "Origin: https://lwichlacz.github.io" -d "{\"prenom\":\"Test\",\"email\":\"test@example.com\",\"consentement\":true,\"elapsed\":5000,\"formations\":[{\"name\":\"Licence Gestion\",\"school\":\"FGES\"}]}"
-   ```
-
-   Réponse attendue : `{"ok":true,"sent":1,"dryRun":true}`. Un 404 veut dire que l'extension n'est pas active
-   (ou que les permaliens sont en « simple » : passer en « nom de l'article ») ; un 403, que l'origine n'est pas
-   dans `CAMPUS_FGES_ORIGINS`.
-5. **Dire au campus où est le relais.** Dans [`js/data.js`](../js/data.js) :
+1. **Installer.** *Extensions → Ajouter → Téléverser une extension* :
+   [`tools/wordpress/campus-fges.zip`](../tools/wordpress/campus-fges.zip), puis **Activer**. Le tableau de bord
+   de l'extension s'ouvre tout seul (menu **Campus 3D**, à gauche) avec les 5 étapes de mise en route.
+2. **Réglages → Le CRM** : coller l'adresse du CRM et sa clé d'import (`IMPORT_TOKEN` du `.env` du CRM),
+   **Enregistrer**, puis **Envoyer un contact de test au CRM**. Le résultat s'affiche en clair (CRM injoignable,
+   clé refusée, adresse fausse…) ; un contact « Test Campus 3D » apparaît dans le CRM, à supprimer ensuite.
+3. **Brancher le campus.** L'onglet **Aide** donne la ligne à copier dans [`js/data.js`](../js/data.js) :
 
    ```js
    export const LEAD_ENDPOINT = "https://www.fges.fr/wp-json/campus-fges/v1/lead";
    ```
 
-   puis `python tools/version.py`, commit, push.
-6. **Passer en réel** : `CAMPUS_FGES_CRM_LIVE` à `true`, puis faire une vraie demande depuis le campus (carnet →
-   « Recevoir les plaquettes ») et vérifier que le contact apparaît dans le CRM avec la source
-   « Campus FGES (jeu 3D) ». En cas d'échec, les erreurs sont dans le journal PHP (`[Campus FGES] …`).
+   puis `python tools/version.py`, commit, push. Le tableau de bord vérifie tout seul que le campus en ligne
+   envoie bien ses demandes au site (étape 3 au vert).
+4. **Faire une demande depuis le campus** (carnet → « Recevoir les plaquettes ») : elle apparaît dans l'onglet
+   **Demandes** en « Mode essai ».
+5. **Réglages → Mode d'envoi → Réel**, enregistrer, refaire une demande : elle passe en « Arrivée au CRM ».
+6. **Plaquettes** : pour chaque formation, **Choisir** le PDF dans la médiathèque. Le visiteur le reçoit tout de
+   suite après sa demande (sinon, le catalogue de toutes les plaquettes).
+
+Si une extension de sécurité (Wordfence, iThemes, « Disable REST API »…) filtre `/wp-json/`, autoriser la route
+`campus-fges/v1` ; si une extension de cache est active, exclure `/wp-json/` du cache ; les permaliens ne doivent
+pas être en « Simple ».
+
+**Ce que fait l'extension, en plus du relais :**
+- si le CRM ne répond pas (maintenance, clé changée…), la demande n'est **pas perdue** : elle est gardée et
+  renvoyée toute seule toutes les 5 minutes, jusqu'à 7 jours, et l'adresse choisie reçoit un e-mail d'alerte
+  (au plus un par heure). Le menu **Campus 3D** affiche un compteur tant que des demandes attendent ;
+- un journal des demandes (prénom, initiale, e-mail masqué, formations, provenance) et des chiffres : demandes
+  sur 7 et 30 jours, formations les plus demandées, d'où viennent les visiteurs ;
+- un bloc **Campus 3D** pour l'éditeur de pages, et le code court `[campus_3d]` pour les autres éditeurs ;
+- un générateur de liens et de **QR codes** prêts à imprimer.
+
+Pour l'équipe technique : les réglages sensibles peuvent aussi être posés dans `wp-config.php`
+(`CAMPUS_FGES_CRM_URL`, `CAMPUS_FGES_CRM_TOKEN`, `CAMPUS_FGES_CRM_LIVE`, `CAMPUS_FGES_ORIGINS`) ; ils sont alors
+verrouillés dans l'écran de réglages. Après une modification des formations ou des jeux dans `js/data.js`, lancer
+`python tools/wordpress/build.py` : il met à jour `formations.json` (lu par l'extension) et refait le zip ; la
+vérification avant chaque envoi le rappelle si on l'oublie.
 
 ## 2. Donner au campus sa propre adresse : campus.fges.fr
 
@@ -75,7 +80,8 @@ très bien en attendant : tout le reste du guide s'applique pareil.
    - remplacer `https://lwichlacz.github.io/campus_fges/` par `https://campus.fges.fr/` dans les balises
      `og:image` de `index.html` et `liste.html` (l'aperçu quand on partage le lien) ;
    - `python tools/version.py`, commit, push.
-4. **WordPress** : ajouter `https://campus.fges.fr` dans `CAMPUS_FGES_ORIGINS` (séparé par une virgule).
+4. **WordPress** : *Campus 3D → Réglages → Adresse du campus* : `https://campus.fges.fr/`, et l'ancienne adresse
+   dans *Réglages avancés* le temps de la bascule.
 
 L'ancienne adresse github.io redirige alors toute seule vers campus.fges.fr : les liens et QR codes déjà
 diffusés continuent de marcher.
@@ -98,8 +104,9 @@ Toujours un **lien simple** (même onglet ou nouvel onglet), jamais une iframe. 
 Identifiants des formations qui ont un jeu (`?jeu=`) : `gestion`, `sv`, `cfa`, `spi`, `info` (licences) ;
 `dmb`, `dgp`, `mbif`, `ebmd` (masters). À compléter au fil des nouveaux jeux (`GAMES` dans `js/data.js`).
 
-Dans WordPress, le plus efficace : un **bloc réutilisable** (ou « composition ») « Campus 3D » avec l'image et le
-bouton, inséré sur l'accueil, la page JPO et les fiches ; on ne change ensuite que le lien `?jeu=` par fiche.
+Dans WordPress, le plus simple : le **bloc « Campus 3D »** de l'extension (carte, bouton ou lien, formation au
+choix) ; il fabrique le bon lien tout seul. L'onglet **Campus sur le site** de l'extension reprend ce tableau et
+génère les liens et les QR codes.
 
 ## 4. Le jour de la JPO (stand)
 

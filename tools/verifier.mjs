@@ -57,6 +57,16 @@ for(const page of ["index.html", "liste.html"]){
 if(versions.size > 1) bad(`numéros de version mélangés (${[...versions].join(", ")}) : lancer python tools/version.py`);
 else ok(`un seul numéro de version (${[...versions][0] || "aucun"})`);
 
+// formations.json (lu par l'extension WordPress) doit suivre js/data.js
+{
+	const d = await import(new URL("../js/data.js", import.meta.url).href);
+	const want = d.FORMATIONS.map(f => `${f.id}|${f.name}|${d.GAMES[f.id] ? d.GAME_INFO[d.GAMES[f.id]].title : ""}`).join("\n");
+	let have = "";
+	try { have = JSON.parse(readFileSync(join(ROOT, "formations.json"), "utf8")).formations.map(f => `${f.id}|${f.name}|${f.game ? f.game.title : ""}`).join("\n"); } catch(e){}
+	if(have !== want) bad("formations.json n'est plus à jour : lancer python tools/wordpress/build.py");
+	else ok("formations.json à jour pour l'extension WordPress");
+}
+
 if(RAPIDE){ finish(); }
 else await browserChecks().catch(e => bad("vérification dans le navigateur interrompue : " + (e.stack || e))).then(finish);
 

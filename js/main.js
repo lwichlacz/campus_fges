@@ -2995,14 +2995,15 @@ $("leadForm").querySelector("form").addEventListener("submit", async e => {
 		if(!r.ok || !res.ok) throw new Error(res.error || "Envoi impossible pour le moment.");
 		store.set("leadSent", true);
 		Audio.play("win");
-		// plaquette PDF quand on l'a, sinon le catalogue de toutes les plaquettes
-		const direct = chosen.filter(f => PLAQUETTES[f.id]);
+		// plaquette PDF quand on l'a (choisie dans WordPress, sinon dans data.js), sinon le catalogue de toutes les plaquettes
+		const PLAQ = Object.assign({}, PLAQUETTES, res.plaquettes || {});
+		const direct = chosen.filter(f => PLAQ[f.id]);
 		$("leadDoneP").textContent = (direct.length
 			? `Voici ${direct.length > 1 ? "tes plaquettes" : "ta plaquette"}. L'équipe de la FGES pourra aussi te recontacter pour répondre à tes questions.`
 			: "Toutes nos plaquettes sont à feuilleter ci-dessous. L'équipe de la FGES pourra aussi te recontacter pour répondre à tes questions.") + (res.dryRun ? " (Mode essai : rien n'a été transmis au CRM.)" : "");
-		const missing = chosen.length === 0 || chosen.some(f => !PLAQUETTES[f.id]);
+		const missing = chosen.length === 0 || chosen.some(f => !PLAQ[f.id]);
 		$("leadLinks").innerHTML =
-			direct.map(f => `<a class="dl" href="${PLAQUETTES[f.id]}" target="_blank" rel="noopener">📄 Plaquette · ${f.name}<span>↓</span></a>`).join("") +
+			direct.map(f => `<a class="dl" href="${PLAQ[f.id]}" target="_blank" rel="noopener">📄 Plaquette · ${f.name}<span>↓</span></a>`).join("") +
 			(missing ? `<a class="dl" href="${CATALOGUE_PLAQUETTES}" target="_blank" rel="noopener">📚 Feuilleter nos plaquettes<span>↗</span></a>` : "") +
 			chosen.map(f => `<a href="${f.url}" target="_blank" rel="noopener">${f.name} sur fges.fr<span>↗</span></a>`).join("");
 		$("leadForm").hidden = true; $("leadDone").hidden = false;

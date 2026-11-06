@@ -1,0 +1,409 @@
+{
+ "formations": [
+  {
+   "id": "apes",
+   "name": "APES · Année préparatoire aux études scientifiques",
+   "school": "FGES",
+   "level": "prep",
+   "levelLabel": "Année préparatoire",
+   "url": "https://www.fges.fr/formations/apes-annee-de-preparation-aux-etudes-scientifiques/",
+   "game": null
+  },
+  {
+   "id": "sv",
+   "name": "Licence Sciences de la Vie",
+   "school": "FGES",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/licence-science-de-la-vie/",
+   "game": {
+    "id": "jardin",
+    "title": "Mission Jardin Boulay",
+    "icon": "🔍",
+    "dur": "7 min",
+    "pitch": "Identifie les petites bêtes du jardin, refais l'expérience de Mendel… puis choisis ta spécialisation de L3."
+   }
+  },
+  {
+   "id": "veto",
+   "name": "Prépa concours B Véto et Agro",
+   "school": "FGES",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/licence-science-de-la-vie/",
+   "game": null
+  },
+  {
+   "id": "mh",
+   "name": "Licence Management & Humanités",
+   "school": "FGES",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/humanites-management/",
+   "game": null
+  },
+  {
+   "id": "gestion",
+   "name": "Licence Gestion",
+   "school": "FGES",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/licence-de-gestion/",
+   "game": {
+    "id": "comptoir",
+    "title": "Le Comptoir",
+    "icon": "☕",
+    "dur": "6 min",
+    "pitch": "Pilote le café de l'atrium : prix, équipe, imprévus… et ton résultat en direct."
+   }
+  },
+  {
+   "id": "ecofi",
+   "name": "Licence Économie-Finance",
+   "school": "FGES",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/licence-economie-finance/",
+   "game": null
+  },
+  {
+   "id": "cupge",
+   "name": "Prépa Grandes Écoles de Commerce",
+   "school": "FGES",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/prepa-grandes-ecoles-de-commerce/",
+   "game": null
+  },
+  {
+   "id": "d2",
+   "name": "Prépa D2 Économie-Gestion",
+   "school": "FGES",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/prepa-d2/",
+   "game": null
+  },
+  {
+   "id": "lieg",
+   "name": "Licence Internationale Économie & Gestion",
+   "school": "FGES",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/licence-internationale-deconomie-et-de-gestion/",
+   "game": null
+  },
+  {
+   "id": "aese",
+   "name": "Licence Administration Économique, Sociale et Environnementale",
+   "school": "FGES",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/licence-administration-economique-sociale-environnementale/",
+   "game": null
+  },
+  {
+   "id": "cfa",
+   "name": "Licence Comptabilité-Finance-Audit",
+   "school": "ISEA",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/licence-comptabilite-finance-audit/",
+   "game": {
+    "id": "audit",
+    "title": "L'Enquête de l'auditeur",
+    "icon": "🕵️",
+    "dur": "6 min",
+    "pitch": "La trésorerie d'une PME fond sans raison : trie les pièces, rapproche la banque, analyse le budget… et démasque le fraudeur."
+   }
+  },
+  {
+   "id": "lpabf",
+   "name": "Licence Pro Assurance-Banque-Finance",
+   "school": "FGES",
+   "level": "LP",
+   "levelLabel": "Licence professionnelle",
+   "url": "https://www.fges.fr/formations/licence-professionnelle-assurance-banque-finance/",
+   "game": null
+  },
+  {
+   "id": "info",
+   "name": "Licence Informatique",
+   "school": "EDN",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/licence-sciences-du-numerique/",
+   "game": {
+    "id": "gaming",
+    "title": "Game Jam 48 h",
+    "icon": "🎮",
+    "dur": "12 min",
+    "pitch": "Un week-end de game jam avec ton équipe de L1 : dessine un niveau faisable, programme le héros en Python et échappe au bug rouge, mets les scores en ligne en SQL, crée l’ambiance en réalité virtuelle, tiens le choc quand 5 000 joueurs débarquent, puis passe devant le jury. Bonus : crée et partage ton niveau."
+   }
+  },
+  {
+   "id": "spi",
+   "name": "Licence Sciences pour l'Ingénieur",
+   "school": "EDN",
+   "level": "L",
+   "levelLabel": "Licences et prépas",
+   "url": "https://www.fges.fr/formations/licence-informatique-industrielle-objets-connectes-et-robotique/",
+   "game": {
+    "id": "robot",
+    "title": "Cellule robotique Wenov",
+    "icon": "🦾",
+    "dur": "7 min",
+    "pitch": "Pilote un vrai bras robot en 3D, programme le cycle d'une ligne de production, puis donne-lui des yeux pour trier les pièces."
+   }
+  },
+  {
+   "id": "ecoop",
+   "name": "Master Écologie Opérationnelle",
+   "school": "FGES",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-ecologie-operationnelle/",
+   "game": null
+  },
+  {
+   "id": "mdd",
+   "name": "Master Management du Développement Durable",
+   "school": "FGES",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-management-du-developpement-durable/",
+   "game": null
+  },
+  {
+   "id": "im",
+   "name": "Master International Management",
+   "school": "FGES",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-international-management/",
+   "game": null
+  },
+  {
+   "id": "mrc",
+   "name": "Master Marketing & Responsible Cocreation",
+   "school": "FGES",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-marketing-and-responsible-cocreation/",
+   "game": null
+  },
+  {
+   "id": "cca",
+   "name": "Master Comptabilité, Contrôle et Audit",
+   "school": "ISEA",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-comptabilite-controle-audit/",
+   "game": null
+  },
+  {
+   "id": "dgp",
+   "name": "Master Droit & Gestion du Patrimoine",
+   "school": "ISEA",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-droit-gestion-du-patrimoine/",
+   "game": {
+    "id": "patrimoine",
+    "title": "Le Dossier Deslaurier",
+    "icon": "📜",
+    "dur": "10 min",
+    "pitch": "Un jeu de cartes chez le notaire : conseille la famille Deslaurier de 1959 à aujourd'hui. Contrat de mariage, donation, assurance-vie, SCI… chaque carte jouée envoie l'argent à la famille, au fisc, ou finit en dispute. Et gare aux coups du sort !"
+   }
+  },
+  {
+   "id": "cgao",
+   "name": "Master Contrôle de Gestion & Audit Organisationnel",
+   "school": "ISEA",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-controle-de-gestion-et-audit-organisationnel/",
+   "game": null
+  },
+  {
+   "id": "mre",
+   "name": "Master Management des Risques de l'Entreprise",
+   "school": "FGES",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-management-des-risques-de-lentreprise/",
+   "game": null
+  },
+  {
+   "id": "me",
+   "name": "Master Management des Entreprises",
+   "school": "FGES",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-management-des-entreprises/",
+   "game": null
+  },
+  {
+   "id": "frd",
+   "name": "Master Finance Responsable & Durable",
+   "school": "FGES",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-finance-responsable-durable/",
+   "game": null
+  },
+  {
+   "id": "mbif",
+   "name": "Master Management des Banques et Institutions Financières",
+   "school": "FGES",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-management-des-banques-et-institutions-financieres/",
+   "game": {
+    "id": "affaires",
+    "title": "Une journée du chargé d'affaires",
+    "icon": "🤝",
+    "dur": "12 min",
+    "pitch": "Dans ton agence, cinq clients qui sont d'abord des personnes. Fais émerger l'iceberg des besoins d'un boulanger, repère les signaux faibles chez une veuve, construis le pont de la confiance avec un jeune couple, accompagne une PME pendant huit ans et bâtis la solution d'une famille sans faire tomber la tour."
+   }
+  },
+  {
+   "id": "iasi",
+   "name": "Master Informatique Appliquée et Systèmes Intelligents",
+   "school": "EDN",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-informatique-appliquee-et-systemes-intelligents/",
+   "game": null
+  },
+  {
+   "id": "dia",
+   "name": "Master Data & Intelligence Artificielle",
+   "school": "EDN",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-data-intelligence-artificielle/",
+   "game": null
+  },
+  {
+   "id": "cyber",
+   "name": "Master Cyber",
+   "school": "EDN",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-cyber/",
+   "game": null
+  },
+  {
+   "id": "jn",
+   "name": "Master Jumeaux Numériques",
+   "school": "EDN",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-jumeaux-numeriques/",
+   "game": null
+  },
+  {
+   "id": "dmb",
+   "name": "Master Data Management in Biosciences",
+   "school": "EDN",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-data-management-in-biosciences/",
+   "game": {
+    "id": "biodata",
+    "title": "From Blood to Decision",
+    "icon": "🧬",
+    "dur": "12-15 min",
+    "pitch": "En anglais, comme le master : du dossier d'un patient fatigué à l'étude d'une cohorte. RGPD, contrôle qualité du séquençage, interprétation d'un variant, biostatistiques, machine learning et compte rendu clinique."
+   }
+  },
+  {
+   "id": "ebmd",
+   "name": "Master E-Business & Marketing Digital",
+   "school": "EDN",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-e-business-et-marketing-digital/",
+   "game": {
+    "id": "boutique",
+    "title": "Courée, la boutique en 3D",
+    "icon": "🛍️",
+    "dur": "12 min",
+    "pitch": "Fais décoller le site d'une jeune marque lilloise : répare le tunnel de commande, grimpe sur les moteurs de recherche, monte une bannière cookies conforme, répartis 3 000 € de pub, cible tes clients… puis tiens le choc du Black Friday en direct. Et regarde tes visiteurs parcourir la boutique en 3D !"
+   }
+  },
+  {
+   "id": "mtn",
+   "name": "Master Management & Transformation Numérique",
+   "school": "EDN",
+   "level": "M",
+   "levelLabel": "Masters",
+   "url": "https://www.fges.fr/formations/master-management-transformation-numerique/",
+   "game": null
+  },
+  {
+   "id": "duia",
+   "name": "DU IA au service des entreprises",
+   "school": "EDN",
+   "level": "DU",
+   "levelLabel": "Diplômes d'université",
+   "url": "https://www.fges.fr/formations/du-lia-au-service-des-entreprises/",
+   "game": null
+  },
+  {
+   "id": "duric",
+   "name": "DU Renseignement & Investigation Cyber",
+   "school": "EDN",
+   "level": "DU",
+   "levelLabel": "Diplômes d'université",
+   "url": "https://www.fges.fr/formations/du-renseignement-investigation-cyber/",
+   "game": null
+  },
+  {
+   "id": "ducse",
+   "name": "DU Cybersécurité en Entreprise",
+   "school": "EDN",
+   "level": "DU",
+   "levelLabel": "Diplômes d'université",
+   "url": "https://www.fges.fr/formations/du-cybersecurite-en-entreprise-gouvernance-risques-et-conformite/",
+   "game": null
+  },
+  {
+   "id": "ducc",
+   "name": "DU Cybercriminalité",
+   "school": "EDN",
+   "level": "DU",
+   "levelLabel": "Diplômes d'université",
+   "url": "https://www.fges.fr/formations/du-cybercriminalite/",
+   "game": null
+  },
+  {
+   "id": "duiacg",
+   "name": "DU IA & Numérique au service du Contrôle de Gestion",
+   "school": "ISEA",
+   "level": "DU",
+   "levelLabel": "Diplômes d'université",
+   "url": "https://www.fges.fr/formations/du-ia-et-numerique-au-service-du-controle-de-gestion/",
+   "game": null
+  },
+  {
+   "id": "dusp",
+   "name": "DU Stratégies patrimoniales",
+   "school": "ISEA",
+   "level": "DU",
+   "levelLabel": "Diplômes d'université",
+   "url": "https://www.fges.fr/formations/du-strategies-patrimoniales/",
+   "game": null
+  },
+  {
+   "id": "duhm",
+   "name": "Parcours Humanités & Management",
+   "school": "FGES",
+   "level": "DU",
+   "levelLabel": "Diplômes d'université",
+   "url": "https://www.fges.fr/formations/du-humanite-management/",
+   "game": null
+  }
+ ]
+}

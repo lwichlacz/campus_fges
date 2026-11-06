@@ -1,0 +1,14 @@
+/* Bloc « Campus 3D » sur le site : s'adapte au thème (police et couleurs héritées, accent réglable avec --cfges-accent) */
+.cfges-carte{--cfges-accent:#b23a24;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);border-radius:18px;overflow:hidden;background:#fff;color:#16141f;box-shadow:0 10px 30px rgba(20,16,40,.12);margin:1.5em 0}
+.cfges-carte .cfges-img{display:block;min-height:240px;background:#e9e3d8;overflow:hidden}
+.cfges-carte .cfges-img img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.cfges-carte:hover .cfges-img img{transform:scale(1.04)}
+.cfges-carte .cfges-txt{padding:26px 28px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.cfges-carte .cfges-k{margin:0;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cfges-accent)}
+.cfges-carte h3{margin:0;font-size:1.5em;line-height:1.15}
+.cfges-carte p{margin:0;line-height:1.5;opacity:.85}
+.cfges-btn{--cfges-accent:#b23a24;display:inline-flex;align-items:center;gap:8px;align-self:flex-start;margin-top:8px;padding:12px 20px;border-radius:999px;background:var(--cfges-accent);color:#fff!important;font-weight:700;text-decoration:none!important;transition:transform .15s,box-shadow .15s}
+.cfges-btn:hover,.cfges-btn:focus-visible{transform:translateY(-2px);box-shadow:0 8px 18px rgba(178,58,36,.3)}
+.cfges-wrapbtn{margin:1.2em 0}.cfges-wrapbtn small{display:block;margin-top:6px;opacity:.7}
+.cfges-lien{font-weight:700}
+@media (max-width:700px){.cfges-carte{grid-template-columns:1fr}.cfges-carte .cfges-img{min-height:0;aspect-ratio:782/510}.cfges-carte .cfges-txt{padding:20px}}
