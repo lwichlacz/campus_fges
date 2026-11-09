@@ -6,7 +6,7 @@
    sur la table vers leur cible, d'un coup de doigt. Entreprise et personnages fictifs. Contenu à relire par l'équipe. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { mountTable, MOBILE } from "./table.js?v=d51348a27b";
+import { mountTable, MOBILE } from "./table.js?v=99b2439c6d";
 
 const COURSES = {
 	erreur:   ["Erreur humaine : épistémologie de l'erreur et de l'illusion", "L2 · Séparer le fait vérifié de la croyance : la première compétence d'un manager en crise."],
