@@ -74,7 +74,8 @@ const CSS = `
 `;
 
 /* o : { id, label, theme:{ bg, paper, paper2, ink, dark, accent, accentInk, gold, line }, mentor:{ name, svg },
-         timeline:[[libellé, libellé court, [étapes]]], meters:[{ k, label, icon, cls, fmt }], hint, extraCSS } */
+         timeline:[[libellé, libellé court, [étapes]]], meters:[{ k, label, icon, cls, fmt }], hint, extraCSS,
+         noTimeline (le jeu masque la frise : la 3D prend toute la hauteur) } */
 export function mountTable(o){
 	const cssId = "tb-css";
 	if(!document.getElementById(cssId)){ const st = document.createElement("style"); st.id = cssId; st.textContent = CSS; document.head.appendChild(st); }
@@ -102,11 +103,11 @@ export function mountTable(o){
 		if(w >= MOBILE){
 			wrap.style.top = ""; hint.style.top = "110px"; tl.style.top = ""; tl.style.width = (w - 444 - 24) + "px";
 			Object.assign(bubble.style, { left:"12px", right:"456px", top:"auto", bottom:"86px" });
-			W && (W.resize(w - 444, h - 76), W.reserve(104));
+			W && (W.resize(w - 444, h - (o.noTimeline ? 0 : 76)), W.reserve(104));
 		} else {
 			const top = Math.round(h*.5); wrap.style.top = top + "px"; tl.style.top = (top - 54) + "px"; tl.style.width = (w - 24) + "px"; hint.style.top = (top - 92) + "px";
 			Object.assign(bubble.style, { left:"8px", right:"8px", top:"92px", bottom:"auto" });
-			W && (W.resize(w, top - 58), W.reserve(0));
+			W && (W.resize(w, top - (o.noTimeline ? 0 : 58)), W.reserve(0));
 		}
 		frise(curStep);
 	}
