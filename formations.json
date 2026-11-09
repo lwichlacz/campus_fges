@@ -40,7 +40,13 @@
    "level": "L",
    "levelLabel": "Licences et prépas",
    "url": "https://www.fges.fr/formations/humanites-management/",
-   "game": null
+   "game": {
+    "id": "crise",
+    "title": "La cellule de crise",
+    "icon": "🔥",
+    "dur": "8 min",
+    "pitch": "Un bad buzz frappe une chocolaterie roubaisienne. Trie faits et rumeurs, pèse la décision avec Kant, Mill, Aristote et Weber, trouve le bon ton pour chaque collègue, puis écris un communiqué qui tient debout. Un seul geste : lancer."
+   }
   },
   {
    "id": "gestion",

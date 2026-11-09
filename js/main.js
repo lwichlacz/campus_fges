@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=8651068e8e";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=8651068e8e";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=8651068e8e";
-import { MAP } from "./vauban.js?v=8651068e8e";
-import { buildLandmarks } from "./landmarks.js?v=8651068e8e";
-import { buildMonuments } from "./monuments.js?v=8651068e8e";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=8651068e8e";
-import { buildStation } from "./station.js?v=8651068e8e";
-import { createRame } from "./rame.js?v=8651068e8e";
-import { Audio } from "./audio.js?v=8651068e8e";
-import { DETAILS } from "./details.js?v=8651068e8e";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=9499cca49c";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=9499cca49c";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=9499cca49c";
+import { MAP } from "./vauban.js?v=9499cca49c";
+import { buildLandmarks } from "./landmarks.js?v=9499cca49c";
+import { buildMonuments } from "./monuments.js?v=9499cca49c";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=9499cca49c";
+import { buildStation } from "./station.js?v=9499cca49c";
+import { createRame } from "./rame.js?v=9499cca49c";
+import { Audio } from "./audio.js?v=9499cca49c";
+import { DETAILS } from "./details.js?v=9499cca49c";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -295,11 +295,14 @@ function buildHA(){
 
 	// la chapelle (aile à galeries et pinacles) et l'aile aux pignons de brique
 	// chapelle Saint-Joseph (1911-1924) : croix latine, deux rangs de baies superposées, grand toit d'ardoise au-dessus du parapet
-	const chapel = wing(root, { x:cs*19, z:5, ry:-cs*Math.PI/2, L:22, D:10, floors:2, fh:5, roof:"parapet", rh:6.6, m:M, faces:"fbs", arch:true, ww:1.7, wh:2.3, sp:3.6, bands:false });
+	// nef haute et étroite vue du ciel : grand toit d'ardoise à forte pente (comme sur les vues de drone)
+	const chapel = wing(root, { x:cs*19, z:5, ry:-cs*Math.PI/2, L:22, D:10, floors:2, fh:5, roof:"parapet", rh:8.4, m:M, faces:"fbs", arch:true, ww:1.7, wh:2.3, sp:3.6, bands:false });
 	const tr = wing(chapel, { x:1.5, z:0, ry:Math.PI/2, L:15, D:6.5, floors:2, fh:5, roof:"gable", rh:5.4, m:M, faces:"fb", arch:true, ww:1.6, wh:2.3, sp:3.4, bands:false });
 	for(const s of [-1, 1]){ cone(tr, .45, 2.6, M.stone, 0, 10.4 + 5.4*.0, s*7.55, 4, Math.PI/4); }
 	cyl(root, .5, .7, 2.2, M.stone, cs*14.6, 10.4, 15.6);
-	wing(root, { x:-cs*19, z:5, ry:cs*Math.PI/2, L:22, D:10, floors:3, roof:"gable", rh:5.6, dormers:5, dstyle:"brick", m:M, faces:"fbs", gableEnds:true });
+	// l'aile en retour face à la chapelle : toits de zinc gris clair et lucarnes de pierre, comme vus du ciel
+	const zinc = std("#9aa5b1", { metalness:.35, roughness:.5 }); zincMats.push(zinc);          // blanchit sous la neige comme les autres zincs
+	wing(root, { x:-cs*19, z:5, ry:cs*Math.PI/2, L:22, D:10, floors:3, roof:"gable", rh:5.6, dormers:5, dstyle:"slate", m:{ ...M, slate:zinc }, faces:"fbs", gableEnds:true });
 	// (pas de tour d'angle : la BD TOPO ne relève aucun volume à plus de 4,8 m au-dessus des gouttières)
 	register(root, "ha");
 	register(chapel, "chapelle");
@@ -1439,7 +1442,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=8651068e8e").then(({ FAR }) => {
+	import("./vauban_far.js?v=9499cca49c").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1955,18 +1958,19 @@ setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=8651068e8e").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=8651068e8e").then(m => m.createChapelle), eura:() => import("./eura.js?v=8651068e8e").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=8651068e8e").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=8651068e8e").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=9499cca49c").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=9499cca49c").then(m => m.createChapelle), eura:() => import("./eura.js?v=9499cca49c").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=9499cca49c").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=9499cca49c").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=8651068e8e").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=8651068e8e").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=8651068e8e").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=8651068e8e").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=8651068e8e").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=8651068e8e").then(m => m.openBiodata),
-	patrimoine:() => import("./games/patrimoine.js?v=8651068e8e").then(m => m.openPatrimoine),
-	affaires:() => import("./games/affaires.js?v=8651068e8e").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=8651068e8e").then(m => m.openBoutique),
-	telephone:() => import("./games/dossier.js?v=8651068e8e").then(m => m.openDossier)
+	comptoir:() => import("./games/comptoir.js?v=9499cca49c").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=9499cca49c").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=9499cca49c").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=9499cca49c").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=9499cca49c").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=9499cca49c").then(m => m.openBiodata),
+	crise:() => import("./games/crise.js?v=9499cca49c").then(m => m.openCrise),
+	patrimoine:() => import("./games/patrimoine.js?v=9499cca49c").then(m => m.openPatrimoine),
+	affaires:() => import("./games/affaires.js?v=9499cca49c").then(m => m.openAffaires),
+	boutique:() => import("./games/boutique.js?v=9499cca49c").then(m => m.openBoutique),
+	telephone:() => import("./games/dossier.js?v=9499cca49c").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2881,14 +2885,20 @@ function toggleFav(id){
 	if(favs.has(id)) favs.delete(id); else { favs.add(id); toast("Ajouté à ton carnet 📒", 1600); Audio.play("pop"); }
 	store.set("favs", [...favs]); refreshHud();
 }
+/* Mesure d'audience anonyme (GoatCounter, chargé en async dans index.html) : un événement par mini-jeu lancé et par mini-jeu gagné.
+   Silencieux si le script est bloqué (bloqueur de pub) ou pas encore chargé. */
+function countEvent(path, title){
+	try { window.goatcounter?.count?.({ path, title, event:true }); } catch(e){}
+}
 function openGame(fid, loader){
 	const f = F.find(x => x.id === fid);
 	const kind = GAMES[fid], load = GAME_LOADERS[loader || kind];      // loader : une autre version du jeu de la formation (prototype)
 	if(!f || !load) return;
 	$("ambiance").hidden = true;
-	let won = false, mention = null;
+	let won = false, mention = null, counted = false;
 	gamePaused = true;
-	load().then(open => open({
+	const label = `${loader || kind} · ${fid}`;
+	load().then(open => { countEvent(`jeu-lance/${loader || kind}`, label); return open({
 		openLead:() => openLead([fid]),
 		formation:f, audio:Audio,
 		isFav:() => favs.has(fid), toggleFav:() => toggleFav(fid),
@@ -2896,6 +2906,7 @@ function openGame(fid, loader){
 			if(fid === JEU) relecture?.event(ev, v);
 			if(ev !== "win") return;
 			won = true; mention = v;
+			if(!counted){ counted = true; countEvent(`jeu-gagne/${loader || kind}`, label); }
 			if(sub){ const m = { ...(medalsSub[kind] || {}) }; if(MENTION_RANK.indexOf(v) > MENTION_RANK.indexOf(m[sub])) m[sub] = v; medalsSub = { ...medalsSub, [kind]:m }; store.set("medalsSub", medalsSub); }
 			if(MENTION_RANK.indexOf(v) > MENTION_RANK.indexOf(medals[kind])){ medals = { ...medals, [kind]:v }; store.set("medals", medals); }
 		},
@@ -2910,7 +2921,7 @@ function openGame(fid, loader){
 			} else if(won){ Audio.play("win"); buzz([30, 70, 30, 70, 60]); suggest(); }      // le bandeau de la vue Jeux annonce la médaille
 			else if(current) openPanel(current);
 		}
-	})).catch(() => { gamePaused = false; toast("Impossible de lancer le mini-jeu : vérifie ta connexion.", 3500); });
+	}); }).catch(() => { gamePaused = false; toast("Impossible de lancer le mini-jeu : vérifie ta connexion.", 3500); });
 }
 function flyToPlace(id, dur){
 	if(mode === "eura" && interiors.eura.places[id]){ focusEura(id, false); return true; }

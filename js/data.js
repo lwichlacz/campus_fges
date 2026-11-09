@@ -61,9 +61,11 @@ export const RENDEZ_VOUS = [
 ];
 
 /* Mini-jeux disponibles : id de formation → id du jeu */
-export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires", ebmd: "boutique" };
+export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires", ebmd: "boutique", mh: "crise" };
 /* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */
 export const GAME_INFO = {
+	crise:{ fid:"mh", title:"La cellule de crise", icon:"🔥", where:"ha", whereLabel:"Salle du conseil · Hôtel Académique", dur:"8 min",
+		pitch:"Un bad buzz frappe une chocolaterie roubaisienne. Trie faits et rumeurs, pèse la décision avec Kant, Mill, Aristote et Weber, trouve le bon ton pour chaque collègue, puis écris un communiqué qui tient debout. Un seul geste : lancer." },
 	comptoir:{ fid:"gestion", title:"Le Comptoir", icon:"☕", where:"falise", whereLabel:"Atrium de Michel Falise", dur:"6 min",
 		pitch:"Pilote le café de l'atrium : prix, équipe, imprévus… et ton résultat en direct." },
 	jardin:{ fid:"sv", title:"Mission Jardin Boulay", icon:"🔍", where:"jardin", whereLabel:"Jardin botanique Nicolas Boulay", dur:"7 min",
