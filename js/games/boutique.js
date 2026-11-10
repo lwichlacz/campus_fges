@@ -6,7 +6,7 @@
    ceux qui font demi-tour sont des ventes perdues. Chiffres simplifiés et illustratifs, à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=09eacf57e3";
+import { jpoCard } from "./jpo.js?v=d2a74cf8d1";
 
 const COURSES = {
 	ux:    ["UX design, UI et accessibilité", "Observer les utilisateurs, simplifier les parcours, rendre un site lisible par tous (contrastes, formulaires, WCAG)."],
@@ -579,7 +579,7 @@ function world(canvas){
 		setShip(r){ shipRate = r; },
 		get pending(){ return pending; },
 		setEntrepot(t){ roomTag.entrepot.small.textContent = t; },
-		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); }); labs.innerHTML = ""; }
+		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); renderer.forceContextLoss(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); }); labs.innerHTML = ""; }
 	};
 }
 const pick = a => a[Math.floor(Math.random()*a.length)];

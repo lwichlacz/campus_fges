@@ -6,8 +6,8 @@
    sur la table vers leur cible, d'un coup de doigt. Entreprise et personnages fictifs. Contenu à relire par l'équipe. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { mountTable, MOBILE } from "./table.js?v=09eacf57e3";
-import { jpoCard } from "./jpo.js?v=09eacf57e3";
+import { mountTable, MOBILE } from "./table.js?v=d2a74cf8d1";
+import { jpoCard } from "./jpo.js?v=d2a74cf8d1";
 
 const COURSES = {
 	erreur:   ["Erreur humaine : épistémologie de l'erreur et de l'illusion", "L2 · Séparer le fait vérifié de la croyance : la première compétence d'un manager en crise."],
@@ -534,7 +534,7 @@ function world(canvas){
 		set onThrow(f){ onThrow = f; }, set enabled(v){ enabled = v; if(!v){ grab = null; select(null); controls.enabled = true; } },
 		dossier, bin, pans, panPos, setWeights, panLabel, showBalance, ingot, BUSTS, bustHead,
 		PEOPLE, seat, leave, mood, personPos, board, boardSlots, boardLeg, boardReset, boardWobble, boardPublish, boardTilt,
-		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); if(o.material && o.material.map) o.material.map.dispose(); }); }
+		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); renderer.forceContextLoss(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); if(o.material && o.material.map) o.material.map.dispose(); }); }
 	};
 }
 

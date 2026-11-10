@@ -6,7 +6,7 @@
    Le joueur choisit l'ordre de ses rendez-vous. Clients fictifs. Contenu à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=09eacf57e3";
+import { jpoCard } from "./jpo.js?v=d2a74cf8d1";
 
 const MOBILE = 760;
 const THEMES = [["ecoute", "Écoute", "👂"], ["sens", "Sensibilité", "🔎"], ["bienv", "Bienveillance", "🤝"], ["accomp", "Accompagnement", "🧭"], ["expert", "Expertise", "🎓"]];
@@ -877,7 +877,7 @@ function world(canvas){
 		place:at, setYear:y => relabel(factory.year, String(y)),
 		set onPick(f){ onPick = f; canvas.style.cursor = f ? "zoom-in" : ""; },
 		talk(id){ const p = P[id]; if(p) anim(900, k => { p.inner.scale.y = 1 + Math.sin(k*Math.PI*6)*.03; }, () => p.inner.scale.y = 1, "talk" + id); },
-		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); }); }
+		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); renderer.forceContextLoss(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); }); }
 	};
 }
 

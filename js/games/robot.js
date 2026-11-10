@@ -8,7 +8,7 @@
    Mise en scène illustrative ; contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=09eacf57e3";
+import { jpoCard } from "./jpo.js?v=d2a74cf8d1";
 
 const COURSES = {
 	meca:   ["L1", "Mécanique et systèmes numériques", "Un bras robot est une chaîne d'articulations : chaque angle déplace tout ce qui suit. Trois articulations, trois degrés de liberté pour atteindre un point de l'espace."],
@@ -679,7 +679,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 	function close(){
 		if(closed) return; closed = true;
 		cancelAnimationFrame(raf); removeEventListener("resize", resize); document.removeEventListener("keydown", onKey);
-		controls.dispose(); renderer.dispose(); root.remove(); onClose && onClose();
+		controls.dispose(); renderer.dispose(); renderer.forceContextLoss(); root.remove(); onClose && onClose();
 	}
 	function onKey(e){ if(e.key === "Escape") close(); }
 	document.addEventListener("keydown", onKey);

@@ -6,7 +6,7 @@
    Mécaniques : recherche par mots-clés (à la Her Story), captures d'écran à cadrer, graphique trompeur à démasquer,
    assistant IA qui invente parfois, batterie comme budget, notifications à saisir au vol, navigation privée sur le site,
    et comité en appel vidéo où l'on objecte en gardant le doigt sur la personne qui parle. */
-import { jpoCard } from "./jpo.js?v=09eacf57e3";
+import { jpoCard } from "./jpo.js?v=d2a74cf8d1";
 
 const CODE = "2021", T0 = 16*60 + 30, T1 = 18*60, SEC_MIN = 3, BAT0 = 50;
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];

@@ -11,8 +11,8 @@
    Entreprise, personnes, sociétés et documents sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { mountTable, MOBILE } from "./table.js?v=09eacf57e3";
-import { jpoCard } from "./jpo.js?v=09eacf57e3";
+import { mountTable, MOBILE } from "./table.js?v=d2a74cf8d1";
+import { jpoCard } from "./jpo.js?v=d2a74cf8d1";
 
 const COURSES = {
 	compta:   ["L1", "Comptabilité financière", "Classer chaque opération : une charge, un produit, ou un investissement qui s'amortit sur plusieurs années."],
@@ -599,7 +599,7 @@ function world(canvas){
 		set onDrop(f){ onDrop = f; }, set onTap(f){ onTap = f; }, set onPick(f){ onPick = f; }, set onCalc(f){ onCalc = f; },
 		set enabled(v){ enabled = v; if(!v){ grab = null; select(null); controls.enabled = true; } },
 		goHome, select,
-		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); if(o.material && o.material.map) o.material.map.dispose(); }); }
+		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); renderer.forceContextLoss(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); if(o.material && o.material.map) o.material.map.dispose(); }); }
 	};
 }
 

@@ -6,7 +6,7 @@
    On raisonne avec le droit d'aujourd'hui. Famille fictive. Contenu à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=09eacf57e3";
+import { jpoCard } from "./jpo.js?v=d2a74cf8d1";
 
 const COURSES = {
 	famille: ["Droit de la famille", "Régimes matrimoniaux, PACS, concubinage : qui possède quoi dans un couple, et que changer quand la vie change."],
@@ -545,7 +545,7 @@ function world(canvas){
 		O, era, popIn, popOut, moveTo, shake, hop, glow, fly, mourn, focus, slot, halves, setPlot, scaleTo, look, resize, grow, rename, pose, zap,
 		set onZone(f){ onZone = f; canvas.style.cursor = f ? "pointer" : ""; },
 		get onZone(){ return onZone; }, camera, notaryTalk, notaryHead, reserve,
-		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); }); }
+		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); renderer.forceContextLoss(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); }); }
 	};
 }
 

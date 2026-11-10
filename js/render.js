@@ -327,7 +327,8 @@ export async function createPost(renderer, scene, camera){
 export const CLOUDS = { value:0 };
 export function cloudShade(mat){
 	chain(mat, "clouds", sh => {
-		sh.uniforms.uCloudT = TIME;          // nom propre : uTime est déjà déclaré par d'autres effets (fenêtres, vent) sh.uniforms.uClouds = CLOUDS;
+		sh.uniforms.uCloudT = TIME;          // nom propre : uTime est déjà déclaré par d'autres effets (fenêtres, vent)
+		sh.uniforms.uClouds = CLOUDS;
 		sh.vertexShader = sh.vertexShader
 			.replace("#include <common>", "#include <common>\nvarying vec2 vCloudXZ;")
 			.replace("#include <project_vertex>", `#include <project_vertex>\n	{ ${WORLD_VS}\n	vCloudXZ = fxW.xz; }`);

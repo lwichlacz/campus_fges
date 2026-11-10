@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=09eacf57e3";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=09eacf57e3";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=09eacf57e3";
-import { MAP } from "./vauban.js?v=09eacf57e3";
-import { buildLandmarks } from "./landmarks.js?v=09eacf57e3";
-import { buildMonuments } from "./monuments.js?v=09eacf57e3";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=09eacf57e3";
-import { buildStation } from "./station.js?v=09eacf57e3";
-import { createRame } from "./rame.js?v=09eacf57e3";
-import { Audio } from "./audio.js?v=09eacf57e3";
-import { DETAILS } from "./details.js?v=09eacf57e3";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=d2a74cf8d1";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=d2a74cf8d1";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=d2a74cf8d1";
+import { MAP } from "./vauban.js?v=d2a74cf8d1";
+import { buildLandmarks } from "./landmarks.js?v=d2a74cf8d1";
+import { buildMonuments } from "./monuments.js?v=d2a74cf8d1";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=d2a74cf8d1";
+import { buildStation } from "./station.js?v=d2a74cf8d1";
+import { createRame } from "./rame.js?v=d2a74cf8d1";
+import { Audio } from "./audio.js?v=d2a74cf8d1";
+import { DETAILS } from "./details.js?v=d2a74cf8d1";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -1442,7 +1442,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=09eacf57e3").then(({ FAR }) => {
+	import("./vauban_far.js?v=d2a74cf8d1").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1958,19 +1958,19 @@ setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=09eacf57e3").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=09eacf57e3").then(m => m.createChapelle), eura:() => import("./eura.js?v=09eacf57e3").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=09eacf57e3").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=09eacf57e3").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=d2a74cf8d1").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=d2a74cf8d1").then(m => m.createChapelle), eura:() => import("./eura.js?v=d2a74cf8d1").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=d2a74cf8d1").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=d2a74cf8d1").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=09eacf57e3").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=09eacf57e3").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=09eacf57e3").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=09eacf57e3").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=09eacf57e3").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=09eacf57e3").then(m => m.openBiodata),
-	crise:() => import("./games/crise.js?v=09eacf57e3").then(m => m.openCrise),
-	patrimoine:() => import("./games/patrimoine.js?v=09eacf57e3").then(m => m.openPatrimoine),
-	affaires:() => import("./games/affaires.js?v=09eacf57e3").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=09eacf57e3").then(m => m.openBoutique),
-	telephone:() => import("./games/dossier.js?v=09eacf57e3").then(m => m.openDossier)
+	comptoir:() => import("./games/comptoir.js?v=d2a74cf8d1").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=d2a74cf8d1").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=d2a74cf8d1").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=d2a74cf8d1").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=d2a74cf8d1").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=d2a74cf8d1").then(m => m.openBiodata),
+	crise:() => import("./games/crise.js?v=d2a74cf8d1").then(m => m.openCrise),
+	patrimoine:() => import("./games/patrimoine.js?v=d2a74cf8d1").then(m => m.openPatrimoine),
+	affaires:() => import("./games/affaires.js?v=d2a74cf8d1").then(m => m.openAffaires),
+	boutique:() => import("./games/boutique.js?v=d2a74cf8d1").then(m => m.openBoutique),
+	telephone:() => import("./games/dossier.js?v=d2a74cf8d1").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2973,7 +2973,7 @@ function openGame(fid, loader){
 			const suggest = () => { justWon = kind; openPanel("nav:jeux"); };
 			if(won) discovered();
 			if(won && kind === "comptoir"){
-				const party = () => { interiors.atrium.celebrate(); Audio.play("win"); toast("🎓 Bravo, diplômé·e ! Toute l'atrium fête ta réussite !", 4500); setTimeout(suggest, 4200); };
+				const party = () => { interiors.atrium.celebrate(); Audio.play("win"); toast("🎓 Bravo, diplômé·e ! Tout l'atrium fête ta réussite !", 4500); setTimeout(suggest, 4200); };
 				if(mode === "atrium") party(); else enterInterior("atrium", party);
 			} else if(won){ Audio.play("win"); buzz([30, 70, 30, 70, 60]); suggest(); }      // le bandeau de la vue Jeux annonce la médaille
 			else if(current) openPanel(current);
@@ -3118,11 +3118,14 @@ function carouselIds(){
 let carMode = null;
 function buildCarousel(){
 	const nGames = Object.keys(GAME_INFO).length, nWon = Object.keys(GAME_INFO).filter(k => medals[k]).length;
+	// fourchette de durée calculée sur les jeux (« 6 min », « 12-15 min »…), pour ne pas promettre moins que la réalité
+	const durs = Object.values(GAME_INFO).flatMap(g => (String(g.dur || "").match(/\d+/g) || []).map(Number));
+	const durRange = durs.length ? `${Math.min(...durs)} à ${Math.max(...durs)} min` : "";
 	const left = car.scrollLeft;
 	car.innerHTML = carouselIds().map(id => {
 		if(id === "_eura") return `<button class="ccard hub eura" data-id="_eura"><span class="gic">🏙️</span><span><b>Quartier Euratechnologies</b><small>Wenov, le Blan-Lafont, la Deûle, le métro</small></span><span class="go-c">Explorer</span></button>`;
 		if(id === "_vauban") return `<button class="ccard hub" data-id="_vauban"><span class="gic">🚇</span><span><b>Retour au campus Vauban</b><small>Ligne 2 · par ${STATION_NAME[store.get("lastStation", "cormontaigne")] || "Cormontaigne"}</small></span><span class="go-c">Y aller</span></button>`;
-		if(id === "_hub") return `<button class="ccard hub" data-id="_hub"><span class="gic">🎮</span><span><b>Joue une formation</b><small>${nWon ? `${nWon}/${nGames} médaille${nWon > 1 ? "s" : ""} · ` : ""}${nGames} mini-jeux · 6 à 7 min</small></span><span class="go-c">Jouer</span></button>`;
+		if(id === "_hub") return `<button class="ccard hub" data-id="_hub"><span class="gic">🎮</span><span><b>Joue une formation</b><small>${nWon ? `${nWon}/${nGames} médaille${nWon > 1 ? "s" : ""} · ` : ""}${nGames} mini-jeux${durRange ? ` · ${durRange}` : ""}</small></span><span class="go-c">Jouer</span></button>`;
 		const p = PLACES[id] || LIFE[id], games = (GAME_AT[id] || []).length, done = stamps.has(id) || found.has(id);
 		const n = PLACES[id] && profile ? listFor(id).length : 0;
 		const sub = LIFE[id] && LIFE[id].metro ? `Ligne 2 → Wenov · ${lineFrom(id, true).length - 1} stations` : PLACES[id] ? (n ? `${n} formation${n > 1 ? "s" : ""} pour toi` : p.kicker) : p.kicker;
