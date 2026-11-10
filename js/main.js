@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=99187be9c3";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=99187be9c3";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=99187be9c3";
-import { MAP } from "./vauban.js?v=99187be9c3";
-import { buildLandmarks } from "./landmarks.js?v=99187be9c3";
-import { buildMonuments } from "./monuments.js?v=99187be9c3";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=99187be9c3";
-import { buildStation } from "./station.js?v=99187be9c3";
-import { createRame } from "./rame.js?v=99187be9c3";
-import { Audio } from "./audio.js?v=99187be9c3";
-import { DETAILS } from "./details.js?v=99187be9c3";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=dceb40a90a";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=dceb40a90a";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=dceb40a90a";
+import { MAP } from "./vauban.js?v=dceb40a90a";
+import { buildLandmarks } from "./landmarks.js?v=dceb40a90a";
+import { buildMonuments } from "./monuments.js?v=dceb40a90a";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=dceb40a90a";
+import { buildStation } from "./station.js?v=dceb40a90a";
+import { createRame } from "./rame.js?v=dceb40a90a";
+import { Audio } from "./audio.js?v=dceb40a90a";
+import { DETAILS } from "./details.js?v=dceb40a90a";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -1442,7 +1442,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=99187be9c3").then(({ FAR }) => {
+	import("./vauban_far.js?v=dceb40a90a").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1958,19 +1958,19 @@ setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=99187be9c3").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=99187be9c3").then(m => m.createChapelle), eura:() => import("./eura.js?v=99187be9c3").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=99187be9c3").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=99187be9c3").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=dceb40a90a").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=dceb40a90a").then(m => m.createChapelle), eura:() => import("./eura.js?v=dceb40a90a").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=dceb40a90a").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=dceb40a90a").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=99187be9c3").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=99187be9c3").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=99187be9c3").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=99187be9c3").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=99187be9c3").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=99187be9c3").then(m => m.openBiodata),
-	crise:() => import("./games/crise.js?v=99187be9c3").then(m => m.openCrise),
-	patrimoine:() => import("./games/patrimoine.js?v=99187be9c3").then(m => m.openPatrimoine),
-	affaires:() => import("./games/affaires.js?v=99187be9c3").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=99187be9c3").then(m => m.openBoutique),
-	telephone:() => import("./games/dossier.js?v=99187be9c3").then(m => m.openDossier)
+	comptoir:() => import("./games/comptoir.js?v=dceb40a90a").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=dceb40a90a").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=dceb40a90a").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=dceb40a90a").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=dceb40a90a").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=dceb40a90a").then(m => m.openBiodata),
+	crise:() => import("./games/crise.js?v=dceb40a90a").then(m => m.openCrise),
+	patrimoine:() => import("./games/patrimoine.js?v=dceb40a90a").then(m => m.openPatrimoine),
+	affaires:() => import("./games/affaires.js?v=dceb40a90a").then(m => m.openAffaires),
+	boutique:() => import("./games/boutique.js?v=dceb40a90a").then(m => m.openBoutique),
+	telephone:() => import("./games/dossier.js?v=dceb40a90a").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2215,6 +2215,7 @@ welcomeNote();
 function enter(){
 	musicWanted = $("musicPref").checked; store.set("music", musicWanted);
 	if(musicWanted) Audio.enable(); else Audio.disable();
+	if(!entered) countOnce(`entree/${profile || "sans-profil"}`, "Entrée sur le campus");
 	$("welcome").classList.add("gone");
 	refreshHud();
 	if(entered){ if(current) openPanel(current); return; }
@@ -2885,25 +2886,42 @@ function toggleFav(id){
 	if(favs.has(id)) favs.delete(id); else { favs.add(id); toast("Ajouté à ton carnet 📒", 1600); Audio.play("pop"); }
 	store.set("favs", [...favs]); refreshHud();
 }
-/* Mesure d'audience anonyme (GoatCounter, chargé en async dans index.html) : un événement par mini-jeu lancé et par mini-jeu gagné.
-   Silencieux si le script est bloqué (bloqueur de pub) ou pas encore chargé. */
+/* Mesure d'audience anonyme (GoatCounter, chargé en async dans index.html). Silencieux si le script est bloqué
+   (bloqueur de pub) ou pas encore chargé. Aucun identifiant de visiteur : seulement des chemins d'événements.
+   L'entonnoir : entree/<profil> → jeu-lance → jeu-debut → jeu-etape/<n> → jeu-gagne ou jeu-abandon/<dernière étape>
+   → formulaire-ouvert → formulaire-envoye, plus clic-jpo et clic-fiche depuis les jeux. Chaque chemin porte le jeu
+   (ou « campus » hors jeu). */
 function countEvent(path, title){
 	try { window.goatcounter?.count?.({ path, title, event:true }); } catch(e){}
 }
+const countedOnce = new Set();      // une fois par visite (chargement de page)
+function countOnce(path, title){ if(countedOnce.has(path)) return; countedOnce.add(path); countEvent(path, title); }
+let gameNow = null, lastGame = null;      // jeu ouvert, et dernier jeu joué (transmis avec la demande de plaquette)
+document.addEventListener("click", e => {
+	const where = gameNow || "campus";
+	if(e.target.closest("[data-jpo]")) countEvent(`clic-jpo/${where}`, "Clic vers la journée portes ouvertes");
+	else if(gameNow && e.target.closest('a[href*="fges.fr"]')) countEvent(`clic-fiche/${where}`, "Clic vers la fiche formation");
+}, true);
 function openGame(fid, loader){
 	const f = F.find(x => x.id === fid);
 	const kind = GAMES[fid], load = GAME_LOADERS[loader || kind];      // loader : une autre version du jeu de la formation (prototype)
 	if(!f || !load) return;
 	$("ambiance").hidden = true;
-	let won = false, mention = null, counted = false;
+	let won = false, mention = null, counted = false, stageN = 0;
+	const stagesSeen = new Set();
 	gamePaused = true;
-	const label = `${loader || kind} · ${fid}`;
-	load().then(open => { countEvent(`jeu-lance/${loader || kind}`, label); return open({
-		openLead:() => openLead([fid]),
+	const label = `${loader || kind} · ${fid}`, g = loader || kind;
+	load().then(open => { countEvent(`jeu-lance/${g}`, label); gameNow = g; lastGame = kind; return open({
+		openLead:() => openLead([fid], g),
 		formation:f, audio:Audio,
 		isFav:() => favs.has(fid), toggleFav:() => toggleFav(fid),
 		onEvent:(ev, v, sub) => {
 			if(fid === JEU) relecture?.event(ev, v);
+			if(ev === "start") countOnce(`jeu-debut/${g}`, label);
+			if(ev === "stage" && !stagesSeen.has(String(v))){
+				stagesSeen.add(String(v)); stageN++;
+				countOnce(`jeu-etape/${g}/${stageN}`, `${label} · ${v}`);
+			}
 			if(ev !== "win") return;
 			won = true; mention = v;
 			if(!counted){ counted = true; countEvent(`jeu-gagne/${loader || kind}`, label); }
@@ -2911,7 +2929,8 @@ function openGame(fid, loader){
 			if(MENTION_RANK.indexOf(v) > MENTION_RANK.indexOf(medals[kind])){ medals = { ...medals, [kind]:v }; store.set("medals", medals); }
 		},
 		onClose:() => {
-			gamePaused = false;
+			gamePaused = false; gameNow = null;
+			if(!won) countEvent(`jeu-abandon/${g}/${stageN}`, `${label} · abandon après l'étape ${stageN}`);
 			if(fid === JEU) relecture?.event("close");
 			const suggest = () => { justWon = kind; openPanel("nav:jeux"); };
 			if(won) discovered();
@@ -2921,7 +2940,7 @@ function openGame(fid, loader){
 			} else if(won){ Audio.play("win"); buzz([30, 70, 30, 70, 60]); suggest(); }      // le bandeau de la vue Jeux annonce la médaille
 			else if(current) openPanel(current);
 		}
-	}); }).catch(() => { gamePaused = false; toast("Impossible de lancer le mini-jeu : vérifie ta connexion.", 3500); });
+	}); }).catch(() => { gamePaused = false; gameNow = null; toast("Impossible de lancer le mini-jeu : vérifie ta connexion.", 3500); });
 }
 function flyToPlace(id, dur){
 	if(mode === "eura" && interiors.eura.places[id]){ focusEura(id, false); return true; }
@@ -2967,8 +2986,10 @@ function markVisited(id){
 const LEAD_API = window.CAMPUS_LEAD_API || LEAD_ENDPOINT || "api/lead";
 // version de test en ligne (GitHub Pages, Netlify, Cloudflare…) ou ?demo : le formulaire ne transmet rien
 const LEAD_DEMO = !window.CAMPUS_LEAD_API && !LEAD_ENDPOINT && (/[?&]demo/.test(location.search) || /\.(github\.io|netlify\.app|pages\.dev)$/.test(location.hostname));
-let leadOpenedAt = 0;
-function openLead(ids){
+let leadOpenedAt = 0, leadFrom = "campus";
+function openLead(ids, from = "campus"){
+	leadFrom = from;
+	countEvent(`formulaire-ouvert/${from}`, "Formulaire de plaquette ouvert");
 	const list = (ids && ids.length ? ids : [...favs]).map(id => F.find(f => f.id === id)).filter(Boolean);
 	$("leadList").innerHTML = list.length
 		? list.map(f => `<label><input type="checkbox" name="f" value="${f.id}" checked><span>${f.name}<br><small style="color:var(--muted)">${f.school}</small></span></label>`).join("")
@@ -2997,7 +3018,10 @@ $("leadForm").querySelector("form").addEventListener("submit", async e => {
 		prenom:form.prenom.value, nom:form.nom.value, email, telephone:form.telephone.value, code_postal:form.code_postal.value,
 		consentement:true, tracking:form.tracking.checked, website:form.website.value, elapsed:Date.now() - leadOpenedAt,
 		formations:chosen.map(f => ({ id:f.id, name:f.name, school:f.school })),
-		utm_source:qs.get("utm_source") || "", utm_medium:qs.get("utm_medium") || "", utm_campaign:qs.get("utm_campaign") || ""
+		utm_source:qs.get("utm_source") || "", utm_medium:qs.get("utm_medium") || "", utm_campaign:qs.get("utm_campaign") || "",
+		// quel jeu a amené la demande (D2) : dernier jeu joué et jeux terminés, par leur titre
+		jeu:lastGame ? (GAME_INFO[lastGame]?.title || lastGame) : "",
+		jeux_termines:Object.keys(medals).map(k => GAME_INFO[k]?.title || k)
 	};
 	btn.disabled = true; btn.textContent = "Envoi…";
 	try {
@@ -3005,6 +3029,7 @@ $("leadForm").querySelector("form").addEventListener("submit", async e => {
 		const res = LEAD_DEMO ? { ok:true, dryRun:true } : await r.json().catch(() => ({}));
 		if(!r.ok || !res.ok) throw new Error(res.error || "Envoi impossible pour le moment.");
 		store.set("leadSent", true);
+		countEvent(`formulaire-envoye/${leadFrom}`, "Demande de plaquette envoyée");
 		Audio.play("win");
 		// plaquette PDF quand on l'a (choisie dans WordPress, sinon dans data.js), sinon le catalogue de toutes les plaquettes
 		const PLAQ = Object.assign({}, PLAQUETTES, res.plaquettes || {});

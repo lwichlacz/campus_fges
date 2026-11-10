@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Campus FGES 3D
  * Description:       Relie le campus 3D de la FGES au site : les demandes de plaquettes arrivent dans le CRM, les plaquettes PDF se choisissent ici, et un bloc « Campus 3D » s'ajoute à n'importe quelle page.
- * Version:           2.0.1
+ * Version:           2.0.2
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            FGES · Université Catholique de Lille
@@ -18,7 +18,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('CFGES_VERSION', '2.0.1');
+define('CFGES_VERSION', '2.0.2');
 define('CFGES_FILE', __FILE__);
 define('CFGES_URL', plugin_dir_url(__FILE__));
 define('CFGES_DIR', plugin_dir_path(__FILE__));
@@ -326,6 +326,9 @@ function cfges_rest_lead(WP_REST_Request $req) {
 		'utm_source'            => cfges_clip($d['utm_source'] ?? '', 80) ?: 'campus-3d',
 		'utm_medium'            => cfges_clip($d['utm_medium'] ?? '', 80),
 		'utm_campaign'          => cfges_clip($d['utm_campaign'] ?? '', 80),
+		// quel jeu a amené la demande : le CRM ignore ces deux champs tant qu'il ne les attend pas
+		'jeu_campus'            => cfges_clip($d['jeu'] ?? '', 80),
+		'jeux_termines'         => cfges_clip(implode(', ', array_filter(array_map(function ($t) { return is_string($t) ? $t : ''; }, array_slice((array) ($d['jeux_termines'] ?? []), 0, 20)))), 400),
 	];
 	$payloads = [];
 	foreach ($formations ?: [[]] as $f) {
@@ -346,6 +349,7 @@ function cfges_rest_lead(WP_REST_Request $req) {
 		'email'  => cfges_mask_email($email),
 		'f'      => array_values(array_filter(array_map(function ($f) { return isset($f['name']) ? mb_substr((string) $f['name'], 0, 120) : null; }, $formations))),
 		'src'    => $base['utm_source'], 'med' => $base['utm_medium'], 'camp' => $base['utm_campaign'],
+		'jeu'    => $base['jeu_campus'],
 		'status' => 'essai', 'tries' => 0, 'err' => '',
 	];
 	update_option('cfges_seen_campus', time(), false);
@@ -569,7 +573,7 @@ function cfges_tab_demandes() {
 		echo '<tr><td>' . esc_html(wp_date('j M Y · H:i', $e['t'])) . '</td>';
 		echo '<td><b>' . esc_html($e['who'] ?: '—') . '</b><br><small>' . esc_html($e['email']) . '</small></td>';
 		echo '<td>' . ($e['f'] ? esc_html(implode(', ', $e['f'])) : '<span class="cfges-mut">Présentation générale</span>') . '</td>';
-		echo '<td>' . esc_html(cfges_source_label($e['src'], $e['med'])) . ($e['camp'] ? '<br><small>' . esc_html($e['camp']) . '</small>' : '') . '</td>';
+		echo '<td>' . esc_html(cfges_source_label($e['src'], $e['med'])) . ($e['camp'] ? '<br><small>' . esc_html($e['camp']) . '</small>' : '') . (!empty($e['jeu']) ? '<br><small>🎮 ' . esc_html($e['jeu']) . '</small>' : '') . '</td>';
 		echo '<td>' . cfges_status_badge($e['status'], $e['tries']) . ($e['err'] ? '<br><small class="cfges-err">' . esc_html($e['err']) . '</small>' : '') . '</td></tr>';
 	}
 	echo '</tbody></table><p><button class="button-link cfges-danger" data-cfges="clearlog">Vider le journal</button> <span class="cfges-mut">(n\'efface rien dans le CRM ni les demandes en attente)</span></p></div>';

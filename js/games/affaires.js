@@ -6,7 +6,7 @@
    Le joueur choisit l'ordre de ses rendez-vous. Clients fictifs. Contenu à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=99187be9c3";
+import { jpoCard } from "./jpo.js?v=dceb40a90a";
 
 const MOBILE = 760;
 const THEMES = [["ecoute", "Écoute", "👂"], ["sens", "Sensibilité", "🔎"], ["bienv", "Bienveillance", "🤝"], ["accomp", "Accompagnement", "🧭"], ["expert", "Expertise", "🎓"]];
