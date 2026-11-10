@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=dceb40a90a";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=dceb40a90a";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=dceb40a90a";
-import { MAP } from "./vauban.js?v=dceb40a90a";
-import { buildLandmarks } from "./landmarks.js?v=dceb40a90a";
-import { buildMonuments } from "./monuments.js?v=dceb40a90a";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=dceb40a90a";
-import { buildStation } from "./station.js?v=dceb40a90a";
-import { createRame } from "./rame.js?v=dceb40a90a";
-import { Audio } from "./audio.js?v=dceb40a90a";
-import { DETAILS } from "./details.js?v=dceb40a90a";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=e6e058ec59";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=e6e058ec59";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=e6e058ec59";
+import { MAP } from "./vauban.js?v=e6e058ec59";
+import { buildLandmarks } from "./landmarks.js?v=e6e058ec59";
+import { buildMonuments } from "./monuments.js?v=e6e058ec59";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=e6e058ec59";
+import { buildStation } from "./station.js?v=e6e058ec59";
+import { createRame } from "./rame.js?v=e6e058ec59";
+import { Audio } from "./audio.js?v=e6e058ec59";
+import { DETAILS } from "./details.js?v=e6e058ec59";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -1442,7 +1442,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=dceb40a90a").then(({ FAR }) => {
+	import("./vauban_far.js?v=e6e058ec59").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1958,19 +1958,19 @@ setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=dceb40a90a").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=dceb40a90a").then(m => m.createChapelle), eura:() => import("./eura.js?v=dceb40a90a").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=dceb40a90a").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=dceb40a90a").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=e6e058ec59").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=e6e058ec59").then(m => m.createChapelle), eura:() => import("./eura.js?v=e6e058ec59").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=e6e058ec59").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=e6e058ec59").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=dceb40a90a").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=dceb40a90a").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=dceb40a90a").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=dceb40a90a").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=dceb40a90a").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=dceb40a90a").then(m => m.openBiodata),
-	crise:() => import("./games/crise.js?v=dceb40a90a").then(m => m.openCrise),
-	patrimoine:() => import("./games/patrimoine.js?v=dceb40a90a").then(m => m.openPatrimoine),
-	affaires:() => import("./games/affaires.js?v=dceb40a90a").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=dceb40a90a").then(m => m.openBoutique),
-	telephone:() => import("./games/dossier.js?v=dceb40a90a").then(m => m.openDossier)
+	comptoir:() => import("./games/comptoir.js?v=e6e058ec59").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=e6e058ec59").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=e6e058ec59").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=e6e058ec59").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=e6e058ec59").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=e6e058ec59").then(m => m.openBiodata),
+	crise:() => import("./games/crise.js?v=e6e058ec59").then(m => m.openCrise),
+	patrimoine:() => import("./games/patrimoine.js?v=e6e058ec59").then(m => m.openPatrimoine),
+	affaires:() => import("./games/affaires.js?v=e6e058ec59").then(m => m.openAffaires),
+	boutique:() => import("./games/boutique.js?v=e6e058ec59").then(m => m.openBoutique),
+	telephone:() => import("./games/dossier.js?v=e6e058ec59").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2902,6 +2902,43 @@ document.addEventListener("click", e => {
 	if(e.target.closest("[data-jpo]")) countEvent(`clic-jpo/${where}`, "Clic vers la journée portes ouvertes");
 	else if(gameNow && e.target.closest('a[href*="fges.fr"]')) countEvent(`clic-fiche/${where}`, "Clic vers la fiche formation");
 }, true);
+
+/* Sortie des jeux (U6). Une partie dure jusqu'à 15 minutes : elle ne doit pas se perdre sur un geste.
+   - Le geste ou le bouton retour ferme le jeu, pas le site : une entrée d'historique est posée à l'ouverture.
+   - Échap, la croix « Quitter le jeu » et le retour demandent confirmation si la partie a commencé et n'est pas finie.
+   Tous les jeux se ferment sur Échap (écouteur sur document) : le campus s'appuie là-dessus, sans toucher aux jeux. */
+const gameExit = { guard:false, touched:false, bypass:false, pushed:false, ignorePop:false };
+const QUIT_MSG = "Quitter la partie ? Ta progression dans ce jeu sera perdue.";
+const QUIT_SEL = '[aria-label="Quitter le jeu"], [aria-label="Close the game"]';
+// confirmation seulement si la partie a commencé ET que le joueur a déjà touché le jeu (certains jeux lancent leur
+// première étape dès l'ouverture : celui qui ferme aussitôt n'a rien à perdre)
+function confirmQuit(){ return !(gameExit.guard && gameExit.touched) || confirm(QUIT_MSG); }
+addEventListener("pointerdown", e => { if(gameNow && !e.target.closest(QUIT_SEL)) gameExit.touched = true; }, true);
+addEventListener("keydown", e => {
+	if(e.key !== "Escape" || !gameNow || gameExit.bypass) return;
+	if(!confirmQuit()){ e.stopImmediatePropagation(); e.preventDefault(); }
+}, true);
+addEventListener("click", e => {
+	if(!gameNow || !e.target.closest(QUIT_SEL)) return;
+	if(!confirmQuit()){ e.stopImmediatePropagation(); e.preventDefault(); }
+}, true);
+addEventListener("popstate", () => {
+	if(gameExit.ignorePop){ gameExit.ignorePop = false; return; }
+	if(!gameNow || !gameExit.pushed) return;
+	gameExit.pushed = false;
+	if(!confirmQuit()){ history.pushState({ campusGame:gameNow }, ""); gameExit.pushed = true; return; }
+	gameExit.bypass = true;
+	document.dispatchEvent(new KeyboardEvent("keydown", { key:"Escape", bubbles:true }));
+	gameExit.bypass = false;
+});
+function gameOpened(g){
+	gameExit.guard = false; gameExit.touched = false;
+	try { history.pushState({ campusGame:g }, ""); gameExit.pushed = true; } catch(e){}
+}
+function gameClosed(){
+	gameExit.guard = false;
+	if(gameExit.pushed){ gameExit.pushed = false; gameExit.ignorePop = true; history.back(); }      // retire l'entrée posée à l'ouverture
+}
 function openGame(fid, loader){
 	const f = F.find(x => x.id === fid);
 	const kind = GAMES[fid], load = GAME_LOADERS[loader || kind];      // loader : une autre version du jeu de la formation (prototype)
@@ -2911,25 +2948,26 @@ function openGame(fid, loader){
 	const stagesSeen = new Set();
 	gamePaused = true;
 	const label = `${loader || kind} · ${fid}`, g = loader || kind;
-	load().then(open => { countEvent(`jeu-lance/${g}`, label); gameNow = g; lastGame = kind; return open({
+	load().then(open => { countEvent(`jeu-lance/${g}`, label); gameNow = g; lastGame = kind; gameOpened(g); return open({
 		openLead:() => openLead([fid], g),
 		formation:f, audio:Audio,
 		isFav:() => favs.has(fid), toggleFav:() => toggleFav(fid),
 		onEvent:(ev, v, sub) => {
 			if(fid === JEU) relecture?.event(ev, v);
+			if(ev === "start" || ev === "stage") gameExit.guard = !won;      // la partie a commencé : sortir demande confirmation
 			if(ev === "start") countOnce(`jeu-debut/${g}`, label);
 			if(ev === "stage" && !stagesSeen.has(String(v))){
 				stagesSeen.add(String(v)); stageN++;
 				countOnce(`jeu-etape/${g}/${stageN}`, `${label} · ${v}`);
 			}
 			if(ev !== "win") return;
-			won = true; mention = v;
+			won = true; mention = v; gameExit.guard = false;
 			if(!counted){ counted = true; countEvent(`jeu-gagne/${loader || kind}`, label); }
 			if(sub){ const m = { ...(medalsSub[kind] || {}) }; if(MENTION_RANK.indexOf(v) > MENTION_RANK.indexOf(m[sub])) m[sub] = v; medalsSub = { ...medalsSub, [kind]:m }; store.set("medalsSub", medalsSub); }
 			if(MENTION_RANK.indexOf(v) > MENTION_RANK.indexOf(medals[kind])){ medals = { ...medals, [kind]:v }; store.set("medals", medals); }
 		},
 		onClose:() => {
-			gamePaused = false; gameNow = null;
+			gamePaused = false; gameNow = null; gameClosed();
 			if(!won) countEvent(`jeu-abandon/${g}/${stageN}`, `${label} · abandon après l'étape ${stageN}`);
 			if(fid === JEU) relecture?.event("close");
 			const suggest = () => { justWon = kind; openPanel("nav:jeux"); };
