@@ -491,20 +491,20 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition-duration:.01s!important} }
 </style>
 <script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"}}
+{"imports":{"three":"./vendor/three-0.165.0/build/three.module.min.js","three/addons/":"./vendor/three-0.165.0/examples/jsm/"}}
 </script>
-<link rel="modulepreload" href="js/main.js?v=e6e058ec59">
-<link rel="modulepreload" href="js/kit.js?v=e6e058ec59">
-<link rel="modulepreload" href="js/data.js?v=e6e058ec59">
-<link rel="modulepreload" href="js/details.js?v=e6e058ec59">
-<link rel="modulepreload" href="js/vauban.js?v=e6e058ec59">
-<link rel="modulepreload" href="js/city.js?v=e6e058ec59">
-<link rel="modulepreload" href="js/render.js?v=e6e058ec59">
-<link rel="modulepreload" href="js/landmarks.js?v=e6e058ec59">
-<link rel="modulepreload" href="js/monuments.js?v=e6e058ec59">
-<link rel="modulepreload" href="js/audio.js?v=e6e058ec59">
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js" crossorigin>
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/controls/OrbitControls.js" crossorigin>
+<link rel="modulepreload" href="js/main.js?v=09eacf57e3">
+<link rel="modulepreload" href="js/kit.js?v=09eacf57e3">
+<link rel="modulepreload" href="js/data.js?v=09eacf57e3">
+<link rel="modulepreload" href="js/details.js?v=09eacf57e3">
+<link rel="modulepreload" href="js/vauban.js?v=09eacf57e3">
+<link rel="modulepreload" href="js/city.js?v=09eacf57e3">
+<link rel="modulepreload" href="js/render.js?v=09eacf57e3">
+<link rel="modulepreload" href="js/landmarks.js?v=09eacf57e3">
+<link rel="modulepreload" href="js/monuments.js?v=09eacf57e3">
+<link rel="modulepreload" href="js/audio.js?v=09eacf57e3">
+<link rel="modulepreload" href="vendor/three-0.165.0/build/three.module.min.js">
+<link rel="modulepreload" href="vendor/three-0.165.0/examples/jsm/controls/OrbitControls.js">
 </head>
 <body>
 <noscript><p style="padding:24px;font:16px sans-serif">Le campus en 3D nécessite JavaScript. <a href="liste.html">Voir toutes les formations en version liste</a>.</p></noscript>
@@ -689,8 +689,13 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 	<div class="pb" id="pbody"></div>
 </aside>
 
-<script type="module" src="js/main.js?v=e6e058ec59"></script>
+<script type="module" src="js/main.js?v=09eacf57e3"></script>
 <!-- mesure d audience anonyme, sans cookie (GoatCounter) -->
 <script data-goatcounter="https://lucas-wichlacz.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<!-- cache hors ligne (sw.js) : la borne de la JPO survit à une coupure du Wi-Fi ; installé après le chargement, sans retarder le campus.
+     En local, seulement avec ?sw (sinon le cache masquerait les modifications en cours, et il est retiré). -->
+<script>if("serviceWorker" in navigator){ const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+	if(location.protocol === "https:" || (local && /[?&]sw\b/.test(location.search))) addEventListener("load", () => setTimeout(() => navigator.serviceWorker.register("sw.js").catch(() => {}), 3000));
+	else if(local) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(() => {}); }</script>
 </body>
 </html>
