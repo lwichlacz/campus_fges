@@ -6,7 +6,8 @@
    sur la table vers leur cible, d'un coup de doigt. Entreprise et personnages fictifs. Contenu à relire par l'équipe. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { mountTable, MOBILE } from "./table.js?v=99b2439c6d";
+import { mountTable, MOBILE } from "./table.js?v=99187be9c3";
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 const COURSES = {
 	erreur:   ["Erreur humaine : épistémologie de l'erreur et de l'illusion", "L2 · Séparer le fait vérifié de la croyance : la première compétence d'un manager en crise."],
@@ -913,7 +914,7 @@ export function openCrise({ formation, audio, isFav, toggleFav, onClose, onEvent
 			<div class="cr-recap"><ul><li><span>🚨 Niveau de crise</span><b>${Math.round(S.crise)} %</b></li><li><span>🤝 Climat d'équipe</span><b>${Math.round(S.clim)} / 100</b></li><li><span>⚖ Décision</span><b>${S.recall ? "Rappel du lot" : "Attente des analyses"}</b></li></ul></div>
 			${lam("Trier l'information, décider sans tout savoir, parler juste à chacun, convaincre sans mentir : c'est le management éclairé de la licence, avec la gestion et la philosophie dans le même cursus. Vous avez touché à :")}
 			${order.map(k => `<div class="cr-b cr-link"><span class="tag">📚 ${COURSES[k][1].split(" · ")[0]}</span><b>${COURSES[k][0]}</b><span></span></div>`).join("")}`);
-		live(`${openLead ? `<button class="tb-go" data-a="lead">📄 Recevoir la plaquette de la licence</button>` : ""}
+		live(`${jpoCard()}${openLead ? `<button class="tb-go" data-a="lead">📄 Recevoir la plaquette de la licence</button>` : ""}
 			<a class="tb-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir la Licence Management & Humanités ↗</a>
 			<button class="tb-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
 			<button class="tb-alt" data-a="replay">Rejouer : d'autres messages et d'autres coups du sort</button>`);

@@ -6,6 +6,7 @@
    Mécaniques : recherche par mots-clés (à la Her Story), captures d'écran à cadrer, graphique trompeur à démasquer,
    assistant IA qui invente parfois, batterie comme budget, notifications à saisir au vol, navigation privée sur le site,
    et comité en appel vidéo où l'on objecte en gardant le doigt sur la personne qui parle. */
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 const CODE = "2021", T0 = 16*60 + 30, T1 = 18*60, SEC_MIN = 3, BAT0 = 50;
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -801,7 +802,7 @@ export function openDossier(opts = {}){
 			<button class="tp-alt" data-a="restart">Recommencer l'enquête</button>
 			<details class="tp-more"><summary>Ce qu'il fallait trouver</summary><ul>${CLAIMS.map((c, i) => { const r = cm.res[i]; return `<li><i>${c.truth ? "✓" : r && r.r === "won" ? "✓" : "✗"}</i><span>${c.truth ? `<b>Vrai</b> : « ${c.txt} » (il ne fallait pas contredire)` : `« ${c.txt} » → ${c.need.map(f => FACTS[f]).join(" ou ")}`}</span></li>`; }).join("")}</ul></details>
 			<details class="tp-more"><summary>Le métier de Camille, et les tiens peut-être</summary><p>E-commerce manager, responsable marketing digital, traffic manager, data analyst marketing, chef·fe de projet e-business, consultant·e SEO et GEO.</p><div class="tp-course"><b>📚 Un master en alternance, 2 ans</b>UX, référencement et GEO, web analytics, CRM, e-logistique, droit du numérique, IA appliquée, stratégie digitale, business game…</div></details>
-			${openLead ? `<button class="tp-alt" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
+			${jpoCard()}${openLead ? `<button class="tp-alt" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
 			${formation && formation.url ? `<a class="tp-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master E-Business & Marketing Digital ↗</a>` : ""}
 			${toggleFav ? `<button class="tp-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>` : ""}
 			<button class="tp-alt" data-a="quit">Reposer le téléphone sur le banc</button></div>`;

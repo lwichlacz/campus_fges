@@ -6,6 +6,7 @@
    Le joueur choisit l'ordre de ses rendez-vous. Clients fictifs. Contenu à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 const MOBILE = 760;
 const THEMES = [["ecoute", "Écoute", "👂"], ["sens", "Sensibilité", "🔎"], ["bienv", "Bienveillance", "🤝"], ["accomp", "Accompagnement", "🧭"], ["expert", "Expertise", "🎓"]];
@@ -1668,7 +1669,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 			${S.mgmt != null ? `<div class="ca-boss"><i>🏢</i><span><b>Directeur d'agence d'un jour : ${S.mgmt} / 3</b><small>${S.mgmt >= 3 ? "Ton équipe te suivrait n'importe où." : S.mgmt >= 2 ? "Un bon début de manager." : "Manager, ça s'apprend : le master a un cours de management d'équipe."}</small></span></div>
 				${quit || tense ? `<p class="ca-p" style="color:#b3261e;font-weight:700">${[quit && "🚪 Léo a démissionné : il manque à l'équipe ce soir.", tense && "⚡ L'ambiance est tendue dans l'agence : Nadia et Samir t'en veulent."].filter(Boolean).join("<br>")}</p>` : ""}` : ""}
 			<p class="ca-p">Ton point fort : <b>${best[2]} ${best[1]}</b>. Écouter, percevoir, rassurer, accompagner, conseiller : c'est le métier de chargé d'affaires, que le master prépare en alternance sur 2 ans, avec des débouchés comme conseiller patrimonial ou directeur d'agence.</p>
-			${openLead ? `<button class="ca-go" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
+			${jpoCard()}${openLead ? `<button class="ca-go" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
 			<a class="ca-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master MBIF ↗</a>
 			<button class="ca-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
 			<button class="ca-alt" data-a="replay">Rejouer une nouvelle journée</button>`);

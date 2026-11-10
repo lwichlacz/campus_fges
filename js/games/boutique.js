@@ -6,6 +6,7 @@
    ceux qui font demi-tour sont des ventes perdues. Chiffres simplifiés et illustratifs, à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 const COURSES = {
 	ux:    ["UX design, UI et accessibilité", "Observer les utilisateurs, simplifier les parcours, rendre un site lisible par tous (contrastes, formulaires, WCAG)."],
@@ -1176,7 +1177,7 @@ export function openBoutique({ formation, audio, isFav, toggleFav, onClose, onEv
 			<div class="eb-deltas">${delta("Visiteurs / jour", vis1, visitors(), int)}${delta("Conversion", conv1, conv(), pct)}${delta("Ventes / jour", vis1*conv1*M1.basket, caDay(), euro)}${S.bf ? `<div class="eb-delta"><small>Black Friday</small><b>${euro(S.bf.ca)}</b></div>` : ""}</div>
 			<p class="eb-p">UX, référencement, RGPD, acquisition, CRM, logistique : le e-commerce, c'est tout cela à la fois. C'est le métier de chef de projet e-commerce, de consultant SEO, de trafic manager ou de responsable CRM, que prépare le master, en alternance sur 2 ans. Tu as touché à :</p>
 			<ul class="eb-list">${Object.keys(COURSES).filter(k => S.learned.has(k)).map(k => `<li><i>📚</i><span>${COURSES[k][0]}</span></li>`).join("")}</ul>
-			${openLead ? `<button class="eb-btn vio" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
+			${jpoCard()}${openLead ? `<button class="eb-btn vio" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
 			<a class="eb-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master E-Business & Marketing Digital ↗</a>
 			<button class="eb-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
 			<button class="eb-alt" data-a="replay">Rejouer</button>`, "couree.fr/admin/rapport", "Rapport final");

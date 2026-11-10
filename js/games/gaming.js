@@ -12,7 +12,8 @@
    La lumière des fenêtres suit les 48 heures (vendredi 18 h → dimanche 17 h) ; le style choisi habille toute la salle.
    Équipe, joueurs et scores sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
-import { makePerson } from "../kit.js?v=99b2439c6d";
+import { makePerson } from "../kit.js?v=99187be9c3";
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 const COURSES = {
 	gaming: ["L1", "Projet Gaming", "Toute la première année, chaque équipe conçoit et programme son propre jeu vidéo : idée, niveaux, code, tests, présentation devant un jury."],
@@ -1049,7 +1050,7 @@ LIMIT ${sel("lim")};</div>
 			<p class="gj-p" style="text-align:center">Jam réussie, mention <b>${mention}</b> (${e} erreur${e > 1 ? "s" : ""} en chemin).</p>
 			<p class="gj-p">Niveau, physique, base de données, API, 3D, serveurs, sécurité : en un week-end, tu as touché à ${order.length} cours de la licence. En L2, on choisit son parcours (Data, Cyber, ou IoT et réalité virtuelle) ; la L3 peut se faire en alternance.</p>
 			<ul class="gj-list">${order.map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
-			${openLead ? `<button class="gj-go" data-a="lead">📄 Recevoir la plaquette de la licence</button>` : ""}
+			${jpoCard()}${openLead ? `<button class="gj-go" data-a="lead">📄 Recevoir la plaquette de la licence</button>` : ""}
 			<a class="gj-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir la Licence Informatique ↗</a>
 			<button class="gj-alt" data-a="free">🛠️ Bonus : créer mon propre niveau</button>
 			<button class="gj-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>

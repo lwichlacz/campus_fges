@@ -7,7 +7,8 @@
    Les contenus sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { std, mesh, box, cyl, cone, mulberry32 } from "../kit.js?v=99b2439c6d";
+import { std, mesh, box, cyl, cone, mulberry32 } from "../kit.js?v=99187be9c3";
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 /* ---------- contenus (à valider par l'enseignant) ---------- */
 const COURSES = {
@@ -913,7 +914,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 			<p class="jd-p">Tu as touché à ${S.learned.size} cours de la licence (avec un stage chaque année pour pratiquer) :</p>
 			<ul class="jd-list">${["cle", "reseau", "genet", P.course].filter(k => S.learned.has(k)).map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
 			${others.map(k => `<button class="jd-alt" data-p="${k}">${PARCOURS[k].icon} Essayer le parcours ${PARCOURS[k].name}${S.done.has(k) ? " · 🏅" : ""}</button>`).join("")}
-			${openLead ? `<button class="jd-go" data-a="lead">📄 Recevoir la plaquette de la licence</button>` : ""}
+			${jpoCard()}${openLead ? `<button class="jd-go" data-a="lead">📄 Recevoir la plaquette de la licence</button>` : ""}
 			<a class="jd-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir la Licence Sciences de la Vie ↗</a>
 			<button class="jd-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
 			<button class="jd-alt" data-a="replay">Rejouer</button>`);

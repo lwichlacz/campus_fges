@@ -5,7 +5,8 @@
      seuil de rentabilité, décision d'investissement) qui révèle le cours de la licence.
    Les chiffres sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
-import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=99b2439c6d";
+import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=99187be9c3";
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 /* ---------- Économie du Comptoir (à valider par l'enseignant) ---------- */
 const ECO = { amortVelo:7, cafe:.25, lait:.20, gobelet:.10, tasse:.55, croissantAchat:.45, croissantPrix:1.2, salaire:25,
@@ -856,7 +857,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 				<tr class="tot"><td><b>Résultat cumulé</b></td><td class="${tot >= 0 ? "cz-pos" : "cz-neg"}">${tot >= 0 ? "+" : "−"} ${euro(Math.abs(tot))}</td></tr></table>
 			<p class="cz-p">En quatre matinées, tu as fait le travail d'un gestionnaire, et touché à ${order.length} cours de la licence :</p>
 			<ul class="cz-list">${order.map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
-			${openLead ? `<button class="cz-go" data-a="lead">📄 Recevoir la plaquette de la Licence Gestion</button>` : ""}
+			${jpoCard()}${openLead ? `<button class="cz-go" data-a="lead">📄 Recevoir la plaquette de la Licence Gestion</button>` : ""}
 			<a class="cz-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir la Licence Gestion ↗</a>
 			<button class="cz-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
 			<button class="cz-alt" data-a="replay">Rejouer</button>`);

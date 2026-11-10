@@ -6,6 +6,7 @@
    On raisonne avec le droit d'aujourd'hui. Famille fictive. Contenu à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 const COURSES = {
 	famille: ["Droit de la famille", "Régimes matrimoniaux, PACS, concubinage : qui possède quoi dans un couple, et que changer quand la vie change."],
@@ -1059,7 +1060,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 			<ul class="gp-sim"><li><span>💰 Pour la famille</span><b>${euro(S.fam)}</b></li><li><span>🏛 Au fisc</span><b>${euro(S.fisc)}</b></li><li><span>⚡ Conflits</span><b>${S.conf}</b></li></ul>
 			<p class="gp-p">Mariage, entreprise, immobilier, décès, placements, famille recomposée : presque chaque moment de la vie pose une question de patrimoine. C'est le métier de conseiller en gestion de patrimoine ou de banquier privé, que prépare le master, en alternance sur 2 ans. Tu as touché à :</p>
 			<ul class="gp-list">${order.map(k => `<li><span>📚</span>${COURSES[k][0]}</li>`).join("")}</ul>
-			${openLead ? `<button class="gp-go" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
+			${jpoCard()}${openLead ? `<button class="gp-go" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
 			<a class="gp-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master Droit & Gestion du Patrimoine ↗</a>
 			<button class="gp-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
 			<button class="gp-alt" data-a="replay">Rejouer : d'autres coups du sort t'attendent</button>`);

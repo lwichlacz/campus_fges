@@ -12,6 +12,7 @@
    Cas : hémochromatose HFE C282Y homozygote. Séquences, cohorte et chiffres sont simulés ; contenu à relire par l'équipe du master. */
 
 import * as THREE from "three";
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 const COURSES = {
 	protect: ["M2", "Data protection & health data", "GDPR, data minimisation, pseudonymisation, certified hosting (HDS): health data are handled before they are analysed."],
@@ -796,7 +797,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 			<p>Alex's blood test became a decision: governed data, clean reads, a variant weighed on evidence, a cohort analysed without traps, a screening model that stays honest, and a report that respects consent. <b>This is what the Master in Data Management in Biosciences is about.</b> ${e ? `Errors on the way: ${e}.` : "Not a single error!"}</p>
 			${course("clin")}
 			<ul>${order.map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
-			${openLead ? `<button class="bd-btn dark" data-a="lead">📄 Get the programme brochure</button>` : ""}
+			${jpoCard("en")}${openLead ? `<button class="bd-btn dark" data-a="lead">📄 Get the programme brochure</button>` : ""}
 			<a class="bd-alt" href="${formation.url}" target="_blank" rel="noopener">Discover the Master ↗</a>
 			<button class="bd-alt" data-a="fav">${isFav() ? "♥ In my notebook" : "♡ Add to my notebook"}</button>
 			<button class="bd-alt" data-a="replay">Play again</button>`);

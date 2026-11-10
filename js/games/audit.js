@@ -11,7 +11,8 @@
    Entreprise, personnes, sociétés et documents sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { mountTable, MOBILE } from "./table.js?v=99b2439c6d";
+import { mountTable, MOBILE } from "./table.js?v=99187be9c3";
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 const COURSES = {
 	compta:   ["L1", "Comptabilité financière", "Classer chaque opération : une charge, un produit, ou un investissement qui s'amortit sur plusieurs années."],
@@ -930,7 +931,7 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 			<p class="aw-p">Tu as fait le travail d'un comptable, d'un contrôleur de gestion et d'un auditeur, et touché à ${order.length} cours de la licence (en L3, en alternance dans un cabinet ou une entreprise) :</p>
 			<ul class="aw-list">${order.map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
 			<div class="aw-sig"><span>Rapport revu et approuvé</span><i>C. Roussel</i></div>`);
-		live(`${openLead ? go("lead", "📄 Recevoir la plaquette de la licence") : ""}
+		live(`${jpoCard()}${openLead ? go("lead", "📄 Recevoir la plaquette de la licence") : ""}
 			<a class="tb-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir la Licence Comptabilité-Finance-Audit ↗</a>
 			<button class="tb-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
 			<button class="tb-alt" data-a="replay">Rejouer</button>`);

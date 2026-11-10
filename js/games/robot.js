@@ -8,6 +8,7 @@
    Mise en scène illustrative ; contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 const COURSES = {
 	meca:   ["L1", "Mécanique et systèmes numériques", "Un bras robot est une chaîne d'articulations : chaque angle déplace tout ce qui suit. Trois articulations, trois degrés de liberté pour atteindre un point de l'espace."],
@@ -589,7 +590,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 			${course("vision")}
 			<p>En quatre missions, tu as touché à ${order.length} cours de la licence : piloter un bras, programmer une ligne, régler un moteur, donner la vue à une machine. ${e ? `Erreurs en chemin : ${e}.` : "Sans une seule erreur !"}</p>
 			<ul>${order.map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
-			${openLead ? `<button class="rb-btn dark" data-a="lead">📄 Recevoir la plaquette de la licence</button>` : ""}
+			${jpoCard()}${openLead ? `<button class="rb-btn dark" data-a="lead">📄 Recevoir la plaquette de la licence</button>` : ""}
 			<a class="rb-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir la ${formation.name} ↗</a>
 			<button class="rb-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
 			<button class="rb-alt" data-a="replay">Rejouer</button>`);

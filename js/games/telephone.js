@@ -4,6 +4,7 @@
    les visiteurs qui abandonnent, et on corrige les pages au doigt avant le point ventes de 14 h.
    Acte 2 : dans l'appli Recherche (Trouvo, moteur inventé), on regarde les recherches en direct et on glisse
    les bons mots dans le titre et la description de Courée pour remonter dans les résultats avant 18 h. */
+import { jpoCard } from "./jpo.js?v=99187be9c3";
 
 const ACT = 120, EVERY = .8, LOAD0 = 1.0, PRICE = 52, CODE = "2021";
 const STARS = [.35, .5, .62], MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -909,7 +910,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 			<button class="tp-alt" data-a="replay">Rejouer l'acte 1</button>
 			<details class="tp-more"><summary>Pourquoi les visiteurs sont partis</summary>${lost.length ? `<ul>${lost.map(([r, n]) => `<li><i>${REASONS[r][0]}</i><span style="flex:1">${REASONS[r][1]}</span><b>${n}</b></li>`).join("")}</ul>` : ""}<p>Dans la vraie vie, un site e-commerce convertit souvent 1 à 3 % de ses visiteurs, et environ 7 paniers sur 10 sont abandonnés.</p></details>
 			<details class="tp-more"><summary>Le métier de Camille et les cours du master</summary><p>E-commerce manager, UX designer, chargé·e d'optimisation de la conversion (CRO), web analyst.</p><div class="tp-course"><b>📚 UX design et ergonomie</b>Observer les visiteurs, comprendre où ils bloquent, simplifier le parcours.</div><div class="tp-course"><b>📚 Web analytics</b>Lire un tunnel de conversion pour décider quoi corriger.</div></details>
-			${openLead ? `<button class="tp-alt" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
+			${jpoCard()}${openLead ? `<button class="tp-alt" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
 			${formation && formation.url ? `<a class="tp-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master E-Business & Marketing Digital ↗</a>` : ""}
 			${toggleFav ? `<button class="tp-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>` : ""}
 			<button class="tp-alt" data-a="quit">Reposer le téléphone sur le banc</button></div>`;
@@ -1128,7 +1129,7 @@ export function openTelephone({ formation, audio, isFav, toggleFav, onClose, onE
 			<details class="tp-more"><summary>Comment marche un moteur de recherche ?</summary><p>Il compare les mots tapés avec ceux des pages, surtout le titre. Il tient aussi compte de la qualité du site (vitesse, fiabilité). La description n'aide pas beaucoup le classement, mais c'est elle qui donne envie de cliquer. Dans la vraie vie, le premier résultat reçoit environ un quart à un tiers des clics.</p></details>
 			<details class="tp-more"><summary>Les métiers et les cours du master</summary><p>Consultant·e SEO, content manager, traffic manager, chef·fe de projet e-commerce.</p><div class="tp-course"><b>📚 Référencement naturel (SEO)</b>Choisir ses mots-clés, optimiser titres et descriptions, suivre ses positions.</div><div class="tp-course"><b>📚 Rédaction web</b>Écrire pour les internautes et pour les moteurs.</div></details>
 			<button class="tp-alt" disabled>Acte 3 · Le budget pub brûle (bientôt)</button>
-			${openLead ? `<button class="tp-alt" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
+			${jpoCard()}${openLead ? `<button class="tp-alt" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
 			${formation && formation.url ? `<a class="tp-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master E-Business & Marketing Digital ↗</a>` : ""}
 			${toggleFav ? `<button class="tp-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>` : ""}
 			<button class="tp-alt" data-a="quit">Reposer le téléphone sur le banc</button></div>`;
