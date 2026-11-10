@@ -130,7 +130,13 @@
    "level": "LP",
    "levelLabel": "Licence professionnelle",
    "url": "https://www.fges.fr/formations/licence-professionnelle-assurance-banque-finance/",
-   "game": null
+   "game": {
+    "id": "guichet",
+    "title": "Le guichet du samedi",
+    "icon": "🏦",
+    "dur": "4 min",
+    "pitch": "Samedi matin, cinq clients font la queue à ton guichet : un jeune couple qui achète, un retraité qui hérite, un Erasmus, un dégât des eaux, un plombier qui se lance. Écoute ce qu'ils disent vraiment, règle le simulateur, réponds sous chrono… et garde un œil sur la conformité."
+   }
   },
   {
    "id": "info",

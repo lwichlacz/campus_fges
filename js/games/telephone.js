@@ -4,7 +4,7 @@
    les visiteurs qui abandonnent, et on corrige les pages au doigt avant le point ventes de 14 h.
    Acte 2 : dans l'appli Recherche (Trouvo, moteur inventé), on regarde les recherches en direct et on glisse
    les bons mots dans le titre et la description de Courée pour remonter dans les résultats avant 18 h. */
-import { jpoCard } from "./jpo.js?v=d2a74cf8d1";
+import { jpoCard } from "./jpo.js?v=469db25824";
 
 const ACT = 120, EVERY = .8, LOAD0 = 1.0, PRICE = 52, CODE = "2021";
 const STARS = [.35, .5, .62], MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];

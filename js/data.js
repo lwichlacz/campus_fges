@@ -61,9 +61,11 @@ export const RENDEZ_VOUS = [
 ];
 
 /* Mini-jeux disponibles : id de formation → id du jeu */
-export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires", ebmd: "boutique", mh: "crise" };
+export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires", ebmd: "boutique", mh: "crise", lpabf: "guichet" };
 /* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */
 export const GAME_INFO = {
+	guichet:{ fid:"lpabf", title:"Le guichet du samedi", icon:"🏦", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"4 min",
+		pitch:"Samedi matin, cinq clients font la queue à ton guichet : un jeune couple qui achète, un retraité qui hérite, un Erasmus, un dégât des eaux, un plombier qui se lance. Écoute ce qu'ils disent vraiment, règle le simulateur, réponds sous chrono… et garde un œil sur la conformité." },
 	crise:{ fid:"mh", title:"La cellule de crise", icon:"🔥", where:"ha", whereLabel:"Salle du conseil · Hôtel Académique", dur:"8 min",
 		pitch:"Un bad buzz frappe une chocolaterie roubaisienne. Trie faits et rumeurs, pèse la décision avec Kant, Mill, Aristote et Weber, trouve le bon ton pour chaque collègue, puis écris un communiqué qui tient debout. Un seul geste : lancer." },
 	comptoir:{ fid:"gestion", title:"Le Comptoir", icon:"☕", where:"falise", whereLabel:"Atrium de Michel Falise", dur:"6 min",
