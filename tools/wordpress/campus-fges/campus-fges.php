@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Campus FGES 3D
  * Description:       Relie le campus 3D de la FGES au site : les demandes de plaquettes arrivent dans le CRM, les plaquettes PDF se choisissent ici, et un bloc « Campus 3D » s'ajoute à n'importe quelle page.
- * Version:           2.0.0
+ * Version:           2.0.1
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            FGES · Université Catholique de Lille
@@ -18,7 +18,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('CFGES_VERSION', '2.0.0');
+define('CFGES_VERSION', '2.0.1');
 define('CFGES_FILE', __FILE__);
 define('CFGES_URL', plugin_dir_url(__FILE__));
 define('CFGES_DIR', plugin_dir_path(__FILE__));
@@ -252,12 +252,47 @@ function cfges_clip($v, $n) {
 }
 function cfges_reply($code, $data) { return new WP_REST_Response($data, $code); }
 
+/* Adresse du visiteur. Derrière un proxy de confiance (à confirmer avec l'hébergeur), poser dans wp-config.php :
+   define('CAMPUS_FGES_TRUSTED_PROXY', true); l'adresse est alors lue dans X-Forwarded-For. */
+function cfges_client_ip() {
+	$ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+	if (defined('CAMPUS_FGES_TRUSTED_PROXY') && CAMPUS_FGES_TRUSTED_PROXY && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+		$first = trim(explode(',', (string) $_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
+		if (filter_var($first, FILTER_VALIDATE_IP)) $ip = $first;
+	}
+	return $ip;
+}
+
+/* Anti-rafale, pensé pour la JPO : tout le Wi-Fi du campus et la borne sortent par la même adresse.
+   - 5 envois par 10 minutes pour un même couple adresse + e-mail (le vrai visiteur qui insiste) ;
+   - 60 envois par 10 minutes pour une même adresse (une salle entière, pas un robot) ;
+   - au-delà de 150 envois dans l'heure, tous visiteurs confondus, un e-mail d'alerte part (au plus une fois par heure) ;
+   - au-delà de 600 dans l'heure, le relais refuse : un salon entier n'atteint pas ce rythme. */
+define('CFGES_MAX_PAIR', 5);
+define('CFGES_MAX_IP', 60);
+define('CFGES_ALERT_HOUR', 150);
+define('CFGES_MAX_HOUR', 600);
+
+function cfges_busy() { return cfges_reply(429, ['ok' => false, 'error' => "Trop d'envois, réessaie dans quelques minutes."]); }
+function cfges_hit($key, $ttl) { set_transient($key, (int) get_transient($key) + 1, $ttl); }
+function cfges_global_key() { return 'cfges_glob_' . gmdate('YmdH'); }
+function cfges_alert_volume($n) {
+	$last = (int) get_option('cfges_last_volume_mail', 0);
+	if (time() - $last < HOUR_IN_SECONDS) return;
+	update_option('cfges_last_volume_mail', time(), false);
+	$to = cfges_get('notify_email') ?: get_option('admin_email');
+	wp_mail($to, '[Campus 3D] Volume inhabituel de demandes de plaquettes',
+		"Bonjour,\n\nLe campus 3D a reçu $n demandes de plaquettes dans l'heure.\n\n" .
+		"C'est peut-être un temps fort (journée portes ouvertes, salon), ou un robot. Le détail est dans le back-office : " .
+		admin_url('admin.php?page=' . CFGES_PAGE . '&tab=demandes') . "\n\n" .
+		"Au-delà de " . CFGES_MAX_HOUR . " demandes dans l'heure, le relais les refuse jusqu'à l'heure suivante.\n\n(Message envoyé au plus une fois par heure.)");
+}
+
 function cfges_rest_lead(WP_REST_Request $req) {
-	// anti-rafale : 5 envois par 10 minutes et par adresse IP
-	$ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
-	$key = 'cfges_ip_' . md5($ip);
-	$hits = (int) get_transient($key);
-	if ($hits >= 5) return cfges_reply(429, ['ok' => false, 'error' => "Trop d'envois, réessaie dans quelques minutes."]);
+	$ip = cfges_client_ip();
+	$ipKey = 'cfges_ip_' . md5($ip);
+	if ((int) get_transient($ipKey) >= CFGES_MAX_IP) return cfges_busy();
+	if ((int) get_transient(cfges_global_key()) >= CFGES_MAX_HOUR) return cfges_busy();
 
 	$raw = $req->get_body();
 	if (strlen($raw) > 8000) return cfges_reply(400, ['ok' => false, 'error' => 'Demande illisible.']);
@@ -270,7 +305,13 @@ function cfges_rest_lead(WP_REST_Request $req) {
 	$email = strtolower(trim((string) ($d['email'] ?? '')));
 	if (!is_email($email)) return cfges_reply(400, ['ok' => false, 'error' => 'Adresse e-mail invalide.']);
 	if (($d['consentement'] ?? null) !== true) return cfges_reply(400, ['ok' => false, 'error' => 'Le consentement est nécessaire pour te recontacter.']);
-	set_transient($key, $hits + 1, 10 * MINUTE_IN_SECONDS);
+	$pairKey = 'cfges_pair_' . md5($ip . '|' . $email);
+	if ((int) get_transient($pairKey) >= CFGES_MAX_PAIR) return cfges_busy();
+	cfges_hit($pairKey, 10 * MINUTE_IN_SECONDS);
+	cfges_hit($ipKey, 10 * MINUTE_IN_SECONDS);
+	cfges_hit(cfges_global_key(), HOUR_IN_SECONDS + 5 * MINUTE_IN_SECONDS);
+	$volume = (int) get_transient(cfges_global_key());
+	if ($volume >= CFGES_ALERT_HOUR) cfges_alert_volume($volume);
 
 	$formations = array_slice(array_values(array_filter((array) ($d['formations'] ?? []), 'is_array')), 0, 12);
 	$base = [
@@ -641,7 +682,7 @@ function cfges_tab_aide() {
 	echo '<details><summary>Le campus change d\'adresse (ex. campus.fges.fr)</summary><p>Mets la nouvelle adresse dans <b>Réglages → Adresse du campus</b>, et l\'ancienne dans <b>Réglages avancés</b> le temps de la bascule. Les liens et le bloc se mettent à jour tout seuls.</p></details>';
 	echo '<details><summary>Une extension de sécurité ou de cache bloque les envois</summary><p>Autoriser la route <code>/wp-json/campus-fges/v1/</code> dans l\'extension de sécurité (Wordfence, iThemes…) et l\'exclure du cache. Les permaliens doivent être autre chose que « Simple » (Réglages → Permaliens).</p></details>';
 	echo '<details><summary>Données personnelles</summary><p>Ce site ne garde pas les fiches des visiteurs : seulement un journal réduit (prénom, initiale, e-mail masqué) pour suivre les envois, effacé au bout de 13 mois. Une demande en attente est gardée en entier le temps de son envoi, 7 jours au plus. La fiche complète est dans le CRM.</p></details>';
-	echo '<details><summary>Pour l\'équipe technique</summary><p>Relais : <code>POST ' . esc_html($ep) . '</code> (origines autorisées : ' . esc_html(implode(', ', cfges_origins())) . '). Anti-robots (champ piège, envoi trop rapide), 5 envois par 10 minutes et par IP. Nouvel essai par WP-Cron toutes les 5 minutes. Plaquettes en lecture : <code>GET ' . esc_html(rest_url('campus-fges/v1/plaquettes')) . '</code>. Réglages verrouillables dans <code>wp-config.php</code> : <code>CAMPUS_FGES_CRM_URL</code>, <code>CAMPUS_FGES_CRM_TOKEN</code>, <code>CAMPUS_FGES_CRM_LIVE</code>, <code>CAMPUS_FGES_ORIGINS</code>.</p></details>';
+	echo '<details><summary>Pour l\'équipe technique</summary><p>Relais : <code>POST ' . esc_html($ep) . '</code> (origines autorisées : ' . esc_html(implode(', ', cfges_origins())) . '). Anti-robots (champ piège, envoi trop rapide), anti-rafale : ' . CFGES_MAX_PAIR . ' envois par 10 minutes pour un même couple IP + e-mail, ' . CFGES_MAX_IP . ' par IP, alerte e-mail au-delà de ' . CFGES_ALERT_HOUR . ' dans l\'heure, refus au-delà de ' . CFGES_MAX_HOUR . '. Nouvel essai par WP-Cron toutes les 5 minutes. Plaquettes en lecture : <code>GET ' . esc_html(rest_url('campus-fges/v1/plaquettes')) . '</code>. Réglages verrouillables dans <code>wp-config.php</code> : <code>CAMPUS_FGES_CRM_URL</code>, <code>CAMPUS_FGES_CRM_TOKEN</code>, <code>CAMPUS_FGES_CRM_LIVE</code>, <code>CAMPUS_FGES_ORIGINS</code>, et <code>CAMPUS_FGES_TRUSTED_PROXY</code> si le site est derrière un proxy de confiance.</p></details>';
 	echo '</div>';
 }
 
