@@ -6,9 +6,9 @@
    simulateur en voyant les chiffres bouger, maintenir « Stop » quand la conformité l'exige.
    Les contenus (répliques, chiffres, cours) sont dans guichet-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=4c7bed0933";
-import { jpoCard } from "./jpo.js?v=4c7bed0933";
-import { COURSES, CLIENTS, IMMO, immoCalc, immoBest, euro } from "./guichet-data.js?v=4c7bed0933";
+import { makePerson, std, box, cyl } from "../kit.js?v=fdd5d880ac";
+import { jpoCard } from "./jpo.js?v=fdd5d880ac";
+import { COURSES, CLIENTS, IMMO, immoCalc, immoBest, euro } from "./guichet-data.js?v=fdd5d880ac";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
