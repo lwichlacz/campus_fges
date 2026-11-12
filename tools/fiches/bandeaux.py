@@ -25,7 +25,7 @@ OUT = ROOT / "docs" / "bandeaux"
 ACCROCHE = {
     "info": "Un week-end de game jam avec ton équipe : dessine un niveau, programme le héros en Python, mets les scores en ligne, puis passe devant le jury.",
     "dgp": "Un jeu de cartes chez le notaire : conseille la famille Deslaurier de 1959 à aujourd'hui, du contrat de mariage à la SCI.",
-    "mbif": "Dans ton agence, cinq clients qui sont d'abord des personnes : écoute, crédit, confiance… et une PME à accompagner pendant huit ans.",
+    "mbif": "Jeudi, en comité de crédit : prête-t-on 1,2 M€ à une PME textile ? Lis ses comptes, visite l'usine, monte le prêt, puis défends ton dossier pièce par pièce.",
     "dmb": "En anglais, comme le master : du dossier d'un patient à l'étude d'une cohorte : un variant à interpréter, un consentement à respecter, un modèle à garder honnête.",
     "mh": "Un bad buzz frappe une chocolaterie : trie faits et rumeurs, décide avec Kant et Weber, tiens ton équipe, puis écris le communiqué.",
     "ecofi": "Le comité de 18 h : le fonds a perdu 3,2 % et on te demande pourquoi. Mesure, calcule, ajuste la régression, retrouve le ticket d'ordre, puis défends ton dossier.",

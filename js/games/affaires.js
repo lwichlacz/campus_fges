@@ -1,1719 +1,1147 @@
-/* « Une journée du chargé d'affaires » — mini-jeu du Master Management des Banques et Institutions Financières (MBIF).
-   Le geste métier du chargé d'affaires en cinq rendez-vous, un par thème : l'écoute, la sensibilité, la bienveillance,
-   l'accompagnement et l'expertise. On ne découvre pas un portefeuille de clients, on découvre des personnes.
-   Une agence en maquette 3D (coupe de maison de poupée) ; à chaque rendez-vous, la caméra plonge dans l'univers du client :
-   l'iceberg de Karim, le salon de Mme Lefèvre, le pont d'Inès et Tom, l'usine de Duval Textiles, la tour de la famille Martin.
-   Le joueur choisit l'ordre de ses rendez-vous. Clients fictifs. Contenu à relire par l'équipe du master. */
+/* « Le dossier Duval Textiles » — mini-jeu du Master Management des Banques et Institutions Financières (MBIF).
+   Une seule question, du lundi au jeudi : en comité de crédit, prête-t-on 1,2 M€ à Duval Textiles (PME textile fictive
+   de Roubaix) pour sa nouvelle ligne de production ? Le joueur, chargé d'affaires en alternance, instruit le dossier :
+     1. lundi : entourer au doigt la ligne qui cloche dans la liasse fiscale ;
+     2. lundi : calculer les ratios du comité sur la calculatrice, avec les chiffres lus dans la liasse ;
+     3. mardi : visiter l'usine, compter les palettes, coller une pastille sur le stock invendable, lire la lettre de Volta ;
+     4. mercredi : monter le prêt (durée, caution, Bpifrance, nantissement, condition) en voyant bouger les jauges ;
+     5. mercredi : remonter l'actionnariat jusqu'aux bénéficiaires effectifs, puis noter le risque ;
+     6. jeudi : devant le comité, répondre à chaque objection en montrant la pièce et la ligne qui le prouvent.
+   Le dossier s'épaissit sur le bureau à chaque pièce. Environ 9 minutes. Contenus dans affaires-data.js. */
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=4ee573b189";
+import { makePerson, std, box, cyl } from "../kit.js?v=3a479ec015";
+import { jpoCard } from "./jpo.js?v=3a479ec015";
+import { PRET, TAUX, CAF_PREV, SERVICE, VIE, PATRI, PROPRES, NANT, BPI_MAX, PAL, annuite, LIASSE, RATIOS, PALLETS, ORDERS, LETTER, ORG, RBE, GRID,
+	PIECES, MEMBERS, objections, COURSES, NEXT } from "./affaires-data.js?v=3a479ec015";
 
-const MOBILE = 760;
-const THEMES = [["ecoute", "Écoute", "👂"], ["sens", "Sensibilité", "🔎"], ["bienv", "Bienveillance", "🤝"], ["accomp", "Accompagnement", "🧭"], ["expert", "Expertise", "🎓"]];
-const MOOD_ICON = { neutre:"😐", inquiet:"😟", agace:"😠", rassure:"🙂", ravi:"😄" };
-const MOOD_TXT = { neutre:"Neutre", inquiet:"Inquiet", agace:"Agacé", rassure:"Rassuré", ravi:"Ravi" };
+const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
+const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a)*t;
+const fr = (n, d = 0) => n.toLocaleString("fr-FR", { minimumFractionDigits:d, maximumFractionDigits:d }).replace(/ | /g, " ");
+const ease = k => k < .5 ? 2*k*k : 1 - Math.pow(-2*k + 2, 2)/2;
+const FX = 60, CX = -60, DY = .77;          // l'usine, la salle du comité ; hauteur du plateau du bureau
+const NAVY = "#16324f", INK = "#1f2a36", GREY = "#66727e", RED = "#c0392b", GREEN = "#2e7d4f", GOLD = "#b8871b", PAPER = "#fbf9f4";
 
 const CSS = `
-.ca{position:fixed;inset:0;z-index:40;font-family:Nunito,system-ui,sans-serif;color:#1d2a36;background:#16222c;animation:caIn .35s ease both;overflow:hidden}
-@keyframes caIn{from{opacity:0}to{opacity:1}}
-.ca canvas{position:absolute;left:0;top:0;display:block;touch-action:none}
-.ca-top{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;gap:8px;align-items:center;padding:10px;pointer-events:none}
-.ca-top>*{pointer-events:auto}
-.ca-chip{background:rgba(251,250,246,.95);border-radius:999px;padding:7px 12px;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(5,10,20,.3)}
-.ca-stage{background:#1f6f78;color:#fff}
-.ca-x{margin-left:auto;width:40px;height:40px;border-radius:50%;border:0;background:rgba(251,250,246,.95);font-size:22px;cursor:pointer}
-.ca-meters{position:absolute;z-index:2;left:12px;top:60px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;max-width:calc(100% - 24px)}
-.ca-m{background:rgba(251,250,246,.94);border-radius:10px;padding:5px 10px;font-size:13px;font-weight:800;box-shadow:0 4px 12px rgba(5,10,20,.25);display:flex;flex-direction:column;line-height:1.15}
-.ca-m[hidden]{display:none}
-.ca-m small{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#5f6b75}
-.ca-m.pop{animation:caPop .5s ease}
-@keyframes caPop{40%{transform:scale(1.15)}}
-.ca-hint{position:absolute;z-index:2;left:12px;background:rgba(10,20,30,.7);color:#e9f1f5;font-size:12px;font-weight:700;border-radius:999px;padding:5px 10px;pointer-events:none}
-.ca-wrap{position:absolute;z-index:2;top:62px;right:12px;bottom:12px;width:420px;overflow:auto;border-radius:8px;scrollbar-width:thin}
-.ca-card{background:#fbfaf6;border-radius:8px;box-shadow:0 18px 40px rgba(5,10,20,.45);padding:18px 18px 16px;position:relative;animation:caUp .35s cubic-bezier(.2,.8,.2,1) both;border-top:5px solid #1f6f78;min-height:calc(100% - 21px)}
-@keyframes caUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@media (max-width:${MOBILE - 1}px){
-	.ca-wrap{left:0;right:0;bottom:0;width:auto;border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(5,10,20,.35)}
-	.ca-card{border-radius:16px 16px 0 0;padding:14px 14px 22px}
-}
-.ca-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#1f6f78}
-.ca-h{font:700 22px/1.15 Fraunces,Georgia,serif;margin:4px 0 6px;color:#16324f}
-.ca-p{margin:0 0 10px;color:#46525c;font-size:14.5px}
-.ca-time{display:inline-block;font:700 13px Fraunces,Georgia,serif;background:#16324f;color:#f1e6c8;border-radius:6px;padding:3px 9px;margin-bottom:6px}
-.ca-story{background:#eef4f5;border-left:4px solid #1f6f78;border-radius:4px;padding:10px 12px;margin:8px 0 12px;font-size:14px;color:#2b3a44}
-.ca-go{display:block;width:100%;border:0;border-radius:12px;padding:14px;background:#16324f;color:#fff;font:800 16px Nunito,sans-serif;cursor:pointer;margin-top:12px;text-align:center;text-decoration:none}
-.ca-go[disabled]{opacity:.4;cursor:default}
-.ca-alt{display:block;width:100%;border:2px solid #d5dde2;border-radius:12px;padding:12px;background:#fff;color:#16324f;font:800 14px Nunito,sans-serif;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none}
-.ca-themes{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
-.ca-themes li{background:#fff;border:1px solid #dfe5e8;border-radius:8px;padding:8px 12px;font-size:14px}
-.ca-themes li b{color:#16324f}
-.ca-qn{display:flex;align-items:center;justify-content:space-between;margin:4px 0 8px;font-weight:800;font-size:14px;color:#16324f}
-.ca-qn i{font-style:normal;letter-spacing:3px;font-size:18px}
-.ca-qs{display:grid;gap:8px}
-.ca-q{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid #d5dde2;background:#fff;border-radius:12px;padding:12px;min-height:52px;font:800 14.5px/1.3 Nunito,sans-serif;cursor:pointer;color:#1d2a36;transition:border-color .2s,transform .15s}
-.ca-q:before{content:"💬";font-size:18px}
-.ca-q.nb:before{content:none}
-.ca-q:hover:not([disabled]){border-color:#16324f;transform:translateX(3px)}
-.ca-q[disabled]{cursor:default;opacity:.45}
-.ca-q.used{opacity:.6;text-decoration:line-through}
-.ca-q.ok{border-color:#3d7a55;background:#eef8f0;opacity:1;text-decoration:none}.ca-q.ko{border-color:#c4532f;background:#fdeceb;opacity:1;text-decoration:none}
-.ca-log{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
-.ca-log li{background:#fff;border:1px solid #dfe5e8;border-radius:10px;padding:9px 12px;font-size:13.5px;animation:caUp .3s both}
-.ca-log li q{display:block;font-weight:800;color:#16324f;margin-bottom:3px}
-.ca-log li q:before,.ca-log li q:after{content:""}
-.ca-log li span{display:block;color:#46525c;font-style:italic}
-.ca-tag{display:inline-block;margin-top:5px;font-size:12px;font-weight:800;border-radius:999px;padding:2px 9px}
-.ca-tag.ok{background:#e3f4ea;color:#23704a}.ca-tag.mid{background:#f6efdc;color:#8a6a24}.ca-tag.ko{background:#fbe7e5;color:#b3261e}
-.ca-ice{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
-.ca-ice li{border-radius:8px;padding:8px 12px;font-size:14px;font-weight:700;background:#eaf3f8;color:#1d4a66}
-.ca-ice li.top{background:#fff;border:2px solid #9cc4d9}
-.ca-ice li.miss{background:#f1f1f1;color:#8a8f94;font-style:italic}
-.ca-verdict{border-radius:10px;padding:10px 12px;margin:10px 0 8px;font-weight:800;font-size:15px;display:flex;align-items:center;gap:10px;animation:caUp .35s both}
-.ca-verdict .st{font-size:20px;letter-spacing:2px}
-.ca-verdict.s3{background:#e3f4ea;color:#23704a}.ca-verdict.s2{background:#f6efdc;color:#8a6a24}.ca-verdict.s1,.ca-verdict.s0{background:#fbe7e5;color:#b3261e}
-.ca-tip{background:#fff8e6;border-left:4px solid #e0a33a;border-radius:4px;padding:8px 10px;font-size:13.5px;margin:8px 0}
-.ca-course{background:#fff;border:2px solid #1f6f78;border-radius:10px;padding:12px 14px;margin:10px 0 4px}
-.ca-course .tag{display:inline-block;background:#e2f0f1;color:#1f5a62;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px;margin-bottom:6px}
-.ca-course b{display:block;font:700 17px Fraunces,Georgia,serif;margin-bottom:3px}
-.ca-course span{font-size:14px;color:#46525c}
-.ca-epi{background:#16324f;color:#f1e6c8;border-radius:10px;padding:10px 12px;font-size:14px;margin:10px 0}
-.ca-epi b{color:#fff}
-.ca-agenda{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
-.ca-agenda button{width:100%;display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #dfe5e8;border-radius:10px;padding:8px 10px;font:13.5px Nunito,sans-serif;text-align:left;cursor:pointer;color:#1d2a36;transition:border-color .2s,transform .15s}
-.ca-agenda button:hover:not([disabled]){border-color:#1f6f78;transform:translateX(3px)}
-.ca-agenda button[disabled]{cursor:default}
-.ca-agenda .h{font:700 13px Fraunces,Georgia,serif;color:#16324f;min-width:52px}
-.ca-agenda .w{flex:1;line-height:1.25}.ca-agenda .w b{display:block;font-size:14px}.ca-agenda .w small{color:#5f6b75}
-.ca-agenda .s{font-weight:800;font-size:12px;white-space:nowrap;color:#1f6f78}
-.ca-agenda button.done{background:#f3f8f5}.ca-agenda button.done .s{color:#23704a;font-size:14px;letter-spacing:1px}
-.ca-radar{display:block;margin:6px auto;width:100%;max-width:300px}
-.ca-loupe{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:14px;color:#16324f;margin:6px 0}
-.ca-loupe i{font-style:normal;font-size:17px;letter-spacing:2px}
-.ca-objs summary{cursor:pointer;font-weight:800;font-size:13px;color:#1f6f78;margin:8px 0}
-.ca-objs div{display:flex;flex-wrap:wrap;gap:6px}
-.ca-objs button{border:2px solid #d5dde2;background:#fff;border-radius:999px;padding:6px 11px;font:800 12.5px Nunito,sans-serif;cursor:pointer;color:#1d2a36}
-.ca-objs button[disabled]{opacity:.45;cursor:default}
-.ca-found{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
-.ca-found li{background:#fff8e6;border-left:4px solid #e0a33a;border-radius:6px;padding:7px 10px;font-size:13.5px;font-weight:700;animation:caUp .3s both}
-.ca-found li.no{background:#f4f4f4;border-color:#c9cdd1;color:#6f767c;font-weight:600}
-.ca-plank{display:flex;gap:4px;margin:6px 0 10px}
-.ca-plank i{flex:1;height:10px;border-radius:3px;background:#e3e7ea}
-.ca-plank i.on{background:#9a6a3a}
-.ca-who{font-weight:800;color:#16324f;font-size:14.5px;margin:4px 0 8px}
-.ca-who span{color:#46525c;font-weight:700;font-style:italic}
-.ca-exp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ca-exp button{border:2px solid #d5dde2;background:#fff;border-radius:12px;padding:10px 8px;font:800 13px/1.25 Nunito,sans-serif;cursor:pointer;color:#1d2a36;text-align:center;min-height:64px}
-.ca-exp button span{display:block;font-size:22px;margin-bottom:2px}
-.ca-exp button:hover:not([disabled]){border-color:#16324f}
-.ca-exp button[disabled]{opacity:.45;cursor:default}
-.ca-exp button.ok{border-color:#3d7a55;background:#eef8f0;opacity:1}.ca-exp button.ko{border-color:#c4532f;background:#fdeceb;opacity:1}
-.ca-years{display:flex;gap:6px;margin:4px 0 10px}
-.ca-years span{flex:1;text-align:center;font:700 12px Fraunces,Georgia,serif;border-radius:6px;padding:4px 0;background:#e3e7ea;color:#7a858d}
-.ca-years span.on{background:#16324f;color:#f1e6c8}.ca-years span.ok{background:#3d7a55;color:#fff}.ca-years span.ko{background:#c4532f;color:#fff}
-.ca-needs{list-style:none;padding:0;margin:6px 0 10px;display:grid;gap:5px}
-.ca-needs li{font-size:13.5px;font-weight:700;padding:6px 10px;border-radius:8px;background:#f1f3f5;color:#46525c}
-.ca-needs li.on{background:#e3f4ea;color:#23704a}
-.ca-needs li.on:before{content:"✓ "}
-.ca-prods{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.ca-prods button{display:flex;gap:8px;align-items:center;text-align:left;border:2px solid #d5dde2;background:#fff;border-radius:10px;padding:8px;font:800 12.5px/1.2 Nunito,sans-serif;cursor:pointer;color:#1d2a36}
-.ca-prods button i{font-style:normal;font-size:20px}
-.ca-prods button small{display:block;font-weight:600;color:#5f6b75;font-size:11.5px;margin-top:2px}
-.ca-prods button:hover:not([disabled]){border-color:#16324f}
-.ca-prods button[disabled]{opacity:.4;cursor:default}
-.ca-prods button.ok{border-color:#3d7a55;background:#eef8f0;opacity:1}.ca-prods button.ko{border-color:#c4532f;background:#fdeceb;opacity:1}
-.ca-cr{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0 10px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 0 0 1px #e3e7ea}
-.ca-cr td{padding:6px 10px;border-top:1px solid #e3e7ea}.ca-cr td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
-.ca-cr tr.t td{background:#eef4f5;font-weight:800;color:#16324f}.ca-cr tr.neg td:last-child{color:#b3261e}
-.ca-sig{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ca-sig button{border:2px solid #d5dde2;background:#fff;border-radius:12px;padding:10px;font:700 13px/1.3 Nunito,sans-serif;text-align:left;cursor:pointer;color:#1d2a36}
-.ca-sig button b{display:block;font:700 18px Fraunces,Georgia,serif;color:#16324f;margin-bottom:2px}
-.ca-sig button[aria-pressed=true]{border-color:#16324f;box-shadow:0 0 0 3px rgba(22,50,79,.18)}
-.ca-sig button.ok{border-color:#3d7a55;background:#eef8f0}.ca-sig button.ko{border-color:#c4532f;background:#fdeceb}.ca-sig button.miss{border-color:#e0a33a;background:#fff8e6}
-.ca-boss{background:linear-gradient(135deg,#16324f,#1f6f78);color:#fff;border-radius:12px;padding:10px 12px;margin-bottom:10px;display:flex;gap:10px;align-items:center}
-.ca-boss i{font-style:normal;font-size:28px}.ca-boss b{display:block;font:700 17px Fraunces,Georgia,serif}.ca-boss small{opacity:.85;font-weight:700}
-@media (max-width:520px){ .ca-sig{grid-template-columns:1fr} }
-.ca-bubble{position:absolute;z-index:3;display:flex;align-items:center;gap:10px;pointer-events:auto;cursor:pointer;transition:opacity .3s,transform .3s}
-.ca-bubble.off{opacity:0;transform:translateY(8px);pointer-events:none}
-.ca-bubble .av{flex:none;width:54px;height:54px;border-radius:50%;background:#16324f;display:grid;place-items:center;font-size:30px;box-shadow:0 4px 10px rgba(0,0,0,.35)}
-.ca-bubble.k .av{background:#e0a33a}
-.ca-bubble p{flex:1;position:relative;margin:0;background:#fbfaf6;border:2px solid #16324f;border-radius:14px;padding:8px 14px;font-size:14.5px;font-weight:700;line-height:1.35;color:#16324f;box-shadow:0 8px 20px rgba(0,0,0,.3);min-height:20px}
-.ca-bubble p:before{content:"";position:absolute;left:-9px;top:50%;width:14px;height:14px;background:#fbfaf6;border:2px solid #16324f;border-top:0;border-right:0;transform:translateY(-50%) rotate(45deg)}
-.ca-bubble p b{display:block;font:800 10.5px Nunito,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#1f6f78;margin-bottom:2px}
-@media (max-width:520px){ .ca-bubble .av{width:40px;height:40px;font-size:22px} .ca-bubble p{font-size:12.5px;padding:6px 10px} .ca-m{padding:4px 8px;font-size:12px} .ca-m small{display:none} .ca-h{font-size:19px} .ca-q{font-size:13.5px;padding:10px} .ca-prods{grid-template-columns:1fr} }
+.dv{position:fixed;inset:0;z-index:40;font-family:Nunito,system-ui,sans-serif;color:${INK};background:#e7ebee;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;animation:dvIn .3s ease both}
+@keyframes dvIn{from{opacity:0}to{opacity:1}}
+.dv canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.dv-top{position:absolute;left:0;right:0;top:0;display:flex;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 12px) 6px calc(env(safe-area-inset-left) + 12px);z-index:5;pointer-events:none}
+.dv-top>*{pointer-events:auto}
+.dv-tag{background:#fff;border:1px solid #cdd6de;border-radius:6px;padding:6px 11px;font-weight:900;font-size:13px;white-space:nowrap;box-shadow:0 2px 6px rgba(20,35,55,.12)}
+.dv-tag.n{background:${NAVY};border-color:${NAVY};color:#f1e6c8;font-family:Fraunces,Georgia,serif;font-weight:700}
+.dv-tag.f{transition:transform .25s}
+.dv-tag.f.pop{transform:scale(1.18)}
+.dv-x{margin-left:auto;width:48px;height:48px;border-radius:50%;border:1px solid #cdd6de;background:#fff;font-size:24px;cursor:pointer;color:${INK};box-shadow:0 2px 6px rgba(20,35,55,.15)}
+.dv-say{position:absolute;z-index:6;max-width:min(390px,calc(100% - 24px));transform:translate(-50%,-100%);transition:opacity .25s;cursor:pointer}
+.dv-say.off{opacity:0;pointer-events:none}
+.dv-say .b{background:#fff;border-left:5px solid ${NAVY};border-radius:6px;padding:9px 12px 7px;font-size:14.5px;line-height:1.42;box-shadow:0 6px 18px rgba(20,35,55,.22)}
+.dv-say .who{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:${GOLD};font-weight:900}
+.dv-say .nx{display:block;text-align:right;font-size:11px;color:#97a2ad;font-weight:800}
+.dv-say.fix{transform:none}
+.dv-say.me .b{border-left-color:${GOLD}}
+.dv-task{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 10px);z-index:5;background:${NAVY};color:#fff;border-radius:10px;padding:9px 14px;font-weight:800;font-size:14px;line-height:1.35;width:max-content;max-width:calc(100% - 24px);text-align:center;box-shadow:0 6px 18px rgba(20,35,55,.3);pointer-events:none}
+.dv-task[hidden]{display:none}
+.dv-task b{color:#f1d27a}
+.dv-notes{position:absolute;right:calc(env(safe-area-inset-right) + 12px);bottom:calc(env(safe-area-inset-bottom) + 70px);z-index:5;display:flex;flex-direction:column-reverse;gap:8px;align-items:flex-end;pointer-events:none;max-width:min(270px,48%)}
+.dv-note{background:#fff;border-radius:3px;border-top:4px solid ${GOLD};padding:6px 10px 8px;font-size:12.5px;font-weight:800;line-height:1.3;box-shadow:2px 4px 12px rgba(20,35,55,.2);animation:dvNote 4.4s ease both;background-image:repeating-linear-gradient(transparent 0 17px,#d6e4f0 17px 18px)}
+.dv-note span{display:block;font-size:10px;color:${GOLD};letter-spacing:.06em;text-transform:uppercase}
+@keyframes dvNote{0%{opacity:0;translate:0 14px}10%{opacity:1;translate:0 0}85%{opacity:1}100%{opacity:0}}
+.dv-ov{position:absolute;inset:0;z-index:9;display:grid;place-items:center;padding:14px;background:rgba(15,25,40,.42)}
+.dv-ov[hidden]{display:none}
+.dv-card{max-width:580px;width:100%;max-height:100%;overflow:auto;background:${PAPER};border-radius:10px;border-top:6px solid ${NAVY};padding:20px 18px;box-shadow:0 20px 60px rgba(0,0,0,.35);user-select:text;-webkit-user-select:text}
+.dv-card h2{font:700 27px/1.15 Fraunces,Georgia,serif;margin:4px 0 8px;color:${NAVY}}
+.dv-card .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:${GOLD};font-weight:900;margin:0 0 4px}
+.dv-card p{font-size:14.5px;line-height:1.5;margin:0 0 10px}
+.dv-q{background:#eef2f6;border-left:4px solid ${NAVY};padding:9px 12px;font:600 16px/1.4 Fraunces,Georgia,serif;color:${NAVY};margin:0 0 12px}
+.dv-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0 12px}
+.dv-legend div{background:#eef1f3;border-radius:8px;padding:7px 9px;font-size:13px;line-height:1.3}
+.dv-legend b{font-size:18px;display:block}
+.dv-go{display:block;width:100%;border:0;border-radius:10px;padding:12px;font:900 16px Nunito,sans-serif;background:${NAVY};color:#fff;cursor:pointer;min-height:48px;box-shadow:0 4px 0 #0b1c2e}
+.dv-go:focus-visible{outline:3px solid #f1d27a}
+.dv-alt{display:block;text-align:center;margin-top:8px;font-weight:800;color:${NAVY};background:none;border:0;cursor:pointer;width:100%;font-size:14px;text-decoration:underline;min-height:44px}
+.dv-stats{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+.dv-stats div{flex:1 1 120px;background:#eef1f3;border-radius:8px;padding:6px 9px;font-size:12px;font-weight:800;color:${GREY}}
+.dv-stats b{display:block;font-size:17px;color:${INK}}
+.dv-list{list-style:none;margin:0 0 10px;padding:0}
+.dv-list li{background:#f1f3f5;border-radius:8px;padding:7px 9px;margin:5px 0;font-size:13px;line-height:1.35}
+.dv-list li span{display:inline-block;background:${NAVY};color:#fff;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:900;margin-right:5px}
+.dv-list.next li{background:#fdf6e3}
+.dv-big{font-size:46px;text-align:center;margin:0}
+.dv-stamp{display:inline-block;border:3px solid currentColor;border-radius:6px;padding:3px 10px;font:900 15px Nunito,sans-serif;letter-spacing:.08em;transform:rotate(-4deg);margin:2px 0 10px}
+.dv-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:640px){.dv-tag{font-size:12px;padding:5px 8px}.dv-tag.hide-s{display:none}.dv-say .b{font-size:13.5px}.dv-task{font-size:13px}.dv-notes{max-width:60%}}
+@media (prefers-reduced-motion:reduce){.dv,.dv-note{animation:none}}
 `;
 
-/* ================= la maquette 3D ================= */
-// les univers des clients, posés autour de l'agence
-const U = { karim:new THREE.Vector3(70, 0, 0), lefevre:new THREE.Vector3(-70, 0, 0), couple:new THREE.Vector3(0, 0, -80), duval:new THREE.Vector3(70, 0, -80), martin:new THREE.Vector3(-70, 0, -80) };
-const BOT = -7.2;                                // fond de la mer, sous l'iceberg de Karim
-const LEVELS = [1, -2, -4.2, -6.6];              // niveau de l'eau : il baisse à chaque besoin découvert
-const SLOTS = [[-1.7, -1.1, 3.55], [1.6, -3.3, 3.45], [-.4, -5.4, 3.2]];
+export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEvent, openLead }){
+	if(!document.getElementById("dv-css")){ const st = document.createElement("style"); st.id = "dv-css"; st.textContent = CSS; document.head.appendChild(st); }
+	const play = n => audio && audio.play(n);
+	const ev = (...a) => onEvent && onEvent(...a);
+	const root = document.createElement("div"); root.className = "dv";
+	root.setAttribute("role", "dialog"); root.setAttribute("aria-modal", "true"); root.setAttribute("aria-label", "Mini-jeu Le dossier Duval Textiles");
+	root.innerHTML = `<canvas tabindex="0" aria-label="Le bureau du chargé d'affaires"></canvas>
+		<div class="dv-top"><span class="dv-tag n">Dossier Duval</span><span class="dv-tag" id="dvDay">Lundi 9 h</span><span class="dv-tag hide-s" id="dvWhere">Agence</span><span class="dv-tag f" id="dvFile">📁 0 pièce</span><button class="dv-x" aria-label="Quitter le jeu">×</button></div>
+		<div class="dv-say off" id="dvSay" aria-live="polite"><div class="b"><span class="who"></span><span class="t"></span><span class="nx">toucher pour continuer ›</span></div></div>
+		<div class="dv-task" id="dvTask" hidden></div>
+		<div class="dv-notes" id="dvNotes"></div>
+		<div class="dv-sr" id="dvSr" aria-live="assertive"></div>
+		<div class="dv-ov" id="dvOv"><div class="dv-card" id="dvCard"></div></div>`;
+	document.body.appendChild(root);
+	const $ = s => root.querySelector(s);
+	let closed = false;
 
-function world(canvas){
+	/* ---------- état ---------- */
+	const S = { phase:"intro", pts:0, max:0, learned:[], pieces:[], view:null, zoom:null,
+		rv:[null, null, null, null], rs:[null, null, null, null], ri:-1,
+		counted:new Set(), stick:new Set(), visitDone:false, dead:0,
+		n:6, caution:0, conj:false, bpi:0, nant:false, volta:false, cov:0, effort:0, submitted:false,
+		bo:{}, cell:null, el:null, elOk:null, rate:null, com:0, comMax:0, answers:[], accord:false };
+	const trash = [];       // géométries, matériaux et textures créés ici (ceux du kit sont partagés avec le campus)
+	const own = o => (trash.push(o), o);
+	const mat = (c, o) => own(std(c, o));
+
+	/* ---------- la scène ---------- */
+	const canvas = $("canvas");
 	const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
-	renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+	renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 900 ? 1.5 : 2));
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-	const scene = new THREE.Scene(); scene.background = new THREE.Color("#16222c"); scene.fog = new THREE.Fog("#16222c", 60, 130);
-	const camera = new THREE.PerspectiveCamera(36, 1, .1, 260);
-	const controls = new OrbitControls(camera, canvas);
-	controls.enableDamping = true; controls.enablePan = false; controls.minDistance = 5; controls.maxDistance = 40; controls.maxPolarAngle = 1.45;
-	scene.add(new THREE.HemisphereLight("#fff6e8", "#2a3a48", 1.15));
-	// un seul soleil porte les ombres : il suit la caméra d'un univers à l'autre
-	const sun = new THREE.DirectionalLight("#fff3dc", 2.1); sun.castShadow = true;
-	sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left:-15, right:15, top:15, bottom:-15, near:1, far:60 }); sun.shadow.bias = -.0005;
+	renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.NeutralToneMapping;
+	const ANISO = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+	const scene = new THREE.Scene(); scene.background = new THREE.Color("#dfe8ee");
+	const camera = new THREE.PerspectiveCamera(42, 1, .03, 80);
+	scene.add(new THREE.HemisphereLight("#fdfcf8", "#9d968a", 1.5));
+	const sun = new THREE.DirectionalLight("#fff3e0", 1.6); sun.castShadow = true;
+	sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left:-9, right:9, top:9, bottom:-9, near:1, far:30 }); sun.shadow.bias = -.0005;
 	scene.add(sun, sun.target);
-	const light = c => { sun.position.set(c.x - 8, 18, c.z + 12); sun.target.position.copy(c); };
-	light(new THREE.Vector3());
+	function lightAt(x){ sun.position.set(x - 4, 10, 6); sun.target.position.set(x, 0, -1); }
+	lightAt(0);
 
-	const mats = {}, M = (c, o = {}) => mats[c + JSON.stringify(o)] || (mats[c + JSON.stringify(o)] = new THREE.MeshStandardMaterial({ color:c, roughness:.75, ...o }));
-	const mesh = (geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; return m; };
-	const box = (w, h, d, c, x, y, z) => mesh(new THREE.BoxGeometry(w, h, d), M(c), x, y + h/2, z);
-	const tex = (w, h, draw) => { const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
-	// un texte dessiné sur une texture ne doit jamais déborder : on réduit la police jusqu'à ce qu'il tienne
-	const fitFont = (x, text, maxW, size, weight = 800, family = "Nunito, sans-serif") => { let s = size; do { x.font = `${weight} ${s}px ${family}`; } while(x.measureText(text).width > maxW && --s > 8); return s; };
-	const add = (...o) => { scene.add(...o); return o[0]; };
-	const group = (c, parent = scene) => { const g = new THREE.Group(); g.position.copy(c); parent.add(g); return g; };
-	const roof = (w, h, d, c) => { const sh = new THREE.Shape(); sh.moveTo(-w/2, 0); sh.lineTo(0, h); sh.lineTo(w/2, 0); sh.closePath(); return mesh(new THREE.ExtrudeGeometry(sh, { depth:d, bevelEnabled:false }), M(c)); };
-	const sway = [], pendulums = [], wobble = [], spin = [];
+	const M = { floor:mat("#b7a07e"), wall:mat("#f2efe9"), oak:mat("#c9a77a"), leg:mat("#3b3a38"), black:mat("#1d2024"), paper:mat("#f4f1ea"), manila:mat("#d8b878"),
+		sky:own(new THREE.MeshBasicMaterial({ color:"#cfe3f1" })), frame:mat("#5a5f66"), city:mat("#c3bcb1"), city2:mat("#aea79c"), plant:mat("#56804f"), pot:mat("#d9cbb5"),
+		chair:mat("#2c3138"), navy:mat(NAVY), concrete:mat("#a8a59f"), brick:mat("#a2553b"), steel:mat("#8b9096"), orange:mat("#d9772b"), loom:mat("#5d7b74"),
+		wood:mat("#b78f5a"), dust:mat("#9b968c"), dustTop:mat("#c9c2b4"), glass:own(new THREE.MeshBasicMaterial({ color:"#e3f0f7" })), yellow:mat("#e9c02b"),
+		film:own(new THREE.MeshStandardMaterial({ color:"#ffffff", transparent:true, opacity:.22, roughness:.2, depthWrite:false })),
+		bob:[mat("#3d6fb6"), mat("#e9e6df"), mat("#c2463a"), mat("#2f6b4f"), mat("#d6c7a6")], table:mat("#6e4f36"), board:mat("#fafafa"),
+		hit:own(new THREE.MeshBasicMaterial({ transparent:true, opacity:0, depthWrite:false })) };
+	const geo = g => own(g);
 
-	/* --- étiquettes (sprites dessinés au canvas), plus grandes sur téléphone --- */
-	let LS = 1;
-	function drawLabel(sp, text, o){
-		const c = sp.userData.c || (sp.userData.c = document.createElement("canvas")), x = c.getContext("2d");
-		const f = `800 ${o.big ? 60 : 44}px Nunito, system-ui, sans-serif`; x.font = f;
-		const w = Math.ceil(x.measureText(text).width) + (o.bg ? 44 : 12), h = o.big ? 88 : 68;
-		c.width = w; c.height = h; x.font = f;
-		if(o.bg){ x.fillStyle = o.bg; x.beginPath(); x.roundRect(2, 2, w - 4, h - 4, h/2 - 2); x.fill(); if(o.line){ x.strokeStyle = o.line; x.lineWidth = 4; x.stroke(); } }
-		x.fillStyle = o.fg || "#16324f"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(text, w/2, h/2 + 3);
-		if(sp.material.map) sp.material.map.dispose();
-		const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; sp.material.map = t; sp.material.needsUpdate = true;
-		const s = (o.size || .55)*LS; sp.scale.set(s*w/h, s, 1);
-	}
-	function label(text, o = {}){
-		o = { bg:"#fbfaf6", ...o };
-		const sp = new THREE.Sprite(new THREE.SpriteMaterial({ depthTest:false, transparent:true }));
-		sp.renderOrder = 10; sp.userData.o = o; drawLabel(sp, text, o); return sp;
-	}
-	const relabel = (sp, text, o) => drawLabel(sp, text, { ...sp.userData.o, ...(o || {}) });
-
-	/* --- les personnages : des pions à visage, qui changent d'expression (inquiet, neutre, rassuré, ravi, agacé) --- */
-	function drawFace(x, mood, skin, hair){
-		// le visage est dessiné en grand : il doit se lire même quand le pion est loin
-		const W = 256, H = 128, cx = 64, ey = 58, my = 80;
-		x.fillStyle = skin; x.fillRect(0, 0, W, H);
-		if(hair){ x.fillStyle = hair; x.fillRect(0, 0, W, 30); x.fillRect(112, 0, 144, 92); x.fillRect(0, 0, 18, 92); }
-		x.strokeStyle = x.fillStyle = "#2a1d14"; x.lineCap = "round"; x.lineWidth = 5;
-		const line = (a, b, c, d) => { x.beginPath(); x.moveTo(a, b); x.lineTo(c, d); x.stroke(); };
-		const curve = (a, b, cx2, cy2, c, d) => { x.beginPath(); x.moveTo(a, b); x.quadraticCurveTo(cx2, cy2, c, d); x.stroke(); };
-		for(const s of [-1, 1]){
-			if(mood === "ravi"){ x.beginPath(); x.arc(cx + s*14, ey + 4, 6.5, Math.PI*1.1, Math.PI*1.9); x.stroke(); }
-			else { x.beginPath(); x.ellipse(cx + s*14, ey, 4.6, mood === "inquiet" ? 7 : 6, 0, 0, Math.PI*2); x.fill(); }
-			if(mood === "inquiet") line(cx + s*7, ey - 16, cx + s*21, ey - 10);
-			if(mood === "agace") line(cx + s*7, ey - 9, cx + s*21, ey - 16);
-		}
-		if(mood === "ravi" || mood === "rassure"){ x.fillStyle = "rgba(225,95,95,.45)"; for(const s of [-1, 1]){ x.beginPath(); x.arc(cx + s*24, my - 8, 6.5, 0, Math.PI*2); x.fill(); } x.fillStyle = "#2a1d14"; }
-		if(mood === "ravi"){ x.beginPath(); x.moveTo(cx - 14, my - 4); x.quadraticCurveTo(cx, my + 18, cx + 14, my - 4); x.closePath(); x.fill(); }
-		else if(mood === "rassure") curve(cx - 11, my - 2, cx, my + 9, cx + 11, my - 2);
-		else if(mood === "inquiet") curve(cx - 10, my + 4, cx, my - 6, cx + 10, my + 4);
-		else if(mood === "agace") curve(cx - 10, my + 6, cx, my - 4, cx + 10, my + 6);
-		else line(cx - 9, my, cx + 9, my);
-	}
-	const P = {};                                // id → personnage
-	function person(id, o){
-		const g = new THREE.Group(), inner = new THREE.Group(); g.add(inner); scene.add(g);
-		const m = M(o.body, { roughness:.5 });
-		inner.add(mesh(new THREE.CylinderGeometry(.42, .46, .16, 28), m, 0, .08, 0));
-		inner.add(mesh(new THREE.CylinderGeometry(.16, .34, .84, 24), m, 0, .56, 0));
-		inner.add(mesh(new THREE.CylinderGeometry(.24, .2, .1, 24), M(o.collar || o.body), 0, 1, 0));
-		const fc = document.createElement("canvas"); fc.width = 256; fc.height = 128;
-		const ft = new THREE.CanvasTexture(fc); ft.colorSpace = THREE.SRGBColorSpace;
-		inner.add(mesh(new THREE.SphereGeometry(.27, 32, 20), new THREE.MeshStandardMaterial({ map:ft, roughness:.6 }), 0, 1.3, 0));
-		if(o.hat) o.hat(inner);
-		const icon = label("", { bg:null, size:.62, big:1 }); icon.position.set(.32, 1.95, 0); icon.visible = false; g.add(icon);
-		let name = null;
-		if(o.name){ name = label(o.name, { size:.36, fg:"#fff", bg:o.tag || "#16324f" }); name.position.y = 2.05; g.add(name); }
-		if(o.small) g.scale.setScalar(.82);
-		const p = P[id] = { id, g, inner, icon, name, mood:"neutre", walk:null, react:null, phase:Math.random()*6,
-			setMood(md){ p.mood = md; drawFace(fc.getContext("2d"), md, o.skin || "#f1c9a5", o.hair); ft.needsUpdate = true;
-				const ic = { inquiet:"💦", agace:"💢", ravi:"✨" }[md]; icon.visible = !!ic; if(ic) relabel(icon, ic); },
-			setHair(c){ o.hair = c; p.setMood(p.mood); } };
-		p.setMood("neutre");
-		return p;
-	}
-	const toque = inner => { const w = M("#ffffff", { roughness:.9 }); inner.add(mesh(new THREE.CylinderGeometry(.22, .2, .26, 20), w, 0, 1.62, 0)); for(const [x, z] of [[-.1, 0], [.1, 0], [0, .1], [0, -.1], [0, 0]]) inner.add(mesh(new THREE.SphereGeometry(.15, 14, 10), w, x, 1.8, z)); };
-	const casque = inner => inner.add(mesh(new THREE.SphereGeometry(.3, 20, 10, 0, Math.PI*2, 0, Math.PI/2), M("#e9b62c", { roughness:.4 }), 0, 1.36, 0));
-	const sac = inner => inner.add(mesh(new THREE.BoxGeometry(.3, .24, .12), M("#5a2d1e"), .38, .5, .05));
-	const chignon = inner => inner.add(mesh(new THREE.SphereGeometry(.13, 12, 10), M("#d8d4cf"), 0, 1.5, -.18));
-
-	/* --- l'agence : une coupe de maison de poupée, posée sur la table --- */
-	const clock = { t:8*60 + 55, h:null, m:null }, steam = { at:null };
-	{
-		const tiles = tex(256, 256, (x, w) => { for(let i = 0; i < 4; i++) for(let j = 0; j < 4; j++){ x.fillStyle = (i + j) % 2 ? "#e9e2d2" : "#dfd6c3"; x.fillRect(i*64, j*64, 64, 64); } x.strokeStyle = "rgba(0,0,0,.08)"; x.lineWidth = 2; for(let i = 0; i <= 4; i++){ x.beginPath(); x.moveTo(i*64, 0); x.lineTo(i*64, w); x.stroke(); x.beginPath(); x.moveTo(0, i*64); x.lineTo(w, i*64); x.stroke(); } });
-		tiles.wrapS = tiles.wrapT = THREE.RepeatWrapping; tiles.repeat.set(5, 3.5);
-		add(mesh(new THREE.BoxGeometry(19, .5, 13), [M("#5b4636"), M("#5b4636"), new THREE.MeshStandardMaterial({ map:tiles, roughness:.8 }), M("#5b4636"), M("#5b4636"), M("#5b4636")], 0, -.25, 0));
-		add(box(19, 3.2, .3, "#efe9dc", 0, 0, -6.35), box(.3, 3.2, 13, "#efe9dc", -9.35, 0, 0));
-		add(box(19, .35, .34, "#1f6f78", 0, 0, -6.33), box(.34, .35, 13, "#1f6f78", -9.33, 0, 0));
-		// fenêtres sur la rue, au fond
-		const sky = new THREE.MeshBasicMaterial({ map:tex(64, 64, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#bcdcef"); g.addColorStop(1, "#f2ead6"); x.fillStyle = g; x.fillRect(0, 0, w, h); }) });
-		for(const wx of [-7, -4.3]){ add(box(2.6, 1.9, .1, "#2e3d48", wx, .9, -6.2)); add(mesh(new THREE.PlaneGeometry(2.3, 1.6), sky, wx, 1.85, -6.13)).castShadow = false; add(box(.06, 1.6, .06, "#2e3d48", wx, 1.05, -6.1)); }
-		// enseigne de l'agence (fictive)
-		const sign = tex(512, 160, (x, w, h) => { x.fillStyle = "#16324f"; x.fillRect(0, 0, w, h); x.fillStyle = "#e0a33a"; x.fillRect(0, h - 14, w, 14); x.fillStyle = "#fff"; x.textAlign = "center"; fitFont(x, "Agence Vauban", w - 60, 56, 700, "Fraunces, Georgia, serif"); x.fillText("Agence Vauban", w/2, 74); fitFont(x, "PARTICULIERS · PROFESSIONNELS · ENTREPRISES", w - 48, 24); x.fillStyle = "#cfe0ea"; x.fillText("PARTICULIERS · PROFESSIONNELS · ENTREPRISES", w/2, 118); });
-		add(mesh(new THREE.PlaneGeometry(3.4, 1.06), new THREE.MeshStandardMaterial({ map:sign }), -1, 2.3, -6.18)).castShadow = false;
-		// l'accueil, où Sophie dirige l'agence
-		add(box(3.2, 1.05, .9, "#16324f", -1.6, 0, -4.4), box(3.4, .08, 1.05, "#e9e2d2", -1.6, 1.05, -4.4));
-		add(box(.5, .34, .05, "#222", -.9, 1.13, -4.6));
-		// la salle d'attente
-		for(const z of [-4.4, -3, -1.6, -.2, 1.2, 2.6]){ add(box(.8, .45, .8, "#1f6f78", -8.5, 0, z), box(.16, .9, .8, "#1f6f78", -8.95, .45, z)); }
-		add(mesh(new THREE.CylinderGeometry(.8, .8, .08, 24), M("#c9b48f"), -6.9, .5, -.9), mesh(new THREE.CylinderGeometry(.08, .1, .5, 10), M("#555"), -6.9, .25, -.9));
-		["#c0392b", "#2f5d9e", "#e0a33a"].forEach((c, i) => { const r = add(box(.5, .03, .66, c, -6.95 + i*.12, .54 + i*.03, -.9 - i*.08)); r.rotation.y = i*.3 - .3; });
-		// la vitre du bureau du chargé d'affaires
-		add(mesh(new THREE.BoxGeometry(.08, 2.5, 4.8), new THREE.MeshStandardMaterial({ color:"#bfe0ee", transparent:true, opacity:.28, roughness:.1 }), 1, 1.25, -3.8)).castShadow = false;
-		add(box(.14, .12, 4.8, "#2e3d48", 1, 2.5, -3.8), box(.14, 2.6, .14, "#2e3d48", 1, 0, -1.4));
-		// le bureau : le chargé d'affaires (toi) tourne le dos à la caméra, le client nous fait face
-		add(mesh(new THREE.CylinderGeometry(2.8, 2.8, .03, 40), M("#a8c5c9"), 5, .015, -3));
-		add(box(3.2, .85, 1.3, "#8a6a4a", 5, 0, -3), box(3.4, .08, 1.45, "#a9875f", 5, .85, -3));
-		const screen = group(new THREE.Vector3(6.3, 0, -2.9)); screen.rotation.y = -.5;
-		screen.add(box(.9, .58, .05, "#1d1d1d", 0, 1.05, 0), box(.12, .2, .12, "#333", 0, .93, 0));
-		add(box(.5, .05, .7, "#f4f1ea", 4.2, .93, -3.1));
-		steam.at = add(mesh(new THREE.CylinderGeometry(.11, .1, .22, 14), M("#e0a33a"), 3.75, 1.04, -2.7));
-		for(const x of [4.3, 5.7]) add(box(.7, .42, .7, "#3d4a55", x, 0, -4.4), box(.7, .8, .14, "#3d4a55", x, .42, -4.83));
-		add(box(.8, .45, .8, "#16324f", 5, 0, -1.4));
-		// l'horloge murale : la journée avance de rendez-vous en rendez-vous
-		add(mesh(new THREE.CylinderGeometry(.62, .62, .08, 36).rotateX(Math.PI/2), M("#fbfaf6"), 5, 2.45, -6.15));
-		add(mesh(new THREE.TorusGeometry(.62, .05, 8, 36), M("#16324f"), 5, 2.45, -6.12));
-		for(let i = 0; i < 12; i++){ const a = i/12*Math.PI*2; add(box(.04, .1, .02, "#16324f", 5 + Math.sin(a)*.5, 2.45 + Math.cos(a)*.5 - .05, -6.09)).rotation.z = -a; }
-		const hand = (len, w) => { const g = group(new THREE.Vector3(5, 2.45, -6.07)); const h = new THREE.Mesh(new THREE.BoxGeometry(w, len, .02), M("#16324f")); h.position.y = len/2 - .05; g.add(h); return g; };
-		clock.h = hand(.32, .06); clock.m = hand(.48, .04);
-		// plantes (elles ondulent un peu)
-		for(const [x, z] of [[8.4, -5.6], [-8.5, 4.6], [-4.4, -5.6]]) plant(scene, x, z);
-	}
-	function plant(parent, x, z, s = 1){
-		parent.add(mesh(new THREE.CylinderGeometry(.42*s, .32*s, .7*s, 16), M("#c26b3c"), x, .35*s, z));
-		const leaves = new THREE.Group(); leaves.position.set(x, .7*s, z); parent.add(leaves); sway.push(leaves);
-		for(let i = 0; i < 7; i++){ const l = mesh(new THREE.ConeGeometry(.16*s, 1.1*s, 6), M(i % 2 ? "#3f7a4a" : "#559157"), Math.cos(i*.9)*.18*s, .5*s, Math.sin(i*.9)*.18*s); l.rotation.set(Math.sin(i*.9)*.5, 0, -Math.cos(i*.9)*.5); leaves.add(l); }
-		return leaves;
+	// une étiquette ou un panneau dessiné
+	function canvasPlane(parent, W, H, ww, draw, basic = true){
+		const c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d");
+		const tex = own(new THREE.CanvasTexture(c)); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = ANISO;
+		const m = new THREE.Mesh(geo(new THREE.PlaneGeometry(ww, ww*H/W)), own(basic ? new THREE.MeshBasicMaterial({ map:tex, toneMapped:false }) : new THREE.MeshStandardMaterial({ map:tex, roughness:.9 })));
+		parent.add(m); if(draw){ draw(x, W, H); tex.needsUpdate = true; }
+		return { m, c, x, tex };
 	}
 
-	/* --- objets à toucher sur la maquette (la loupe de Mme Lefèvre) --- */
-	const pickables = [];
-	let onPick = null, down = null;
-	const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
-	const hitMat = new THREE.MeshBasicMaterial({ transparent:true, opacity:0, depthWrite:false });
-	function pickable(id, obj, r){ const hit = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 8), hitMat); hit.position.y = r*.6; hit.userData.pick = id; obj.add(hit); pickables.push(hit); }
-	canvas.addEventListener("pointerdown", e => { down = [e.clientX, e.clientY]; });
-	canvas.addEventListener("pointerup", e => {
-		if(!onPick || !down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
-		const r = canvas.getBoundingClientRect(); ndc.set((e.clientX - r.left)/r.width*2 - 1, -(e.clientY - r.top)/r.height*2 + 1);
-		ray.setFromCamera(ndc, camera);
-		const hit = ray.intersectObjects(pickables)[0];
-		if(hit) onPick(hit.object.userData.pick);
+	/* --- l'agence : le bureau du chargé d'affaires --- */
+	box(scene, 14, .1, 12, M.floor, 0, -.1, 0).receiveShadow = true;
+	box(scene, 14, .9, .2, M.wall, 0, 0, -3.2); box(scene, 14, .8, .2, M.wall, 0, 2.8, -3.2);
+	const sky1 = new THREE.Mesh(geo(new THREE.PlaneGeometry(24, 7)), M.sky); sky1.position.set(0, 2.2, -7); scene.add(sky1);
+	for(let x = -6.5; x <= 6.5; x += 1.3) box(scene, .07, 1.9, .1, M.frame, x, .9, -3.15, 0, false);
+	box(scene, 14, .06, .1, M.frame, 0, 1.7, -3.15, 0, false);
+	for(let i = 0; i < 16; i++){ const h = .5 + ((i*37) % 11)/9; box(scene, .8 + (i % 3)*.3, h, .4, i % 2 ? M.city : M.city2, -7.5 + i*1.05, .4, -5.6, 0, false); }
+	box(scene, .3, 2.6, .3, M.city2, -2.2, .4, -5.5, 0, false);     // une cheminée d'usine roubaisienne au loin
+	box(scene, .2, 3.6, 12, M.wall, -6, 0, 0); box(scene, .2, 3.6, 12, M.wall, 6, 0, 0);
+	// le bureau
+	box(scene, 2.9, .05, 1.3, M.oak, 0, DY - .05, 0);
+	for(const dx of [-1.35, 1.35]) for(const dz of [-.55, .55]) box(scene, .06, DY - .05, .06, M.leg, dx, 0, dz, 0, false);
+	box(scene, .6, .5, .6, M.chair, 0, 0, 1.25, 0, false);
+	// l'écran : l'outil d'instruction de la banque
+	box(scene, .3, .02, .2, M.black, .3, DY, -.42); box(scene, .05, .32, .05, M.black, .3, DY, -.47);
+	const monG = new THREE.Group(); monG.position.set(.3, DY + .5, -.45); monG.rotation.x = -.1; scene.add(monG);
+	box(monG, 1.08, .68, .04, M.black, 0, -.34, -.03);
+	{ const sc = canvasPlane(monG, 800, 480, 1.04, (x, W, H) => { x.fillStyle = "#0f2236"; x.fillRect(0, 0, W, H); x.fillStyle = "#f1e6c8"; x.font = "700 64px Fraunces, Georgia, serif"; x.textAlign = "center"; x.fillText("Crédit des Flandres", W/2, 230); x.font = "800 30px Nunito, sans-serif"; x.fillStyle = "#8fa3b8"; x.fillText("Centre d'affaires de Roubaix", W/2, 290); }); sc.m.position.z = .001; }
+	// la calculatrice
+	box(scene, .34, .03, .48, M.black, 1.06, DY, .16);
+	// une étagère de classeurs, une plante, le nom de la banque
+	box(scene, 1.6, 2, .35, M.oak, -4.6, 0, -2.8);
+	for(let i = 0; i < 9; i++) box(scene, .14, .34, .28, [M.navy, M.manila, M.frame][i % 3], -5.25 + i*.16, 1.02, -2.8, 0, false);
+	cyl(scene, .3, .24, .5, M.pot, 4.6, 0, -2.4); { const p = new THREE.Mesh(geo(new THREE.IcosahedronGeometry(.55, 0)), M.plant); p.position.set(4.6, 1, -2.4); p.castShadow = true; scene.add(p); }
+	{ const sg = canvasPlane(scene, 900, 160, 3, (x, W, H) => { x.fillStyle = NAVY; x.fillRect(0, 0, W, H); x.fillStyle = "#f1e6c8"; x.font = "700 64px Fraunces, Georgia, serif"; x.fillText("Crédit des Flandres", 40, 82); x.font = "800 34px Nunito, sans-serif"; x.fillText("Centre d'affaires de Roubaix", 42, 132); }, false); sg.m.position.set(0, 3.1, -3.08); }
+	// le dossier Duval, qui s'épaissit à chaque pièce
+	const folder = new THREE.Group(); folder.position.set(-1.18, DY, -.32); folder.rotation.y = .12; scene.add(folder);
+	box(folder, .36, .006, .46, M.manila, 0, 0, 0);
+	{ const t = canvasPlane(folder, 360, 120, .3, (x, W, H) => { x.fillStyle = "#d8b878"; x.fillRect(0, 0, W, H); x.fillStyle = NAVY; x.font = "900 44px Nunito, sans-serif"; x.fillText("DUVAL", 18, 56); x.font = "800 28px Nunito, sans-serif"; x.fillText("Textiles · crédit 1,2 M€", 18, 100); }, false);
+		t.m.rotation.x = -Math.PI/2; t.m.position.set(0, .0075, .1); folder.userData.lab = t.m; }
+	// Nadia, directrice du centre d'affaires
+	const nadia = makePerson(scene, false, "pro"); nadia.g.position.set(1.95, 0, -1.05); nadia.g.rotation.y = -.7;
+
+	/* --- l'usine Duval Textiles, à Roubaix --- */
+	const fac = new THREE.Group(); fac.position.set(FX, 0, 0); scene.add(fac);
+	box(fac, 26, .1, 18, M.concrete, 0, -.1, -1).receiveShadow = true;
+	box(fac, 26, 5.2, .3, M.brick, 0, 0, -6); box(fac, .3, 5.2, 14, M.brick, -13, 0, -1); box(fac, .3, 5.2, 14, M.brick, 13, 0, -1);
+	for(let x = -12; x <= 12; x += 3){ const r = box(fac, .2, .6, 14, M.steel, x, 4.9, -1, 0, false); r.rotation.z = .5; }
+	for(let x = -10.5; x <= 12; x += 3){ const g = new THREE.Mesh(geo(new THREE.PlaneGeometry(1.6, 12)), M.glass); g.rotation.x = -Math.PI/2; g.rotation.y = .5; g.position.set(x, 5.6, -1); fac.add(g); }
+	for(let i = 0; i < 4; i++){ const w = new THREE.Mesh(geo(new THREE.PlaneGeometry(1.4, 1.6)), M.glass); w.position.set(-9 + i*6, 3.4, -5.84); fac.add(w); }
+	// les métiers à tisser, et la place de la nouvelle ligne
+	for(let i = 0; i < 3; i++){
+		const lx = 3.6 + i*2.9;
+		box(fac, 2.2, 1.1, 1.3, M.loom, lx, 0, -3.8); box(fac, 2.3, .12, 1.4, M.steel, lx, 1.1, -3.8);
+		const r1 = cyl(fac, .14, .14, 2.1, M.bob[i % 3], lx - 1.05, 1.42, -3.3, 12); r1.rotation.z = -Math.PI/2;
+		const cl = new THREE.Mesh(geo(new THREE.PlaneGeometry(2, 1.1)), M.bob[(i + 1) % 5]); cl.rotation.x = -1.05; cl.position.set(lx, 1.25, -3.05); fac.add(cl);
+	}
+	for(const [w, d, x, z] of [[3.6, .08, 6.5, -.3], [3.6, .08, 6.5, 1.9], [.08, 2.2, 4.7, .8], [.08, 2.2, 8.3, .8]]) box(fac, w, .012, d, M.yellow, x, 0, z, 0, false);
+	{ const fl = canvasPlane(fac, 760, 180, 2.6, (x, W, H) => { x.clearRect(0, 0, W, H); x.fillStyle = "#e9c02b"; x.font = "900 52px Nunito, sans-serif"; x.fillText("NOUVELLE LIGNE", 20, 70); x.font = "800 40px Nunito, sans-serif"; x.fillText("d'enduction · emplacement", 20, 140); });
+		fl.m.material.transparent = true; fl.m.rotation.x = -Math.PI/2; fl.m.position.set(6.5, .02, .8); }
+	// les racks et les 12 palettes
+	const pallets = [];
+	const bays = [-5.6, -2.4], levels = [0, 1.2];
+	for(const bx of bays){
+		for(const dx of [-1.55, 1.55]) for(const dz of [-.5, .5]) box(fac, .1, 2.3, .1, M.orange, bx + dx, 0, -3 + dz, 0, false);
+		for(const dz of [-.5, .5]) box(fac, 3.2, .12, .08, M.orange, bx, 1.07, -3 + dz, 0, false);
+		box(fac, 3.1, .04, 1, M.steel, bx, 1.14, -3, 0, false);
+	}
+	PALLETS.forEach((p, i) => {
+		const g = new THREE.Group(), b = Math.floor(i/6), l = Math.floor((i % 6)/3), s = i % 3;
+		g.position.set(bays[b] + (s - 1)*1.02, levels[l] + (l ? .04 : 0), -3); fac.add(g);
+		box(g, .9, .12, .9, M.wood, 0, 0, 0);
+		const bm = p[3] ? M.dust : M.bob[(i*2) % 5];
+		for(let r = 0; r < 2; r++) for(let c = 0; c < 3; c++) cyl(g, .13, .13, .62, bm, -.3 + c*.3, .12, -.2 + r*.4, 10);
+		box(g, .92, .64, .92, M.film, 0, .12, 0, 0, false);
+		if(p[3]){ box(g, .93, .012, .93, M.dustTop, 0, .76, 0, 0, false); }
+		const tag = canvasPlane(g, 320, 200, .5, null); tag.m.position.set(0, .44, .47); tag.m.visible = false;
+		const hit = new THREE.Mesh(BOXGEO(), M.hit); hit.scale.set(1, .95, 1); hit.position.y = .45; hit.userData.pal = i; g.add(hit);
+		pallets.push({ g, tag, hit, i, p });
+	});
+	function BOXGEO(){ return BOXGEO.g || (BOXGEO.g = geo(new THREE.BoxGeometry(1, 1, 1))); }
+	const tagTxt = i => { const [c, r, d] = PALLETS[i]; return `${c} · ${r} · entrée ${d}`; };
+	function drawTag(i){
+		const P = pallets[i], x = P.tag.x, [client, ref, date, dead] = P.p, n = [...S.counted].indexOf(i) + 1;
+		x.fillStyle = dead ? "#e9e4d8" : "#ffffff"; x.fillRect(0, 0, 320, 200);
+		x.strokeStyle = "#333"; x.lineWidth = 4; x.strokeRect(2, 2, 316, 196);
+		x.fillStyle = "#2a5db0"; x.font = "900 54px Nunito, sans-serif"; x.fillText(String(n), 16, 60);
+		x.fillStyle = "#222"; x.font = "900 30px Nunito, sans-serif"; x.fillText(client, 82, 46);
+		x.font = "800 24px Nunito, sans-serif"; x.fillText(ref, 18, 110); x.fillText("Entrée : " + date, 18, 150);
+		x.fillStyle = "#666"; x.font = "800 20px Nunito, sans-serif"; x.fillText("150 k€ · inventaire", 18, 186);
+		if(S.stick.has(i)){ x.fillStyle = "#d22f27"; x.beginPath(); x.arc(276, 150, 34, 0, 7); x.fill(); x.fillStyle = "#fff"; x.font = "900 34px Nunito, sans-serif"; x.textAlign = "center"; x.fillText("✕", 276, 162); x.textAlign = "left"; }
+		P.tag.tex.needsUpdate = true; P.tag.m.visible = true;
+	}
+	// le tableau des commandes, avec la lettre de Volta épinglée ; le pupitre de la fiche de visite
+	box(fac, 2.7, 1.6, .06, M.frame, 1.3, .85, -5.8);
+	box(fac, .62, .34, .5, M.wood, -4, 0, -1.35);
+	// M. Duval
+	const duval = makePerson(fac, false, "senior"); duval.g.position.set(2.6, 0, -2.3); duval.g.rotation.y = -.6;
+
+	/* --- la salle du comité de crédit --- */
+	const com = new THREE.Group(); com.position.set(CX, 0, 0); scene.add(com);
+	box(com, 12, .1, 10, M.floor, 0, -.1, -1).receiveShadow = true;
+	box(com, 12, 3.4, .2, M.wall, 0, 0, -4.2); box(com, .2, 3.4, 10, M.wall, -5, 0, -1); box(com, .2, 3.4, 10, M.wall, 5, 0, -1);
+	{ const w = new THREE.Mesh(geo(new THREE.PlaneGeometry(1.6, 2.2)), M.sky); w.rotation.y = Math.PI/2; w.position.set(-4.88, 1.7, -1.5); com.add(w); }
+	box(com, 5.2, .05, 2.1, M.table, 0, DY - .05, -1.15);
+	for(const dx of [-2.4, 2.4]) for(const dz of [-1.9, -.4]) box(com, .08, DY - .05, .08, M.leg, dx, 0, dz, 0, false);
+	{ const sc = canvasPlane(com, 1000, 420, 2.4, (x, W, H) => { x.fillStyle = "#1d2024"; x.fillRect(0, 0, W, H); x.fillStyle = "#f1e6c8"; x.font = "700 62px Fraunces, Georgia, serif"; x.fillText("Comité de crédit", 50, 120); x.font = "800 40px Nunito, sans-serif"; x.fillStyle = "#cfd8e0"; x.fillText("Jeudi 14 h · Duval Textiles · 1 200 k€", 50, 200); x.fillText("Rapporteur : le chargé d'affaires", 50, 260); x.fillText("Décision : accord / refus / ajournement", 50, 320); }); sc.m.position.set(0, 2.2, -4.08); }
+	const members = {};
+	[["lambert", -1.5], ["vasseur", 0], ["okafor", 1.5]].forEach(([id, x], i) => {
+		box(com, .55, .48, .55, M.chair, x, 0, -2.75, 0, false);
+		const p = makePerson(com, true, i === 1 ? "senior" : "pro"); p.g.position.set(x, 0, -2.75); members[id] = p;
 	});
 
-	/* ===== 1. l'univers de Karim : sa boulangerie au sommet d'un iceberg ===== */
-	const water = { mesh:null, level:LEVELS[0] };
-	const slotGroups = [];
-	const flour = { origin:new THREE.Vector3() }, oven = { pos:new THREE.Vector3() };
-	{
-		const G = group(U.karim), at = (o, x, y, z) => { if(x !== undefined) o.position.set(x, y, z); G.add(o); return o; };
-		at(mesh(new THREE.CylinderGeometry(11, 11.4, .6, 64), M("#d8c79a")), 0, BOT - .3, 0);
-		at(mesh(new THREE.TorusGeometry(10.9, .12, 8, 96).rotateX(Math.PI/2), M("#2e3d48")), 0, BOT, 0);
-		// algues qui ondulent et rochers
-		for(let i = 0; i < 14; i++){ const a = i*2.4, r = 6.5 + (i % 3)*1.3; const s = at(new THREE.Group(), Math.cos(a)*r, BOT, Math.sin(a)*r); sway.push(s); for(let k = 0; k < 3; k++){ const c = mesh(new THREE.ConeGeometry(.12, 1 + k*.5, 5), M(k % 2 ? "#2f6b4a" : "#3f8a55")); c.position.set((k - 1)*.15, .5 + k*.2, 0); s.add(c); } }
-		for(let i = 0; i < 8; i++){ const a = i*.8 + .3, r = 8 + (i % 2); at(mesh(new THREE.DodecahedronGeometry(.4 + (i % 3)*.25), M("#7d7a72")), Math.cos(a)*r, BOT + .2, Math.sin(a)*r); }
-		// l'iceberg : un bloc de glace irrégulier, et sa pointe aplatie où se tient la boulangerie
-		const ice = new THREE.MeshStandardMaterial({ color:"#eaf6fc", roughness:.35, metalness:.05, flatShading:true });
-		const blob = (sx, sy, sz, y, seed) => { const g = new THREE.IcosahedronGeometry(1, 2), p = g.attributes.position; for(let i = 0; i < p.count; i++){ const k = 1 + .09*Math.sin(i*12.9898 + seed)*Math.cos(i*4.1 + seed); p.setXYZ(i, p.getX(i)*k, p.getY(i)*k, p.getZ(i)*k); } g.computeVertexNormals(); const m = mesh(g, ice); m.scale.set(sx, sy, sz); return at(m, 0, y, 0); };
-		blob(4.3, 4.7, 3.5, -3.4, 1); blob(2.7, 1, 2.3, 1.3, 2);
-		at(mesh(new THREE.CylinderGeometry(2.5, 2.8, .5, 9), ice), 0, 2, 0);
-		// la boulangerie, la fumée du four en panne et la farine qui vole
-		const shop = new THREE.Group();
-		shop.add(box(1.9, 1.25, 1.4, "#f3e1c0", 0, 0, 0));
-		const r = roof(2.1, .8, 1.6, "#a0522d"); r.position.set(0, 1.25, -.8); shop.add(r);
-		shop.add(box(.5, .8, .05, "#6b3a1f", -.4, 0, .71), box(.6, .5, .05, "#ffe4a8", .45, .4, .71));
-		const store = tex(256, 64, (x, w) => { x.fillStyle = "#6b3a1f"; x.fillRect(0, 0, w, 64); x.fillStyle = "#ffe9b8"; x.textAlign = "center"; fitFont(x, "Boulangerie", w - 24, 34, 700, "Fraunces, Georgia, serif"); x.fillText("Boulangerie", w/2, 44); });
-		shop.add(mesh(new THREE.PlaneGeometry(1.6, .4), new THREE.MeshStandardMaterial({ map:store }), 0, 1.0, .72));
-		for(let i = 0; i < 4; i++) shop.add(mesh(new THREE.CapsuleGeometry(.05, .4, 4, 8).rotateZ(Math.PI/2.4), M("#c98a3a"), .3 + i*.08, .45, .78));
-		at(shop, -.7, 2.25, -.5);
-		const ov = new THREE.Group();
-		ov.add(box(1.1, .9, .9, "#4a4f55", 0, 0, 0), box(.7, .4, .05, "#2a2a2a", 0, .25, .46), box(.2, .7, .2, "#5b6066", .3, .9, -.2));
-		at(ov, 1.25, 2.25, .35);
-		oven.pos.set(U.karim.x + 1.55, 3.95, U.karim.z + .15);
-		at(label("La demande : un crédit pour le four", { size:.42, bg:"#fbfaf6", line:"#9cc4d9" }), 1.1, 4.3, .4);
-		flour.origin.set(U.karim.x - .9, 2.6, U.karim.z + .4);
-		// l'eau : une colonne translucide dont le niveau baisse à chaque besoin découvert
-		water.mesh = at(new THREE.Mesh(new THREE.CylinderGeometry(10.6, 10.6, 1, 64), new THREE.MeshStandardMaterial({ color:"#1c6a9e", transparent:true, opacity:.84, roughness:.3, metalness:0, depthWrite:false })), 0, 0, 0);
-		water.mesh.renderOrder = 2;
-		// trois blocs de glace givrés cachent les besoins que Karim n'a pas dits
-		for(const [x, y, z] of SLOTS){
-			const g = at(new THREE.Group(), x, y, z);
-			const frost = mesh(new THREE.IcosahedronGeometry(1, 0), new THREE.MeshStandardMaterial({ color:"#f4fbff", roughness:.95, flatShading:true })); frost.scale.set(1.35, 1.05, .75); g.add(frost);
-			const q = label("?", { bg:null, fg:"#7fb2cc", size:.9, big:1 }); q.position.set(0, 0, .9); q.material.depthTest = true; g.add(q);
-			slotGroups.push({ g, frost, q, content:null, lab:null });
+	/* ---------- les documents : des feuilles dessinées qu'on touche ---------- */
+	const SH = {}, hits = [];
+	function sheet(id, W, H, ww, paint){
+		const c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d");
+		const tex = own(new THREE.CanvasTexture(c)); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = ANISO;
+		const m = new THREE.Mesh(geo(new THREE.PlaneGeometry(ww, ww*H/W)), own(new THREE.MeshBasicMaterial({ map:tex, toneMapped:false })));
+		const s = { id, W, H, ww, wh:ww*H/W, c, x, tex, mesh:m, paint, ink:[], on:null, zones:{}, dirty:true };
+		m.userData.sheet = s; hits.push(m); SH[id] = s;
+		return s;
+	}
+	function flat(s, parent, x, y, z, ry = 0){ s.mesh.rotation.set(-Math.PI/2, 0, 0); s.mesh.rotateZ(ry); s.mesh.position.set(x, y, z); parent.add(s.mesh); }
+	function redraw(s){
+		const x = s.x; x.save(); s.paint(x, s); x.restore();
+		for(const st of s.ink){
+			if(st.pts.length < 2) continue;
+			x.strokeStyle = st.col; x.globalAlpha = st.a || .85; x.lineWidth = st.w || 7; x.lineCap = x.lineJoin = "round";
+			x.beginPath(); st.pts.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); x.stroke(); x.globalAlpha = 1;
 		}
+		s.tex.needsUpdate = true; s.dirty = false;
 	}
-	// poissons et mouettes
-	const fish = [], gulls = [];
-	for(let i = 0; i < 4; i++){ const f = new THREE.Group(); f.add(mesh(new THREE.SphereGeometry(.25, 12, 8).scale(1.6, 1, .7), M(i % 2 ? "#f08a3a" : "#f2c33a"))); f.add(mesh(new THREE.ConeGeometry(.2, .35, 4).rotateZ(Math.PI/2), M("#e0702a"), -.5, 0, 0)); scene.add(f); fish.push({ f, r:6.4 + i*.8, y:-2.2 - i*1.1, s:.35 + i*.07, a:i*1.7 }); }
-	for(let i = 0; i < 2; i++){ const g = new THREE.Group(); for(const s of [-1, 1]){ const w = mesh(new THREE.BoxGeometry(.6, .04, .16), M("#fbfaf6")); w.position.x = s*.28; w.rotation.z = s*.35; g.add(w); } scene.add(g); gulls.push({ g, c:U.karim, r:5 + i*2, y:6.5 + i, s:.5 - i*.15, a:i*3 }); }
+	const dirty = (...ids) => ids.forEach(id => SH[id] && (SH[id].dirty = true));
 
-	/* ===== 2. l'univers de Mme Lefèvre : son salon, plein de signaux faibles ===== */
-	const clues = {};
-	const cat = { body:null };
-	{
-		const G = group(U.lefevre), at = (o, x, y, z) => { if(x !== undefined) o.position.set(x, y, z); G.add(o); return o; };
-		at(mesh(new THREE.CylinderGeometry(8.6, 8.9, .5, 48), M("#6b4a2e")), 0, -.25, 0);
-		const parquet = tex(128, 128, (x, w) => { for(let i = 0; i < 8; i++){ x.fillStyle = ["#a7794d", "#b08356", "#9c6f45"][i % 3]; x.fillRect(0, i*16, w, 16); x.fillStyle = "rgba(0,0,0,.2)"; x.fillRect(0, i*16, w, 1); x.fillRect((i*37) % w, i*16, 1, 16); } });
-		parquet.wrapS = parquet.wrapT = THREE.RepeatWrapping; parquet.repeat.set(4, 4);
-		at(mesh(new THREE.CylinderGeometry(8.5, 8.5, .04, 48), new THREE.MeshStandardMaterial({ map:parquet, roughness:.7 })), 0, .02, 0);
-		at(mesh(new THREE.CylinderGeometry(3.4, 3.4, .03, 40), M("#8f3a3a")), .3, .05, .9);
-		at(mesh(new THREE.TorusGeometry(3.2, .06, 6, 60).rotateX(Math.PI/2), M("#d9b25a")), .3, .07, .9);
-		// murs tapissés, fenêtre aux rideaux qui ondulent, horloge comtoise au balancier
-		const wall = tex(128, 128, (x, w) => { x.fillStyle = "#e9d9b8"; x.fillRect(0, 0, w, w); x.fillStyle = "#d9c49c"; for(let i = 0; i < 8; i++) for(let j = 0; j < 8; j++) if((i + j) % 2){ x.beginPath(); x.arc(i*16 + 8, j*16 + 8, 3, 0, 7); x.fill(); } });
-		wall.wrapS = wall.wrapT = THREE.RepeatWrapping; wall.repeat.set(6, 2);
-		const wm = new THREE.MeshStandardMaterial({ map:wall, roughness:.9 });
-		at(mesh(new THREE.BoxGeometry(13, 4.2, .3), wm), 0, 2.1, -6); at(mesh(new THREE.BoxGeometry(.3, 4.2, 10), wm), -6.5, 2.1, -1);
-		at(box(13, .6, .34, "#6b4a2e", 0, 0, -5.98)); at(box(.34, .6, 10, "#6b4a2e", -6.48, 0, -1));
-		at(box(2.6, 2.2, .1, "#f4efe4", -2.6, 1.3, -5.84)); at(mesh(new THREE.PlaneGeometry(2.2, 1.8), new THREE.MeshBasicMaterial({ map:tex(64, 64, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#a9cbe0"); g.addColorStop(1, "#e8dcc4"); x.fillStyle = g; x.fillRect(0, 0, w, h); }) })), -2.6, 2.4, -5.78);
-		for(const s of [-1, 1]){ const c = at(new THREE.Group(), -2.6 + s*1.45, 3.55, -5.7); c.add(box(.5, 2.5, .12, "#a33b3b", 0, -2.5, 0)); sway.push(c); }
-		at(box(.9, 2.8, .55, "#5a3a22", -5.6, 0, -4.9)); at(mesh(new THREE.CylinderGeometry(.3, .3, .05, 24).rotateX(Math.PI/2), M("#f4efe4"), -5.6, 2.35, -4.6));
-		const pend = at(new THREE.Group(), -5.6, 1.9, -4.6); pend.add(box(.04, 1.1, .04, "#c9a548", 0, -1.1, 0), mesh(new THREE.CylinderGeometry(.16, .16, .04, 20).rotateX(Math.PI/2), M("#c9a548", { metalness:.6, roughness:.3 }), 0, -1.15, 0)); pendulums.push(pend);
-		// le fauteuil où elle s'assoit, le canapé, la table basse et le thé
-		at(box(1.3, .5, 1.2, "#6b7f5a", -1.6, 0, -1.4)); at(box(1.3, 1.2, .3, "#6b7f5a", -1.6, .5, -1.95)); for(const s of [-1, 1]) at(box(.25, .75, 1.2, "#5d6f4e", -1.6 + s*.65, 0, -1.4));
-		at(box(3, .5, 1.1, "#8a6d4e", 2.6, 0, -3.4)); at(box(3, 1, .3, "#8a6d4e", 2.6, .5, -3.85));
-		at(mesh(new THREE.CylinderGeometry(1, 1, .08, 28), M("#7a5636"), .4, .55, .5)); at(mesh(new THREE.CylinderGeometry(.12, .16, .55, 10), M("#5a3a22"), .4, .27, .5));
-		for(const [x, z] of [[.1, .3], [.75, .55]]) at(mesh(new THREE.CylinderGeometry(.1, .08, .14, 14), M("#f4efe4"), x, .66, z));
-		at(mesh(new THREE.SphereGeometry(.22, 16, 12), M("#f4efe4"), .35, .78, .9));
-		// les indices (et les fausses pistes) que la loupe peut révéler
-		const clue = (id, obj, x, z, r, ry = 0) => { obj.position.set(x, 0, z); obj.rotation.y = ry; G.add(obj); clues[id] = obj; pickable(id, obj, r); return obj; };
-		{	// le manteau de son mari, toujours au portemanteau
-			const g = new THREE.Group(); g.add(mesh(new THREE.CylinderGeometry(.06, .06, 2.6, 10), M("#3a2616"), 0, 1.3, 0), mesh(new THREE.CylinderGeometry(.35, .4, .08, 16), M("#3a2616"), 0, .04, 0));
-			g.add(box(.75, 1.45, .32, "#4d4a3f", 0, .95, .22)); g.add(mesh(new THREE.CylinderGeometry(.3, .3, .04, 18), M("#2b2a26"), 0, 2.5, .2), mesh(new THREE.CylinderGeometry(.18, .2, .25, 18), M("#2b2a26"), 0, 2.62, .2));
-			clue("manteau", g, -5.2, 2.6, 1.3, .6);
+	// le crayon : rectangles arrondis, texte, paragraphes
+	function rr(x, X, Y, W, H, r, fill, stroke, lw = 3){ x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + W, Y, X + W, Y + H, r); x.arcTo(X + W, Y + H, X, Y + H, r); x.arcTo(X, Y + H, X, Y, r); x.arcTo(X, Y, X + W, Y, r); x.closePath(); if(fill){ x.fillStyle = fill; x.fill(); } if(stroke){ x.strokeStyle = stroke; x.lineWidth = lw; x.stroke(); } }
+	function T(x, s, X, Y, size, col = INK, w = 700, al = "left", fam = "Nunito, system-ui, sans-serif"){ x.font = `${w} ${size}px ${fam}`; x.fillStyle = col; x.textAlign = al; x.textBaseline = "alphabetic"; x.fillText(s, X, Y); }
+	function P(x, s, X, Y, maxW, size, col = INK, w = 700, lh = 1.25){
+		x.font = `${w} ${size}px Nunito, system-ui, sans-serif`; let line = "", yy = Y;
+		for(const wd of s.split(" ")){ const t = line ? line + " " + wd : wd; if(x.measureText(t).width > maxW && line){ T(x, line, X, yy, size, col, w); line = wd; yy += size*lh; } else line = t; }
+		if(line) T(x, line, X, yy, size, col, w); return yy;
+	}
+	function paper(x, s, title, sub){
+		x.fillStyle = PAPER; x.fillRect(0, 0, s.W, s.H); x.strokeStyle = "#d9d3c4"; x.lineWidth = 4; x.strokeRect(2, 2, s.W - 4, s.H - 4);
+		T(x, title, 40, 58, 32, NAVY, 900); if(sub) T(x, sub, 40, 94, 22, GREY, 700);
+		x.fillStyle = "#c9a227"; x.fillRect(40, 108, 90, 5);
+	}
+	const check = (x, X, Y, ok) => T(x, ok ? "✔" : "✘", X, Y, 34, ok ? GREEN : RED, 900, "center");
+
+	/* -- la liasse fiscale -- */
+	sheet("liasse", 1000, 800, .8, (x, s) => {
+		paper(x, s, "LIASSE FISCALE SIMPLIFIÉE", "Duval Textiles SAS · Roubaix · en milliers d'euros (k€)");
+		const cols = [700, 830, 960];
+		["2023", "2024", "2025"].forEach((y, i) => T(x, y, cols[i], 142, 24, GREY, 900, "right"));
+		let y = 152;
+		for(const [id, lab, ...v] of LIASSE){
+			if(!v.length){ x.fillStyle = "#e6ebf1"; x.fillRect(24, y, s.W - 48, 34); T(x, lab, 40, y + 25, 18, NAVY, 900); y += 34; continue; }
+			s.zones[id] = [24, y, s.W - 24, y + 50];
+			if(S.hl === id){ x.fillStyle = "#fff1b8"; x.fillRect(24, y, s.W - 48, 50); }
+			T(x, lab, 40, y + 35, 25, INK, 700);
+			v.forEach((n, i) => T(x, fr(n), cols[i], y + 35, 26, INK, 800, "right"));
+			x.strokeStyle = "#e3ded2"; x.lineWidth = 2; x.beginPath(); x.moveTo(24, y + 50); x.lineTo(s.W - 24, y + 50); x.stroke();
+			y += 50;
 		}
-		{	// le buffet : la photo de Théo et le courrier du notaire
-			at(box(3.4, 1.1, .8, "#6b4a2e", 3.2, 0, -5.4));
-			const photo = new THREE.Group();
-			photo.add(box(.75, .9, .07, "#c9a548", 0, 0, 0));
-			photo.add(mesh(new THREE.PlaneGeometry(.6, .72), new THREE.MeshStandardMaterial({ map:tex(96, 120, (x, w, h) => { x.fillStyle = "#cfe0ea"; x.fillRect(0, 0, w, h); x.fillStyle = "#2a2a3a"; x.beginPath(); x.arc(48, 52, 18, 0, 7); x.fill(); x.fillRect(22, 74, 52, 46); x.fillStyle = "#e7b894"; x.beginPath(); x.arc(48, 56, 13, 0, 7); x.fill(); x.fillStyle = "#1a1a24"; x.fillRect(26, 30, 44, 8); x.fillRect(44, 22, 8, 8); x.fillStyle = "#e0a33a"; x.fillRect(66, 34, 3, 18); }) }), 0, .45, .04));
-			photo.add(box(.06, .5, .3, "#c9a548", 0, 0, -.18));
-			clue("photo", photo, 2.2, -5.25, .9, .15).position.y = 1.1;
-			const letter = new THREE.Group(); const env = box(.8, .55, .03, "#f2ead6", 0, 0, 0); env.rotation.x = -.25; letter.add(env);
-			letter.add(mesh(new THREE.CylinderGeometry(.08, .08, .04, 14).rotateX(Math.PI/2), M("#9b1c1c"), 0, .28, .06));
-			const nl = label("Étude notariale", { size:.22, bg:null, fg:"#3b2a10" }); nl.position.set(0, .4, .1); nl.material.depthTest = true; letter.add(nl);
-			clue("notaire", letter, 3.9, -5.15, .9, -.1).position.y = 1.1;
-		}
-		{	// des factures pas ouvertes, sur la petite table
-			at(mesh(new THREE.CylinderGeometry(.55, .55, .06, 20), M("#7a5636"), 2.6, .7, 1.4)); at(mesh(new THREE.CylinderGeometry(.06, .08, .7, 10), M("#5a3a22"), 2.6, .35, 1.4));
-			const g = new THREE.Group(); for(let i = 0; i < 6; i++){ const e = box(.6, .03, .4, i % 2 ? "#f2ead6" : "#fbf7ee", 0, i*.035, 0); e.rotation.y = (i - 3)*.18; g.add(e); }
-			const r = label("!", { bg:"#c0392b", fg:"#fff", size:.28 }); r.position.set(.25, .35, 0); r.material.depthTest = true; g.add(r);
-			clue("factures", g, 2.6, 1.4, .8).position.y = .73;
-		}
-		{	// fausses pistes : le chat qui dort, la télé, les plantes
-			const c = new THREE.Group(), fur = M("#d9822b");
-			cat.body = mesh(new THREE.SphereGeometry(.45, 16, 12), fur, 0, .3, 0); cat.body.scale.set(1.4, .7, 1); c.add(cat.body);
-			c.add(mesh(new THREE.SphereGeometry(.26, 14, 10), fur, .6, .35, .1)); for(const z of [-.02, .22]) c.add(mesh(new THREE.ConeGeometry(.08, .16, 4), fur, .68, .58, z));
-			c.add(mesh(new THREE.CapsuleGeometry(.07, .7, 4, 8).rotateZ(Math.PI/2), fur, -.7, .15, .3));
-			clue("chat", c, -.9, 2.2, .9, .4);
-			const tv = new THREE.Group(); tv.add(box(1.4, .7, .6, "#3a2a1e", 0, 0, 0), box(1.4, .85, .1, "#111", 0, .75, 0));
-			tv.add(mesh(new THREE.PlaneGeometry(1.25, .72), new THREE.MeshBasicMaterial({ map:tex(64, 40, (x) => { const g = x.createLinearGradient(0, 0, 64, 40); g.addColorStop(0, "#5aa0e0"); g.addColorStop(1, "#e05a9a"); x.fillStyle = g; x.fillRect(0, 0, 64, 40); x.fillStyle = "#ffe066"; x.fillRect(20, 14, 24, 12); }) }), 0, 1.17, .06));
-			clue("tele", tv, 5.6, -.6, 1, -1.2);
-			const pl = new THREE.Group(); plant(pl, 0, 0, 1.2); pl.add(mesh(new THREE.CylinderGeometry(.18, .22, .4, 12), M("#4f8a6e"), .7, .2, .2));
-			clue("plante", pl, 5.4, 2.6, 1);
-		}
-	}
-
-	/* ===== 3. l'univers d'Inès et Tom : un pont à construire au-dessus du vide ===== */
-	const bridge = { planks:[], river:null };
-	{
-		const G = group(U.couple), at = (o, x, y, z) => { if(x !== undefined) o.position.set(x, y, z); G.add(o); return o; };
-		at(box(16, .4, 11, "#6b5a45", 0, -4.6, 0));
-		const rt = tex(64, 64, (x, w) => { x.fillStyle = "#2f86b8"; x.fillRect(0, 0, w, w); x.strokeStyle = "rgba(255,255,255,.45)"; x.lineWidth = 3; for(let i = 0; i < 5; i++){ x.beginPath(); x.moveTo(0, i*13 + 4); x.quadraticCurveTo(32, i*13 - 4, 64, i*13 + 4); x.stroke(); } });
-		rt.wrapS = rt.wrapT = THREE.RepeatWrapping; rt.repeat.set(1, 3); bridge.river = rt;
-		at(mesh(new THREE.PlaneGeometry(4.4, 11).rotateX(-Math.PI/2), new THREE.MeshStandardMaterial({ map:rt, roughness:.2 })), 0, -4.15, 0);
-		for(const s of [-1, 1]){
-			at(box(6, 6.2, 11, "#a7744a", s*5, -4.2, 0)); at(box(6, .3, 11, "#7da35a", s*5, 2, 0));
-			for(let i = 0; i < 5; i++) at(mesh(new THREE.DodecahedronGeometry(.5 + (i % 2)*.3), M("#8a5f3c")), s*(2.2 + (i % 2)*.2), -3.8 + i*1.2, -4 + i*2);
-			for(const z of [-.95, .95]) at(box(.18, 1, .18, "#5a3a22", s*2.15, 2.3, z));
-		}
-		for(const z of [-.95, .95]) at(mesh(new THREE.CylinderGeometry(.03, .03, 4.3, 6).rotateZ(Math.PI/2), M("#c9a26a")), 0, 3.15, z);
-		for(let i = 0; i < 5; i++){ const p = at(box(.74, .14, 1.8, "#9a6a3a", 0, 0, 0), -1.6 + i*.8, 2.1, 0); p.scale.setScalar(.001); p.visible = false; bridge.planks.push(p); }
-		// leur futur chez-eux, et les cartons du déménagement
-		const home = at(new THREE.Group(), 6, 2.3, -2.6);
-		home.add(box(2.4, 2.4, 2, "#f1e2c6", 0, 0, 0)); const r = roof(2.7, 1.1, 2.2, "#c0392b"); r.position.set(0, 2.4, -1.1); home.add(r);
-		for(const x of [-.6, .6]) home.add(box(.5, .5, .05, "#9fc3d8", x, 1.4, 1.01)); home.add(box(.5, .9, .05, "#6b3a1f", 0, 0, 1.01));
-		const sold = label("🔑 Leur futur chez-eux", { size:.42, bg:"#fbfaf6", line:"#c0392b" }); sold.position.set(0, 4.1, 0); home.add(sold);
-		for(const [x, y, z, s] of [[4.4, 2.3, 2.6, 1], [5.2, 2.3, 2.9, .9], [4.8, 2.95, 2.7, .8], [5.9, 2.3, 2.2, .8]]){ const c = at(new THREE.Group(), x, y, z); c.add(box(.7*s, .6*s, .6*s, "#c9a26a", 0, 0, 0), box(.72*s, .06*s, .12*s, "#8d7a5a", 0, .6*s, 0)); wobble.push(c); }
-		gulls.push(...[0, 1].map(i => { const g = new THREE.Group(); for(const s of [-1, 1]){ const w = mesh(new THREE.BoxGeometry(.6, .04, .16), M("#fbfaf6")); w.position.x = s*.28; w.rotation.z = s*.35; g.add(w); } scene.add(g); return { g, c:U.couple, r:4 + i*2.5, y:6 + i, s:.45, a:i*2 }; }));
-	}
-
-	/* ===== 4. l'univers de Duval Textiles : une usine qui grandit sur un plateau tournant ===== */
-	const factory = { plat:null, grow:{}, cloud:null, rain:null, sunL:null, bolt:null, year:null, truck:null, puffs:[] };
-	{
-		const G = group(U.duval), at = (o, x, y, z, p = G) => { if(x !== undefined) o.position.set(x, y, z); p.add(o); return o; };
-		const plat = factory.plat = at(new THREE.Group(), 0, 0, -1);
-		at(mesh(new THREE.CylinderGeometry(8.6, 8.9, .5, 56), M("#7c868c")), 0, -.25, 0, plat);
-		at(mesh(new THREE.CylinderGeometry(8.5, 8.5, .04, 56), M("#9aa59a")), 0, .02, 0, plat);
-		at(mesh(new THREE.RingGeometry(6.6, 7.6, 56).rotateX(-Math.PI/2), M("#4a4f55")), 0, .05, 0, plat);
-		// l'usine : toits en dents de scie, cheminée, bobines de fil qui tournent
-		const usine = at(new THREE.Group(), 0, 0, -.6, plat);
-		usine.add(box(5.2, 2, 3.4, "#b85c3c", 0, 0, 0));
-		for(let i = 0; i < 4; i++){ const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(1.3, 0); sh.lineTo(1.3, .9); sh.closePath(); const t = mesh(new THREE.ExtrudeGeometry(sh, { depth:3.4, bevelEnabled:false }), M("#8a8f94")); t.position.set(-2.6 + i*1.3, 2, -1.7); usine.add(t); usine.add(box(.05, .8, 3.3, "#bfe0ee", -1.3 + i*1.3, 2, 0)); }
-		usine.add(box(1.2, 1.2, .06, "#5a3a22", -1.2, 0, 1.71));
-		const brand = label("DUVAL TEXTILES", { size:.4, bg:"#16324f", fg:"#fff" }); brand.position.set(.9, 1.5, 1.8); usine.add(brand);
-		usine.add(mesh(new THREE.CylinderGeometry(.3, .4, 4.6, 16), M("#9b4a33"), 2.1, 2.3, -1.2));
-		factory.chimney = new THREE.Vector3(U.duval.x, 4.8, U.duval.z);
-		for(let i = 0; i < 3; i++){ const b = mesh(new THREE.CylinderGeometry(.32, .32, .7, 18), M(["#c0392b", "#2f5d9e", "#e0a33a"][i]), 0, 0, 0); b.position.set(-1.6 + i*.8, .35, 2.4); usine.add(b); spin.push(b); }
-		// ce qui pousse quand l'entreprise est bien accompagnée
-		const exp = at(new THREE.Group(), -4.4, 0, 2.2, plat); exp.add(box(2.4, 1.4, 1.8, "#d9d2c3", 0, 0, 0), box(2.5, .12, 1.9, "#6b6b6b", 0, 1.4, 0)); const fl = label("🇩🇪 Export", { size:.36 }); fl.position.y = 2; exp.add(fl); factory.grow.export = exp;
-		const coins = at(new THREE.Group(), 4.2, 0, 2.4, plat); for(let i = 0; i < 3; i++) for(let k = 0; k < 4 + i; k++) coins.add(mesh(new THREE.CylinderGeometry(.24, .24, .08, 18), M("#d9a93a", { metalness:.7, roughness:.3 }), (i - 1)*.55, .05 + k*.09, 0)); const cl = label("💶 Trésorerie", { size:.36 }); cl.position.y = 1.3; coins.add(cl); factory.grow.coins = coins;
-		const hall = at(new THREE.Group(), 4.3, 0, -1.6, plat); hall.add(box(2.4, 1.6, 2.2, "#e8eef0", 0, 0, 0)); for(let i = 0; i < 3; i++){ const s = box(.7, .05, 1.9, "#1d3557", -.8 + i*.8, 1.62, 0); s.rotation.z = .2; hall.add(s); } const hl = label("⚙️ Machine neuve", { size:.36 }); hl.position.y = 2.4; hall.add(hl); factory.grow.machine = hall;
-		Object.values(factory.grow).forEach(g => { g.visible = false; g.scale.setScalar(.001); });
-		// un camion fait le tour de l'usine
-		const tr = factory.truck = at(new THREE.Group(), 7.1, 0, 0, plat); tr.add(box(1.4, .8, .7, "#f4f1ea", -.3, .15, 0), box(.5, .6, .66, "#1f6f78", .6, .15, 0)); for(const x of [-.6, .5]) for(const z of [-.33, .33]) tr.add(mesh(new THREE.CylinderGeometry(.15, .15, .1, 12).rotateX(Math.PI/2), M("#222"), x, .15, z));
-		// devant le plateau, une estrade fixe pour M. Duval et les experts
-		at(mesh(new THREE.CylinderGeometry(4.6, 4.8, .3, 40, 1, false, -Math.PI/2.6, Math.PI/1.3), M("#cfc9bb")), 0, -.15, 8.2);
-		// la météo de l'entreprise : nuage, pluie, éclair ou soleil
-		const cloud = factory.cloud = at(new THREE.Group(), 0, 7.6, -1);
-		for(const [x, y, z, r] of [[0, 0, 0, 1.1], [1, -.2, .2, .85], [-1, -.2, -.1, .9], [.4, .5, 0, .8], [-.5, .4, .2, .7]]) cloud.add(mesh(new THREE.SphereGeometry(r, 14, 10), new THREE.MeshStandardMaterial({ color:"#c9ced3", roughness:1 }), x, y, z));
-		cloud.visible = false;
-		const rg = new THREE.BufferGeometry(), rp = new Float32Array(60*3); rg.setAttribute("position", new THREE.BufferAttribute(rp, 3));
-		factory.rain = at(new THREE.Points(rg, new THREE.PointsMaterial({ color:"#9fc3e8", size:.12 })), 0, 0, 0); factory.rain.visible = false;
-		factory.sunL = at(label("☀️", { bg:null, size:1.8, big:1 }), 0, 8, -1); factory.sunL.visible = false;
-		factory.bolt = at(label("⚡", { bg:null, size:1.8, big:1 }), .4, 5.8, -1); factory.bolt.visible = false;
-		factory.year = at(label("2026", { size:.7, bg:"#16324f", fg:"#f1e6c8" }), -5.4, 5.4, -1);
-		// les signaux de risque de 2029 : des stocks de fil qui s'entassent, une facture qui ne se paie pas
-		const stock = factory.stock = at(new THREE.Group(), -3.4, 0, 2.6, plat);
-		for(let i = 0; i < 14; i++){ const r = i < 6 ? 0 : i < 11 ? 1 : 2, k = i < 6 ? i : i < 11 ? i - 6 : i - 11; stock.add(mesh(new THREE.CylinderGeometry(.3, .3, .62, 14).rotateZ(Math.PI/2), M(["#9aa7b4", "#c9d1d8", "#7f8c99"][i % 3]), -1.25 + k*.62 + r*.31, .3 + r*.56, 0)); }
-		const sl = factory.stockLab = label("📦 Stocks de fil", { size:.34 }); sl.position.y = 2.1; stock.add(sl);
-		const unpaid = factory.unpaid = at(new THREE.Group(), 3.4, 0, 6.6);
-		unpaid.add(box(.9, .05, 1.2, "#fbf7ee", 0, 1.3, 0), mesh(new THREE.CylinderGeometry(.05, .05, 1.3, 8), M("#5a3a22"), 0, .65, 0));
-		const ul = factory.unpaidLab = label("🧾 Autolux : facture impayée", { size:.34, bg:"#fff", line:"#c0392b" }); ul.position.y = 1.9; unpaid.add(ul);
-		[stock, unpaid].forEach(g => { g.visible = false; g.scale.setScalar(.001); });
-	}
-
-	/* ===== 5. l'univers de la famille Martin : la tour d'équilibre devant leur maison ===== */
-	const tower = { g:null, blocks:[], tilt:0, falling:false };
-	{
-		const G = group(U.martin), at = (o, x, y, z) => { if(x !== undefined) o.position.set(x, y, z); G.add(o); return o; };
-		at(mesh(new THREE.CylinderGeometry(8.6, 8.9, .5, 56), M("#5a4636")), 0, -.25, 0);
-		at(mesh(new THREE.CylinderGeometry(8.5, 8.5, .04, 56), M("#7fae5c")), 0, .02, 0);
-		const house = at(new THREE.Group(), -1.5, 0, -4.2);
-		house.add(box(5.2, 2.3, 3, "#f1ece2", 0, 0, 0), box(5.5, .2, 3.3, "#4a4f55", 0, 2.3, 0), box(2.6, 1.3, 2.2, "#f1ece2", 1.2, 2.5, -.3), box(2.8, .16, 2.4, "#4a4f55", 1.2, 3.8, -.3));
-		for(const x of [-1.6, -.2, 1.2]) house.add(box(.9, 1.3, .05, "#9fc3d8", x, .5, 1.51));
-		const pool = at(mesh(new THREE.BoxGeometry(3.6, .12, 1.8), new THREE.MeshStandardMaterial({ color:"#4fb3d9", roughness:.1, metalness:.1 })), 3.9, .08, -2.6); tower.pool = pool;
-		at(box(3.9, .1, 2.1, "#e9e2d2", 3.9, 0, -2.6));
-		const tree = at(new THREE.Group(), -5.6, 0, -.8); tree.add(mesh(new THREE.CylinderGeometry(.2, .28, 1.8, 10), M("#6b4a2e"), 0, .9, 0)); const crown = new THREE.Group(); crown.position.y = 1.8; tree.add(crown); sway.push(crown);
-		for(const [x, y, z, r] of [[0, .6, 0, 1.1], [.6, .3, .3, .8], [-.6, .4, -.2, .85], [0, 1.2, .1, .75]]) crown.add(mesh(new THREE.SphereGeometry(r, 14, 10), M("#4f8a45"), x, y, z));
-		// le socle de pierre où l'on empile la solution
-		at(mesh(new THREE.CylinderGeometry(1.1, 1.3, 1.4, 20), M("#cfc9bb")), 0, .7, 2);
-		at(mesh(new THREE.CylinderGeometry(1.25, 1.25, .12, 20), M("#b8b1a2")), 0, 1.46, 2);
-		tower.g = at(new THREE.Group(), 0, 1.52, 2);
-		const pl = label("🏛️ La solution des Martin", { size:.3, bg:"#fbfaf6", line:"#16324f" }); at(pl, 0, .3, 3.5);
-		gulls.push(...[0].map(i => { const g = new THREE.Group(); for(const s of [-1, 1]){ const w = mesh(new THREE.BoxGeometry(.5, .04, .14), M("#3a3a3a")); w.position.x = s*.24; w.rotation.z = s*.35; g.add(w); } scene.add(g); return { g, c:U.martin, r:5, y:6, s:.4, a:1 }; }));
-	}
-
-	/* --- l'agence : une ambiance tendue après un management raté --- */
-	const tension = label("⚡ Ambiance tendue", { size:.45, bg:"#fbe7e5", fg:"#b3261e" }); tension.position.set(-1.6, 3.4, -2); tension.visible = false; scene.add(tension);
-
-	/* --- les personnages --- */
-	person("toi", { body:"#24365c", collar:"#f4f1ea", hair:"#3b2a1e" });
-	person("sophie", { body:"#8f1d3a", hair:"#2a1a14", skin:"#e7b894" });
-	const KARIM = { body:"#f4f1ea", collar:"#e0a33a", skin:"#c99068", hat:toque }, LEF = { body:"#7a4f9e", hair:"#d8d4cf", hat:chignon }, INES = { body:"#d97a5b", hair:"#2a1a14", skin:"#b98264", small:1 }, TOM = { body:"#4a8f8a", hair:"#8a5a2e", small:1 }, DUV = { body:"#3a4a5c", hair:"#6b6b6b", hat:casque }, MAR = { body:"#2e3b2e", hair:"#c9c2b6", collar:"#c9a548" };
-	person("karim", { ...KARIM, name:"Karim", tag:"#e0a33a" }); person("karimU", KARIM);
-	person("lefevre", { ...LEF, hat:inner => { chignon(inner); sac(inner); }, name:"Mme Lefèvre", tag:"#7a4f9e" }); person("lefevreU", LEF);
-	person("ines", { ...INES, name:"Inès", tag:"#d97a5b" }); person("inesU", INES);
-	person("tom", { ...TOM, name:"Tom", tag:"#4a8f8a" }); person("tomU", TOM);
-	person("duval", { ...DUV, name:"M. Duval", tag:"#3a4a5c" }); person("duvalU", { ...DUV, hat:null });
-	person("clara", { body:"#5b7fa6", hair:"#5a3a22" });
-	person("martin", { ...MAR, name:"Famille Martin", tag:"#2e3b2e" }); person("martinU", MAR); person("martinF", { body:"#8c5a7a", hair:"#e3ddd2", collar:"#c9a548" });
-	person("toiC", { body:"#24365c", collar:"#f4f1ea", hair:"#3b2a1e", name:"Toi", tag:"#1f6f78" });
-	// l'équipe de l'agence, pour le défi de directeur d'agence
-	person("leo", { body:"#3d6b8f", collar:"#f4f1ea", hair:"#2a1a14", name:"Léo", tag:"#3d6b8f" });
-	person("nadia", { body:"#b3563f", collar:"#f4f1ea", hair:"#4a2a1a", skin:"#c99068", name:"Nadia", tag:"#b3563f" });
-	person("samir", { body:"#5a7a3a", collar:"#f4f1ea", hair:"#1a1a1a", skin:"#b07850", name:"Samir", tag:"#5a7a3a" });
-	person("didier", { body:"#5b5f66", collar:"#c9a548", hair:"#3a2a1e", name:"Didier, son fils", tag:"#5b5f66" });
-	const EXPERT_COL = { inter:"#2f7d6b", ct:"#c9a227", cb:"#3a6ea5", patri:"#7a3e8f", wait:"#9aa0a6" };
-	for(const k in EXPERT_COL) person("x_" + k, { body:EXPERT_COL[k], collar:"#f4f1ea", hair:"#3b2a1e" });
-	const SEATS = { karim:-4.4, lefevre:-3, ines:-1.6, tom:-.2, duval:1.2, martin:2.6 };
-	const at = (id, c, x, y, z, ry = 0) => { const p = P[id]; p.walk = null; p.g.visible = true; p.g.position.set(c.x + x, y, c.z + z); p.g.rotation.y = ry; };
-	// les clients en salle d'attente se tournent vers nous : on voit leurs visages dès la vue d'ensemble
-	function seat(id){ const p = P[id]; p.g.visible = true; p.walk = null; p.g.position.set(-7.9, 0, SEATS[id]); p.g.rotation.y = .45; }
-	function resetPeople(){
-		P.toi.g.position.set(5, 0, -1.6); P.toi.g.rotation.y = Math.PI;
-		P.sophie.g.position.set(-1.6, 0, -5.3); P.sophie.g.rotation.y = 0;
-		for(const id in SEATS) seat(id);
-		P.ines.setMood("inquiet"); P.tom.setMood("inquiet"); P.martin.setMood("rassure"); P.karim.setMood("inquiet"); P.lefevre.setMood("inquiet"); P.duval.setMood("neutre");
-		at("karimU", U.karim, .4, 2.25, 1.4);
-		at("lefevreU", U.lefevre, -1.6, .5, -1.25);
-		at("toiC", U.couple, -3.4, 2.3, .3, 1.2); at("inesU", U.couple, 3, 2.3, .1, -1.2); at("tomU", U.couple, 4.1, 2.3, .7, -1.2);
-		at("duvalU", U.duval, -1, 0, 8.4); at("clara", U.duval, -2.4, 0, 8.6); P.clara.g.visible = false;
-		for(const k in EXPERT_COL) at("x_" + k, U.duval, 6, 0, 9.5); for(const k in EXPERT_COL) P["x_" + k].g.visible = false;
-		at("martinU", U.martin, -2.1, 0, 2.6); at("martinF", U.martin, 2.1, 0, 2.6);
-		for(const id of ["leo", "nadia", "samir", "didier"]) P[id].g.visible = false;
-		tension.visible = false;
-	}
-	resetPeople();
-
-	/* --- animations --- */
-	const anims = [];
-	const easeIO = k => k < .5 ? 2*k*k : 1 - Math.pow(-2*k + 2, 2)/2;
-	function anim(dur, fn, done, key){
-		if(key) for(let i = anims.length - 1; i >= 0; i--) if(anims[i].key === key) anims.splice(i, 1);
-		anims.push({ t0:performance.now(), dur, fn, done, key });
-	}
-	function walk(id, pts, done, face){ const p = P[id]; p.walk = { pts:pts.map(([x, z]) => new THREE.Vector3(x, p.g.position.y, z)), i:0, done, face }; }
-	function hop(id, n = 1){ const p = P[id]; anim(420*n, k => { p.inner.position.y = Math.abs(Math.sin(Math.PI*k*n))*.7; }, () => p.inner.position.y = 0, "hop" + id); }
-	// réaction en direct : le client se penche vers toi (+1) ou recule (−1)
-	function react(id, v){ const p = P[id]; p.react = { v, until:performance.now() + 1400 }; if(v < 0) shake(p.g, .08); }
-	function shake(o, amp = .18){ const x0 = o.position.x; anim(500, k => { o.position.x = x0 + Math.sin(k*Math.PI*7)*amp*(1 - k); }, () => o.position.x = x0, "shake" + o.id); }
-	function pop(o, on, dur = 500){ o.visible = true; const s0 = on ? .001 : o.scale.x; anim(dur, k => o.scale.setScalar(Math.max(.001, on ? (k < .7 ? k/.7*1.15 : 1.15 - (k - .7)/.3*.15) : s0*(1 - k))), () => { if(!on) o.visible = false; }, "pop" + o.id); }
-	function setClock(h, m, dur = 1500){ const from = clock.t, to = h*60 + m; anim(dur, k => { clock.t = from + (to - from)*easeIO(k); }, null, "clock"); }
-
-	/* --- Karim : l'eau, les vagues, la glace qui se brise --- */
-	const rings = [], shards = [];
-	function ripple(c, y, n = 3, big){
-		for(let i = 0; i < n; i++) setTimeout(() => {
-			const r = new THREE.Mesh(new THREE.TorusGeometry(1, big ? .12 : .07, 6, 48).rotateX(Math.PI/2), new THREE.MeshBasicMaterial({ color:"#e8f6ff", transparent:true, opacity:.8 }));
-			r.position.set(c.x + (Math.random() - .5)*4, y + .05, c.z + 2 + Math.random()*2); scene.add(r);
-			rings.push({ r, t0:performance.now(), big, y });
-		}, i*220);
-	}
-	function setLevel(i){
-		const from = water.level, to = LEVELS[i]; anim(1800, k => { water.level = from + (to - from)*easeIO(k); }, null, "water"); ripple(U.karim, water.level, 4);
-		// la caméra descend avec l'eau, pour bien cadrer le besoin découvert tout au fond
-		const v = VIEWS.karim; look(v[0], v[1] - i*1.1, v[2] + i*.5, v[3], v[4] - i*.75, v[5], 1.8, 0, v[6]);
-	}
-	function wave(){ ripple(U.karim, water.level, 6, true); const m = water.mesh; anim(1400, k => { m.rotation.z = Math.sin(k*Math.PI*5)*.02*(1 - k); m.rotation.x = Math.cos(k*Math.PI*4)*.015*(1 - k); }, null, "wave"); }
-	function burst(wp, color = "#f4fbff", n = 10){ for(let i = 0; i < n; i++){ const sh = mesh(new THREE.TetrahedronGeometry(.18), M(color)); sh.position.copy(wp); scene.add(sh); shards.push({ m:sh, v:new THREE.Vector3((Math.random() - .5)*5, Math.random()*4 + 1, Math.random()*3 + 1), t0:performance.now() }); } }
-	function reveal(i, build, text){
-		const s = slotGroups[i]; if(!s || s.content) return;
-		const c = build(); c.scale.setScalar(.001); s.g.add(c); s.content = c;
-		s.q.visible = false;
-		const f0 = s.frost.scale.clone();
-		anim(500, k => s.frost.scale.copy(f0).multiplyScalar(Math.max(.001, 1 - k)), () => s.frost.visible = false);
-		anim(700, k => c.scale.setScalar(Math.max(.001, 1.5*(k < .7 ? k/.7*1.1 : 1.1 - (k - .7)/.3*.1))));
-		burst(s.g.getWorldPosition(new THREE.Vector3()));
-		s.lab = label(text, { size:.55, bg:"#fbfaf6", line:"#2b7fb5" }); s.lab.position.set(0, 1.45, .4); s.lab.renderOrder = 12; s.g.add(s.lab);
-	}
-	function unknown(i){ const s = slotGroups[i]; if(s.content) return; relabel(s.q, "?", { fg:"#b3261e" }); s.lab = label("Besoin non découvert", { size:.45, bg:"#f1f1f1", fg:"#8a8f94" }); s.lab.position.set(0, 1.3, .4); s.g.add(s.lab); }
-	function resetIce(){ resetCash(); water.level = LEVELS[0]; slotGroups.forEach(s => { if(s.content) s.g.remove(s.content); if(s.lab) s.g.remove(s.lab); s.content = s.lab = null; s.frost.visible = true; s.frost.scale.set(1.35, 1.05, .75); s.q.visible = true; relabel(s.q, "?", { fg:"#7fb2cc" }); }); }
-	const NEEDS = {
-		boutique:() => { const g = new THREE.Group(); g.add(box(1.2, .8, .8, "#f6dca0", 0, -.4, 0)); const r = roof(1.36, .45, .9, "#c0392b"); r.position.set(0, .4, -.45); g.add(r); const two = label("2", { bg:"#16324f", fg:"#fff", size:.5 }); two.position.set(0, -.05, .5); g.add(two); return g; },
-		seul:() => { const g = new THREE.Group(); const k = new THREE.Group(); k.add(mesh(new THREE.CylinderGeometry(.3, .34, .12, 18), M("#f4f1ea"), 0, -.55, 0), mesh(new THREE.CylinderGeometry(.12, .24, .6, 14), M("#f4f1ea"), 0, -.2, 0), mesh(new THREE.SphereGeometry(.22, 14, 10), M("#c99068"), 0, .22, 0), mesh(new THREE.CylinderGeometry(.16, .15, .2, 14), M("#ffffff"), 0, .45, 0)); k.position.x = -.45; k.rotation.z = .3; g.add(k); g.add(mesh(new THREE.CylinderGeometry(.36, .36, .16, 22).rotateX(Math.PI/2), M("#c0392b"), .45, -.15, 0)); for(const s of [-1, 1]) g.add(mesh(new THREE.SphereGeometry(.1, 10, 8), M("#c0392b"), .45 + s*.25, .2, 0)); const t = label("3:00", { bg:"#fbfaf6", fg:"#c0392b", size:.36 }); t.position.set(.45, -.15, .25); g.add(t); return g; },
-		treso:() => { const g = new THREE.Group(), pk = M("#f2a7b5"); g.add(mesh(new THREE.SphereGeometry(.42, 18, 12).scale(1.25, 1, 1), pk, -.2, -.2, 0), mesh(new THREE.CylinderGeometry(.13, .13, .12, 14).rotateZ(Math.PI/2), pk, .37, -.2, 0)); for(const z of [-.18, .18]) g.add(mesh(new THREE.ConeGeometry(.1, .18, 4), pk, -.05, .2, z)); g.add(box(.5, .6, .06, "#fbfaf6", .62, -.6, .1)); const a = label("AOÛT", { bg:"#c0392b", fg:"#fff", size:.3 }); a.position.set(.62, -.1, .2); g.add(a); return g; }
-	};
-
-	/* --- Mme Lefèvre : la loupe --- */
-	const marks = {};
-	function markClue(id, text, good){
-		const o = clues[id]; if(!o || marks[id]) return;
-		const g = new THREE.Group(); g.position.copy(o.position); o.parent.add(g); marks[id] = g;
-		if(good){ const ring = mesh(new THREE.TorusGeometry(.9, .07, 8, 36).rotateX(Math.PI/2), new THREE.MeshBasicMaterial({ color:"#e0a33a" })); ring.position.y = .06; g.add(ring); g.userData.ring = ring; }
-		const top = new THREE.Box3().setFromObject(o).max.y - o.parent.position.y;
-		const l = label(text, good ? { size:.4, bg:"#fff8e6", line:"#e0a33a" } : { size:.36, bg:"#eceff1", fg:"#6f767c" }); l.position.y = top + .5; g.add(l);
-		const s0 = o.scale.x; anim(600, k => o.scale.setScalar(s0*(1 + .2*Math.sin(Math.PI*k))), () => o.scale.setScalar(s0));
-		if(good) burst(o.getWorldPosition(new THREE.Vector3()).setY(1.5), "#ffd77a", 8);
-	}
-	function resetClues(){ for(const id in marks){ marks[id].parent.remove(marks[id]); delete marks[id]; } }
-
-	/* --- Inès et Tom : les planches du pont --- */
-	let nPlanks = 0;
-	function plank(add){
-		if(add){
-			if(nPlanks >= 5) return; const p = bridge.planks[nPlanks++];
-			const from = P.toiC.g.position.clone().sub(U.couple).setY(3.4), to = new THREE.Vector3(-1.6 + (nPlanks - 1)*.8, 2.1, 0);
-			p.visible = true; p.scale.setScalar(1); p.rotation.set(0, 0, 0);
-			anim(800, k => { p.position.lerpVectors(from, to, easeIO(k)); p.position.y += Math.sin(Math.PI*k)*2; p.rotation.z = (1 - k)*4; }, () => ripple(U.couple, -4.1, 0));
-		} else {
-			if(!nPlanks) return; const p = bridge.planks[--nPlanks], y0 = p.position.y;
-			anim(1100, k => { p.rotation.z = k*2.4; p.rotation.x = k*.8; p.position.y = y0 - k*k*6.2; }, () => { p.visible = false; ripple(U.couple, -4.1, 3, true); });
-		}
-	}
-	function resetBridge(){ resetGauge(); nPlanks = 0; bridge.planks.forEach(p => { p.visible = false; p.scale.setScalar(.001); }); }
-
-	/* --- Duval Textiles : la météo, les experts, ce qui pousse --- */
-	let weather = "none";
-	function setWeather(w){
-		weather = w; const c = factory.cloud;
-		if(w === "none"){ c.visible = false; factory.rain.visible = factory.sunL.visible = factory.bolt.visible = false; return; }
-		if(w === "sun"){ pop(c, false); factory.rain.visible = false; factory.sunL.visible = true; factory.sunL.material.opacity = 1; anim(2600, k => { factory.sunL.material.opacity = 1 - Math.max(0, k - .6)/.4; }, () => factory.sunL.visible = false); return; }
-		c.visible = true; const dark = w === "storm";
-		c.children.forEach(s => s.material.color.set(dark ? "#4a4f57" : "#c9ced3"));
-		anim(700, k => c.scale.setScalar((dark ? 1.4 : .8)*Math.min(1, .4 + k)), null, "cloud");
-		factory.rain.visible = dark;
-		if(dark){ let n = 0; const flash = () => { factory.bolt.visible = true; setTimeout(() => factory.bolt.visible = false, 180); if(++n < 3) setTimeout(flash, 420); }; flash(); shake(factory.plat, .25); }
-	}
-	function grow(k){ if(k === "clara"){ at("clara", U.duval, -6, 0, 9.4); walk("clara", [[U.duval.x - 2.4, U.duval.z + 8.6]], () => { hop("clara"); hop("duvalU"); }, 0); return; } const g = factory.grow[k]; if(g) pop(g, true, 900); }
-	// les experts mobilisés restent aux côtés de M. Duval, côte à côte
-	let xSlot = 0;
-	function expert(k, good, done){
-		const id = "x_" + k; at(id, U.duval, 6.5, 0, 9.6);
-		walk(id, [[U.duval.x + 1.1 + (good ? xSlot++ : xSlot)*1.1, U.duval.z + 8.6 - (good ? 0 : .3)]], () => {
-			P[id].g.rotation.y = 0;
-			if(good){ P[id].setMood("ravi"); hop(id); done && done(); }
-			else { P[id].setMood("agace"); shake(P[id].g, .12); setTimeout(() => walk(id, [[U.duval.x + 6.5, U.duval.z + 9.6]], () => P[id].g.visible = false), 900); done && done(); }
+	});
+	/* -- la fiche de ratios -- */
+	sheet("ratios", 1000, 720, .8, (x, s) => {
+		paper(x, s, "FICHE DE RATIOS", "pour le comité de crédit · chiffres de la liasse");
+		RATIOS.forEach((r, i) => {
+			const y = 128 + i*146; s.zones[r.id] = [24, y, s.W - 24, y + 140];
+			if(i === S.ri) rr(x, 24, y + 4, s.W - 48, 134, 10, "#eef4fb", "#9db8d6", 3);
+			T(x, r.t, 44, y + 42, 27, NAVY, 900);
+			T(x, "= " + r.f, 44, y + 80, 22, INK, 700);
+			T(x, r.norm, 44, y + 116, 20, GOLD, 800);
+			rr(x, 720, y + 26, 250, 88, 8, "#fff", S.rs[i] === "ok" ? GREEN : S.rs[i] ? RED : i === S.ri ? NAVY : "#cfd6dd", i === S.ri ? 4 : 3);
+			if(S.rv[i] !== null) T(x, fr(S.rv[i], r.dec) + (r.unit ? " " + r.unit : ""), 845, y + 84, 36, S.rs[i] === "ok" ? GREEN : S.rs[i] ? "#a3341f" : INK, 900, "center");
+			else if(i === S.ri) T(x, "↗ calculatrice", 845, y + 80, 22, GREY, 800, "center");
 		});
-	}
-	// les signaux de risque apparaissent ; ceux que le joueur repère reçoivent un ⚠️
-	function alerts(on){ for(const g of [factory.stock, factory.unpaid]){ if(on) pop(g, true, 800); else { g.visible = false; g.scale.setScalar(.001); if(g.userData.flag){ g.remove(g.userData.flag); g.userData.flag = null; } } } }
-	function flag(k){ const g = k === "stock" ? factory.stock : factory.unpaid; if(g.userData.flag) return; const f = label("⚠️", { bg:null, size:1, big:1 }); f.position.y = 2.9; g.add(f); g.userData.flag = f; shake(g, .15); }
-	function resetFactory(){ xSlot = 0; alerts(false); relabel(factory.stockLab, "📦 Stocks de fil", { bg:"#fbfaf6", fg:"#16324f", line:null }); relabel(factory.unpaidLab, "🧾 Autolux : facture impayée", { bg:"#fff", fg:"#16324f" }); Object.values(factory.grow).forEach(g => { g.visible = false; g.scale.setScalar(.001); }); setWeather("none"); relabel(factory.year, "2026"); P.duvalU.setHair("#6b6b6b"); }
-
-	/* --- famille Martin : la tour --- */
-	function stack(color, text, good){
-		// le nom du produit est imprimé sur la face avant du bloc : il ne peut plus être caché par les blocs voisins
-		const face = tex(512, 140, (x, w, h) => {
-			x.fillStyle = color; x.fillRect(0, 0, w, h); x.fillStyle = "rgba(0,0,0,.18)"; x.fillRect(0, h - 10, w, 10); x.fillRect(0, 0, w, 4);
-			x.fillStyle = "#fff"; x.textAlign = "center"; x.textBaseline = "middle"; x.shadowColor = "rgba(0,0,0,.35)"; x.shadowBlur = 4;
-			// sur une ligne si elle reste grande, sinon sur deux lignes (plus lisible de loin)
-			if(fitFont(x, text, w - 40, 58) >= 48 || text.split(" ").length < 3) return x.fillText(text, w/2, h/2);
-			const words = text.split(" "), cut = Math.ceil(words.length/2), l1 = words.slice(0, cut).join(" "), l2 = words.slice(cut).join(" ");
-			const s = Math.min(fitFont(x, l1, w - 40, 52), fitFont(x, l2, w - 40, 52)); x.font = `800 ${s}px Nunito, sans-serif`;
-			x.fillText(l1, w/2, h*.3); x.fillText(l2, w/2, h*.7);
-		});
-		const side = M(color), b = mesh(new THREE.BoxGeometry(1.9, .52, 1.15).translate(0, .26, 0), [side, side, side, side, new THREE.MeshStandardMaterial({ map:face, roughness:.6 }), side]);
-		const i = tower.blocks.length, off = good ? (Math.random() - .5)*.08 : (i % 2 ? -.38 : .38);
-		const y1 = i*.54; b.position.set(off, y1 + 6, 0); tower.g.add(b); tower.blocks.push(b);
-		anim(650, k => { b.position.y = y1 + 6*(1 - k*k); }, () => { burst(b.getWorldPosition(new THREE.Vector3()), "#e9e2d2", 5); if(!good){ tower.tilt += .085; } });
-	}
-	function collapse(){
-		tower.falling = true;
-		tower.blocks.forEach((b, i) => { const v = new THREE.Vector3((Math.random() - .5)*3 + (i % 2 ? -1 : 1), 2 + Math.random()*2, (Math.random() - .2)*2.4), p0 = b.position.clone(), r0 = Math.random()*3;
-			anim(1300, k => { b.position.set(p0.x + v.x*k*1.6, Math.max(-1.3, p0.y + v.y*k*1.3 - 9*k*k), p0.z + v.z*k*1.6); b.rotation.set(r0*k, 0, (i % 2 ? 2 : -2)*k); }); });
-	}
-	function resetTower(){ resetDoc(); tower.blocks.forEach(b => tower.g.remove(b)); tower.blocks = []; tower.tilt = 0; tower.falling = false; tower.g.rotation.set(0, 0, 0); }
-
-	/* --- Karim : la trésorerie mois par mois, une pile de pièces au pied de la boulangerie --- */
-	const CASH_M = [2700, 2700, 2700, 2600, 2600, 2500, 1800, 900, 2400, 2800, 2900, 3100];      // ce que dégage la boulangerie chaque mois (août : le quartier se vide)
-	const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-	const coinGeo = new THREE.CylinderGeometry(.22, .22, .08, 18);
-	const cash = { g:null, coins:[], lab:null, run:0 };
-	function cashYear(pay, done){
-		const run = ++cash.run;
-		if(!cash.g){
-			cash.g = group(new THREE.Vector3(U.karim.x - 1.7, 2.25, U.karim.z + 1.2));
-			for(let i = 0; i < 26; i++){ const c = mesh(coinGeo, M("#d9a93a", { metalness:.7, roughness:.3 }), (i % 2)*.03, .05 + i*.085, 0); c.visible = false; cash.g.add(c); cash.coins.push(c); }
-			cash.lab = label(" ", { size:.42 }); cash.lab.position.y = 3; cash.g.add(cash.lab);
+	});
+	/* -- la calculatrice -- */
+	const KEYS = [["C", "⌫", "÷", "×"], ["7", "8", "9", "−"], ["4", "5", "6", "+"], ["1", "2", "3", "="], ["0", ",", "↗"]];
+	const CALC = { cur:"", acc:null, op:null, hist:"", eq:false, flash:null, on:null };
+	sheet("calc", 300, 456, .3, (x, s) => {
+		x.fillStyle = "#23272d"; x.fillRect(0, 0, s.W, s.H);
+		rr(x, 12, 12, 276, 108, 8, "#c9d8c1");
+		T(x, CALC.hist.slice(-24), 278, 44, 20, "#3c4a37", 800, "right");
+		T(x, CALC.cur || (CALC.acc !== null ? fmtN(CALC.acc) : "0"), 278, 100, 46, "#1b2418", 900, "right");
+		KEYS.forEach((row, r) => row.forEach((k, c) => {
+			const X = 12 + c*69, Y = 130 + r*64, W = k === "↗" ? 135 : 66;
+			const col = k === "↗" ? "#c9a227" : /[÷×−+=]/.test(k) ? "#41566f" : k === "C" || k === "⌫" ? "#7a3a32" : "#3c4048";
+			rr(x, X, Y, W, 58, 8, CALC.flash === k ? "#f1d27a" : col);
+			T(x, k === "↗" ? "↗ Reporter" : k, X + W/2, Y + 40, k === "↗" ? 24 : 30, k === "↗" ? "#1b1b1b" : "#fff", 900, "center");
+			s.zones["k" + k] = [X, Y, X + W, Y + 58];
+		}));
+	});
+	const fmtN = v => !isFinite(v) ? "Erreur" : fr(v, Math.abs(v) < 10 ? 3 : Math.abs(v) < 1000 ? 2 : 1).replace(/,?0+$/, "").replace(/,$/, "");
+	const num = s => parseFloat(s.replace(",", "."));
+	const apply = (a, op, b) => op === "+" ? a + b : op === "−" ? a - b : op === "×" ? a*b : b === 0 ? NaN : a/b;
+	function calcKey(k){
+		const C = CALC; C.flash = k; setTimeout(() => { C.flash = null; dirty("calc"); }, 140); play("clic");
+		if(/[0-9]/.test(k)){ if(C.eq){ C.acc = null; C.hist = ""; C.eq = false; } if(C.cur.replace(/\D/g, "").length < 9) C.cur += k; C.hist += k; }
+		else if(k === ","){ if(C.eq){ C.acc = null; C.hist = ""; C.eq = false; } if(!C.cur.includes(",")){ C.cur = (C.cur || "0") + ","; C.hist += ","; } }
+		else if(k === "C"){ C.cur = ""; C.acc = null; C.op = null; C.hist = ""; C.eq = false; }
+		else if(k === "⌫"){ if(C.cur){ C.cur = C.cur.slice(0, -1); C.hist = C.hist.slice(0, -1); } }
+		else if("÷×−+".includes(k)){
+			if(C.cur){ const b = num(C.cur); C.acc = C.op && C.acc !== null ? apply(C.acc, C.op, b) : b; C.cur = ""; }
+			else if(C.acc === null) C.acc = 0;
+			C.op = k; C.eq = false; C.hist = C.hist.replace(/ [÷×−+] $/, "") + " " + k + " ";
 		}
-		cash.g.visible = true;
-		let m = 0;
-		const step = () => {
-			if(run !== cash.run) return;
-			if(m >= 12){ done && done(); return; }
-			const left = CASH_M[m] - 300 - pay, n = Math.max(0, Math.round(left/120));
-			cash.coins.forEach((c, i) => c.visible = i < n);
-			relabel(cash.lab, `${MONTHS[m]} : ${left >= 0 ? "+" : "−"} ${Math.abs(left).toLocaleString("fr-FR")} €`, left < 0 ? { bg:"#fbe7e5", fg:"#b3261e", line:"#b3261e" } : { bg:"#fbfaf6", fg:"#16324f", line:null });
-			// les mensualités s'envolent vers la banque
-			const top = cash.g.position.clone().setY(2.4 + n*.085);
-			for(let i = 0; i < Math.min(6, Math.round((pay + 300)/250)); i++) setTimeout(() => { const c = mesh(coinGeo, M("#d9a93a", { metalness:.7, roughness:.3 })); c.position.copy(top); scene.add(c); const p0 = top.clone(), p1 = top.clone().add(new THREE.Vector3(-4, 3, 2)); anim(600, k => { c.position.lerpVectors(p0, p1, k); c.position.y += Math.sin(Math.PI*k)*1.5; c.rotation.x = k*9; }, () => scene.remove(c)); }, i*70);
-			if(left < 0){ shake(cash.g, .2); burst(top, "#c0392b", 6); }
-			m++; setTimeout(step, m === 8 ? 1400 : 650);
+		else if(k === "="){ if(C.op && C.cur){ C.acc = apply(C.acc, C.op, num(C.cur)); C.cur = ""; C.op = null; C.hist += " ="; C.eq = true; } }
+		else if(k === "↗"){
+			const v = C.cur ? (C.op && C.acc !== null ? apply(C.acc, C.op, num(C.cur)) : num(C.cur)) : C.acc;
+			if(v === null || !isFinite(v)){ play("bad"); return; }
+			if(C.on) C.on(v); else play("bad");
+			C.cur = ""; C.acc = null; C.op = null; C.hist = ""; C.eq = false;
+		}
+		dirty("calc");
+	}
+	SH.calc.on = { down:p => { for(const [z, r] of Object.entries(SH.calc.zones)) if(p.x >= r[0] && p.x <= r[2] && p.y >= r[1] && p.y <= r[3]){ calcKey(z.slice(1)); return; } } };
+	const calcValue = () => new Promise(r => { CALC.on = v => { CALC.on = null; r(v); }; });
+	flat(SH.calc, scene, 1.06, DY + .033, .16);
+
+	/* -- l'écran : la fiche de montage du prêt -- */
+	const MT = { x0:70, x1:630, rows:{ duree:[400, 3, 12, 1], caution:[520, 0, 600, 25], bpi:[700, 0, BPI_MAX, 10] }, tog:{ conj:[566, 622], nant:[750, 806], volta:[810, 866] } };
+	function montageCalc(){
+		const a = annuite(S.n), cEff = S.conj ? S.caution : Math.min(S.caution, PROPRES);
+		S.annuite = a; S.cEff = cEff;
+		S.cov = Math.min(PRET, (S.nant ? NANT : 0) + S.bpi/100*PRET + cEff); S.covPct = S.cov/PRET*100;
+		S.effort = (a + SERVICE)/CAF_PREV*100;
+		const issues = [];
+		if(S.n > VIE) issues.push(["duree", `Le prêt durerait ${S.n} ans, plus longtemps que la machine (${VIE} ans) : on rembourserait encore une ligne déjà usée.`]);
+		if(S.effort > 55) issues.push(["effort", `Annuités trop lourdes : ${fr(S.effort)} % de la CAF prévisionnelle. Au-delà de 55 %, la trésorerie ne suit plus.`]);
+		if(S.caution > PATRI) issues.push(["caution", `Caution de ${fr(S.caution)} k€ pour un patrimoine de ${PATRI} k€ : disproportionnée, un juge la réduirait (Code civil, art. 2300).`]);
+		if(S.covPct < 70) issues.push(["cov", `Couverture de ${fr(S.covPct)} % seulement : pour ce risque, la banque veut au moins 70 % de garanties.`]);
+		if(!S.volta) issues.push(["volta", "Rien ne protège la banque si Volta ne signe jamais : on débloquerait 1,2 M€ pour une ligne sans client."]);
+		S.issues = issues; return issues;
+	}
+	const sheetMon = sheet("montage", 700, 1040, .54, (x, s) => {
+		x.fillStyle = "#f4f6f8"; x.fillRect(0, 0, s.W, s.H); x.strokeStyle = "#1d2024"; x.lineWidth = 14; x.strokeRect(7, 7, s.W - 14, s.H - 14);
+		x.fillStyle = NAVY; x.fillRect(14, 14, s.W - 28, 80); T(x, "OUTIL D'INSTRUCTION", 32, 48, 26, "#f1e6c8", 900); T(x, "Prêt Duval Textiles · 1 200 k€ · taux indicatif 4,2 %", 32, 80, 20, "#cfd8e0", 800);
+		montageCalc();
+		const slider = (id, label, val, marks) => {
+			const [y, a, b] = MT.rows[id], X = v => MT.x0 + (v - a)/(b - a)*(MT.x1 - MT.x0);
+			s.zones[id] = [20, y - 62, 680, y + 40];
+			T(x, label, 32, y - 30, 26, INK, 900); T(x, val, 668, y - 30, 25, NAVY, 900, "right");
+			rr(x, MT.x0, y - 6, MT.x1 - MT.x0, 12, 6, "#cfd6dd");
+			T(x, String(a), MT.x0 - 14, y + 8, 17, GREY, 800, "right"); T(x, String(b), MT.x1 + 12, y + 8, 17, GREY, 800);
+			for(const [v, t, c] of marks){ x.fillStyle = c; x.fillRect(X(v) - 2, y - 18, 4, 36); T(x, t, X(v), y + 38, 18, c, 800, "center"); }
+			x.fillStyle = NAVY; x.beginPath(); x.arc(X(clamp(id === "duree" ? S.n : id === "caution" ? S.caution : S.bpi, a, b)), y, 20, 0, 7); x.fill();
 		};
-		step();
-	}
-	function resetCash(){ cash.run++; if(cash.g) cash.g.visible = false; }
+		const toggle = (id, label, on) => {
+			const [y0, y1] = MT.tog[id]; s.zones[id] = [20, y0, 680, y1];
+			rr(x, 32, y0 + 8, 68, 36, 18, on ? GREEN : "#b7c0c8"); x.fillStyle = "#fff"; x.beginPath(); x.arc(on ? 82 : 50, y0 + 26, 14, 0, 7); x.fill();
+			P(x, label, 116, y0 + 22, 550, 21, INK, 800, 1.12);
+		};
+		const gauge = (y, label, v, ok, sub, okFn, id) => {
+			s.zones[id] = [20, y - 34, 680, y + 70];
+			T(x, label, 32, y - 10, 23, INK, 900); T(x, fr(v) + " %", 668, y - 10, 28, okFn(v) ? GREEN : RED, 900, "right");
+			rr(x, 32, y, 636, 36, 7, "#dde3e8");
+			const f = clamp(v/100, 0, 1), good = okFn(v);
+			if(v > 0) rr(x, 32, y, Math.max(14, 636*f), 36, 7, good ? "#3f9a62" : "#d0573b");
+			x.fillStyle = INK; x.fillRect(32 + 636*ok/100 - 2, y - 7, 4, 50);
+			T(x, sub, 32, y + 62, 18, GREY, 800);
+		};
+		gauge(128, "Effort de remboursement", S.effort, 55, `annuités ÷ CAF prévue (${CAF_PREV} k€) · 55 % au plus`, v => v <= 55, "effort");
+		gauge(240, "Couverture par les garanties", S.covPct, 70, `${fr(S.cov)} k€ couverts sur 1 200 · 70 % au moins`, v => v >= 70, "cov");
+		x.fillStyle = "#d9dfe5"; x.fillRect(20, 322, 660, 3);
+		slider("duree", "Durée", `${S.n} ans · annuité ${fr(S.annuite)} k€`, [[VIE, "vie de la machine", RED]]);
+		slider("caution", "Caution de M. Duval", `${fr(S.caution)} k€`, [[PATRI, "son patrimoine net", RED]]);
+		toggle("conj", "Accord écrit de Mme Duval à la caution (mariés sous la communauté)", S.conj);
+		slider("bpi", "Garantie Bpifrance", `${S.bpi} % du prêt`, []);
+		toggle("nant", `Nantissement de la nouvelle ligne (valeur retenue ${NANT} k€)`, S.nant);
+		toggle("volta", "Condition suspensive : contrat Volta signé avant déblocage des fonds", S.volta);
+		const warn = [];
+		if(S.n > VIE) warn.push("⚠ Plus long que la vie de la machine");
+		if(S.caution > PATRI) warn.push("⚠ Caution disproportionnée au patrimoine");
+		if(S.caution > PROPRES && !S.conj) warn.push(`⚠ Sans l'accord de son épouse, la caution n'engage que ses biens propres : ${PROPRES} k€ retenus`);
+		let y = 868;
+		for(const w of warn.slice(0, 2)) y = P(x, w, 32, y, 636, 19, RED, 800, 1.12) + 28;
+		s.zones.stamp = [32, 950, 668, 1026];
+		rr(x, 32, 950, 636, 76, 12, S.submitted ? "#e7efe9" : NAVY);
+		T(x, S.submitted ? "✔ Transmis au comité" : "Transmettre au comité ✍", 350, 1000, 28, S.submitted ? GREEN : "#fff", 900, "center");
+	});
+	flat(sheetMon, scene, .3, DY + .018, .1); sheetMon.mesh.visible = false;
 
-	/* --- Inès et Tom : la jauge du taux d'endettement, au-dessus du vide --- */
-	const gauge = { g:null, fill:null, lab:null, v:0 }, GH = 2.25;      // hauteur de la jauge pour 50 %
-	function setGauge(v){
-		if(!gauge.g){
-			const g = gauge.g = group(new THREE.Vector3(U.couple.x - 4.4, 2.3, U.couple.z - 2.4));
-			g.add(box(.8, 2.4, .3, "#e9edf0", 0, 0, 0));
-			gauge.fill = mesh(new THREE.BoxGeometry(.56, 1, .34).translate(0, .5, 0), new THREE.MeshStandardMaterial({ color:"#3d7a55" }), 0, .08, 0); gauge.fill.scale.y = .001; g.add(gauge.fill);
-			const lim = .08 + 35/50*GH; g.add(box(1.1, .07, .4, "#c0392b", 0, lim - .035, 0));
-			const ll = label("35 % max", { size:.32, bg:"#fbfaf6", fg:"#c0392b" }); ll.position.set(1.25, lim, 0); g.add(ll);
-			gauge.lab = label(" ", { size:.4 }); gauge.lab.position.y = 2.9; g.add(gauge.lab);
+	/* -- l'organigramme des actionnaires (KYC) -- */
+	sheet("kyc", 1000, 780, .8, (x, s) => {
+		paper(x, s, "QUI EST DERRIÈRE DUVAL TEXTILES ?", "statuts, Kbis et registre des titres · KYC");
+		const N = ORG.nodes;
+		for(const [a, b, pct] of ORG.edges){
+			const [ax, ay] = N[a], [bx, by] = N[b];
+			x.strokeStyle = "#8a97a6"; x.lineWidth = 5; x.beginPath(); x.moveTo(ax, ay); x.lineTo(bx, by); x.stroke();
+			const mx = (ax + bx)/2, my = (ay + by)/2; rr(x, mx - 44, my - 24, 88, 44, 22, "#fff", "#8a97a6", 3); T(x, pct + " %", mx, my + 10, 26, NAVY, 900, "center");
 		}
-		gauge.g.visible = true;
-		const from = gauge.v; gauge.v = v;
-		anim(1200, k => { gauge.fill.scale.y = Math.max(.001, (from + (v - from)*easeIO(k))/50*GH); }, null, "gauge");
-		gauge.fill.material.color.set(v >= 35 ? "#c0392b" : v >= 30 ? "#e0a33a" : "#3d7a55");
-		relabel(gauge.lab, `📊 Endettement : ${v} %`, { fg:v >= 35 ? "#b3261e" : "#16324f" });
-		if(v >= 35) shake(gauge.g, .12);
-	}
-	function resetGauge(){ gauge.v = 0; if(gauge.g){ gauge.g.visible = false; gauge.fill.scale.y = .001; } }
-
-	/* --- Duval : les signaux manqués en 2029 ont des conséquences en 2031 --- */
-	function consequence(k){
-		if(k === "stock"){ const s = factory.stock; pop(s, true, 400); setTimeout(() => anim(900, q => s.scale.set(1 + .7*q, 1 + .9*q, 1 + .4*q)), 450); relabel(factory.stockLab, "📦 Les stocks débordent", { bg:"#fbe7e5", fg:"#b3261e", line:"#b3261e" }); }
-		else { const u = factory.unpaid; pop(u, true, 400); relabel(factory.unpaidLab, "❌ Autolux en faillite", { bg:"#fbe7e5", fg:"#b3261e" }); setTimeout(() => { shake(u, .3); burst(u.getWorldPosition(new THREE.Vector3()).setY(2), "#c0392b", 10); }, 500); }
-	}
-
-	/* --- Martin : le document « profil client » signé, posé sur un pupitre --- */
-	const doc = { g:null, paper:null };
-	function profileDoc(profil, ok){
-		if(!doc.g){
-			doc.g = group(new THREE.Vector3(U.martin.x + 3.2, 0, U.martin.z + 4.2));
-			const d = new THREE.Group(); d.scale.setScalar(1.5); d.rotation.y = -.35; doc.g.add(d);
-			d.add(mesh(new THREE.CylinderGeometry(.08, .1, 1.1, 10), M("#5a3a22"), 0, .55, 0), box(1.5, .06, 1.1, "#6b4a2e", 0, 1.1, 0));
-			doc.paper = mesh(new THREE.PlaneGeometry(1.2, 1.2*340/256), new THREE.MeshStandardMaterial({ roughness:.9 }), 0, 1.5, .05); doc.paper.rotation.x = -.85; d.add(doc.paper);
-			// le stylo est posé sur le bord du pupitre, pas sur le texte
-			d.add(mesh(new THREE.CylinderGeometry(.03, .03, .8, 8).rotateZ(Math.PI/2), M("#16324f"), 0, 1.16, .5));
+		if(S.trace){ const t = S.trace; x.strokeStyle = "rgba(240,190,40,.75)"; x.lineWidth = 22; x.lineCap = x.lineJoin = "round"; x.beginPath(); t.path.forEach((n, i) => { const [a, b] = N[n]; i ? x.lineTo(a, b) : x.moveTo(a, b); }); if(t.f) x.lineTo(t.f[0], t.f[1]); x.stroke(); }
+		for(const [id, [X, Y, name, sub]] of Object.entries(N)){
+			const done = S.bo[id] !== undefined, person = id === "jean" || id === "clara";
+			rr(x, X - 130, Y - 42, 260, 84, 12, id === "dt" ? NAVY : done ? "#e6f3ea" : "#fff", id === "dt" ? NAVY : person ? GOLD : "#8a97a6", 4);
+			T(x, name, X, Y - 4, 26, id === "dt" ? "#fff" : INK, 900, "center"); T(x, sub, X, Y + 26, 19, id === "dt" ? "#cfd8e0" : GREY, 800, "center");
 		}
-		const date = new Date().toLocaleDateString("fr-FR");
-		const t = tex(256, 340, (x, w, h) => {
-			x.fillStyle = "#fffdf6"; x.fillRect(0, 0, w, h); x.fillStyle = "#16324f"; x.fillRect(0, 0, w, 36);
-			x.fillStyle = "#fff"; x.textAlign = "center"; fitFont(x, "PROFIL CLIENT", w - 24, 18); x.fillText("PROFIL CLIENT", w/2, 25);
-			x.textAlign = "left"; x.fillStyle = "#2b3a44";
-			["M. et Mme Martin", "Objectifs : retraite, enfants,", "protection du conjoint", "Horizon : 6 ans et plus", "Tolérance au risque : faible", "Connaissances : livrets, AV"].forEach((l, i) => { fitFont(x, l, w - 32, 14, 700); x.fillText(l, 16, 64 + i*22); });
-			const pr = "Profil retenu : " + profil.toUpperCase(); fitFont(x, pr, w - 32, 16); x.fillStyle = ok ? "#23704a" : "#b3261e"; x.fillText(pr, 16, 204);
-			x.fillStyle = "#6f767c"; x.font = "600 12px Nunito, sans-serif"; x.fillText("Signé le " + date, 16, 230);
-			// les deux signatures en bas à gauche, le tampon en bas à droite : rien ne se chevauche
-			x.strokeStyle = "#16324f"; x.lineWidth = 2; for(const [ox, oy] of [[18, 268], [18, 312]]){ x.beginPath(); x.moveTo(ox, oy); for(let i = 0; i < 6; i++) x.quadraticCurveTo(ox + 8 + i*12, oy - 16 + (i % 2)*28, ox + 12 + i*12, oy - 2); x.stroke(); }
-			x.save(); x.translate(186, 292); x.rotate(-.25); x.strokeStyle = x.fillStyle = ok ? "#23704a" : "#b3261e"; x.lineWidth = 3; x.strokeRect(-46, -16, 92, 32); x.font = "800 14px Nunito, sans-serif"; x.textAlign = "center"; x.fillText(ok ? "CONFORME" : "À REVOIR", 0, 5); x.restore();
-		});
-		if(doc.paper.material.map) doc.paper.material.map.dispose();
-		doc.paper.material.map = t; doc.paper.material.needsUpdate = true;
-		pop(doc.g, true, 700);
-	}
-	function resetDoc(){ if(doc.g){ doc.g.visible = false; doc.g.scale.setScalar(.001); } }
-
-	/* --- caméra : elle vole d'un endroit à l'autre, en arc quand on plonge dans l'univers du client --- */
-	let cam = null;
-	// r : demi-largeur de la scène à garder dans le cadre. Sur écran large comme sur téléphone, la caméra recule
-	// jusqu'à ce que toute la largeur tienne (et pas seulement la hauteur)
-	function look(px, py, pz, tx, ty, tz, dur = 1.3, arc = 0, r = 0){
-		const t1 = new THREE.Vector3(tx, ty, tz), p = new THREE.Vector3(px, py, pz), d = p.distanceTo(t1);
-		const visW = d*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*VW/VH;
-		const fit = Math.min(2.6, Math.max(1.2, 1.2/camera.aspect, r ? r/visW : 0));
-		cam = { p0:camera.position.clone(), t0:controls.target.clone(), p1:p.sub(t1).multiplyScalar(fit).add(t1), t1, k:0, dur, arc };
-		light(t1.clone().setY(0));
-	}
-	// [position de la caméra, point visé, demi-largeur à garder visible]
-	const VIEWS = {
-		agence:[-.5, 15, 15.5, -.5, 0, -.5, 12.8],
-		bureau:[5, 3.1, 1.4, 5, 1.3, -4.2, 2.6],
-		karim:[U.karim.x + 3, 5.5, 22, U.karim.x, -1.4, 0, 10],
-		lefevre:[U.lefevre.x + 1, 10.5, 12, U.lefevre.x - .2, .8, -1.2, 9.5],
-		couple:[U.couple.x + 1, 10, U.couple.z + 16, U.couple.x + .3, 2, U.couple.z, 11],
-		duval:[U.duval.x + 1, 10.5, U.duval.z + 24, U.duval.x, 3.1, U.duval.z + 3, 12],
-		martin:[U.martin.x + 1.5, 8.5, U.martin.z + 17, U.martin.x, 2.4, U.martin.z + .5, 10]
-	};
-	const view = (v, dur = 1.3, arc = 0) => { const [px, py, pz, tx, ty, tz, r] = VIEWS[v]; look(px, py, pz, tx, ty, tz, dur, arc, r); };
-
-	/* --- boucle --- */
-	let raf = 0, last = performance.now();
-	const flourGeo = new THREE.BufferGeometry(), FN = 90, fp = new Float32Array(FN*3), fv = [];
-	for(let i = 0; i < FN; i++) fv.push([Math.random(), (Math.random() - .5)*.6, Math.random()*.5 + .2, (Math.random() - .5)*.6]);
-	flourGeo.setAttribute("position", new THREE.BufferAttribute(fp, 3));
-	scene.add(new THREE.Points(flourGeo, new THREE.PointsMaterial({ color:"#ffffff", size:.07, transparent:true, opacity:.85 })));
-	const puffs = (n, c, op) => Array.from({ length:n }, (_, i) => { const p = new THREE.Mesh(new THREE.SphereGeometry(.22, 10, 8), new THREE.MeshStandardMaterial({ color:c, transparent:true, opacity:op })); scene.add(p); return { p, k:i/n }; });
-	const ovenP = puffs(7, "#5d6166", .6), chimP = puffs(7, "#e8e8e8", .55), steamP = puffs(4, "#ffffff", .5), teaP = puffs(4, "#ffffff", .5);
-	steamP.forEach(s => s.p.scale.setScalar(.25)); teaP.forEach(s => s.p.scale.setScalar(.3));
-	const teaCup = new THREE.Vector3(U.lefevre.x + .1, .75, U.lefevre.z + .3);
-	function loop(now){
-		raf = requestAnimationFrame(loop);
-		const dt = Math.min(.05, (now - last)/1000); last = now; const t = now/1000;
-		for(let i = anims.length - 1; i >= 0; i--){ const a = anims[i], k = Math.min(1, (now - a.t0)/a.dur); a.fn(k); if(k >= 1){ anims.splice(i, 1); a.done && a.done(); } }
-		// personnages : marche, posture selon l'humeur, réaction en direct
-		for(const id in P){
-			const p = P[id]; if(!p.g.visible) continue;
-			if(p.walk){
-				const w = p.walk, tg = w.pts[w.i], d = tg.clone().sub(p.g.position); d.y = 0; const L = d.length();
-				if(L < .05){ if(++w.i >= w.pts.length){ p.walk = null; p.inner.position.y = 0; p.inner.rotation.z = 0; if(w.face != null) p.g.rotation.y = w.face; w.done && w.done(); } }
-				else { p.g.position.addScaledVector(d, Math.min(1, dt*3.2/L)); const a = Math.atan2(d.x, d.z); p.g.rotation.y += Math.atan2(Math.sin(a - p.g.rotation.y), Math.cos(a - p.g.rotation.y))*Math.min(1, dt*10); p.inner.position.y = Math.abs(Math.sin(t*11 + p.phase))*.14; p.inner.rotation.z = Math.sin(t*11 + p.phase)*.06; }
-				continue;
-			}
-			const md = p.mood, ph = t + p.phase, re = p.react && now < p.react.until ? p.react.v : 0;
-			const lean = re ? re*.32 : md === "rassure" ? .1 : md === "agace" ? -.16 : md === "inquiet" ? .05 : 0;
-			p.inner.rotation.x += (lean - p.inner.rotation.x)*Math.min(1, dt*(re ? 10 : 6));
-			p.inner.position.z += ((re < 0 ? -.25 : 0) - p.inner.position.z)*Math.min(1, dt*8);
-			p.inner.rotation.z = md === "inquiet" ? Math.sin(ph*22)*.012 : md === "agace" ? Math.sin(ph*3)*.04 : 0;
-			p.inner.scale.y = md === "inquiet" ? .95 : 1 + Math.sin(ph*2)*.012;
-			if(md === "ravi" && !anims.some(a => a.key === "hop" + id)) p.inner.position.y = Math.abs(Math.sin(ph*5))*.14;
-			if(p.icon.visible) p.icon.position.y = 1.95 + Math.sin(ph*3)*.06;
+		let y = 660;
+		for(const id of ["jean", "clara", "lys"]){
+			if(S.bo[id] === undefined) continue;
+			const v = S.bo[id], be = v > 25 && id !== "lys";
+			s.zones[id] = [24, y - 32, s.W - 24, y + 10];
+			T(x, id === "lys" ? `Lys Invest : 20 % en direct · une société, sous 25 %` : `${ORG.nodes[id][2]} : ${id === "jean" ? "60" : "40"} % × 80 % = ${fr(v)} %`, 44, y, 25, INK, 800);
+			T(x, be ? "bénéficiaire effectif" : "", s.W - 44, y, 22, be ? GREEN : GREY, 900, "right");
+			y += 42;
 		}
-		// l'agence : l'horloge, les plantes, la vapeur du café
-		clock.h.rotation.z = -(clock.t/60)/12*Math.PI*2; clock.m.rotation.z = -(clock.t % 60)/60*Math.PI*2;
-		sway.forEach((s, i) => { s.rotation.z = Math.sin(t*1.3 + i)*.05; s.rotation.x = Math.cos(t*1.1 + i)*.04; });
-		const rise = (arr, base, h, sp, spread = .04) => arr.forEach(s => { const k = (s.k + t*sp) % 1; s.p.position.set(base.x + Math.sin(k*9)*spread, base.y + k*h, base.z); s.p.material.opacity = (s.p.userData.op || (s.p.userData.op = s.p.material.opacity))*(1 - k); s.p.scale.setScalar((s.p.userData.s0 || (s.p.userData.s0 = s.p.scale.x))*(1 + k*2)); });
-		rise(steamP, steam.at.position.clone().setY(1.2), .6, .35); rise(teaP, teaCup, .7, .3);
-		// Karim : la farine qui vole, la fumée du four en panne, l'eau, les poissons
-		for(let i = 0; i < FN; i++){ const v = fv[i]; v[0] = (v[0] + dt*v[2]*.5) % 1; const k = v[0]; fp[i*3] = flour.origin.x + v[1] + Math.sin(k*7 + i)*.35; fp[i*3 + 1] = flour.origin.y + k*1.6 - .3; fp[i*3 + 2] = flour.origin.z + v[3] + k*.6; }
-		flourGeo.attributes.position.needsUpdate = true;
-		ovenP.forEach(s => { const k = (s.k + t*.22) % 1; s.p.position.set(oven.pos.x + Math.sin(k*5)*.2 + k*.6, oven.pos.y - .7 + k*2.4, oven.pos.z); s.p.scale.setScalar(.6 + k*2.2); s.p.material.opacity = .55*(1 - k); });
-		water.mesh.scale.y = water.level - BOT; water.mesh.position.y = BOT + (water.level - BOT)/2;
-		fish.forEach(f => { f.a += dt*f.s; const y = Math.min(f.y, water.level - .6), c = U.karim; f.f.position.set(c.x + Math.cos(f.a)*f.r, y + Math.sin(f.a*3)*.2, c.z + Math.sin(f.a)*f.r); f.f.lookAt(c.x + Math.cos(f.a + .1)*f.r, y, c.z + Math.sin(f.a + .1)*f.r); f.f.rotateY(Math.PI/2); });
-		gulls.forEach(g => { g.a += dt*g.s; g.g.position.set(g.c.x + Math.cos(g.a)*g.r, g.y + Math.sin(g.a*2)*.4, g.c.z + Math.sin(g.a)*g.r); g.g.rotation.y = -g.a; g.g.children.forEach((w, i) => w.rotation.z = (i ? 1 : -1)*(.35 + Math.sin(t*9)*.35)); });
-		for(let i = rings.length - 1; i >= 0; i--){ const r = rings[i], k = (now - r.t0)/1600; if(k >= 1){ scene.remove(r.r); r.r.geometry.dispose(); rings.splice(i, 1); continue; } r.r.scale.setScalar(.4 + k*(r.big ? 7 : 4)); r.r.material.opacity = .8*(1 - k); }
-		for(let i = shards.length - 1; i >= 0; i--){ const s = shards[i], k = (now - s.t0)/1000; if(k >= 1){ scene.remove(s.m); shards.splice(i, 1); continue; } s.v.y -= dt*9; s.m.position.addScaledVector(s.v, dt); s.m.rotation.x += dt*8; s.m.scale.setScalar(1 - k); }
-		// Mme Lefèvre : le balancier, le chat qui respire, les indices qui brillent
-		pendulums.forEach(p => p.rotation.z = Math.sin(t*2.6)*.28);
-		cat.body.scale.y = .7 + Math.sin(t*1.8)*.04;
-		for(const id in marks){ const r = marks[id].userData.ring; if(r) r.scale.setScalar(1 + .1*Math.sin(t*4)); }
-		// Inès et Tom : la rivière coule, les cartons tremblent un peu
-		bridge.river.offset.y = (bridge.river.offset.y - dt*.4) % 1;
-		wobble.forEach((c, i) => c.rotation.z = Math.sin(t*3 + i*1.7)*.03);
-		// Duval Textiles : le plateau tourne, les bobines, le camion, la fumée, la pluie
-		factory.plat.rotation.y += dt*.12;
-		spin.forEach(s => s.rotation.y += dt*3);
-		const ta = t*.5; factory.truck.position.set(Math.cos(ta)*7.1, 0, Math.sin(ta)*7.1); factory.truck.rotation.y = -ta - Math.PI/2;
-		chimP.forEach(s => { const k = (s.k + t*.18) % 1; const c = factory.chimney; s.p.position.set(c.x + 1.2 + Math.sin(k*4)*.3 + k*.8, c.y + k*3, c.z - 1.6); s.p.scale.setScalar(.6 + k*2.4); s.p.material.opacity = .5*(1 - k); });
-		if(factory.rain.visible){ const a = factory.rain.geometry.attributes.position; for(let i = 0; i < a.count; i++){ const k = ((i*.137 + t*1.2) % 1); a.setXYZ(i, ((i*7.3) % 5) - 2.5, 7 - k*6.5, ((i*3.1) % 3) - 2.5); } a.needsUpdate = true; }
-		// famille Martin : la piscine miroite, la tour penche
-		tower.pool.material.color.setHSL(.55, .6, .55 + Math.sin(t*2)*.04);
-		if(!tower.falling) tower.g.rotation.z += ((tower.tilt ? tower.tilt + Math.sin(t*3)*tower.tilt*.25 : 0) - tower.g.rotation.z)*Math.min(1, dt*3);
-		if(cam){ cam.k = Math.min(1, cam.k + dt/cam.dur); const e = easeIO(cam.k); camera.position.lerpVectors(cam.p0, cam.p1, e); camera.position.y += Math.sin(Math.PI*e)*cam.arc; controls.target.lerpVectors(cam.t0, cam.t1, e); if(cam.k >= 1) cam = null; }
-		controls.enabled = !cam;
-		controls.update();
-		renderer.render(scene, camera);
-	}
-	// une bande de la vue est réservée à la bulle de dialogue : en bas sur ordinateur, en haut sur téléphone
-	let VD = 0, VW = 1, VH = 1, VTOP = false;
-	function reserve(px, top = false){ VD = px; VTOP = top; camera.setViewOffset(VW, VH + VD, 0, top ? 0 : VD, VW, VH); camera.updateProjectionMatrix(); }
-	function resize(w, h){
-		w = Math.max(1, w); h = Math.max(1, h);      // fenêtre masquée : taille nulle
-		VW = w; VH = h;
-		const ls = w < 600 ? 1.3 : 1;
-		if(ls !== LS){ scene.traverse(o => { if(o.isSprite) o.scale.multiplyScalar(ls/LS); }); LS = ls; }
-		renderer.setSize(w, h, false); canvas.style.width = w + "px"; canvas.style.height = h + "px"; camera.aspect = w/h; camera.fov = w/h < .9 ? 50 : 36; reserve(VD, VTOP);
-	}
-	camera.position.set(-.5, 26, 26); controls.target.set(0, 0, -1);
-	raf = requestAnimationFrame(loop);
-	return {
-		P, U, water, walk, hop, react, shake, setClock, setLevel, wave, reveal, unknown, resetIce, resetPeople, seat, NEEDS, view, look, resize, reserve, camera,
-		markClue, resetClues, plank, resetBridge, setWeather, grow, expert, resetFactory, factory, alerts, flag,
-		cashYear, setGauge, consequence, profileDoc, tension:on => tension.visible = on, stack, collapse, resetTower, tower,
-		place:at, setYear:y => relabel(factory.year, String(y)),
-		set onPick(f){ onPick = f; canvas.style.cursor = f ? "zoom-in" : ""; },
-		talk(id){ const p = P[id]; if(p) anim(900, k => { p.inner.scale.y = 1 + Math.sin(k*Math.PI*6)*.03; }, () => p.inner.scale.y = 1, "talk" + id); },
-		dispose(){ cancelAnimationFrame(raf); controls.dispose(); renderer.dispose(); renderer.forceContextLoss(); scene.traverse(o => { if(o.geometry) o.geometry.dispose(); }); }
-	};
-}
-
-/* ================= les rendez-vous ================= */
-const shuffle = a => { a = a.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const pick = a => a[Math.floor(Math.random()*a.length)];
-const STARS = n => "★".repeat(n) + "☆".repeat(3 - n);
-const andJoin = a => a.length > 1 ? a.slice(0, -1).join(", ") + " et " + a[a.length - 1] : a.join("");
-
-const CLIENTS = {
-	karim:{ h:[9, 0], who:"Karim, boulanger", kind:"Professionnel", theme:"ecoute", pawns:["karim"], u:["karimU"], av:"🧑‍🍳", name:"Karim", stage:"L'iceberg de Karim",
-		hello:"Bonjour ! Mon four m'a lâché ce matin. Il me faudrait un crédit, vite.",
-		story:"Karim, 38 ans, tient une boulangerie dans le Vieux-Lille depuis six ans. Client de l'agence, il a pris rendez-vous ce matin en urgence.<br><br><b>Sa demande :</b> un crédit pour remplacer son four, tombé en panne.",
-		gesture:"👂 <b>Le geste métier : l'écoute.</b> Comprendre avant de conseiller. Ce que Karim demande n'est peut-être que la partie visible…", enter:"Écouter Karim" },
-	lefevre:{ h:[10, 30], who:"Mme Lefèvre", kind:"Particulier", theme:"sens", pawns:["lefevre"], u:["lefevreU"], av:"👵", name:"Mme Lefèvre", stage:"Chez Mme Lefèvre",
-		hello:"Bonjour… Je viens juste pour faire un virement à mon fils. Ce ne sera pas long.",
-		story:"Mme Lefèvre, 74 ans, est cliente de l'agence depuis quarante ans. D'habitude, c'est son mari qui venait. Aujourd'hui, elle est seule.<br><br><b>Sa demande :</b> un simple virement.",
-		gesture:"🔎 <b>Le geste métier : la sensibilité.</b> Percevoir au-delà des demandes exprimées : les signaux faibles, les moments de vie.", enter:"Entrer dans son univers" },
-	couple:{ h:[14, 0], who:"Inès et Tom", kind:"Premier achat", theme:"bienv", pawns:["ines", "tom"], u:["inesU", "tomU"], av:"👫", name:"Inès et Tom", stage:"Le pont d'Inès et Tom",
-		hello:"Bonjour… On vient pour notre premier achat. On est un peu stressés, en fait.",
-		story:"Inès, 27 ans, infirmière, et Tom, 29 ans, technicien, ont trouvé un deux-pièces à Lambersart. C'est leur premier rendez-vous dans une banque pour un crédit immobilier.<br><br><b>Leur demande :</b> savoir s'ils peuvent emprunter.",
-		gesture:"🤝 <b>Le geste métier : la bienveillance.</b> Accueillir sans jugement, rassurer, respecter le rythme de chacun.", enter:"Construire la confiance" },
-	duval:{ h:[15, 30], who:"Duval Textiles", kind:"Entreprise", theme:"accomp", pawns:["duval"], u:["duvalU"], av:"👷", name:"M. Duval", stage:"Duval Textiles",
-		hello:"Bonjour ! Les affaires tournent, mais j'ai l'impression que tout va trop vite.",
-		story:"M. Duval, 54 ans, dirige Duval Textiles à Roubaix : 40 salariés, du tissu technique pour l'automobile. L'entreprise est cliente de l'agence depuis vingt ans.<br><br><b>Sa demande :</b> « Qu'on fasse le point. »",
-		gesture:"🧭 <b>Le geste métier : l'accompagnement.</b> Être présent dans la durée, anticiper, mobiliser les bons interlocuteurs au bon moment.", enter:"Voir l'entreprise grandir" },
-	martin:{ h:[17, 0], who:"Famille Martin", kind:"Client patrimonial", theme:"expert", pawns:["martin"], u:["martinU", "martinF"], av:"👴", name:"M. et Mme Martin", stage:"La tour des Martin",
-		hello:"Bonsoir ! Nous avons vendu notre cabinet d'architectes. Et maintenant, que faire de tout ça ?",
-		story:"Jacques et Hélène Martin, 58 et 56 ans, viennent de vendre leur cabinet d'architectes. Ils ont deux enfants, Léa et Hugo, et veulent s'arrêter de travailler dans six ans.<br><br><b>Leur demande :</b> une solution pour organiser leur patrimoine.",
-		gesture:"🎓 <b>Le geste métier : l'expertise.</b> Proposer des solutions personnalisées, et s'appuyer sur des expertises complémentaires quand c'est nécessaire.", enter:"Construire leur solution" }
-};
-const ORDER = ["karim", "lefevre", "couple", "duval", "martin"];
-
-// Karim : une banque de questions, six tirées à chaque partie (une bonne par besoin caché, trois maladroites)
-const Q_GOOD = {
-	seul:[["Comment se passent vos journées au fournil ?", "Debout à 3 h, seul au fournil depuis six ans… Honnêtement, je suis épuisé."],
-		["Qui vous aide au quotidien à la boulangerie ?", "Personne. Je fais tout seul, du pétrin à la caisse. Je n'ai pas pris de vacances depuis trois ans."]],
-	boutique:[["Où voyez-vous la boulangerie dans trois ans ?", "Mon rêve ? Une deuxième boutique à Wazemmes. Le samedi, la file d'attente déborde sur le trottoir !"],
-		["Quels projets vous tiennent à cœur en ce moment ?", "J'ai repéré un local à Wazemmes… Ouvrir une deuxième boutique, j'y pense tous les soirs."]],
-	treso:[["Comment votre activité évolue-t-elle au fil de l'année ?", "L'hiver, ça tourne bien. Mais en août, les étudiants partent : ma trésorerie est à sec chaque été."],
-		["Y a-t-il des périodes plus difficiles pour vous ?", "L'été ! Le quartier se vide, le chiffre d'affaires chute, et je dois quand même payer la farine."]]
-};
-const Q_LAB = { seul:"😓 Seul au fournil depuis 6 ans", boutique:"🏪 Ouvrir une 2e boutique", treso:"📉 Trésorerie à sec en été" };
-const Q_BAD = [
-	{ t:"Combien voulez-vous emprunter exactement ?", kind:"mid", mood:"neutre", rep:"Euh… 25 000 €, le prix du four.", lesson:"Question fermée : elle confirme la demande, mais ne révèle rien de neuf." },
-	{ t:"Votre four, il est de quelle marque ?", kind:"mid", mood:"neutre", rep:"Un vieux modèle… Pourquoi, ça change quelque chose ?", lesson:"Une question de détail : elle ne fait pas avancer la compréhension du besoin." },
-	{ t:"Avez-vous pensé à notre carte Premium ?", kind:"ko", mood:"agace", rep:"Je suis venu pour mon four, pas pour une carte…", lesson:"Proposer un produit avant d'avoir compris le client casse la confiance." },
-	{ t:"Avez-vous une caution ou des garanties ?", kind:"ko", mood:"inquiet", rep:"Déjà ? Vous pensez que je ne pourrai pas rembourser ?", lesson:"Trop tôt : les garanties viendront, mais d'abord comprendre le projet." },
-	{ t:"Vous êtes sûr de vouloir vous endetter ?", kind:"ko", mood:"inquiet", rep:"Vous pensez que c'est une mauvaise idée ? Je n'ai pas le choix, sans four…", lesson:"Une question qui juge : le client se ferme au lieu de se confier." }
-];
-const NEED_TXT = { seul:"le fait que vous soyez seul au fournil", boutique:"votre projet de deuxième boutique", treso:"vos étés difficiles côté trésorerie" };
-
-// Mme Lefèvre : les signaux faibles du salon
-const CLUES = {
-	manteau:{ good:1, name:"Le portemanteau", lab:"🧥 Le manteau de son mari", txt:"Le manteau de son mari, toujours accroché à l'entrée : un deuil récent." },
-	notaire:{ good:1, name:"La lettre sur le buffet", lab:"✉️ Courrier du notaire", txt:"Une lettre de l'étude notariale : une succession est en cours." },
-	photo:{ good:1, name:"Le cadre photo", lab:"🎓 Théo, son petit-fils", txt:"Théo, son petit-fils, en tenue de remise de diplôme : elle aimerait l'aider pour ses études." },
-	factures:{ good:1, name:"Les enveloppes", lab:"📬 Factures pas ouvertes", txt:"Des factures pas ouvertes : c'est son mari qui gérait les comptes, elle se sent perdue." },
-	chat:{ name:"Le chat", lab:"🐈 Rien à signaler", txt:"" }, tele:{ name:"La télévision", lab:"📺 Rien à signaler", txt:"" }, plante:{ name:"Les plantes", lab:"🪴 Rien à signaler", txt:"" }
-};
-
-// Inès et Tom : cinq échanges, trois tons possibles
-const TALK = [
-	{ who:"tomU", line:"On n'a jamais fait ça… On a peur de poser des questions bêtes.", a:[
-		["good", "Il n'y a pas de question bête. On va prendre le temps qu'il faut, ensemble."],
-		["ko", "Vous auriez dû vous renseigner un peu avant de venir."],
-		["mid", "Pas d'inquiétude, c'est simple : je remplis le dossier et vous signez."]] },
-	{ who:"inesU", line:"Mon CDI a commencé il y a quatre mois… c'est un problème ?", a:[
-		["good", "Pas du tout. On va regarder votre situation dans son ensemble, pas seulement la date du contrat."],
-		["ko", "Aïe, quatre mois… Ça risque de coincer."],
-		["mid", "Le taux d'endettement maximal est de 35 %, c'est tout ce qui compte."]] },
-	{ who:"tomU", line:"Il faut que je vous dise… on a encore un petit crédit pour la voiture.", a:[
-		["good", "Merci de me le dire : c'est important pour bien vous conseiller. On va l'intégrer."],
-		["ko", "Encore un crédit ? Ça commence mal."],
-		["mid", "D'accord. Question suivante."]] },
-	{ who:"inesU", line:"Et si un jour on n'arrive plus à payer les mensualités ?", a:[
-		["good", "C'est une vraie question. On va choisir une mensualité qui vous laisse respirer, et une assurance emprunteur adaptée."],
-		["ko", "Il faudra vous serrer la ceinture, c'est le jeu."],
-		["mid", "Ça n'arrive presque jamais, ne vous en faites pas."]] },
-	{ who:"tomU", line:"On peut réfléchir avant de s'engager ?", a:[
-		["good", "Bien sûr. Je vous envoie une simulation et on se revoit la semaine prochaine. De toute façon, la loi vous laisse dix jours de réflexion avant d'accepter l'offre."],
-		["ko", "Si vous hésitez, c'est peut-être que vous n'êtes pas prêts."],
-		["mid", "Il faudrait signer vite, les taux peuvent remonter."]] }
-];
-const TALK_FB = { good:"✓ Bienveillant : le couple se détend", mid:"≈ Correct, mais froid ou pressant", ko:"✗ Jugement : le couple se ferme" };
-
-// Duval Textiles : quatre tournants, et le bon interlocuteur à mobiliser au bon moment
-const EXPERTS = { inter:["🌍", "Spécialiste du commerce international"], ct:["💶", "Spécialiste du financement court terme"], cb:["🏗️", "Spécialiste du crédit-bail"], patri:["🏛️", "Ingénierie patrimoniale"], wait:["⏳", "Attendre de voir"] };
-const EVENTS = [
-	{ y:2027, t:"Un client allemand veut doubler ses commandes", d:"Belle opportunité… mais M. Duval n'a jamais exporté : sécuriser les paiements, financer le stock, gérer les délais.", good:"inter", grow:"export",
-		ok:"Le spécialiste du commerce international sécurise les paiements (crédit documentaire) et finance les commandes : les camions partent pour l'Allemagne.", ko:"Sans accompagnement, le client allemand paie avec quatre mois de retard : la trésorerie plonge." },
-	{ y:2029, t:"Les clients paient à 60 jours", d:"Les commandes affluent, mais il faut acheter le fil tout de suite. Chaque fin de mois, la trésorerie se tend.", good:"ct", grow:"coins",
-		ok:"L'affacturage transforme les factures en trésorerie immédiate : l'usine tourne sans à-coups.", ko:"Faute de solution à temps, M. Duval paie ses fournisseurs en retard : l'un d'eux suspend ses livraisons." },
-	{ y:2031, t:"Une nouvelle machine à 800 000 €", d:"Une machine à tisser plus moderne et plus économe en énergie. L'investissement est lourd pour une PME de 40 salariés.", good:"cb", grow:"machine",
-		ok:"Le crédit-bail finance la machine sans vider la trésorerie : l'usine produit plus, en consommant moins.", ko:"L'achat comptant assèche la trésorerie : l'entreprise doit reporter ses embauches." },
-	{ y:2033, t:"M. Duval a 61 ans", d:"Il pense à la retraite. Sa fille Clara travaille dans l'entreprise, mais rien n'est préparé pour la transmission.", good:"patri", grow:"clara",
-		ok:"L'ingénierie patrimoniale, avec un notaire et un avocat, prépare sur plusieurs années la transmission à Clara, en limitant la fiscalité.", ko:"Rien n'est anticipé : quand M. Duval tombe malade, l'entreprise se retrouve sans dirigeant." }
-];
-
-// famille Martin : leurs objectifs, et les « blocs » qu'on peut empiler
-const M_NEEDS = { reserve:"Garder une réserve disponible", retraite:"Compléter leurs revenus à la retraite, dans 6 ans", conjoint:"Protéger l'autre en cas de coup dur", enfants:"Aider leurs deux enfants à démarrer" };
-const PRODUCTS = [
-	{ id:"epargne", ic:"🐷", t:"Épargne de précaution", d:"Livrets, disponibles à tout moment", need:"reserve", col:"#4a8f8a" },
-	{ id:"per", ic:"🌅", t:"Plan d'épargne retraite", d:"Des revenus pour plus tard", need:"retraite", col:"#e0a33a" },
-	{ id:"av", ic:"🛡️", t:"Assurance-vie", d:"Épargne souple, transmission facilitée", need:"retraite", col:"#2f5d9e" },
-	{ id:"prev", ic:"❤️", t:"Prévoyance", d:"Protéger le conjoint en cas de coup dur", need:"conjoint", col:"#c0392b" },
-	{ id:"notaire", ic:"🤝", t:"Notaire partenaire", d:"Organiser une donation aux enfants", need:"enfants", col:"#6b4a8f" },
-	{ id:"platinum", ic:"💳", t:"Carte Platinum", d:"Prestige et assurances voyage", bad:"Un produit de prestige ne répond à aucun de leurs objectifs.", col:"#9aa0a6" },
-	{ id:"revolving", ic:"🔁", t:"Crédit renouvelable", d:"Une réserve d'argent… à crédit", bad:"Ils ont de l'épargne : leur proposer un crédit coûteux n'a pas de sens.", col:"#7a7a7a" },
-	{ id:"structure", ic:"🎢", t:"Produit structuré complexe", d:"Rendement élevé, capital non garanti", bad:"Incompatible avec leur profil prudent : le devoir de conseil interdit de le leur recommander.", col:"#555b60" }
-];
-
-export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEvent, openLead }){
-	if(!document.getElementById("ca-css")){ const st = document.createElement("style"); st.id = "ca-css"; st.textContent = CSS; document.head.appendChild(st); }
-	const play = n => audio && audio.play(n);
-	const root = document.createElement("div"); root.className = "ca"; root.setAttribute("role", "dialog"); root.setAttribute("aria-modal", "true"); root.setAttribute("aria-label", "Mini-jeu Une journée du chargé d'affaires");
-	root.innerHTML = `<canvas aria-hidden="true"></canvas><div class="ca-top"><span class="ca-chip ca-stage" id="caStage">Agence</span><button class="ca-x" aria-label="Quitter le jeu">×</button></div>
-		<div class="ca-meters" aria-live="polite"><span class="ca-m"><small>🕘 Heure</small><b data-m="h">8 h 55</b></span><span class="ca-m" data-mood hidden><small data-who>Client</small><b data-m="mood">😐 Neutre</b></span><span class="ca-m" data-score hidden><small data-sk>Score</small><b data-m="score">0</b></span></div>
-		<div class="ca-hint">↻ Fais tourner la maquette</div>
-		<div class="ca-bubble off" title="Toucher pour masquer"><span class="av"></span><p><b></b><span></span></p></div>
-		<div class="ca-wrap"><div class="ca-card"></div></div>`;
-	document.body.appendChild(root);
-	const canvas = root.querySelector("canvas"), wrap = root.querySelector(".ca-wrap"), card = root.querySelector(".ca-card"), hint = root.querySelector(".ca-hint"), bubble = root.querySelector(".ca-bubble"), meters = root.querySelector(".ca-meters");
-	const W = world(canvas);
-	function layout(){
-		const w = innerWidth, h = innerHeight;
-		if(w >= MOBILE){ W.resize(w - 444, h); hint.style.top = "112px"; Object.assign(bubble.style, { left:"12px", right:"456px", top:"auto", bottom:"14px" }); W.reserve(96); }
-		// sur téléphone : la maquette en haut, le texte en bas, la bulle tout en haut et qui s'efface seule
-		else { hint.hidden = true; const top = Math.round(h*.5); wrap.style.top = top + "px"; W.resize(w, top); Object.assign(bubble.style, { left:"8px", right:"8px", top:"96px", bottom:"auto" }); W.reserve(70, true); }
-	}
-	addEventListener("resize", layout); layout();
-	canvas.addEventListener("pointerdown", () => hint.hidden = true, { once:true });
-
-	const S = { score:{}, errors:0, busy:false, cur:null, where:null };
-	let closed = false, gen = 0;
-	// chaque rendez-vous a sa « génération » : les minuteries d'un rendez-vous abandonné ne touchent pas au suivant
-	const later = (ms, f) => { const g = gen; setTimeout(() => { if(!closed && g === gen) f(); }, ms); };
-	const show = html => { card.innerHTML = html; card.style.animation = "none"; void card.offsetWidth; card.style.animation = ""; wrap.scrollTo({ top:0, behavior:"smooth" }); };
-	const scrollEnd = () => later(80, () => wrap.scrollTo({ top:wrap.scrollHeight, behavior:"smooth" }));
-	const stage = t => { root.querySelector("#caStage").textContent = t; onEvent && onEvent("stage", t); };
-	function meter(k, v){ const el = meters.querySelector(`[data-m="${k}"]`); if(el.textContent === v) return; el.textContent = v; el.parentNode.classList.remove("pop"); void el.offsetWidth; el.parentNode.classList.add("pop"); }
-	function chips(scoreLabel){ meters.querySelector("[data-mood]").hidden = !S.cur; meters.querySelector("[data-score]").hidden = !scoreLabel; if(scoreLabel) meters.querySelector("[data-sk]").textContent = scoreLabel; if(S.cur) meters.querySelector("[data-who]").textContent = CLIENTS[S.cur].name; }
-	function clockTo(h, m){ W.setClock(h, m); meter("h", `${h} h ${String(m).padStart(2, "0")}`); }
-	// l'humeur du client : sur tous ses pions (à l'agence et dans son univers)
-	function mood(md){ const C = CLIENTS[S.cur]; [...C.pawns, ...C.u].forEach(id => W.P[id].setMood(md)); meter("mood", MOOD_ICON[md] + " " + MOOD_TXT[md]); }
-	function react(v){ const C = CLIENTS[S.cur]; (S.where ? C.u : C.pawns).forEach(id => W.react(id, v)); }
-	// les répliques : la bulle de la directrice d'agence ou du client, écrite lettre à lettre
-	let sayT = 0, hideT = 0;
-	function say(who, text, pawn){
-		const C = CLIENTS[who] || SPK[who], [av, name] = C ? [C.av, C.name] : ["👩‍💼", "Sophie · directrice d'agence"], sp = bubble.querySelector("p span");
-		clearInterval(sayT); clearTimeout(hideT);
-		bubble.classList.toggle("k", !!C); bubble.querySelector(".av").textContent = av; bubble.querySelector("p b").textContent = name;
-		bubble.classList.remove("off"); sp.textContent = ""; let i = 0;
-		W.talk(pawn || (C ? (S.where ? C.u[0] : C.pawns[0]) : "sophie"));
-		sayT = setInterval(() => { if(closed) return clearInterval(sayT); sp.textContent = text.slice(0, ++i); if(i >= text.length) clearInterval(sayT); }, 18);
-		if(innerWidth < MOBILE) hideT = setTimeout(() => bubble.classList.add("off"), 2800 + text.length*45);
-	}
-	bubble.addEventListener("click", () => bubble.classList.add("off"));
-	// les cours cités sont ceux du programme officiel du master (fiche fges.fr)
-	const course = (list, d) => `<div class="ca-course"><span class="tag">📚 Dans le programme du Master MBIF</span><b>${list.join(" · ")}</b><span>${d}</span></div>`;
-	const verdict = (s, names) => `<div class="ca-verdict s${s}"><span class="st">${STARS(s)}</span>${names[s]}</div>`;
-
-	/* ---------- intro : l'agence ouvre ---------- */
-	function intro(){
-		stage("Agence Vauban"); W.view("agence", 2.2);
-		later(800, () => say(null, "Bienvenue à l'agence ! Tes clients t'attendent déjà… Un conseil : écoute-les vraiment."));
-		show(`<div class="ca-k">Mini-jeu · ${formation.name}</div><h2 class="ca-h">Une journée du chargé d'affaires</h2>
-			<p class="ca-p">Tu es <b>chargé d'affaires</b> à l'agence Vauban. Dans ta salle d'attente, des clients (fictifs) : un boulanger, une retraitée, un jeune couple, un patron de PME, une famille. Derrière chaque dossier, il y a <b>une personne, une histoire, un projet</b>.</p>
-			<p class="ca-p">Chaque rendez-vous met à l'épreuve un geste du métier :</p>
-			<ul class="ca-themes">${THEMES.map(([, n, ic], i) => `<li>${ic} <b>${n}</b> · ${["comprendre avant de conseiller", "percevoir au-delà des demandes", "instaurer la confiance", "être présent dans la durée", "apporter la réponse juste"][i]}</li>`).join("")}</ul>
-			<p class="ca-p">Reçois tes clients dans l'ordre que tu veux (2 à 3 minutes chacun). À la fin de la journée, ce n'est pas ton chiffre d'affaires qu'on regarde : c'est ton <b>profil de chargé d'affaires</b>.</p>
-			<button class="ca-go" data-a="agenda">Ouvrir mon agenda</button>`);
-	}
-	/* ---------- l'agenda du jour et le profil ---------- */
-	function radar(){
-		const c = 140, R = 92, pt = (i, v) => { const a = -Math.PI/2 + i*Math.PI*2/5; return [c + Math.cos(a)*R*v, c + Math.sin(a)*R*v]; };
-		const poly = v => THEMES.map((_, i) => pt(i, v(i)).map(n => n.toFixed(1)).join(",")).join(" ");
-		const val = i => Math.max(.04, (S.score[THEMES[i][0]] || 0)/3);
-		return `<svg class="ca-radar" viewBox="-40 0 360 280" role="img" aria-label="Profil de chargé d'affaires">
-			${[1, 2, 3].map(l => `<polygon points="${poly(() => l/3)}" fill="none" stroke="#d5dde2" stroke-width="1.2"/>`).join("")}
-			${THEMES.map((_, i) => { const [x, y] = pt(i, 1); return `<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="#d5dde2"/>`; }).join("")}
-			<polygon points="${poly(val)}" fill="rgba(31,111,120,.35)" stroke="#1f6f78" stroke-width="2.5" stroke-linejoin="round"/>
-			${THEMES.map(([k, n, ic], i) => { const [x, y] = pt(i, 1.22); return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="12.5" font-weight="800" fill="${S.score[k] != null ? "#16324f" : "#9aa5ad"}">${ic} ${n}</text>`; }).join("")}
-		</svg>`;
-	}
-	const done = id => S.score[CLIENTS[id].theme] != null;
-	function agenda(){
-		gen++; S.cur = null; S.where = null; S.busy = false; W.onPick = null; chips();
-		bubble.classList.add("off");          // pas de réplique d'un rendez-vous précédent qui traîne
-		const left = ORDER.filter(id => !done(id));
-		if(!left.length) return S.mgmt == null ? manage() : finale();
-		stage("Mon agenda"); W.view("agence", 1.6);
-		const n = ORDER.length - left.length;
-		show(`<div class="ca-k">${formation.name}</div><h2 class="ca-h">${n ? "Ma journée, pour l'instant" : "Mon agenda du jour"}</h2>
-			<p class="ca-p">${n ? `${n} rendez-vous sur 5. Qui reçois-tu maintenant ?` : "Cinq rendez-vous, cinq gestes du métier. Choisis par qui commencer."}</p>
-			<ul class="ca-agenda">${ORDER.map(id => { const C = CLIENTS[id], th = THEMES.find(t => t[0] === C.theme), d = done(id);
-				return `<li><button class="${d ? "done" : ""}" ${d ? "disabled" : `data-c="${id}"`}><span class="h">${C.h[0]} h ${String(C.h[1]).padStart(2, "0")}</span><span class="w"><b>${C.who}</b><small>${C.kind} · ${th[2]} ${th[1]}</small></span><span class="s">${d ? STARS(S.score[C.theme]) : "Recevoir →"}</span></button></li>`; }).join("")}</ul>
-			${n ? `<p class="ca-p" style="text-align:center;margin:10px 0 0"><b>Mon profil de chargé d'affaires</b></p>${radar()}` : ""}`);
-		if(n) later(500, () => say(null, pick(["Ton prochain client t'attend !", "Belle matinée ! Qui reçois-tu maintenant ?", "Garde le rythme : chaque client mérite toute ton attention."])));
-	}
-
-	/* ---------- un rendez-vous : le client traverse l'agence, puis on plonge dans son univers ---------- */
-	function receive(id){
-		gen++; S.cur = id; S.where = null; S.busy = false;
-		const C = CLIENTS[id];
-		W.resetPeople(); ORDER.filter(done).forEach(k => CLIENTS[k].pawns.forEach(p => W.P[p].g.visible = false));
-		RESET[id]();
-		chips(); mood(id === "duval" ? "neutre" : id === "martin" ? "rassure" : "inquiet");
-		stage(`${C.h[0]} h · ${C.name}`); clockTo(...C.h);
-		W.view("agence", 1.2);
-		say(null, `${C.name}, c'est à toi !`);
-		// les clients traversent l'agence jusqu'au bureau (un seul : au centre ; un couple : sur les deux chaises)
-		const spots = C.pawns.length > 1 ? [4.3, 5.7] : [5];
-		C.pawns.forEach((p, i) => { const z = W.P[p].g.position.z; W.walk(p, [[-6.6, z + .6], [-.4, -.6 + i*.5], [2.8, -.7 + i*.5], [2.8, -4.3], [spots[i], -4.4]], i ? null : () => {
-			if(S.where || S.cur !== id) return; W.view("bureau", 1.3); later(900, () => !S.where && say(id, C.hello)); }, 0); });
-		later(700, () => !S.where && W.view("bureau", 3.4));
-		show(`<span class="ca-time">${C.h[0]} h ${String(C.h[1]).padStart(2, "0")} · Rendez-vous</span><h2 class="ca-h">${C.who}</h2>
-			<div class="ca-story">${C.story}</div>
-			<p class="ca-p">${C.gesture}</p>
-			<button class="ca-go" data-a="enter">${C.enter}</button>`);
-	}
-	function enter(){
-		const id = S.cur, C = CLIENTS[id]; S.where = id;
-		stage(C.stage);
-		// la caméra plonge dans l'univers du client
-		W.view(id, 2.4, 14);
-		later(2200, () => { C.u.forEach((p, i) => setTimeout(() => W.hop(p), i*150)); play("pop"); });
-		PLAY[id]();
-	}
-	function finish(stars, html){
-		S.score[CLIENTS[S.cur].theme] = stars;
-		play(stars >= 3 ? "good" : stars >= 2 ? "chime" : "bad");
-		show(html + `<button class="ca-go" data-a="bye">Raccompagner ${CLIENTS[S.cur].name}</button>`);
-	}
-	function bye(){
-		const id = S.cur, C = CLIENTS[id], stars = S.score[C.theme];
-		S.where = null; W.onPick = null; chips();
-		const end = C.h[0]*60 + C.h[1] + 30;
-		stage("Agence Vauban"); clockTo(Math.floor(end/60), end % 60);
-		W.view("bureau", 2.2, 12);
-		later(2200, () => {
-			if(stars >= 2){ mood("ravi"); C.pawns.forEach(p => W.hop(p, 2)); } else mood(stars ? "rassure" : "neutre");
-			say(id, BYE[id](stars));
-			later(1400, () => { C.pawns.forEach((p, i) => W.walk(p, [[2.8 + i*.4, -4.3], [2.8 + i*.4, -.7], [i*.6, 4.5], [i*.6, 7.5]], () => W.P[p].g.visible = false)); W.view("agence", 2.4); });
-		});
-		show(`<span class="ca-time">Quelques mois plus tard</span><h2 class="ca-h">Des nouvelles de ${C.name}</h2>
-			<div class="ca-epi">${EPI[id](stars)}</div>
-			<button class="ca-go" data-a="agenda">${ORDER.every(done) ? "Voir le bilan de ma journée" : "Retour à mon agenda"}</button>`);
-	}
-
-	/* ===== 1. Karim : l'écoute ===== */
-	const K = { asked:[], found:[], qs:[] };
-	function karimPlay(){
-		Object.assign(K, { asked:[], found:[], loan:null });
-		chips("Besoins découverts"); meter("score", "0 / 3");
-		later(2300, () => say(null, "Ce que Karim dit, c'est la pointe de l'iceberg. Tu as le temps de poser 3 questions : fais apparaître ce qui est caché sous l'eau."));
-		const good = Object.entries(Q_GOOD).map(([need, v]) => { const [t, rep] = pick(v); return { id:need, t, rep, need, mood:need === "boutique" ? "ravi" : "rassure" }; });
-		const bad = shuffle(Q_BAD).slice(0, 3).map((q, i) => ({ ...q, id:"b" + i }));
-		K.qs = shuffle([...good, ...bad]);
-		show(`<span class="ca-time">9 h 05 · L'écoute</span><h2 class="ca-h">Sous la surface</h2>
-			<p class="ca-p">Le rendez-vous dure vingt minutes : tu n'as le temps de poser que <b>trois questions</b>. Lesquelles feront baisser l'eau ?</p>
-			<div class="ca-qn">Questions restantes <i data-left>💬💬💬</i></div>
-			<div class="ca-qs">${K.qs.map(q => `<button class="ca-q" data-q="${q.id}">${q.t}</button>`).join("")}</div>
-			<ul class="ca-log"></ul><div data-next></div>`);
-	}
-	function ask(id){
-		if(S.busy || K.asked.length >= 3 || K.asked.includes(id)) return;
-		const q = K.qs.find(x => x.id === id); K.asked.push(id); S.busy = true;
-		card.querySelectorAll(".ca-q").forEach(b => { b.disabled = true; if(b.dataset.q === id) b.classList.add("used"); });
-		card.querySelector("[data-left]").textContent = "💬".repeat(3 - K.asked.length) || "—";
-		play("pop");
-		later(350, () => {
-			say("karim", q.rep); mood(q.mood);
-			let tag;
-			if(q.need){
-				K.found.push(q.need); const i = K.found.length - 1;
-				W.setLevel(K.found.length); W.reveal(i, W.NEEDS[q.need], Q_LAB[q.need]); react(1);
-				play("good"); meter("score", `${K.found.length} / 3`);
-				tag = `<span class="ca-tag ok">✓ Besoin découvert · question ouverte</span>`;
-			} else {
-				W.wave(); react(-1);
-				if(q.kind === "ko"){ play("bad"); S.errors++; onEvent && onEvent("err"); } else play("chime");
-				tag = `<span class="ca-tag ${q.kind}">${q.kind === "ko" ? "✗" : "≈"} ${q.lesson}</span>`;
-			}
-			card.querySelector(".ca-log").insertAdjacentHTML("beforeend", `<li><q>${q.t}</q><span>« ${q.rep} »</span>${tag}</li>`);
-			scrollEnd();
-			later(1300, () => {
-				S.busy = false;
-				if(K.asked.length < 3) return card.querySelectorAll(".ca-q").forEach(b => b.disabled = b.classList.contains("used"));
-				reformuler();
+	});
+	/* -- l'extrait du registre des bénéficiaires effectifs -- */
+	sheet("rbe", 1000, 560, .8, (x, s) => {
+		paper(x, s, "REGISTRE DES BÉNÉFICIAIRES EFFECTIFS", "extrait · Duval Textiles SAS · RCS Lille Métropole 000 318 442 (fictif)");
+		RBE.forEach(([id, t], i) => { const y = 150 + i*98; s.zones[id] = [24, y - 6, s.W - 24, y + 86]; rr(x, 30, y, s.W - 60, 84, 8, "#fff", "#e0dbcf", 2); const two = (x.font = "800 24px Nunito, sans-serif", x.measureText(t).width > s.W - 110); P(x, t, 50, y + (two ? 34 : 52), s.W - 110, 24, INK, 800, 1.15); });
+	});
+	/* -- la grille de notation -- */
+	sheet("grille", 1000, 780, .8, (x, s) => {
+		paper(x, s, "GRILLE DE NOTATION INTERNE", "cote de la banque (fictive) et probabilité de défaut à un an");
+		const X0 = 300, Y0 = 200, CW = 225, RH = 100;
+		T(x, "Endettement →", X0, 158, 21, GREY, 900); GRID.cols.forEach((c, j) => T(x, c, X0 + j*CW + CW/2, 188, 21, NAVY, 900, "center"));
+		T(x, "Capacité de", 40, 176, 20, GREY, 900); T(x, "remboursement ↓", 40, 198, 20, GREY, 900);
+		GRID.rows.forEach((r, i) => {
+			T(x, r, 40, Y0 + i*RH + 60, 23, NAVY, 900);
+			GRID.cells[i].forEach(([cote, pd], j) => {
+				const X = X0 + j*CW, Y = Y0 + i*RH, sel = S.cell && S.cell[0] === i && S.cell[1] === j, good = i === GRID.good[0] && j === GRID.good[1];
+				s.zones["c" + i + j] = [X, Y, X + CW, Y + RH];
+				rr(x, X + 4, Y + 4, CW - 8, RH - 8, 8, sel ? (good ? "#e6f3ea" : "#fbe3dc") : "#fff", sel ? (good ? GREEN : RED) : "#d9d3c4", sel ? 5 : 2);
+				T(x, "cote " + cote, X + CW/2, Y + 44, 26, INK, 900, "center"); T(x, "défaut " + fr(pd, pd < 1 ? 1 : 0) + " %", X + CW/2, Y + 76, 20, GREY, 800, "center");
 			});
 		});
-	}
-	// reformuler : montrer à Karim qu'on a compris, avant de proposer quoi que ce soit
-	function reformuler(){
-		const n = K.found.length;
-		const full = n ? `Si je résume : il vous faut un four rapidement, mais j'entends aussi ${andJoin(K.found.map(k => NEED_TXT[k]))}. On regarde tout ça ensemble ?` : "Si je résume : il vous faut un four, rapidement. Y a-t-il autre chose qui vous préoccupe ?";
-		const opts = shuffle([["good", full], ["mid", "Donc, un crédit de 25 000 € pour le four. Je lance le dossier."], ["ko", "Parfait : un crédit express pour le four, et je vous ajoute la carte Premium."]]);
-		card.querySelector("[data-next]").innerHTML = `<p class="ca-p" style="margin-top:14px"><b>Dernière étape : reformuler.</b> Avant de proposer quoi que ce soit, montre à Karim que tu l'as compris.</p>
-			<div class="ca-qs">${opts.map(([k, t]) => `<button class="ca-q" data-r="${k}">${t}</button>`).join("")}</div>`;
-		scrollEnd();
-		say(null, "Trois questions, c'est fait. Maintenant, reformule : c'est comme ça qu'il saura que tu l'as écouté.");
-	}
-	function reformulate(k){
-		if(S.busy) return; S.busy = true;
-		card.querySelectorAll("[data-r]").forEach(b => { b.disabled = true; if(b.dataset.r === k) b.classList.add("used"); });
-		const n = K.found.length, stars = k === "good" ? n : Math.max(0, n - 1);
-		if(k === "ko"){ S.errors++; onEvent && onEvent("err"); }
-		for(let i = n; i < 3; i++) W.unknown(i);
-		const md = k === "good" ? (n >= 2 ? "ravi" : "rassure") : k === "mid" ? "neutre" : "agace";
-		mood(md); react(k === "good" ? 1 : -1); if(md === "ravi") W.hop("karimU", 2);
-		say("karim", k === "good" ? (n >= 2 ? "Exactement ! Vous êtes le premier à me poser ces questions." : "Oui… c'est ça. Merci de m'avoir écouté.") : k === "mid" ? "Euh… oui, d'accord. Le four, quoi." : "Encore cette carte ? Bon… pour le four, alors.");
-		K.stars = stars;
-		later(1100, analyse);
-	}
-	// l'analyse financière : lire le compte de résultat de la boulangerie pour fixer le montant du prêt
-	function analyse(){
-		S.busy = false;
-		say(null, "Bien écouté ! Maintenant, les chiffres. Regarde son compte de résultat avant de proposer un montant.");
-		const opts = shuffle([["good", "25 000 € sur 5 ans", "environ 460 € par mois"], ["mid", "25 000 € sur 2 ans", "environ 1 090 € par mois"], ["ko", "60 000 € sur 3 ans", "le four et la 2e boutique tout de suite · environ 1 780 € par mois"]]);
-		show(`<span class="ca-time">9 h 20 · L'analyse</span><h2 class="ca-h">Les chiffres de la boulangerie</h2>
-			<p class="ca-p">Le compte de résultat simplifié de Karim, sur un an :</p>
-			<table class="ca-cr"><tr><td>Chiffre d'affaires</td><td>240 000 €</td></tr>
-				<tr class="neg"><td>Achats (farine, beurre, œufs…)</td><td>− 84 000 €</td></tr>
-				<tr class="neg"><td>Loyer et charges du local</td><td>− 30 000 €</td></tr>
-				<tr class="neg"><td>Rémunération de Karim et cotisations</td><td>− 60 000 €</td></tr>
-				<tr class="neg"><td>Énergie, assurances, divers</td><td>− 36 000 €</td></tr>
-				<tr class="t"><td>Disponible pour rembourser</td><td>30 000 € / an, soit 2 500 € / mois</td></tr>
-				<tr class="neg"><td>Déjà remboursé : le prêt de sa camionnette</td><td>− 300 € / mois</td></tr></table>
-			<p class="ca-p">Le four coûte 25 000 €. Quel prêt proposes-tu ? <small>(taux de 4 %, chiffres simplifiés)</small></p>
-			<div class="ca-qs">${opts.map(([k, t, d]) => `<button class="ca-q nb" data-k="${k}"><span>💶 <b>${t}</b><br><small>${d}</small></span></button>`).join("")}</div><div data-res></div>`);
-	}
-	function loan(k){
-		if(S.busy || K.loan) return; S.busy = true;
-		card.querySelectorAll("[data-k]").forEach(b => { b.disabled = true; if(b.dataset.k === k) b.classList.add(k === "good" ? "ok" : "ko"); });
-		const heard = K.found.includes("treso");
-		const stars = k === "good" ? K.stars : Math.max(0, K.stars - (k === "ko" || heard ? 1 : 0));
-		if(k === "ko"){ S.errors++; onEvent && onEvent("err"); }
-		play(k === "good" ? "good" : "bad"); react(k === "good" ? 1 : -1); mood(k === "good" ? "ravi" : "inquiet");
-		const txt = { good:"460 € par mois, plus les 300 € de la camionnette : 760 €, moins d'un tiers des 2 500 € qu'il dégage. Karim garde de la marge pour l'été. La deuxième boutique aura son propre plan de financement, quand le projet sera mûr.",
-			mid:`1 090 € plus 300 € : 1 390 € par mois, plus de la moitié de ce qu'il dégage. En août, quand le chiffre d'affaires chute, Karim serait à découvert.${heard ? " Il te l'avait pourtant dit !" : ""}`,
-			ko:"1 780 € plus 300 € : 2 080 € par mois, plus de 80 % de ce qu'il dégage. Beaucoup trop risqué : la boutique mérite d'abord une étude à part." }[k];
-		say("karim", k === "good" ? "460 € par mois ? Ça, je peux le tenir, même en août !" : "Hum… ça me paraît lourd, vous êtes sûr ?");
-		// l'année de Karim défile sur la maquette : la pile de pièces, ce qui reste chaque mois après les remboursements
-		const pay = { good:460, mid:1090, ko:1780 }[k];
-		card.querySelector("[data-res]").innerHTML = `<p class="ca-p" style="margin-top:12px">📅 Regarde l'année de Karim défiler sur la maquette : la pile de pièces, c'est ce qu'il lui reste chaque mois.</p>`;
-		W.look(W.U.karim.x - 1, 7.5, 14.5, W.U.karim.x - 1, 2.6, W.U.karim.z + .5, 1.4, 0, 4.5);
-		W.cashYear(pay, () => {
-			card.querySelector("[data-res]").innerHTML = `<p class="ca-p" style="margin-top:12px"><span class="ca-tag ${k}">${k === "good" ? "✓ Un prêt à sa mesure : jamais à découvert" : "✗ Une mensualité trop lourde : découvert en été"}</span><br>${txt}</p>
-				<button class="ca-go" data-a="karimEnd">Voir le bilan du rendez-vous</button>`;
-			scrollEnd();
-		});
-		K.loan = k; K.stars2 = stars; scrollEnd(); S.busy = false;
-	}
-	function karimEnd(){
-		const stars = K.stars2, n = K.found.length;
-		const missing = ["seul", "boutique", "treso"].filter(x => !K.found.includes(x));
-		finish(stars, `<span class="ca-time">9 h 25 · Le bilan</span><h2 class="ca-h">L'iceberg de Karim</h2>
-			${verdict(stars, ["Écoute à retravailler", "Écoute partielle", "Bonne écoute", "Écoute remarquable"])}
-			<ul class="ca-ice"><li class="top">☁️ Ce qu'il a dit : un crédit pour le four</li>${K.found.map(x => `<li>🧊 ${Q_LAB[x]}</li>`).join("")}${missing.map(x => `<li class="miss">❓ Resté sous l'eau : ${Q_LAB[x].slice(3)}</li>`).join("")}</ul>
-			<p class="ca-p">${n === 3 ? "Tu as fait émerger tout l'iceberg. Tu peux proposer bien plus qu'un crédit : un prêt pour le four, une solution de trésorerie pour l'été, un premier pas vers l'embauche d'un apprenti, et un rendez-vous dans six mois pour la deuxième boutique." : "Un four, c'est la demande. Mais derrière, Karim avait d'autres besoins : les découvrir, c'est l'aider vraiment… et c'est construire une relation qui dure."}</p>
-			<p class="ca-p">💶 Le prêt : ${K.loan === "good" ? "25 000 € sur 5 ans, une mensualité qui laisse de la marge." : "une mensualité trop lourde pour la boulangerie."}</p>
-			<div class="ca-tip">💡 <b>Le réflexe du chargé d'affaires :</b> des <b>questions ouvertes</b> (« comment », « où vous voyez-vous… ») font parler le client. Les questions fermées confirment, les produits proposés trop tôt referment la discussion. Puis on <b>reformule</b>, et on vérifie avec les <b>chiffres</b> ce que le client peut vraiment rembourser.</div>
-			${course(["Entrée en relation – produits d'épargne bancaire", "Analyse des besoins et risques financiers", "Décisions et techniques de financement des professionnels"], "Écouter, reformuler, lire les comptes d'un professionnel et dimensionner son financement : du premier rendez-vous au dossier de crédit.")}`);
-	}
-
-	/* ===== 2. Mme Lefèvre : la sensibilité ===== */
-	const L = { left:6, found:[], tried:[] };
-	function lefevrePlay(){
-		Object.assign(L, { left:6, found:[], tried:[], comp:null, approach:null });
-		chips("Signaux repérés"); meter("score", "0 / 4");
-		later(2300, () => say(null, "Elle dit qu'elle vient pour un virement… Regarde autour d'elle. Touche les objets qui te disent quelque chose."));
-		show(`<span class="ca-time">10 h 35 · La sensibilité</span><h2 class="ca-h">Ce qu'elle ne dit pas</h2>
-			<p class="ca-p">Mme Lefèvre ne parle que de son virement. Mais son univers en dit beaucoup plus. Avec ta <b>loupe</b>, touche les objets de la maquette pour repérer les <b>signaux faibles</b>.</p>
-			<div class="ca-loupe">Coups de loupe <i data-left>${"🔍".repeat(L.left)}</i></div>
-			<ul class="ca-found"></ul>
-			<details class="ca-objs"><summary>Ou choisis dans la liste des objets</summary><div>${shuffle(Object.keys(CLUES)).map(k => `<button data-o="${k}">${CLUES[k].name}</button>`).join("")}</div></details>
-			<div data-next></div>`);
-		W.onPick = loupe;
-	}
-	function loupe(id){
-		if(S.busy || !L.left || L.tried.includes(id)) return;
-		const c = CLUES[id]; L.tried.push(id); L.left--;
-		card.querySelector(`[data-o="${id}"]`).disabled = true;
-		card.querySelector("[data-left]").textContent = "🔍".repeat(L.left) || "—";
-		W.markClue(id, c.lab, c.good);
-		if(c.good){ L.found.push(id); meter("score", `${L.found.length} / 4`); play("good"); W.react("lefevreU", 1);
-			card.querySelector(".ca-found").insertAdjacentHTML("beforeend", `<li>${c.txt}</li>`); }
-		else { play("pop"); card.querySelector(".ca-found").insertAdjacentHTML("beforeend", `<li class="no">${c.lab}</li>`); }
-		scrollEnd();
-		if(L.found.length === 4 || !L.left){ W.onPick = null; S.busy = true; later(900, approach); }
-	}
-	function approach(){
-		const opts = shuffle([["good", "Je suis désolé pour votre mari. Comment vous sentez-vous pour gérer tout ça ? On peut prendre le temps d'en parler, si vous le souhaitez."],
-			["mid", "Bien. Passons à votre virement, madame Lefèvre."],
-			["ko", "Avec la succession, vous allez recevoir de l'argent : on pourrait le placer rapidement !"]]);
-		card.querySelector("[data-next]").innerHTML = `<p class="ca-p" style="margin-top:14px"><b>Avant de passer au virement</b>, que lui dis-tu ?</p>
-			<div class="ca-qs">${opts.map(([k, t]) => `<button class="ca-q" data-l="${k}">${t}</button>`).join("")}</div>`;
-		scrollEnd(); S.busy = false;
-		say(null, L.found.length >= 3 ? "Tu as vu ce qui se passe dans sa vie. Maintenant, trouve les mots justes." : "Tu n'as pas tout vu… mais tu peux encore lui ouvrir une porte.");
-	}
-	function lefevreEnd(k){
-		if(S.busy) return; S.busy = true;
-		card.querySelectorAll("[data-l]").forEach(b => { b.disabled = true; if(b.dataset.l === k) b.classList.add(k === "good" ? "ok" : "ko"); });
-		const f = L.found.length, base = f >= 4 ? 3 : f >= 3 ? 2 : f >= 2 ? 1 : 0, stars = k === "good" ? base : Math.max(0, base - (k === "ko" ? 2 : 1));
-		if(k === "ko"){ S.errors++; onEvent && onEvent("err"); }
-		mood(k === "good" ? "rassure" : k === "ko" ? "agace" : "neutre"); react(k === "good" ? 1 : -1);
-		say("lefevre", k === "good" ? "Merci… C'est Robert qui s'occupait de tout. Je ne sais même pas par où commencer." : k === "ko" ? "Placer ? Robert n'est parti que depuis trois mois…" : "Oui… le virement.");
-		Object.assign(L, { approach:k, stars });
-		later(1600, transferStep);
-	}
-	// la conformité : le virement demandé au profit de son fils, et le risque d'abus de faiblesse
-	function transferStep(){
-		S.busy = false;
-		W.place("didier", W.U.lefevre, -4.2, 0, 3.6, 2.4); W.P.didier.setMood("agace");
-		say("lefevre", "Didier, mon fils, m'attend dans l'entrée. Il dit que c'est urgent, pour une affaire… Je ne sais pas trop.");
-		const opts = shuffle([["good", "Prendre le temps : la recevoir seule, vérifier qu'elle comprend et souhaite ce virement, et en parler à Sophie et au service conformité avant de l'exécuter."],
-			["ko", "Exécuter le virement : c'est son argent, et c'est son fils."],
-			["mid", "Refuser le virement et demander à Didier de partir."]]);
-		show(`<span class="ca-time">10 h 50 · La conformité</span><h2 class="ca-h">Le virement</h2>
-			<div class="ca-story">Mme Lefèvre te tend un ordre de virement de <b>18 000 €</b> vers le compte de son fils Didier. Didier l'a accompagnée, il attend dans l'entrée et s'impatiente.</div>
-			<p class="ca-p">Les virements vers Didier sur son compte :</p>
-			<table class="ca-cr"><tr><td>12 août (un mois après le décès)</td><td>5 000 €</td></tr><tr><td>23 septembre</td><td>8 000 €</td></tr><tr class="t"><td>Aujourd'hui</td><td>18 000 €</td></tr></table>
-			<p class="ca-p"><b>Que fais-tu ?</b></p>
-			<div class="ca-qs">${opts.map(([k, t]) => `<button class="ca-q" data-v="${k}">${t}</button>`).join("")}</div><div data-res></div>`);
-	}
-	function transfer(k){
-		if(S.busy || L.comp) return; S.busy = true; L.comp = k;
-		card.querySelectorAll("[data-v]").forEach(b => { b.disabled = true; if(b.dataset.v === k) b.classList.add(k === "good" ? "ok" : "ko"); });
-		const D_ = W.P.didier, out = () => W.walk("didier", [[W.U.lefevre.x - 7.5, W.U.lefevre.z + 4.5]], () => D_.g.visible = false);
-		if(k === "good"){ play("good"); mood("rassure"); react(1); say("lefevre", "Vous avez raison… Je me sens bousculée, en ce moment. Merci de prendre le temps."); setTimeout(out, 900); }
-		else if(k === "ko"){ play("bad"); S.errors++; onEvent && onEvent("err"); D_.setMood("ravi"); W.hop("didier", 2); mood("inquiet"); say("lefevre", "Bon… Si Didier dit que c'est urgent."); }
-		else { play("chime"); D_.setMood("agace"); W.shake(D_.g, .15); mood("inquiet"); say("lefevre", "Oh… Didier va être furieux. C'est quand même mon fils…"); setTimeout(out, 1200); }
-		card.querySelector("[data-res]").innerHTML = `<p class="ca-p" style="margin-top:12px"><span class="ca-tag ${k}">${k === "good" ? "✓ Vigilance et respect de la cliente" : k === "mid" ? "≈ Protecteur, mais tu décides à sa place" : "✗ Signaux d'alerte ignorés"}</span><br>${{
-			good:"Deuil récent, comptes qu'elle ne gérait pas, virements de plus en plus gros, pression d'un proche : ce sont des signaux d'un possible <b>abus de faiblesse</b>. Le chargé d'affaires ne décide pas à la place de la cliente : il vérifie son consentement, lui laisse le temps, et alerte sa hiérarchie et la conformité.",
-			mid:"Tu protèges Mme Lefèvre, mais tu décides à sa place et tu accuses son fils, peut-être de bonne foi. Il fallait d'abord l'écouter seule, puis en référer à ta hiérarchie.",
-			ko:"Trois virements en deux mois, de plus en plus gros, juste après un deuil, sous la pression d'un proche : tu n'as pas vu les signaux d'un possible abus de faiblesse." }[k]}</p>
-			<button class="ca-go" data-a="lefevreFinish">Voir le bilan du rendez-vous</button>`;
-		scrollEnd(); S.busy = false;
-	}
-	function lefevreFinish(){
-		const k = L.approach, stars = Math.max(0, L.stars - (L.comp === "good" ? 0 : 1));
-		const miss = ["manteau", "notaire", "photo", "factures"].filter(x => !L.found.includes(x));
-		finish(stars, `<span class="ca-time">11 h 00 · Le bilan</span><h2 class="ca-h">Les signaux faibles</h2>
-			${verdict(stars, ["Sensibilité à développer", "Sensibilité partielle", "Belle sensibilité", "Sensibilité remarquable"])}
-			<ul class="ca-found">${L.found.map(x => `<li>${CLUES[x].txt}</li>`).join("")}${miss.map(x => `<li class="no">Pas vu : ${CLUES[x].txt}</li>`).join("")}</ul>
-			<p class="ca-p">🛡️ Le virement de 18 000 € : ${L.comp === "good" ? "tu as pris le temps de vérifier, et alerté ta hiérarchie." : L.comp === "mid" ? "refusé d'office, sans écouter la cliente." : "exécuté malgré les signaux d'alerte."}</p>
-			<p class="ca-p">${k === "good" ? "Mme Lefèvre est venue pour un virement. Elle repart avec un rendez-vous pour faire le point sur la succession, ses comptes, et le projet d'aider Théo. Et surtout : quelqu'un l'a vue." : k === "ko" ? "Parler placement à une veuve en plein deuil, c'est la blesser. Le bon produit au mauvais moment est un mauvais conseil." : "Tu es passé directement au virement : Mme Lefèvre repart seule avec ses factures et sa succession. Elle n'osera peut-être pas revenir."}</p>
-			<div class="ca-tip">💡 <b>Le réflexe du chargé d'affaires :</b> repérer les <b>moments de vie</b> (deuil, naissance, retraite, études…) et les signaux faibles, puis ouvrir la porte avec tact, au rythme du client. Et rester vigilant : une personne fragilisée peut être la cible d'un abus de faiblesse, le banquier doit savoir le repérer et alerter.</div>
-			${course(["Stratégies du conseil", "Droit bancaire", "Contrôles et audits internes", "Éthique et finance"], "Accompagner un client fragilisé : écouter, adapter son approche, repérer les opérations inhabituelles et alerter, sans jamais décider à sa place.")}`);
-	}
-
-	/* ===== 3. Inès et Tom : la bienveillance ===== */
-	const B = { i:0, good:0, calc:null };
-	function couplePlay(){
-		Object.assign(B, { i:0, good:0, calc:null });
-		chips("Planches posées"); meter("score", "0 / 5");
-		later(2300, () => say(null, "Avant de parler, fais tes calculs : la bienveillance, c'est aussi ne pas laisser un couple s'endetter plus qu'il ne peut."));
-		calcStep();
-	}
-	// la rigueur avant la bienveillance : le taux d'endettement (mensualités ÷ revenus)
-	function calcStep(){
-		const opts = shuffle([["ko1", "Environ 18 %"], ["good", "Environ 29 %"], ["ko2", "Environ 40 %"]]);
-		show(`<span class="ca-time">14 h 05 · Les calculs</span><h2 class="ca-h">Peuvent-ils emprunter ?</h2>
-			<table class="ca-cr"><tr><td>Salaire net d'Inès</td><td>2 150 € / mois</td></tr><tr><td>Salaire net de Tom</td><td>1 850 € / mois</td></tr>
-				<tr class="t"><td>Revenus du couple</td><td>4 000 € / mois</td></tr><tr class="neg"><td>Mensualité du prêt envisagé (assurance comprise)</td><td>1 150 € / mois</td></tr></table>
-			<p class="ca-p"><b>Quel est leur taux d'endettement</b> (mensualités ÷ revenus) ?</p>
-			<div class="ca-qs">${opts.map(([k, t]) => `<button class="ca-q nb" data-t="${k}">📊 ${t}</button>`).join("")}</div><div data-res></div>`);
-	}
-	function calc(k){
-		if(B.calc) return; B.calc = k === "good" ? "ok" : "ko";
-		card.querySelectorAll("[data-t]").forEach(b => { b.disabled = true; if(b.dataset.t === k) b.classList.add(k === "good" ? "ok" : "ko"); else if(b.dataset.t === "good") b.classList.add("ok"); });
-		play(k === "good" ? "good" : "bad"); if(k !== "good"){ S.errors++; onEvent && onEvent("err"); }
-		W.setGauge(29);
-		card.querySelector("[data-res]").innerHTML = `<p class="ca-p" style="margin-top:12px"><span class="ca-tag ${k === "good" ? "ok" : "ko"}">${k === "good" ? "✓ Bien calculé" : "✗ Pas tout à fait"}</span><br>1 150 ÷ 4 000 = 28,75 %, soit environ 29 %. En France, le Haut Conseil de stabilité financière demande aux banques de ne pas dépasser, sauf exception, 35 % d'endettement, assurance comprise. Le projet passe… pour l'instant.</p>
-			<button class="ca-go" data-a="talk">Recevoir Inès et Tom</button>`;
-		scrollEnd();
-	}
-	const moodsB = ["inquiet", "inquiet", "neutre", "rassure", "rassure", "ravi"];
-	function talkStep(){
-		const T = TALK[B.i];
-		show(`<span class="ca-time">14 h 05 · La bienveillance</span><h2 class="ca-h">Le pont de la confiance</h2>
-			<div class="ca-plank">${[0, 1, 2, 3, 4].map(i => `<i data-pk="${i}"></i>`).join("")}</div>
-			<p class="ca-who">${T.who === "inesU" ? "Inès" : "Tom"} : <span>« ${T.line} »</span></p>
-			<div class="ca-qs">${shuffle(T.a).map(([k, t]) => `<button class="ca-q" data-b="${k}">${t}</button>`).join("")}</div>
-			<p class="ca-p" style="margin-top:10px;font-size:13px;color:#7a858d">Échange ${B.i + 1} sur ${TALK.length}</p><div data-res></div>`);
-		paintPlanks();
-		later(300, () => say("couple", T.line, T.who));
-	}
-	function paintPlanks(){ card.querySelectorAll("[data-pk]").forEach((e, i) => e.classList.toggle("on", i < planks)); }
-	let planks = 0;
-	function answer(k){
-		if(S.busy) return; S.busy = true;
-		card.querySelectorAll("[data-b]").forEach(b => { b.disabled = true; if(b.dataset.b === k) b.classList.add(k === "good" ? "ok" : "ko"); });
-		if(k === "good"){ B.good++; planks = Math.min(5, planks + 1); W.plank(true); react(1); play("good"); }
-		else { if(planks){ planks--; W.plank(false); } react(-1); play(k === "ko" ? "bad" : "chime"); if(k === "ko"){ S.errors++; onEvent && onEvent("err"); } }
-		meter("score", `${planks} / 5`);
-		const lvl = Math.max(0, Math.min(5, planks + (k === "ko" ? -1 : 0)));
-		mood(k === "ko" ? "agace" : moodsB[lvl]);
-		paintPlanks();
-		card.querySelector("[data-res]").innerHTML = `<span class="ca-tag ${k}">${TALK_FB[k]}</span>`;
-		// le crédit auto avoué par Tom change le calcul : on le montre, et on laisse le temps de le lire
-		if(B.i === 2) W.setGauge(35);
-		if(B.i === 2) card.querySelector("[data-res]").insertAdjacentHTML("beforeend", `<div class="ca-tip">📊 Avec le crédit auto (250 € par mois) : (1 150 + 250) ÷ 4 000 = <b>35 %</b>, pile la limite. On pourra allonger la durée du prêt ou attendre la fin du crédit auto : c'est le rôle du conseiller de trouver la solution.</div>`);
-		scrollEnd();
-		later(B.i === 2 ? 4200 : 1500, () => { S.busy = false; if(++B.i < TALK.length) talkStep(); else coupleEnd(); });
-	}
-	function coupleEnd(){
-		const stars = Math.max(0, (B.good >= 5 ? 3 : B.good >= 4 ? 2 : B.good >= 3 ? 1 : 0) - (B.calc === "ko" ? 1 : 0)), full = planks >= 5;
-		if(full){
-			mood("ravi");
-			W.walk("inesU", [[W.U.couple.x - 2.6, W.U.couple.z - .5]], null); W.walk("tomU", [[W.U.couple.x - 2.6, W.U.couple.z + .5]], () => { W.hop("inesU", 2); W.hop("tomU", 2); W.hop("toiC"); });
-			say("couple", "On l'a fait ! Merci de nous avoir pris au sérieux.", "inesU");
-		} else say("couple", planks >= 3 ? "Merci… On va réfléchir à tout ça." : "On va peut-être voir une autre banque…", "tomU");
-		later(full ? 2600 : 1200, () => finish(stars, `<span class="ca-time">14 h 30 · Le bilan</span><h2 class="ca-h">${full ? "Le pont est construit !" : "Un pont inachevé"}</h2>
-			${verdict(stars, ["Bienveillance à travailler", "Bienveillance fragile", "Belle bienveillance", "Bienveillance exemplaire"])}
-			<p class="ca-p">${full ? "Inès et Tom ont traversé : ils te font confiance. Ils repartent avec une simulation claire, et l'envie de revenir te voir." : `${B.good} réponse${B.good > 1 ? "s" : ""} bienveillante${B.good > 1 ? "s" : ""} sur 5. Un premier achat, c'est souvent le projet d'une vie : chaque jugement, chaque pression éloigne le client.`}</p>
-			<p class="ca-p">📊 Le calcul du taux d'endettement : ${B.calc === "ok" ? "juste, et c'est lui qui t'a permis de rassurer avec des faits." : "à revoir : sans chiffres justes, on rassure à tort."}</p>
-			<div class="ca-tip">💡 <b>Le réflexe du chargé d'affaires :</b> accueillir sans juger, rassurer avec des faits (des calculs justes), laisser le temps de décider. D'ailleurs, la loi l'impose : après avoir reçu l'offre de prêt immobilier, l'emprunteur dispose de dix jours de réflexion avant de pouvoir l'accepter.</div>
-			${course(["Entrée en relation – produits d'épargne bancaire", "Droit bancaire", "Négociation"], "Accueillir, rassurer, appliquer les règles d'octroi du crédit et le devoir de conseil : accompagner un premier achat, de la simulation à la signature.")}`));
-	}
-
-	/* ===== 4. Duval Textiles : l'accompagnement ===== */
-	const D = { i:0, res:[] };
-	function duvalPlay(){
-		Object.assign(D, { i:0, res:[], sig:null, sigSel:[], sigDone:false });
-		chips("Bons relais"); meter("score", "0 / 4");
-		later(2300, () => say(null, "Tu vas suivre Duval Textiles pendant des années. À chaque tournant, mobilise le bon interlocuteur… au bon moment."));
-		eventStep();
-	}
-	// en 2029, avant de choisir l'expert : lire le tableau de bord de l'entreprise et repérer les signaux de risque
-	const SIGNALS = [
-		{ id:"ca", v:"+ 18 %", t:"Chiffre d'affaires sur un an", why:"Une croissance saine : rien d'inquiétant." },
-		{ id:"stock", alert:1, v:"+ 45 %", t:"Stocks de fil, alors que les ventes ne progressent que de 18 %", why:"Du fil acheté et payé, mais pas encore vendu : de la trésorerie qui dort dans l'entrepôt." },
-		{ id:"client", alert:1, v:"95 jours", t:"Délai de paiement d'Autolux, le premier client (60 jours prévus)", why:"Le premier client paie de plus en plus tard : risque d'impayé, et trésorerie qui fond." },
-		{ id:"staff", v:"40", t:"Salariés, effectif stable", why:"Rien d'anormal." }
-	];
-	function signalStep(){
-		const E = EVENTS[D.i]; D.sigSel = [];
-		W.setWeather("cloud"); yearLabel(E.y); W.alerts(true);
-		show(`<span class="ca-time">${E.y} · Le tableau de bord</span><h2 class="ca-h">Quelque chose cloche…</h2>
-			<div class="ca-years">${EVENTS.map((e, i) => `<span class="${D.res[i] === true ? "ok" : D.res[i] === false ? "ko" : i === D.i ? "on" : ""}">${e.y}</span>`).join("")}</div>
-			<p class="ca-p">Avant d'agir, lis les chiffres de Duval Textiles. <b>Quels signaux t'inquiètent ?</b> (touche-les)</p>
-			<div class="ca-sig">${shuffle(SIGNALS).map(s => `<button data-s="${s.id}" aria-pressed="false"><b>${s.v}</b>${s.t}</button>`).join("")}</div>
-			<div data-res></div><button class="ca-go" data-a="sigOk" disabled>Valider mon analyse</button>`);
-		later(300, () => say(null, "Un bon chargé d'affaires lit les chiffres de ses clients avant qu'ils l'appellent. Regarde bien."));
-	}
-	function toggleSignal(id){
-		if(D.sigDone) return;
-		const b = card.querySelector(`[data-s="${id}"]`), on = b.getAttribute("aria-pressed") !== "true";
-		b.setAttribute("aria-pressed", on); D.sigSel = on ? [...D.sigSel, id] : D.sigSel.filter(x => x !== id);
-		card.querySelector('[data-a="sigOk"]').disabled = !D.sigSel.length; play("pop");
-	}
-	function sigOk(){
-		D.sigDone = true;
-		const good = D.sigSel.filter(id => SIGNALS.find(s => s.id === id).alert), wrong = D.sigSel.length - good.length;
-		D.sig = { good:good.length, wrong };
-		card.querySelectorAll("[data-s]").forEach(b => { const s = SIGNALS.find(x => x.id === b.dataset.s), sel = D.sigSel.includes(s.id); b.disabled = true; const cls = s.alert ? (sel ? "ok" : "miss") : sel ? "ko" : null; if(cls) b.classList.add(cls); });
-		good.forEach(id => W.flag(id === "stock" ? "stock" : "client"));
-		play(good.length === 2 && !wrong ? "good" : "chime");
-		if(good.length === 2 && !wrong) react(1);
-		card.querySelector("[data-res]").innerHTML = `<p class="ca-p" style="margin-top:12px"><span class="ca-tag ${good.length === 2 && !wrong ? "ok" : "mid"}">${good.length === 2 && !wrong ? "✓ Les deux signaux repérés" : `${good.length} signal${good.length > 1 ? "s" : ""} sur 2${wrong ? `, ${wrong} fausse alerte` : ""}`}</span></p>
-			<ul class="ca-found">${SIGNALS.filter(s => s.alert).map(s => `<li>⚠️ ${s.why}</li>`).join("")}</ul>`;
-		card.querySelector('[data-a="sigOk"]').outerHTML = `<button class="ca-go" data-a="sigNext">Choisir l'interlocuteur →</button>`;
-		scrollEnd();
-	}
-	function eventStep(){
-		const E = EVENTS[D.i];
-		if(D.i === 1 && !D.sigDone) return signalStep();
-		W.setWeather("cloud"); yearLabel(E.y);
-		// 2031 : les signaux manqués en 2029 ont grossi
-		const missed = D.i === 2 && D.sig ? SIGNALS.filter(s => s.alert && !D.sigSel.includes(s.id)) : [];
-		missed.forEach(s => later(600, () => { W.consequence(s.id === "stock" ? "stock" : "client"); play("bad"); }));
-		if(missed.length) later(700, () => { mood("inquiet"); react(-1); });
-		show(`<span class="ca-time">${E.y} · L'accompagnement</span><h2 class="ca-h">${E.t}</h2>
-			<div class="ca-years">${EVENTS.map((e, i) => `<span class="${D.res[i] === true ? "ok" : D.res[i] === false ? "ko" : i === D.i ? "on" : ""}">${e.y}</span>`).join("")}</div>
-			${missed.length ? `<div class="ca-tip" style="border-color:#c0392b;background:#fdeceb">⚠️ <b>Les signaux que tu n'as pas vus en 2029 ont grossi :</b> ${missed.map(s => s.id === "stock" ? "les stocks débordent, 200 000 € de fil dorment dans l'entrepôt" : "Autolux a fait faillite, 120 000 € de factures ne seront jamais payées").join(" ; ")}. Sans la trésorerie, ce projet sera plus dur à financer.</div>` : ""}
-			<div class="ca-story">${E.d}</div>
-			<p class="ca-p"><b>Qui mobilises-tu ?</b></p>
-			<div class="ca-exp">${Object.entries(EXPERTS).map(([k, [ic, n]]) => `<button data-x="${k}"><span>${ic}</span>${n}</button>`).join("")}</div><div data-res></div>`);
-		later(300, () => say("duval", pick(["Dites, j'ai une question…", "Il se passe quelque chose, j'aimerais votre avis.", "On a besoin de vous !"]), "duvalU"));
-	}
-	// les années passent : M. Duval grisonne
-	function yearLabel(y){ W.setYear(y); if(y >= 2031) W.P.duvalU.setHair(y >= 2033 ? "#d0d0d0" : "#9a9a9a"); }
-	function mobilize(k){
-		if(S.busy) return; S.busy = true;
-		const E = EVENTS[D.i], ok = k === E.good;
-		card.querySelectorAll("[data-x]").forEach(b => { b.disabled = true; if(b.dataset.x === k) b.classList.add(ok ? "ok" : "ko"); else if(b.dataset.x === E.good && !ok) b.classList.add("ok"); });
-		D.res[D.i] = ok;
-		const after = () => {
-			if(ok){ W.setWeather("sun"); W.grow(E.grow); play("good"); react(1); mood(D.i === 3 ? "ravi" : "rassure"); }
-			else { W.setWeather("storm"); play("bad"); react(-1); mood("inquiet"); S.errors++; onEvent && onEvent("err"); }
-			meter("score", `${D.res.filter(Boolean).length} / 4`);
-			say("duval", ok ? pick(["Parfait, vous avez vu juste !", "Heureusement que vous étiez là.", "Exactement ce qu'il nous fallait !"]) : "Aïe… on aurait dû s'y prendre autrement.", "duvalU");
-			card.querySelector("[data-res]").innerHTML = `<p class="ca-p" style="margin-top:12px"><span class="ca-tag ${ok ? "ok" : "ko"}">${ok ? "✓ Le bon relais, au bon moment" : k === "wait" ? "✗ Trop tard : attendre, c'est subir" : "✗ Pas le bon interlocuteur"}</span><br>${ok ? E.ok : E.ko}</p>
-				<button class="ca-go" data-a="${D.i < EVENTS.length - 1 ? "nextEvent" : "duvalEnd"}">${D.i < EVENTS.length - 1 ? `Avancer en ${EVENTS[D.i + 1].y} →` : "Faire le bilan"}</button>`;
-			scrollEnd(); S.busy = false;
-		};
-		if(k === "wait") after(); else W.expert(k, ok, after);
-	}
-	function duvalEnd(){
-		// 4 bons relais + 2 signaux repérés = 6 ; une fausse alerte retire un point
-		const n = D.res.filter(Boolean).length, sg = D.sig ? D.sig.good - D.sig.wrong : 0, tot = n + sg;
-		const stars = tot >= 6 ? 3 : tot >= 4 ? 2 : tot >= 3 ? 1 : 0;
-		W.setWeather("none");
-		finish(stars, `<span class="ca-time">2034 · Le bilan</span><h2 class="ca-h">Huit ans aux côtés de Duval Textiles</h2>
-			${verdict(stars, ["Accompagnement à construire", "Accompagnement irrégulier", "Bon accompagnement", "Accompagnement exemplaire"])}
-			<div class="ca-years">${EVENTS.map((e, i) => `<span class="${D.res[i] ? "ok" : "ko"}">${e.y}</span>`).join("")}</div>
-			<p class="ca-p">📊 Les signaux de risque de 2029 : ${D.sig ? `${D.sig.good} sur 2 repérés${D.sig.wrong ? `, ${D.sig.wrong} fausse alerte` : ""}` : "non analysés"}.</p>
-			<p class="ca-p">${n === 4 ? "Export, trésorerie, investissement, transmission : à chaque tournant, tu as anticipé et mobilisé le bon expert. Clara reprend une entreprise solide." : "Chaque tournant manqué a coûté cher à l'entreprise. Le chargé d'affaires n'est pas seul : son rôle est aussi de faire venir les bons experts au bon moment."}</p>
-			<div class="ca-tip">💡 <b>Le réflexe du chargé d'affaires :</b> être <b>présent dans la durée</b>, anticiper les transitions (croissance, export, investissement, transmission) et coordonner les experts de la banque et ses partenaires.</div>
-			${course(["Risque sur la clientèle professionnelle et PME", "Gestion des flux bancaires internationaux", "Droit du financement de l'entreprise", "Holdings – LBO – Transmission d'entreprises"], "Détecter les risques, financer la croissance et l'export, préparer la transmission : accompagner une PME à chaque étape de sa vie.")}`);
-	}
-
-	/* ===== 5. La famille Martin : l'expertise ===== */
-	const T = { picked:[], bad:0 };
-	// la conformité d'abord : connaître le client (objectifs, horizon, tolérance au risque, connaissances) avant tout conseil
-	const PROFILE_Q = [
-		["horizon", "Dans combien de temps aurez-vous besoin de cet argent ?", "Dans six ans pour la retraite. Et plus tard, pour aider Léa et Hugo."],
-		["risque", "Si vos placements perdaient 20 % en un an, comment réagiriez-vous ?", "On ne dormirait plus ! Cet argent, c'est trente ans de travail."],
-		["savoir", "Quels placements connaissez-vous ?", "Le livret A et l'assurance-vie en euros. La Bourse, on n'y connaît rien."]
-	];
-	function martinPlay(){
-		Object.assign(T, { picked:[], bad:0, ended:false, asked:[], profile:null });
-		chips("Objectifs couverts"); meter("score", "0 / 4");
-		later(2300, () => say(null, "Avant de proposer quoi que ce soit, la réglementation t'impose de connaître leur profil. Pose-leur les questions."));
-		show(`<span class="ca-time">17 h 05 · La conformité</span><h2 class="ca-h">Leur profil d'investisseur</h2>
-			<p class="ca-p">Le <b>devoir de conseil</b> impose de connaître le client avant de lui proposer un placement : ses objectifs, son horizon, sa tolérance au risque, ses connaissances. Pose les trois questions.</p>
-			<div class="ca-qs">${PROFILE_Q.map(([k, q]) => `<button class="ca-q" data-m="${k}">${q}</button>`).join("")}</div>
-			<ul class="ca-log"></ul><div data-next></div>`);
-	}
-	function profileAsk(k){
-		if(T.asked.includes(k)) return; T.asked.push(k);
-		const [, q, a] = PROFILE_Q.find(x => x[0] === k);
-		card.querySelector(`[data-m="${k}"]`).disabled = true; card.querySelector(`[data-m="${k}"]`).classList.add("used");
-		say("martin", a, T.asked.length % 2 ? "martinF" : "martinU"); play("pop");
-		card.querySelector(".ca-log").insertAdjacentHTML("beforeend", `<li><q>${q}</q><span>« ${a} »</span></li>`);
-		if(T.asked.length === 3) card.querySelector("[data-next]").innerHTML = `<p class="ca-p" style="margin-top:14px"><b>Quel est leur profil ?</b></p>
-			<div class="ca-qs">${[["prudent", "🛡️ Prudent", "préserver le capital avant tout"], ["equilibre", "⚖️ Équilibré", "accepter un peu de risque pour un meilleur rendement"], ["dynamique", "🚀 Dynamique", "viser la performance, quitte à perdre"]].map(([k, t, d]) => `<button class="ca-q nb" data-pf="${k}"><span><b>${t}</b><br><small>${d}</small></span></button>`).join("")}</div>`;
-		scrollEnd();
-	}
-	function profile(k){
-		if(T.profile) return; T.profile = k;
-		const ok = k === "prudent";
-		// le profil est consigné dans un document signé par les clients : la traçabilité du conseil
-		W.profileDoc({ prudent:"prudent", equilibre:"équilibré", dynamique:"dynamique" }[k], ok);
-		later(500, () => { W.hop("martinU"); W.hop("martinF"); });
-		card.querySelectorAll("[data-pf]").forEach(b => { b.disabled = true; if(b.dataset.pf === k) b.classList.add(ok ? "ok" : "ko"); else if(b.dataset.pf === "prudent" && !ok) b.classList.add("ok"); });
-		play(ok ? "good" : "bad"); if(!ok){ S.errors++; onEvent && onEvent("err"); }
-		card.querySelector("[data-next]").insertAdjacentHTML("beforeend", `<p class="ca-p" style="margin-top:12px"><span class="ca-tag ${ok ? "ok" : "ko"}">${ok ? "✓ Profil prudent" : "✗ Leur profil est prudent"}</span><br>Une baisse de 20 % les empêcherait de dormir, ils ne connaissent pas la Bourse et partent à la retraite dans six ans : tout ce que tu leur proposeras devra respecter ce profil.<br>📝 Le profil est consigné dans un document qu'ils signent (sur la maquette) : le conseil est <b>tracé</b>, comme l'exige la réglementation.</p>
-			<button class="ca-go" data-a="products">Construire leur solution →</button>`);
-		scrollEnd();
-	}
-	function products(){
-		later(300, () => say(null, "Chaque produit est un bloc de leur solution. Les bons s'emboîtent. Les mauvais font pencher la tour… et elle peut tomber."));
-		show(`<span class="ca-time">17 h 15 · L'expertise</span><h2 class="ca-h">La tour des Martin</h2>
-			<p class="ca-p">Construis leur solution, bloc par bloc (5 au maximum). Couvre leurs <b>quatre objectifs</b> sans rien d'inutile.</p>
-			<ul class="ca-needs">${Object.entries(M_NEEDS).map(([k, t]) => `<li data-n="${k}">${t}</li>`).join("")}</ul>
-			<div class="ca-prods">${shuffle(PRODUCTS).map(p => `<button data-p="${p.id}"><i>${p.ic}</i><span>${p.t}<small>${p.d}</small></span></button>`).join("")}</div>
-			<div data-res></div><button class="ca-go" data-a="martinEnd" disabled>Présenter ma solution</button>`);
-	}
-	function stackProduct(id){
-		if(S.busy || T.picked.includes(id) || T.picked.length >= 5) return;
-		const p = PRODUCTS.find(x => x.id === id); T.picked.push(id);
-		const b = card.querySelector(`[data-p="${id}"]`); b.disabled = true; b.classList.add(p.bad ? "ko" : "ok");
-		W.stack(p.col, `${p.ic} ${p.t}`, !p.bad);
-		play(p.bad ? "bad" : "pop");
-		if(p.bad){ T.bad++; react(-1); mood("agace"); S.errors++; onEvent && onEvent("err");
-			card.querySelector("[data-res]").insertAdjacentHTML("beforeend", `<p class="ca-p"><span class="ca-tag ko">✗ ${p.t} : ${p.bad}</span></p>`); }
-		else { react(1); mood(covered().length >= 3 ? "ravi" : "rassure"); }
-		const cov = covered();
-		card.querySelectorAll("[data-n]").forEach(li => li.classList.toggle("on", cov.includes(li.dataset.n)));
-		meter("score", `${cov.length} / 4`);
-		card.querySelector('[data-a="martinEnd"]').disabled = false;
-		if(T.bad >= 2){ S.busy = true; card.querySelectorAll("[data-p], [data-a='martinEnd']").forEach(x => x.disabled = true); later(900, () => { W.collapse(); play("bad"); say("martin", "Tout s'écroule… Ce n'est pas du tout ce que nous voulions.", "martinU"); later(1500, martinEnd); }); return; }
-		if(T.picked.length >= 5) card.querySelectorAll("[data-p]").forEach(x => x.disabled = true);
-		scrollEnd();
-	}
-	const covered = () => [...new Set(T.picked.map(id => PRODUCTS.find(x => x.id === id).need).filter(Boolean))];
-	function martinEnd(){
-		if(T.ended) return; T.ended = true; S.busy = true; card.querySelector('[data-a="martinEnd"]')?.setAttribute("disabled", "");
-		const cov = covered().length, fell = T.bad >= 2, stars = fell ? 0 : Math.max(0, Math.min(3, cov - 1 - T.bad) - (T.profile === "prudent" ? 0 : 1));
-		if(!fell){ mood(stars >= 3 ? "ravi" : stars >= 2 ? "rassure" : "neutre"); say("martin", stars >= 3 ? "C'est exactement ce dont nous avions besoin. Et merci de nous orienter vers le notaire !" : "Intéressant… mais il nous manque encore quelque chose.", "martinF"); if(stars >= 3){ W.hop("martinU", 2); W.hop("martinF", 2); } }
-		const miss = Object.keys(M_NEEDS).filter(k => !covered().includes(k));
-		later(1200, () => finish(stars, `<span class="ca-time">17 h 30 · Le bilan</span><h2 class="ca-h">${fell ? "La tour s'est effondrée" : "La solution des Martin"}</h2>
-			${verdict(stars, ["Expertise à consolider", "Expertise partielle", "Bonne expertise", "Expertise remarquable"])}
-			<ul class="ca-needs">${Object.entries(M_NEEDS).map(([k, t]) => `<li class="${miss.includes(k) ? "" : "on"}">${t}</li>`).join("")}</ul>
-			<p class="ca-p">${fell ? "Deux produits inadaptés, et la confiance s'écroule. L'expertise, ce n'est pas vendre plus : c'est proposer juste." : miss.length ? `Il manque : ${miss.map(k => M_NEEDS[k].toLowerCase()).join(", ")}.` : "Réserve disponible, retraite, protection du conjoint, aide aux enfants avec le notaire : une solution sur mesure, sans rien d'inutile."}</p>
-			<p class="ca-p">🛡️ Leur profil : ${T.profile === "prudent" ? "bien identifié (prudent)." : "mal identifié : ils sont prudents."}</p>
-			<div class="ca-tip">💡 <b>Le réflexe du chargé d'affaires :</b> le <b>devoir de conseil</b> passe d'abord par la connaissance du client (objectifs, horizon, tolérance au risque, connaissances) : la réglementation l'impose avant de recommander un placement, et le conseil doit être tracé. Puis on part des <b>objectifs</b>, pas du catalogue. Et on sait passer la main : un notaire pour une donation, un conseiller en gestion de patrimoine pour une stratégie plus fine.</div>
-			${course(["Épargne Assurance Vie", "Épargne salariale – Madelin – PEE – PERCO", "Stratégies patrimoniales et fiscales des particuliers", "Stratégie d'allocation d'actifs"], "Connaître le profil du client, construire une solution d'épargne, de retraite et de transmission adaptée, et travailler avec les experts partenaires.")}`));
-	}
-
-	/* ---------- au revoir et épilogues ---------- */
-	const BYE = {
-		karim:s => s >= 2 ? "Merci ! Je repars avec bien plus qu'un four." : "Merci pour le crédit. À bientôt.",
-		lefevre:s => s >= 2 ? "Merci de m'avoir écoutée. Je reviendrai la semaine prochaine." : "Au revoir.",
-		couple:s => s >= 2 ? "Merci ! On a hâte de vous revoir pour la suite." : "Merci… On va réfléchir.",
-		duval:s => s >= 2 ? "Vingt ans qu'on travaille ensemble, et ça continue !" : "Bon… On fera mieux la prochaine fois.",
-		martin:s => s >= 2 ? "Merci pour vos conseils. Nous sommes rassurés." : "Nous allons y réfléchir. Bonne soirée."
-	};
-	const EPI = {
-		karim:s => { const e = [K.found.includes("seul") && "a embauché Lucas, son premier apprenti", K.found.includes("treso") && "a passé son premier été sans découvert", K.found.includes("boutique") && "visite un local à Wazemmes avec toi"].filter(Boolean);
-			return `🥖 Le nouveau four tourne à plein régime.${e.length ? ` Et Karim <b>${andJoin(e)}</b>.` : " Mais Karim, toujours seul au fournil, songe à vendre…"}`; },
-		lefevre:s => s >= 2 ? "👵 Mme Lefèvre a réglé la succession avec le notaire, ouvert une épargne pour les études de Théo, et elle passe dire bonjour à chaque fois qu'elle vient en ville." : "👵 Mme Lefèvre a reçu une relance pour une facture impayée. Elle a fini par confier ses comptes à son fils, dans une autre banque.",
-		couple:s => s >= 2 ? "🔑 Inès et Tom ont signé, après leurs dix jours de réflexion. Ils t'ont envoyé une photo de leur crémaillère." : "🔑 Inès et Tom ont finalement emprunté dans une autre banque, où on les a mieux écoutés.",
-		duval:s => s >= 2 ? "🏭 Duval Textiles emploie aujourd'hui 55 personnes. Clara a repris l'entreprise, et c'est toi qu'elle appelle en premier." : "🏭 Duval Textiles a traversé des années difficiles. Clara a repris l'entreprise… et cherche une nouvelle banque.",
-		martin:s => s >= 2 ? "🌅 Jacques et Hélène ont pris leur retraite comme prévu. Léa a acheté son premier appartement grâce à la donation préparée avec le notaire." : "🌅 Les Martin ont confié leur patrimoine à un cabinet de gestion privée. Ils ne sont pas revenus."
-	};
-
-	/* ---------- 18 h : Sophie te confie l'agence, le défi de directeur d'agence ---------- */
-	const MGMT = [
-		{ who:"leo", t:"Léo, conseiller arrivé il y a six mois, n'a pas atteint ses objectifs. Il se décourage.", line:"Je crois que je ne suis pas fait pour ce métier…", a:[
-			["good", "Le recevoir en tête-à-tête : l'écouter, reconnaître ses progrès, et fixer avec lui deux objectifs atteignables."],
-			["ko", "Le recadrer en réunion d'équipe, pour que tout le monde comprenne."],
-			["mid", "Ne rien dire : ça passera tout seul."]],
-			res:{ good:"Léo se sent soutenu. Le mois suivant, il signe son premier gros dossier.", ko:"Humilié devant ses collègues, Léo pose sa démission.", mid:"Livré à lui-même, Léo continue de douter… et ses clients le sentent." } },
-		{ who:"nadia", t:"Nadia et Samir veulent tous les deux leurs congés la première semaine d'août.", line:"J'ai posé ma demande en janvier ! Et Samir aussi veut cette semaine-là…", a:[
-			["good", "Les réunir, comprendre les contraintes de chacun et trouver ensemble un compromis équitable, en alternant d'une année sur l'autre."],
-			["mid", "Premier arrivé, premier servi : Nadia a demandé avant."],
-			["ko", "Refuser les deux demandes, sans explication."]],
-			res:{ good:"Samir part la première semaine cette année (ses enfants sont en vacances), Nadia la prochaine. L'équipe reste soudée.", mid:"C'est la règle, mais Samir se sent oublié : l'ambiance se tend.", ko:"Nadia et Samir sont furieux, et toute l'équipe se méfie de toi." } },
-		{ who:"samir", t:"Le siège fixe un objectif : vendre 50 cartes Premium ce mois-ci.", line:"Alors on doit en proposer à tous nos clients ?", a:[
-			["good", "Partager l'objectif, mais rappeler qu'on ne propose la carte qu'aux clients pour qui elle est utile : c'est le devoir de conseil."],
-			["ko", "Pousser l'équipe à la proposer à chaque client, quoi qu'il arrive."],
-			["mid", "Ignorer l'objectif du siège."]],
-			res:{ good:"L'agence vend 38 cartes, toutes utiles à leurs clients. Aucune réclamation : le siège salue la qualité des ventes.", ko:"50 cartes vendues… et 12 clients mécontents qui demandent à être remboursés.", mid:"Le siège te rappelle à l'ordre : diriger, c'est aussi porter les objectifs, à sa façon." } }
-	];
-	const G = { i:0, good:0 };
-	function manage(){
-		gen++; S.cur = null; S.where = null; S.busy = false; chips(); Object.assign(G, { i:0, good:0, res:[] });
-		stage("Directeur d'agence d'un jour"); clockTo(18, 0);
-		W.resetPeople(); for(const id in { karim:1, lefevre:1, ines:1, tom:1, duval:1, martin:1 }) W.P[id].g.visible = false;
-		[["leo", -3.4, -2.2], ["nadia", -1.6, -1.7], ["samir", .2, -2.2]].forEach(([id, x, z]) => { W.place(id, { x:0, z:0 }, x, 0, z, .1); W.P[id].setMood("neutre"); });
-		W.walk("toi", [[3, -.6], [-1.6, .6]], () => W.P.toi.g.rotation.y = Math.PI, Math.PI);
-		W.look(-1.6, 6.5, 5.6, -1.6, .8, -2.2, 2, 0, 3.6);
-		later(500, () => say(null, "Belle journée ! Demain je suis en formation : c'est toi qui diriges l'agence. Trois situations t'attendent."));
-		show(`<div class="ca-boss"><i>🏢</i><span><b>Directeur d'agence d'un jour</b><small>Un des débouchés du master : diriger une agence et son équipe.</small></span></div>
-			<p class="ca-p">Sophie te confie l'agence et son équipe : <b>Léo, Nadia et Samir</b>. Un directeur d'agence ne gère pas seulement des clients : il fait grandir ses conseillers, arbitre, et porte les objectifs de la banque sans oublier le devoir de conseil.</p>
-			<button class="ca-go" data-a="mgmtStep">Prendre les commandes</button>`);
-	}
-	function mgmtStep(){
-		const Q = MGMT[G.i];
-		show(`<div class="ca-boss"><i>🏢</i><span><b>Situation ${G.i + 1} sur ${MGMT.length}</b><small>Directeur d'agence d'un jour</small></span></div>
-			<div class="ca-story">${Q.t}</div>
-			<p class="ca-who">${SPK[Q.who].name} : <span>« ${Q.line} »</span></p>
-			<div class="ca-qs">${shuffle(Q.a).map(([k, t]) => `<button class="ca-q" data-g="${k}">${t}</button>`).join("")}</div><div data-res></div>`);
-		W.P[Q.who].setMood("inquiet"); W.react(Q.who, 1);
-		later(300, () => say(Q.who, Q.line));
-	}
-	function decide(k){
-		if(S.busy) return; S.busy = true;
-		const Q = MGMT[G.i];
-		card.querySelectorAll("[data-g]").forEach(b => { b.disabled = true; if(b.dataset.g === k) b.classList.add(k === "good" ? "ok" : "ko"); });
-		if(k === "good"){ G.good++; W.P[Q.who].setMood("ravi"); W.hop(Q.who, 2); play("good"); }
-		else { W.P[Q.who].setMood(k === "ko" ? "agace" : "inquiet"); W.react(Q.who, -1); play(k === "ko" ? "bad" : "chime"); if(k === "ko"){ S.errors++; onEvent && onEvent("err"); } }
-		G.res[G.i] = k;
-		// Léo humilié démissionne : il quitte l'agence sous nos yeux
-		if(Q.who === "leo" && k === "ko") later(1200, () => W.walk("leo", [[-3.4, 1.5], [0, 4.5], [0, 7.5]], () => W.P.leo.g.visible = false));
-		if(G.res.filter(r => r === "ko").length >= 2 || (G.i === MGMT.length - 1 && G.good <= 1)) W.tension(true);
-		const last = G.i === MGMT.length - 1;
-		card.querySelector("[data-res]").innerHTML = `<p class="ca-p" style="margin-top:12px"><span class="ca-tag ${k}">${k === "good" ? "✓ Un vrai manager" : k === "mid" ? "≈ Ça se discute" : "✗ L'équipe en pâtit"}</span><br>${Q.res[k]}</p>
-			<button class="ca-go" data-a="${last ? "mgmtEnd" : "mgmtNext"}">${last ? "Voir le bilan de ma journée" : "Situation suivante →"}</button>`;
-		scrollEnd(); S.busy = false;
-	}
-	const SPK = { leo:{ av:"🧑‍💼", name:"Léo", pawns:["leo"], u:["leo"] }, nadia:{ av:"👩‍💼", name:"Nadia", pawns:["nadia"], u:["nadia"] }, samir:{ av:"🧔", name:"Samir", pawns:["samir"], u:["samir"] } };
-
-	/* ---------- la fin de la journée ---------- */
-	function finale(){
-		gen++; S.cur = null; chips();
-		stage("Fin de journée"); clockTo(18, 30); W.view("agence", 2);
-		const tot = THEMES.reduce((a, [k]) => a + (S.score[k] || 0), 0);
-		const [rank, mention] = tot >= 13 ? ["Chargé d'affaires confirmé", "Très bien"] : tot >= 9 ? ["Chargé d'affaires", "Bien"] : ["Chargé d'affaires junior", "Assez bien"];
-		// tous les clients reviennent saluer, avec l'équipe de l'agence
-		W.resetPeople();
-		ORDER.forEach((id, i) => CLIENTS[id].pawns.forEach((p, j) => { W.place(p, { x:0, z:0 }, -4 + i*2.2 + j*.7, 0, 3.4); W.P[p].setMood("ravi"); }));
-		// l'équipe porte les traces de tes décisions : Léo absent s'il a démissionné, une ambiance tendue si le management a raté
-		const R = S.mgmtRes || [], quit = R[0] === "ko", tense = S.mgmt != null && S.mgmt <= 1;
-		const team = [["leo", -3.4, -2.2], ["nadia", -1.6, -1.7], ["samir", .2, -2.2]].filter(([id]) => !(id === "leo" && quit));
-		team.forEach(([id, x, z]) => { W.place(id, { x:0, z:0 }, x, 0, z, .1); W.P[id].setMood(tense || R[{ leo:0, nadia:1, samir:2 }[id]] === "ko" ? "agace" : S.mgmt >= 2 ? "ravi" : "neutre"); });
-		W.tension(tense);
-		later(600, () => { ORDER.forEach((id, i) => CLIENTS[id].pawns.forEach(p => setTimeout(() => W.hop(p, 2), i*150))); W.hop("sophie", 2); if(S.mgmt >= 2 && !tense) team.forEach(([p], i) => setTimeout(() => W.hop(p, 2), 300 + i*120)); });
-		later(800, () => say(null, tot >= 13 ? "Quelle journée ! Un jour, c'est toi qui dirigeras cette agence." : tot >= 9 ? "Belle journée ! Tes clients repartent contents." : "Une journée formatrice. Demain, tu les écouteras encore mieux !"));
-		onEvent && onEvent("win", mention); play("win");
-		const best = THEMES.slice().sort((a, b) => (S.score[b[0]] || 0) - (S.score[a[0]] || 0))[0];
-		show(`<div class="ca-k">${formation.name} · bilan</div><h2 class="ca-h">Fin de journée !</h2>
-			<p class="ca-p" style="text-align:center;font-size:16px">Tu es <b>${rank}</b><br><span style="font-size:22px;color:#e0a33a">${tot} / 15 ★</span></p>
-			${radar()}
-			${S.mgmt != null ? `<div class="ca-boss"><i>🏢</i><span><b>Directeur d'agence d'un jour : ${S.mgmt} / 3</b><small>${S.mgmt >= 3 ? "Ton équipe te suivrait n'importe où." : S.mgmt >= 2 ? "Un bon début de manager." : "Manager, ça s'apprend : le master a un cours de management d'équipe."}</small></span></div>
-				${quit || tense ? `<p class="ca-p" style="color:#b3261e;font-weight:700">${[quit && "🚪 Léo a démissionné : il manque à l'équipe ce soir.", tense && "⚡ L'ambiance est tendue dans l'agence : Nadia et Samir t'en veulent."].filter(Boolean).join("<br>")}</p>` : ""}` : ""}
-			<p class="ca-p">Ton point fort : <b>${best[2]} ${best[1]}</b>. Écouter, percevoir, rassurer, accompagner, conseiller : c'est le métier de chargé d'affaires, que le master prépare en alternance sur 2 ans, avec des débouchés comme conseiller patrimonial ou directeur d'agence.</p>
-			${jpoCard()}${openLead ? `<button class="ca-go" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
-			<a class="ca-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master MBIF ↗</a>
-			<button class="ca-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
-			<button class="ca-alt" data-a="replay">Rejouer une nouvelle journée</button>`);
-	}
-
-	/* ---------- mise en place de chaque univers ---------- */
-	const RESET = { karim:() => W.resetIce(), lefevre:() => W.resetClues(), couple:() => { W.resetBridge(); planks = 0; }, duval:() => W.resetFactory(), martin:() => W.resetTower() };
-	const PLAY = { karim:karimPlay, lefevre:lefevrePlay, couple:couplePlay, duval:duvalPlay, martin:martinPlay };
-
-	/* ---------- actions ---------- */
-	const STEPS = { agenda, enter, bye, nextEvent:() => { D.i++; eventStep(); }, duvalEnd, martinEnd, karimEnd, talk:talkStep, sigOk, sigNext:eventStep, products,
-		mgmtStep, mgmtNext:() => { G.i++; mgmtStep(); }, mgmtEnd:() => { S.mgmt = G.good; S.mgmtRes = G.res.slice(); finale(); }, lefevreFinish };
-	root.addEventListener("click", e => {
-		const t = e.target;
-		const kk = t.closest("[data-k]"); if(kk) return loan(kk.dataset.k);
-		const tt = t.closest("[data-t]"); if(tt) return calc(tt.dataset.t);
-		const s = t.closest("[data-s]"); if(s) return toggleSignal(s.dataset.s);
-		const m = t.closest(".ca-card [data-m]"); if(m) return profileAsk(m.dataset.m);
-		const pf = t.closest("[data-pf]"); if(pf) return profile(pf.dataset.pf);
-		const g = t.closest("[data-g]"); if(g) return decide(g.dataset.g);
-		const v = t.closest("[data-v]"); if(v) return transfer(v.dataset.v);
-		const c = t.closest("[data-c]"); if(c) return receive(c.dataset.c);
-		const q = t.closest("[data-q]"); if(q) return ask(q.dataset.q);
-		const r = t.closest("[data-r]"); if(r) return reformulate(r.dataset.r);
-		const o = t.closest("[data-o]"); if(o) return loupe(o.dataset.o);
-		const l = t.closest("[data-l]"); if(l) return lefevreEnd(l.dataset.l);
-		const b = t.closest("[data-b]"); if(b) return answer(b.dataset.b);
-		const x = t.closest("[data-x]"); if(x) return mobilize(x.dataset.x);
-		const p = t.closest("[data-p]"); if(p) return stackProduct(p.dataset.p);
-		const a = t.closest("[data-a]"); if(!a) return;
-		const k = a.dataset.a; play("pop");
-		if(STEPS[k]) return STEPS[k]();
-		if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
-		if(k === "lead"){ close(); return openLead(); }
-		if(k === "replay"){ S.score = {}; S.mgmt = null; S.mgmtRes = null; S.errors = 0; W.resetPeople(); return agenda(); }
+		if(S.cell) s.zones.cell = s.zones["c" + S.cell[0] + S.cell[1]];
+		const y = 560; s.zones.el = [24, y - 40, s.W - 24, y + 170];
+		T(x, "Perte attendue = défaut × (prêt − garanties)", 40, y, 26, NAVY, 900);
+		T(x, `= ${S.cell ? fr(GRID.cells[S.cell[0]][S.cell[1]][1], 1) + " %" : "?"} × (1 200 − ${fr(S.cov)}) =`, 40, y + 48, 26, INK, 800);
+		rr(x, 690, y + 4, 270, 74, 8, "#fff", S.elOk === true ? GREEN : S.elOk === false ? RED : S.cell ? NAVY : "#cfd6dd", 4);
+		if(S.el !== null) T(x, fr(S.el, 1) + " k€", 825, y + 56, 34, S.elOk ? GREEN : "#a3341f", 900, "center");
+		else if(S.cell) T(x, "↗ calculatrice", 825, y + 52, 22, GREY, 800, "center");
+		if(S.rate !== null){ T(x, `Taux client = ressource 3,0 % + risque ${fr(S.el/PRET*100, 2)} % + frais 0,6 % + marge 0,2 %`, 40, y + 120, 21, GREY, 800); T(x, `= ${fr(S.rate, 2)} %`, 40, y + 156, 26, GREEN, 900); }
 	});
-	function close(){ if(closed) return; closed = true; removeEventListener("resize", layout); document.removeEventListener("keydown", onKey); W.dispose(); root.remove(); onClose && onClose(); }
-	function onKey(e){ if(e.key === "Escape") close(); }
+	/* -- la fiche de visite (sur le pupitre de l'usine) -- */
+	sheet("visite", 700, 900, .44, (x, s) => {
+		paper(x, s, "FICHE DE VISITE", "Duval Textiles · mardi 10 h");
+		const n = S.counted.size, k = S.stick.size;
+		s.zones.count = [24, 140, s.W - 24, 300];
+		T(x, `Palettes comptées : ${n}`, 40, 180, 30, INK, 900);
+		T(x, `× ${PAL} k€ (inventaire) = ${fr(n*PAL)} k€`, 40, 226, 26, INK, 800);
+		T(x, "Stocks au bilan : 1 850 k€", 40, 270, 24, GREY, 800);
+		if(!S.visitDone){
+			T(x, `Pastilles rouges : ${k}`, 40, 350, 30, k ? RED : INK, 900);
+			P(x, "Une pastille sur chaque palette qui ne se vendra pas.", 40, 400, 620, 22, GREY, 700);
+			s.zones.sign = [40, 760, 660, 860];
+			rr(x, 40, 760, 620, 100, 12, n === PALLETS.length ? NAVY : "#b7c0c8");
+			T(x, "Signer la fiche ✍", 350, 824, 32, "#fff", 900, "center");
+		} else {
+			const live = PALLETS.length - S.dead;
+			s.zones.live = [24, 320, s.W - 24, 420]; s.zones.dead = [24, 430, s.W - 24, 560]; s.zones.cp = [24, 570, s.W - 24, 700];
+			P(x, `${live} palettes en rotation normale : ${fr(live*PAL)} k€`, 40, 360, 620, 26, GREEN, 900);
+			P(x, `4 palettes Autolux invendables (client fermé) : 600 k€ à déprécier`, 40, 470, 620, 26, RED, 900);
+			P(x, "Capitaux propres corrigés : 2 200 k€, endettement après prêt 0,95 (sous 1, de justesse)", 40, 610, 620, 22, INK, 800);
+			T(x, "Vu sur place ✍", 640, 840, 34, NAVY, 700, "right", "Fraunces, Georgia, serif");
+		}
+	});
+	/* -- le tableau de l'usine : carnet de commandes et lettre de Volta -- */
+	sheet("volta", 1400, 820, 2.5, (x, s) => {
+		x.fillStyle = "#fbfbfa"; x.fillRect(0, 0, s.W, s.H);
+		T(x, "Carnet de commandes 2026 (k€)", 40, 74, 38, "#1b4f9c", 800, "left", "'Comic Sans MS', 'Segoe Print', cursive");
+		ORDERS.forEach(([c, m, st], i) => { const y = 150 + i*84; T(x, c, 50, y, 34, "#222", 700, "left", "'Comic Sans MS', 'Segoe Print', cursive"); T(x, m, 540, y, 34, "#222", 700, "right", "'Comic Sans MS', 'Segoe Print', cursive"); T(x, st, 570, y, 30, st === "signé" ? "#2a7d3c" : "#c0392b", 700, "left", "'Comic Sans MS', 'Segoe Print', cursive"); });
+		T(x, "Total signé : 6 600", 50, 520, 34, "#1b4f9c", 800, "left", "'Comic Sans MS', 'Segoe Print', cursive");
+		T(x, "→ nouvelle ligne = Volta !!", 50, 600, 34, "#c0392b", 800, "left", "'Comic Sans MS', 'Segoe Print', cursive");
+		// la lettre épinglée
+		x.save(); x.shadowColor = "rgba(0,0,0,.25)"; x.shadowBlur = 18; x.shadowOffsetY = 6; x.fillStyle = "#fff"; x.fillRect(740, 30, 620, 760); x.restore();
+		x.fillStyle = "#c0392b"; x.beginPath(); x.arc(1050, 46, 12, 0, 7); x.fill();
+		T(x, "VOLTA MOBILITY GmbH", 780, 104, 30, "#0d5f6e", 900); T(x, "Stuttgart · Purchasing department", 780, 136, 20, GREY, 700);
+		T(x, "LETTER OF INTENT", 780, 196, 26, INK, 900); T(x, "Dear Mr Duval,", 780, 240, 23, INK, 700);
+		let y = 290;
+		for(const [id, lines] of LETTER){ s.zones[id] = [760, y - 30, 1340, y + (lines.length - 1)*32 + 14]; lines.forEach((l, i) => T(x, l, 780, y + i*32, 23, INK, 700)); y += lines.length*32 + 22; }
+		T(x, "Best regards,", 780, y + 20, 23, INK, 700); T(x, "K. Brandt, Head of Purchasing", 780, y + 54, 23, INK, 800);
+	});
+
+	// où se posent les documents
+	const SLOT = { L:new THREE.Vector3(-.58, DY + .004, .14), C:new THREE.Vector3(.33, DY + .005, .14) };
+	flat(SH.liasse, scene, SLOT.L.x, SLOT.L.y, SLOT.L.z, .03); SH.liasse.mesh.visible = false;
+	for(const id of ["ratios", "kyc", "grille"]){ flat(SH[id], scene, SLOT.C.x, SLOT.C.y, SLOT.C.z, -.02); SH[id].mesh.visible = false; }
+	flat(SH.rbe, scene, SLOT.L.x, SLOT.L.y + .001, SLOT.L.z, .02); SH.rbe.mesh.visible = false;
+	{ const v = SH.visite.mesh; v.rotation.set(-Math.PI/2 + .45, 0, 0); v.position.set(-4, .48, -1.33); fac.add(v); }
+	{ const v = SH.volta.mesh; v.position.set(1.3, 1.65, -5.76); fac.add(v); }
+
+	/* ---------- la caméra : elle cadre ce qu'il faut regarder ---------- */
+	const TOP = 66, BOT = 64;     // place des barres du haut et du bas
+	const UP = new THREE.Vector3(0, 1, 0);
+	function wpos(o){ o.updateWorldMatrix(true, false); return new THREE.Vector3().setFromMatrixPosition(o.matrixWorld); }
+	function wnorm(o){ const q = new THREE.Quaternion(); o.getWorldQuaternion(q); return new THREE.Vector3(0, 0, 1).applyQuaternion(q); }
+	const tilt = (n, t = .42) => n.clone().add(new THREE.Vector3(0, 0, t)).normalize();
+	const VIEWS = {
+		liasse:() => ({ c:wpos(SH.liasse.mesh), n:tilt(UP), w:.86, h:.68 }),
+		desk:() => camera.aspect < .9 ? { c:new THREE.Vector3(.57, DY, .14), n:tilt(UP), w:1.46, h:.7 } : { c:new THREE.Vector3(.18, DY, .14), n:tilt(UP), w:2.32, h:.72 },
+		monitor:() => ({ c:wpos(SH.montage.mesh), n:tilt(UP, .3), w:.6, h:.9 }),
+		sheet:id => () => { const m = SH[id].mesh, n = wnorm(m); return { c:wpos(m), n:n.y > .9 ? tilt(n) : n, w:SH[id].ww*1.08, h:SH[id].wh*1.08 }; },
+		factory:() => ({ p:new THREE.Vector3(FX + 1.5, 3.8, 8.8), l:new THREE.Vector3(FX, 1.1, -2.4) }),
+		racks:() => ({ c:new THREE.Vector3(FX - 4, .95, -2.5), n:new THREE.Vector3(0, .25, 1).normalize(), w:6.5, h:2.6 }),
+		board:() => ({ c:wpos(SH.volta.mesh), n:new THREE.Vector3(0, 0, 1), w:2.6, h:1.5 }),
+		committee:() => camera.aspect < .9 ? { p:new THREE.Vector3(CX, 4.3, 3.4), l:new THREE.Vector3(CX, 1.05, -1.2) } : { p:new THREE.Vector3(CX, 2.75, 3.0), l:new THREE.Vector3(CX, 1.2, -1.3) },
+		present:() => { const m = PRES.mesh; return { c:wpos(m), n:wnorm(m), w:PRES.w*1.1, h:PRES.h*1.1 }; },
+		agency:() => ({ p:new THREE.Vector3(0, 2.2, 3.2), l:new THREE.Vector3(0, .9, -.6) })
+	};
+	const camPos = new THREE.Vector3(0, 2.2, 3.2), camLook = new THREE.Vector3(0, .9, -.6), goalP = camPos.clone(), goalL = camLook.clone();
+	function camGoal(){
+		if(!innerWidth || !innerHeight || !isFinite(camera.aspect)) return;
+		const fn = S.zoom || S.view; if(!fn) return;
+		const v = fn();
+		if(v.p){ goalP.copy(v.p); goalL.copy(v.l); return; }
+		const vf = camera.fov*Math.PI/180, hf = 2*Math.atan(Math.tan(vf/2)*camera.aspect);
+		const free = 1 - (TOP + BOT)/innerHeight;
+		const d = Math.max((v.w/2)/Math.tan(hf/2), (v.h/2)/(Math.tan(vf/2)*free));
+		goalP.copy(v.c).addScaledVector(v.n, d);
+		const u = UP.clone().addScaledVector(v.n, -v.n.dot(UP)); if(u.lengthSq() < 1e-4) u.set(0, 0, -1); u.normalize();
+		goalL.copy(v.c).addScaledVector(u, (TOP - BOT)/innerHeight*d*Math.tan(vf/2));
+	}
+	function view(name, arg){ S.zoom = null; S.view = arg !== undefined ? VIEWS[name](arg) : VIEWS[name]; camGoal(); }
+	function zoomOn(fn, id = "x"){ S.zoom = fn; S.zoomId = id; camGoal(); }
+	let sized = "";
+	function resize(){
+		const w = innerWidth, h = innerHeight; if(!w || !h) return;
+		renderer.setSize(w, h, false); camera.aspect = w/h; camera.fov = h > w ? 58 : 42; camera.updateProjectionMatrix();
+		camGoal(); sized = w + "x" + h;
+		if(!isFinite(camPos.x + camLook.x)){ camPos.copy(goalP); camLook.copy(goalL); }
+	}
+	resize(); addEventListener("resize", resize);
+	const toScreen = v => { const p = v.clone().project(camera); return { x:(p.x + 1)/2*innerWidth, y:(1 - p.y)/2*innerHeight, in:p.z < 1 && Math.abs(p.x) < .92 && p.y < .82 && p.y > -.7 }; };
+
+	/* ---------- horloge du jeu, animations ---------- */
+	const timers = new Set(), tickers = new Set(), anims = new Set();
+	function wait(ms){ return new Promise(r => { timers.add({ t:ms/1000, r }); }); }
+	function anim(d, fn, done){ anims.add({ t:0, d, fn, done }); }
+	function flyTo(o, toP, toS, d = .9, done){
+		const p0 = o.position.clone(), s0 = o.scale.clone(), q0 = o.quaternion.clone(), q1 = arguments[5] || q0;
+		anim(d, k => { const e = ease(k); o.position.lerpVectors(p0, toP, e); o.scale.lerpVectors(s0, toS, e); o.quaternion.slerpQuaternions(q0, q1, e); o.position.y += Math.sin(Math.PI*e)*.12; }, done);
+	}
+
+	/* ---------- dialogues, consignes, fiches de cours ---------- */
+	const people = { nadia:[nadia, "Nadia, directrice du centre d'affaires"], duval:[duval, "M. Duval, dirigeant"], lambert:[members.lambert, MEMBERS.lambert], vasseur:[members.vasseur, MEMBERS.vasseur], okafor:[members.okafor, MEMBERS.okafor], me:[null, "Toi"] };
+	const bubble = $("#dvSay"); let speaker = null, skip = null;
+	function say(who, html){
+		speaker = who; bubble.classList.toggle("me", who === "me");
+		bubble.querySelector(".who").textContent = people[who][1]; bubble.querySelector(".t").innerHTML = html;
+		bubble.classList.remove("off"); $("#dvSr").textContent = html.replace(/<[^>]+>/g, ""); placeBubble();
+	}
+	const hush = () => { bubble.classList.add("off"); speaker = null; };
+	function talk(who, html, min = 0){
+		say(who, html);
+		const ms = Math.max(min, clamp(html.replace(/<[^>]+>/g, "").length*52, 2600, 10500));
+		return new Promise(r => { let done = false; const end = () => { if(done) return; done = true; skip = null; r(); }; skip = end; wait(ms).then(end); });
+	}
+	bubble.addEventListener("click", () => { if(skip){ play("clic"); skip(); } });
+	function task(html){ const t = $("#dvTask"); if(!html){ t.hidden = true; return; } t.innerHTML = html; t.hidden = false; }
+	function setDay(d, w){ $("#dvDay").textContent = d; $("#dvWhere").textContent = w; }
+	function learn(keys){
+		for(const k of keys){
+			if(S.learned.includes(k)) continue; S.learned.push(k);
+			const c = COURSES[k], el = document.createElement("div"); el.className = "dv-note"; el.innerHTML = `<span>${c[0]} · au programme</span>${c[1]}`;
+			const b = $("#dvNotes"); b.appendChild(el); while(b.children.length > 3) b.firstChild.remove(); setTimeout(() => el.remove(), 4500);
+		}
+	}
+	function mark(res, w){ S.max += w; S.pts += res === "ok" ? w : res === "mid" ? w/2 : 0; }
+	const resOf = tries => tries <= 1 ? "ok" : tries === 2 ? "mid" : "ko";
+
+	// le dossier s'épaissit
+	const stack = [];
+	function addPiece(id){
+		if(S.pieces.includes(id)) return; S.pieces.push(id);
+		const n = S.pieces.length, sh = box(folder, .34, .012, .44, M.paper, ((n*7) % 5 - 2)*.006, .006 + (n - 1)*.012, ((n*3) % 5 - 2)*.005, ((n*11) % 7 - 3)*.012, false);
+		stack.push(sh); folder.userData.lab.position.y = .0075 + n*.012 + .002;
+		const f = $("#dvFile"); f.textContent = `📁 ${n} pièce${n > 1 ? "s" : ""}`; f.classList.add("pop"); setTimeout(() => f.classList.remove("pop"), 300);
+		play("pop");
+	}
+	// une feuille du bureau rejoint le dossier
+	function file(id){
+		const m = SH[id].mesh; if(!m.visible || m.parent !== scene){ addPiece(id); return Promise.resolve(); }
+		const to = folder.position.clone(); to.y += .02 + S.pieces.length*.012;
+		return new Promise(r => flyTo(m, to, new THREE.Vector3(.4, .4, .4), .8, () => { m.visible = false; m.scale.set(1, 1, 1); addPiece(id); r(); }));
+	}
+
+	/* ---------- les gestes : du doigt aux objets 3D ---------- */
+	const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+	const shown = o => { for(; o; o = o.parent) if(!o.visible) return false; return true; };
+	let cap = null;        // l'objet qui a reçu le doigt
+	const palHandler = { down:null };
+	function pick(e, only){
+		ndc.set(e.clientX/innerWidth*2 - 1, -(e.clientY/innerHeight)*2 + 1); ray.setFromCamera(ndc, camera);
+		const list = only ? [only] : hits.concat(pallets.map(p => p.hit)).filter(shown);
+		const h = ray.intersectObjects(list, false)[0]; if(!h) return null;
+		const s = h.object.userData.sheet;
+		return { obj:h.object, s, pal:h.object.userData.pal, x:s && h.uv ? h.uv.x*s.W : 0, y:s && h.uv ? (1 - h.uv.y)*s.H : 0, cx:e.clientX, cy:e.clientY };
+	}
+	function handlerOf(p){ if(p.pal !== undefined) return palHandler; const s = p.s; return s.on || (s.ref ? refHandler(s) : null); }
+	const refHandler = s => ({ down:() => { play("clic"); const z = VIEWS.sheet(s.id); if(S.zoom && S.zoomId === s.id){ S.zoom = null; S.zoomId = null; } else { S.zoom = z; S.zoomId = s.id; } camGoal(); } });
+	canvas.addEventListener("pointerdown", e => {
+		if(S.phase !== "play") return;
+		const p = pick(e);
+		if(!p){ if(S.zoom && S.zoomId){ S.zoom = null; S.zoomId = null; camGoal(); } return; }
+		const h = handlerOf(p); if(!h) { if(S.zoom && S.zoomId){ S.zoom = null; S.zoomId = null; camGoal(); } return; }
+		try { canvas.setPointerCapture(e.pointerId); } catch(_){}
+		cap = { id:e.pointerId, obj:p.obj, h, last:p }; h.down && h.down(p);
+	});
+	canvas.addEventListener("pointermove", e => { if(!cap || e.pointerId !== cap.id) return; const p = pick(e, cap.obj); if(p){ cap.last = p; cap.h.move && cap.h.move(p); } });
+	const upH = e => { if(!cap || e.pointerId !== cap.id) return; const c = cap; cap = null; const p = pick(e, c.obj) || c.last; c.h.up && c.h.up(p); };
+	canvas.addEventListener("pointerup", upH); canvas.addEventListener("pointercancel", upH);
+	function onKey(e){
+		if(e.key === "Escape"){ close(); return; }
+		if(S.phase !== "play" || !CALC.on) return;
+		const k = { "*":"×", "x":"×", "/":"÷", "-":"−", "+":"+", "Enter":"=", "=":"=", "Backspace":"⌫", ".":",", ",":",", "Delete":"C", "r":"↗", "R":"↗" }[e.key] || (/^[0-9]$/.test(e.key) ? e.key : null);
+		if(k){ e.preventDefault(); calcKey(k); }
+	}
 	document.addEventListener("keydown", onKey);
-	root.querySelector(".ca-x").addEventListener("click", close);
+
+	// entourer au doigt : renvoie la zone entourée (ou soulignée)
+	function circle(s, ids, col = "#c0392b"){
+		return new Promise(res => {
+			let st = null;
+			s.on = {
+				down:p => { st = { pts:[[p.x, p.y]], col, w:7 }; s.ink.push(st); s.dirty = true; },
+				move:p => { if(!st) return; const l = st.pts[st.pts.length - 1]; if(Math.hypot(p.x - l[0], p.y - l[1]) > 4){ st.pts.push([p.x, p.y]); s.dirty = true; } },
+				up:() => {
+					if(!st) return; const pts = st.pts; let len = 0;
+					for(let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+					const xs = pts.map(q => q[0]), ys = pts.map(q => q[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), cy = (y0 + y1)/2;
+					let best = null, bd = 1e9;
+					for(const id of ids){ const z = s.zones[id]; if(!z) continue; const zc = (z[1] + z[3])/2, ov = Math.min(x1, z[2]) - Math.max(x0, z[0]);
+						if(zc < y0 - 14 || zc > y1 + 14 || ov < (z[2] - z[0])*.25) continue; const d = Math.abs(zc - cy); if(d < bd){ bd = d; best = id; } }
+					const stroke = st; st = null;
+					if(len < 70 || !best){ s.ink.splice(s.ink.indexOf(stroke), 1); s.dirty = true; say("nadia", "Entoure (ou souligne) une ligne entière, d'un seul trait de doigt."); return; }
+					s.on = null; res({ z:best, stroke });
+				}
+			};
+		});
+	}
+	// un geste « tracé » propre pour les tests et le clavier : une ellipse autour d'une zone
+	const ellipse = z => { const pts = [], cx = (z[0] + z[2])/2, cy = (z[1] + z[3])/2, rx = (z[2] - z[0])/2, ry = (z[3] - z[1])/2 + 6; for(let a = 0; a <= 6.4; a += .25) pts.push([cx + Math.cos(a)*rx, cy + Math.sin(a)*ry]); return pts; };
+	const okInk = (st, good) => { st.col = good === true ? GREEN : good === "mid" ? "#d68a1c" : "#9aa3ad"; st.a = good === true ? .9 : .6; };
+
+	/* ================= 1. lundi 9 h : la liasse ================= */
+	async function stepLiasse(){
+		ev("stage", "Liasse"); setDay("Lundi 9 h", "Agence"); lightAt(0);
+		SH.liasse.mesh.visible = true; dirty("liasse"); view("agency");
+		await talk("nadia", "Bienvenue au centre d'affaires ! M. Duval, client depuis vingt ans, demande <b>1,2 M€</b> pour une nouvelle ligne de production. Jeudi, c'est toi qui présentes son dossier au comité de crédit.");
+		if(closed) return;
+		view("liasse");
+		await talk("nadia", "On commence toujours par les comptes. Voici sa liasse fiscale : trois ans de chiffres. <b>Entoure au doigt la ligne qui cloche.</b>", 4200);
+		task("✍ Entoure au doigt la ligne <b>anormale</b> de la liasse");
+		let tries = 0;
+		const ids = LIASSE.filter(r => r.length > 2).map(r => r[0]);
+		for(;;){
+			const { z, stroke } = await circle(SH.liasse, ids); if(closed) return;
+			tries++;
+			if(z === "stk"){ okInk(stroke, true); play("good"); break; }
+			ev("err"); play("bad");
+			if(z === "tre"){ okInk(stroke, "mid"); await talk("nadia", "Bien vu, la trésorerie fond : 420, puis 90. Mais c'est une <b>conséquence</b>. L'argent est coincé quelque part : où ?"); }
+			else { okInk(stroke, false); await talk("nadia", tries === 1 ? "Ça, c'est normal. Compare chaque ligne au chiffre d'affaires : lui ne bouge presque pas (+3 % en deux ans). Quelle ligne s'envole ?" : "Regarde les stocks : 900, 1 250, 1 850. Le double en deux ans, pour les mêmes ventes."); }
+			if(closed) return;
+			if(tries >= 3){ S.hl = "stk"; const st = { pts:ellipse(SH.liasse.zones.stk), col:GREEN, w:7 }; SH.liasse.ink.push(st); dirty("liasse"); break; }
+		}
+		    // les essais ratés comptent dans la note ci-dessous, pas deux fois
+		mark(resOf(tries), 2); task(null);
+		await talk("nadia", "Les <b>stocks</b> ont doublé en deux ans alors que les ventes stagnent. Du fil qui dort dans l'usine, c'est de l'argent qui ne rentre pas : voilà pourquoi la trésorerie fond.");
+		learn(["af", "crea", "marche"]);
+	}
+
+	/* ================= 2. lundi 11 h : les ratios ================= */
+	async function stepRatios(){
+		ev("stage", "Ratios"); setDay("Lundi 11 h", "Agence");
+		SH.ratios.mesh.visible = true; S.ri = 0; dirty("ratios", "calc"); SH.liasse.ref = true;
+		view("desk");
+		await talk("nadia", "Le comité regarde quatre ratios. <b>Lis les chiffres dans la liasse et tape-les sur la calculatrice</b>, puis la touche <b>↗ Reporter</b> les écrit sur la fiche.", 5000);
+		if(closed) return;
+		for(let i = 0; i < RATIOS.length; i++){
+			const r = RATIOS[i]; S.ri = i; dirty("ratios");
+			task(`🧮 <b>${r.t}</b> = ${r.f}${camera.aspect < .9 ? "<br>(touche la liasse pour la lire de près)" : ""}`);
+			let tries = 0;
+			for(;;){
+				const v = await calcValue(); if(closed) return;
+				tries++; S.rv[i] = v;
+				if(Math.abs(v - r.v) <= r.tol){ S.rs[i] = "ok"; dirty("ratios"); play("good"); break; }
+				S.rs[i] = "ko"; dirty("ratios"); play("bad");
+				if(tries >= 3){ S.rv[i] = r.v; S.rs[i] = "ok"; dirty("ratios"); await talk("nadia", `Je te le note : ${fr(r.v, r.dec)}${r.unit ? " " + r.unit : ""}. ${r.hint}`); break; }
+				await talk("nadia", tries === 1 ? `Ce n'est pas ça (${fmtN(v)}). Relis bien la liasse : quelle ligne, quelle année ?` : r.hint);
+				if(closed) return;
+				S.rs[i] = null; dirty("ratios");
+			}
+			mark(resOf(tries), 1);
+			if(i === 0) await talk("nadia", `<b>${fr(r.v)} jours</b> de stock, contre 53 en 2023 : le fil reste deux fois plus longtemps dans l'usine.`);
+			if(i === 1) await talk("nadia", "<b>0,75</b> : la banque prêterait 75 centimes pour chaque euro des associés. Sous 1, ça passe.");
+			if(closed) return;
+		}
+		S.ri = -1; dirty("ratios"); task(null); S.zoom = null;
+		await talk("nadia", "<b>4 ans</b> pour tout rembourser avec la CAF : pile à la limite. Le dossier tient… si ce stock existe vraiment et se vend. Demain, on va voir sur place.");
+		learn(["math", "besoins"]);
+		SH.liasse.ref = false;
+		await file("liasse"); await file("ratios");
+	}
+
+	/* ================= 3. mardi 10 h : la visite de l'usine ================= */
+	async function stepVisite(){
+		ev("stage", "Visite"); setDay("Mardi 10 h", "Usine Duval, Roubaix"); lightAt(FX);
+		nadia.g.position.set(FX + .9, 0, -.4); nadia.g.rotation.y = -.5;
+		view("factory");
+		await talk("duval", "Bienvenue chez Duval Textiles ! 42 salariés, du tissu technique pour les sièges de voiture. Depuis qu'<b>Autolux</b> a fermé son usine de Douai, on s'est recentrés sur nos autres clients.");
+		if(closed) return;
+		await talk("duval", "Et là, le marquage jaune : c'est la place de la nouvelle ligne d'enduction. Avec elle, on attaque l'électrique !");
+		if(closed) return;
+		view("racks");
+		await talk("nadia", "Le bilan dit 1 850 k€ de stocks. Vérifions : <b>touche chaque palette pour la compter</b>.", 3600);
+		task(`📦 Compte les palettes : <b>0</b> / ?`);
+		await new Promise(res => {
+			palHandler.down = p => {
+				if(S.counted.has(p.pal)) return;
+				S.counted.add(p.pal); drawTag(p.pal); play("pop"); dirty("visite");
+				task(`📦 Palettes comptées : <b>${S.counted.size}</b><br>n° ${S.counted.size} · ${tagTxt(p.pal)}`);
+				if(S.counted.size === PALLETS.length){ palHandler.down = null; res(); }
+			};
+		});
+		if(closed) return;
+		await talk("duval", "Douze palettes à 150 k€ : 1,8 million. Tout est là, comme au bilan !");
+		if(closed) return;
+		await talk("nadia", "Les chiffres collent. Mais un stock ne vaut que s'il se vend. <b>Lis les étiquettes</b> et colle une pastille rouge sur chaque palette qui ne se vendra pas, puis <b>signe ta fiche de visite</b>.", 5200);
+		task("🔴 Pastille sur les palettes invendables, puis signe la fiche de visite");
+		let tries = 0;
+		for(;;){
+			const res = await new Promise(r => {
+				palHandler.down = p => { if(S.stick.has(p.pal)) S.stick.delete(p.pal); else S.stick.add(p.pal); drawTag(p.pal); play("clic"); dirty("visite"); task(`🔴 ${S.stick.has(p.pal) ? "Pastille sur" : "Pastille retirée :"} n° ${[...S.counted].indexOf(p.pal) + 1} · ${tagTxt(p.pal)}<br>puis signe la fiche de visite`); };
+				SH.visite.on = { down:p => { const z = SH.visite.zones.sign; if(z && p.x >= z[0] && p.x <= z[2] && p.y >= z[1] && p.y <= z[3]){ r(true); } else zoomOn(VIEWS.sheet("visite"), "visite"); } };
+			});
+			if(closed || !res) return;
+			tries++;
+			const dead = new Set(PALLETS.map((p, i) => p[3] ? i : -1).filter(i => i >= 0));
+			const wrongOn = [...S.stick].filter(i => !dead.has(i)), missed = [...dead].filter(i => !S.stick.has(i));
+			if(!wrongOn.length && !missed.length){ play("good"); break; }
+			ev("err"); play("bad"); S.zoom = null; camGoal();
+			if(wrongOn.length) await talk("duval", `Hé ! La palette ${[...S.counted].indexOf(wrongOn[0]) + 1}, c'est pour ${PALLETS[wrongOn[0]][0]} : elle part dans quinze jours !`);
+			else await talk("nadia", tries === 1 ? "Il en reste. Qu'a dit M. Duval en arrivant ? Quel client a fermé son usine ? Regarde aussi les dates d'entrée… et la poussière." : "Toutes les palettes Autolux : ce client n'existe plus, personne n'achètera ce fil noir AX-17.");
+			if(closed) return;
+			if(tries >= 3){ S.stick = dead; pallets.forEach(p => drawTag(p.i)); break; }
+		}
+		palHandler.down = null; SH.visite.on = null; S.dead = 4; S.visitDone = true; dirty("visite"); S.zoom = null;
+		mark(resOf(tries), 2); task(null);
+		zoomOn(VIEWS.sheet("visite"));
+		await talk("nadia", "Quatre palettes Autolux, <b>600 k€ de stock mort</b>. Il faut les déprécier : les capitaux propres tombent à 2,2 M€, l'endettement monte à 0,95. Toujours sous 1… de justesse.");
+		if(closed) return;
+		await talk("duval", "Bon… je les gardais au cas où. Venez voir pourquoi j'ai besoin de cette ligne !");
+		if(closed) return;
+		learn(["risqpme", "conj"]);
+		view("board");
+		await talk("duval", "<b>Volta Mobility</b>, un constructeur électrique allemand : 1,6 million par an ! La lettre est arrivée la semaine dernière.");
+		if(closed) return;
+		await talk("nadia", "La lettre est en anglais, comme souvent. <b>Entoure la phrase qui doit inquiéter la banque.</b>", 3800);
+		task("✍ Entoure dans la lettre de Volta la phrase qui inquiète");
+		tries = 0;
+		for(;;){
+			const { z, stroke } = await circle(SH.volta, LETTER.map(l => l[0])); if(closed) return;
+			tries++;
+			if(z === "z4" || z === "z3"){ okInk(stroke, true); play("good"); break; }
+			ev("err"); play("bad"); okInk(stroke, false);
+			await talk("nadia", tries === 1 ? "Ça, c'est de la politesse ou une promesse. Cherche ce qui dit que <b>rien n'est encore acheté</b>." : "« non-binding » : la lettre n'engage pas Volta. Ce n'est pas une commande.");
+			if(closed) return;
+			if(tries >= 3){ SH.volta.ink.push({ pts:ellipse(SH.volta.zones.z4), col:GREEN, w:7 }); dirty("volta"); break; }
+		}
+		mark(resOf(tries), 1); task(null);
+		await talk("nadia", "Exactement : une <b>lettre d'intention</b>, pas une commande. Volta veut d'abord tester les échantillons. Si la banque finance la ligne et que Volta ne signe pas… Garde ça en tête pour le montage.");
+		learn(["ang"]);
+		addPiece("visite"); addPiece("volta");
+	}
+
+	/* ================= 4. mercredi 9 h : le montage du prêt ================= */
+	async function stepMontage(){
+		ev("stage", "Montage"); setDay("Mercredi 9 h", "Agence"); lightAt(0);
+		nadia.g.position.set(1.95, 0, -1.05); nadia.g.rotation.y = -.7;
+		SH.montage.mesh.visible = true; view("monitor"); dirty("montage");
+		await talk("nadia", "Place au montage. Règle la <b>durée</b> et les <b>garanties</b> en regardant les deux jauges : le remboursement doit rester supportable, et la banque doit être couverte si ça tourne mal.", 6000);
+		if(closed) return;
+		await talk("nadia", "La fiche patrimoniale : M. Duval a <b>350 k€</b> de patrimoine net, il est marié <b>sous la communauté</b>. Bpifrance peut garantir jusqu'à <b>50 %</b>.", 5200);
+		if(closed) return;
+		task("🎚 Règle durée et garanties, puis <b>transmets au comité</b>");
+		const s = SH.montage;
+		let tries = 0;
+		for(;;){
+			const done = await new Promise(r => {
+				let drag = null, moved = 0, down = null;
+				const setFromX = (id, px) => { const [, a, b, st] = MT.rows[id]; const v = clamp(Math.round((a + (px - MT.x0)/(MT.x1 - MT.x0)*(b - a))/st)*st, a, b);
+					const key = id === "duree" ? "n" : id; if(S[key] !== v){ S[key] = v; play("clic"); dirty("montage"); } };
+				s.on = {
+					down:p => {
+						down = p; moved = 0; drag = null;
+						for(const id of Object.keys(MT.rows)){ const y = MT.rows[id][0]; if(p.x > 20 && p.x < 690 && Math.abs(p.y - y) < 30){ drag = id; setFromX(id, p.x); return; } }
+					},
+					move:p => { moved += 1; if(drag) setFromX(drag, p.x); },
+					up:p => {
+						if(drag){ drag = null; return; }
+						if(!down) return;
+						for(const id of Object.keys(MT.tog)){ const [y0, y1] = MT.tog[id]; if(p.y >= y0 && p.y <= y1){ S[id] = !S[id]; play("pop"); dirty("montage"); return; } }
+						const z = s.zones.stamp; if(p.x >= z[0] && p.y >= z[1] && p.y <= z[3]) r(true);
+					}
+				};
+			});
+			if(closed || !done) return;
+			s.on = null; tries++;
+			const issues = montageCalc();
+			if(!issues.length){ S.submitted = true; dirty("montage"); play("good"); break; }
+			ev("err"); play("bad");
+			await talk("nadia", issues[0][1] + (issues.length > 1 ? ` <i>(et ${issues.length - 1} autre${issues.length > 2 ? "s" : ""} point${issues.length > 2 ? "s" : ""})</i>` : ""));
+			if(closed) return;
+		}
+		mark(resOf(tries), 3); task(null);
+		await talk("nadia", `Montage solide : <b>${S.n} ans</b>, effort de ${fr(S.effort)} %, couverture de ${fr(S.covPct)} %, et pas un euro débloqué sans contrat Volta.${S.caution > 0 && !S.conj ? " Note : sans l'accord de son épouse, sa caution ne vaut que 100 k€." : ""}`);
+		learn(["finpro", "droitfin", "droitbq", "sib"]); if(S.caution > 0 || S.conj) learn(["regmat"]);
+		await file("montage");
+	}
+
+	/* ================= 5. mercredi 15 h : KYC et notation ================= */
+	async function stepKyc(){
+		ev("stage", "KYC"); setDay("Mercredi 15 h", "Agence");
+		SH.kyc.mesh.visible = true; dirty("kyc"); S.zoom = null;
+		view("sheet", "kyc");
+		await talk("nadia", "Avant de prêter, la loi nous oblige à savoir <b>qui contrôle vraiment</b> l'entreprise : ses bénéficiaires effectifs, ceux qui détiennent plus de 25 %.", 4800);
+		if(closed) return;
+		task("☝ Trace du doigt le chemin de <b>chaque personne</b> jusqu'à Duval Textiles");
+		await talk("nadia", "Trace du doigt le chemin de <b>chaque personne</b> jusqu'à Duval Textiles : les pourcentages se multiplient en route.", 4000);
+		const N = ORG.nodes, near = (p, id, r = 95) => Math.hypot(p.x - N[id][0], p.y - N[id][1]) < r;
+		const next = id => ORG.edges.filter(e => e[0] === id).map(e => e[1]);
+		const pctOf = path => path.slice(0, -1).reduce((v, a, i) => v*ORG.edges.find(e => e[0] === a && e[1] === path[i + 1])[2]/100, 100);
+		await new Promise(res => {
+			SH.kyc.on = {
+				down:p => { const st = ["jean", "clara", "lys"].find(id => near(p, id)); S.trace = st ? { path:[st], f:[p.x, p.y] } : null; dirty("kyc"); },
+				move:p => { const t = S.trace; if(!t) return; t.f = [p.x, p.y]; const last = t.path[t.path.length - 1]; for(const n of next(last)) if(near(p, n, 80)) t.path.push(n); dirty("kyc"); },
+				up:() => {
+					const t = S.trace; S.trace = null; dirty("kyc"); if(!t) return;
+					if(t.path[t.path.length - 1] !== "dt"){ if(t.path.length) say("nadia", "Va jusqu'au bout : jusqu'à <b>Duval Textiles</b>, en passant par les sociétés intermédiaires."); return; }
+					const who = t.path[0]; if(S.bo[who] === undefined){ S.bo[who] = pctOf(t.path); play("pop"); }
+					if(who === "lys") say("nadia", "Lys Invest : 20 % en direct. C'est une société, et sous 25 % : pas un bénéficiaire effectif.");
+					else say("nadia", `${N[who][2]} : ${fr(S.bo[who])} %.${S.bo[who] > 25 ? " Plus de 25 % : bénéficiaire effectif." : ""}`);
+					if(S.bo.jean !== undefined && S.bo.clara !== undefined){ SH.kyc.on = null; res(); }
+				}
+			};
+		});
+		if(closed) return;
+		await wait(1200); if(closed) return;
+		SH.rbe.mesh.visible = true; dirty("rbe");
+		view("sheet", "rbe");
+		await talk("nadia", "Jean <b>48 %</b>, Clara <b>32 %</b> : deux bénéficiaires effectifs. Compare avec le registre officiel. <b>Entoure la ligne fausse.</b>", 4400);
+		task("✍ Entoure la ligne du registre qui ne colle pas avec ton calcul");
+		SH.rbe.ref = false;
+		let tries = 0;
+		for(;;){
+			const { z, stroke } = await circle(SH.rbe, RBE.map(r => r[0])); if(closed) return;
+			tries++;
+			if(z === "l2"){ okInk(stroke, true); play("good"); break; }
+			ev("err"); play("bad"); okInk(stroke, false);
+			await talk("nadia", tries === 1 ? "Cette ligne-là est juste. Qui manque dans le registre ?" : "Le registre dit « aucun autre bénéficiaire » : or Clara a 32 %.");
+			if(closed) return;
+			if(tries >= 3){ SH.rbe.ink.push({ pts:ellipse(SH.rbe.zones.l2), col:GREEN, w:7 }); dirty("rbe"); break; }
+		}
+		mark(resOf(tries), 1); task(null);
+		await talk("nadia", "Clara a reçu ses parts en 2024, le registre date de 2021. Rien de louche : une déclaration pas à jour. Mais la banque a l'<b>obligation de signaler l'écart au greffe</b>. C'est fait.");
+		if(closed) return;
+		learn(["soc", "audit"]);
+		await file("rbe"); await file("kyc");
+		// la notation
+		SH.grille.mesh.visible = true; dirty("grille"); view("sheet", "grille");
+		await talk("nadia", "Dernière pièce : la <b>note de risque</b>. Avec tes deux ratios du lundi, <b>touche la case</b> de la grille qui correspond à Duval Textiles.", 4600);
+		task("☝ Touche la case : capacité de remboursement × endettement");
+		tries = 0;
+		for(;;){
+			const c = await new Promise(r => { SH.grille.on = { down:p => { for(let i = 0; i < 3; i++) for(let j = 0; j < 3; j++){ const z = SH.grille.zones["c" + i + j]; if(p.x >= z[0] && p.x <= z[2] && p.y >= z[1] && p.y <= z[3]) r([i, j]); } } }; });
+			if(closed) return;
+			SH.grille.on = null; tries++; S.cell = c; dirty("grille");
+			if(c[0] === GRID.good[0] && c[1] === GRID.good[1]){ play("good"); break; }
+			ev("err"); play("bad");
+			await talk("nadia", tries === 1 ? "Reprends la fiche de ratios : capacité de remboursement <b>4 ans</b>, endettement <b>0,75</b> (0,95 après la dépréciation du stock)." : "Ligne « de 3 à 5 ans », colonne « de 0,5 à 1 ».");
+			if(closed) return;
+			if(tries >= 3){ S.cell = GRID.good.slice(); dirty("grille"); break; }
+		}
+		mark(resOf(tries), 1);
+		const pd = GRID.cells[S.cell[0]][S.cell[1]][1]/100, want = pd*(PRET - S.cov);
+		view("desk");
+		await talk("nadia", `Cote 5 : <b>2 % de risque de défaut</b> dans l'année. Calcule la <b>perte attendue</b> : 2 % de la part du prêt que tes garanties ne couvrent pas (1 200 − ${fr(S.cov)}).`, 5200);
+		task(`🧮 Perte attendue = 0,02 × (1 200 − ${fr(S.cov)}) → ↗ Reporter`);
+		tries = 0;
+		for(;;){
+			const v = await calcValue(); if(closed) return;
+			tries++; S.el = v; S.elOk = Math.abs(v - want) <= Math.max(.15, want*.02); dirty("grille");
+			if(S.elOk){ play("good"); break; }
+			play("bad");
+			if(tries >= 3){ S.el = want; S.elOk = true; dirty("grille"); break; }
+			await talk("nadia", tries === 1 ? `Ce n'est pas ${fmtN(v)}. D'abord 1 200 − ${fr(S.cov)}, puis × 0,02 (2 %).` : `Tape : 1200 − ${fr(S.cov)} × 0,02 → la calculatrice va de gauche à droite.`);
+			if(closed) return;
+		}
+		mark(resOf(tries), 1);
+		S.rate = 3 + S.el/PRET*100 + .6 + .2; dirty("grille"); task(null);
+		await talk("nadia", `Perte attendue : <b>${fr(S.el, 1)} k€</b> par an. On la fait payer dans le taux, avec le coût de l'argent (lié aux taux de la BCE), nos frais et notre marge : <b>${fr(S.rate, 2)} %</b>.`);
+		learn(["grisk", "cdg", "polec"]);
+		await file("grille");
+	}
+
+	/* ================= 6. jeudi 14 h : le comité de crédit ================= */
+	const PRES = { mesh:null, w:1, h:1, home:null };
+	const fan = {};
+	async function stepComite(){
+		ev("stage", "Comité"); setDay("Jeudi 14 h", "Comité de crédit"); lightAt(CX);
+		nadia.g.position.set(CX + 3, 0, -.1); nadia.g.rotation.y = -1.1;
+		// les pièces du dossier, étalées sur la table (mêmes feuilles, mêmes annotations)
+		const ids = ["liasse", "ratios", "visite", "volta", "montage", "kyc", "rbe", "grille"];
+		S.zoom = null;
+		ids.forEach((id, k) => {
+			const s = SH[id]; redraw(s);
+			const tall = camera.aspect < .9, w = Math.min(tall ? .56 : .92, (tall ? .5 : .58)*s.W/s.H), h = w*s.H/s.W;
+			const m = new THREE.Mesh(geo(new THREE.PlaneGeometry(w, h)), own(new THREE.MeshBasicMaterial({ map:s.tex, toneMapped:false })));
+			m.userData.sheet = s; m.userData.piece = id;
+			const col = k % 4, row = Math.floor(k/4);
+			m.position.set(tall ? CX - .96 + col*.64 : CX - 1.86 + col*1.24, DY + .004 + k*.0004, tall ? -.4 - row*.6 : -.45 - row*.78); m.rotation.set(-Math.PI/2, 0, ((k*5) % 7 - 3)*.02); scene.add(m);
+			fan[id] = { m, w, h, home:{ p:m.position.clone(), q:m.quaternion.clone() } };
+		});
+		view("committee");
+		await talk("lambert", "Bonjour. Nous avons lu votre note : Duval Textiles, 1,2 M€ sur " + S.n + " ans. Nous avons des questions. <b>Répondez avec les pièces de votre dossier.</b>", 5000);
+		if(closed) return;
+		const OBJ = objections(S.volta);
+		for(let oi = 0; oi < OBJ.length; oi++){
+			const o = OBJ[oi];
+			view("committee");
+			await talk(o.who, o.q, 4200); if(closed) return;
+			say(o.who, o.q);
+			task("📄 Touche la pièce qui répond, puis <b>la ligne</b> qui le prouve");
+			let res = null, tries = 0;
+			while(!res){
+				const ans = await present(); if(closed) return;
+				tries++;
+				const key = ans.piece + ":" + ans.zone, star = ans.piece + ":*";
+				if(o.ok.includes(key)) res = tries === 1 ? "ok" : "mid";
+				else if(o.mid.includes(key) || o.mid.includes(star) || o.ok.some(k => k.startsWith(ans.piece + ":"))) res = tries === 1 ? "mid" : "ko";
+				if(!res){
+					play("bad"); ev("err");
+					await talk(o.who, ans.zone ? "Cette ligne ne répond pas à ma question." : "Ce document ne répond pas à ma question.", 2600); if(closed) return;
+					say(o.who, o.q);
+					if(tries >= 2) res = "ko";
+				}
+				await unpresent();
+			}
+			S.answers.push(res); S.comMax += 2; S.com += res === "ok" ? 2 : res === "mid" ? 1 : 0; mark(res, 2);
+			play(res === "ok" ? "good" : res === "mid" ? "chime" : "bad");
+			if(res === "ko") await talk("nadia", o.no); else await talk("me", o.yes + (res === "mid" ? " <i>(la bonne pièce, mais pas la meilleure ligne)</i>" : ""));
+			if(closed) return;
+			await talk(o.who, res === "ok" ? "Très clair, merci." : res === "mid" ? "Bien. J'aurais aimé l'entendre plus nettement." : "Je note que ce point n'était pas prêt.", 2200);
+			if(closed) return;
+		}
+		task(null); view("committee");
+		S.accord = S.com/S.comMax >= .5;
+		await talk("lambert", S.accord ? `Le comité <b>accorde</b> le prêt : 1,2 M€ sur ${S.n} ans à ${fr(S.rate, 2)} %, garanties comprises, déblocage à la signature du contrat Volta. Bon travail.`
+			: "Le comité <b>ajourne</b> le dossier : revenez avec des réponses plus solides. Le dossier n'est pas mauvais, c'est sa défense qui l'était.", 5200);
+		learn(["nego", "oral", "ethique", "alt"]);
+	}
+	// présenter une pièce : la toucher sur la table, puis toucher la ligne
+	function present(){
+		return new Promise(res => {
+			const pieces = Object.values(fan).map(f => f.m);
+			for(const m of pieces) if(!hits.includes(m)) hits.push(m);
+			let cur = null;
+			const lift = id => {
+				const f = fan[id]; cur = id; PRES.mesh = f.m; PRES.w = f.w*1.7; PRES.h = f.h*1.7;
+				const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI/2 + .62, 0, 0));
+				f.m.renderOrder = 2; play("pop");
+				flyTo(f.m, new THREE.Vector3(CX, DY + .32, .05), new THREE.Vector3(1.7, 1.7, 1.7), .55, () => zoomOn(VIEWS.present), q);
+			};
+			for(const [id, f] of Object.entries(fan)){
+				f.m.userData.sheet = { ...f.m.userData.sheet, on:{ down:p => {
+					if(cur === null){ lift(id); return; }
+					if(cur !== id){ const f = fan[cur]; flyTo(f.m, f.home.p, new THREE.Vector3(1, 1, 1), .35, null, f.home.q); lift(id); return; }
+					const s = SH[id]; let zone = null;
+					for(const [z, r] of Object.entries(s.zones)){ if(/^k|^c\d|^sign$|^stamp$/.test(z)) continue; if(p.x >= r[0] && p.x <= r[2] && p.y >= r[1] && p.y <= r[3]){ zone = z; break; } }
+					if(!zone){ play("clic"); return; }
+					const st = { pts:ellipse(s.zones[zone]), col:"#d68a1c", w:6 }; s.ink.push(st); redraw(s);
+					setTimeout(() => { s.ink.splice(s.ink.indexOf(st), 1); s.dirty = true; }, 2600/SPEED);
+					for(const g of Object.values(fan)) g.m.userData.sheet = { ...g.m.userData.sheet, on:null };
+					res({ piece:id, zone });
+				} } };
+				f.m.userData.sheet.W = SH[id].W; f.m.userData.sheet.H = SH[id].H;
+			}
+		});
+	}
+	function unpresent(){ return new Promise(r => { const f = Object.values(fan).find(g => g.m === PRES.mesh); S.zoom = null; camGoal(); if(!f){ r(); return; } flyTo(f.m, f.home.p, new THREE.Vector3(1, 1, 1), .45, r, f.home.q); PRES.mesh = null; }); }
+
+	/* ---------- déroulé ---------- */
+	async function run(){
+		await stepLiasse(); if(closed) return;
+		await stepRatios(); if(closed) return;
+		await stepVisite(); if(closed) return;
+		await stepMontage(); if(closed) return;
+		await stepKyc(); if(closed) return;
+		await stepComite(); if(closed) return;
+		finish();
+	}
+
+	/* ---------- boucle ---------- */
+	let last = performance.now(), raf = 0, drawAcc = 0;
+	function frame(now){
+		if(closed) return;
+		raf = requestAnimationFrame(frame);
+		const dt = Math.min(.05, (now - last)/1000); last = now;
+		if(SPEED === 1) tick(dt);
+		show(dt);
+	}
+	function show(dt){
+		if(sized !== innerWidth + "x" + innerHeight) resize();
+		camGoal();
+		const k = Math.min(1, dt*3.4); camPos.lerp(goalP, k); camLook.lerp(goalL, k);
+		if(!isFinite(camPos.x + camLook.x)){ camPos.copy(goalP); camLook.copy(goalL); }
+		camera.position.copy(camPos); camera.lookAt(camLook); camera.updateMatrixWorld();
+		drawAcc += dt;
+		if(drawAcc > 1/30){ drawAcc = 0; for(const s of Object.values(SH)) if(s.dirty) redraw(s); }
+		renderer.render(scene, camera);
+		placeBubble();
+	}
+	function tick(dt){
+		const g = dt*SPEED;
+		for(const o of [...timers]){ o.t -= g; if(o.t <= 0){ timers.delete(o); o.r(); } }
+		for(const a of [...anims]){ a.t += g; const k = Math.min(1, a.t/a.d); a.fn(k); if(k >= 1){ anims.delete(a); a.done && a.done(); } }
+		for(const f of [...tickers]) f(g);
+	}
+	function placeBubble(){
+		if(bubble.classList.contains("off") || !speaker) return;
+		const who = people[speaker][0];
+		if(who && who.g.visible){
+			const head = new THREE.Vector3(); who.g.getWorldPosition(head); head.y += who === members.lambert || who === members.vasseur || who === members.okafor ? 2.45 : 2.6;
+			const s = toScreen(head);
+			if(s.in){ bubble.classList.remove("fix"); const half = Math.min(195, innerWidth/2 - 12); bubble.style.left = clamp(s.x, half + 12, innerWidth - half - 12) + "px"; bubble.style.top = Math.max(bubble.offsetHeight + 66, s.y) + "px"; return; }
+		}
+		bubble.classList.add("fix"); bubble.style.left = "12px"; bubble.style.top = "64px";
+	}
+
+	/* ---------- début, fin, fermeture ---------- */
+	const ov = $("#dvOv"), card = $("#dvCard");
+	function intro(){
+		card.innerHTML = `<p class="k">Master Management des Banques et Institutions Financières</p>
+			<h2>Le dossier Duval Textiles</h2>
+			<p>Tu es chargé·e d'affaires en alternance au Crédit des Flandres, à Roubaix. Lundi matin, Duval Textiles, une PME de 42 salariés, demande un prêt pour une nouvelle ligne de production.</p>
+			<p class="dv-q">Jeudi, en comité de crédit : prête-t-on 1,2 M€ à Duval Textiles ?</p>
+			<div class="dv-legend">
+				<div><b>✍</b>Entoure au doigt ce qui cloche dans les documents.</div>
+				<div><b>🧮</b>Calcule les ratios avec les chiffres que tu lis.</div>
+				<div><b>📦</b>Vérifie sur place, à l'usine.</div>
+				<div><b>📄</b>Au comité, prouve chaque réponse avec une pièce.</div>
+			</div>
+			<p>Du lundi au jeudi, environ 9 minutes. Entreprise et personnes fictives.</p>
+			<button class="dv-go" data-a="start">Ouvrir le dossier</button>`;
+	}
+	function finish(){
+		S.phase = "done"; play("win"); task(null); hush();
+		const score = S.max ? Math.round(S.pts/S.max*100) : 0;
+		const mention = MENTIONS[score >= 85 ? 3 : score >= 65 ? 2 : score >= 45 ? 1 : 0];
+		ev("win", mention);
+		const pieceNames = S.pieces.map(id => PIECES[id]);
+		card.innerHTML = `<p class="k">Jeudi 15 h · décision du comité</p><div class="dv-big">${S.accord ? "🤝" : "📂"}</div>
+			<h2>${S.accord ? "Prêt accordé" : "Dossier ajourné"}</h2>
+			<span class="dv-stamp" style="color:${S.accord ? GREEN : RED}">${S.accord ? "ACCORD SOUS CONDITIONS" : "AJOURNEMENT"}</span>
+			<p>Mention <b>${mention}</b> (${score} / 100). ${S.accord ? "Tu as trouvé ce que les comptes cachaient, monté un prêt qui protège la banque et l'entreprise, et défendu chaque point avec une preuve." : (S.pts - S.com)/(S.max - S.comMax) >= .6 ? "L'instruction était solide ; mais au comité, chaque réponse doit s'appuyer sur la bonne pièce, et sur la bonne ligne." : "Le stock qui dort, les garanties, les actionnaires : le comité attend des preuves. Rejoue pour les trouver."}</p>
+			<div class="dv-stats"><div>Stock invendable trouvé<b>600 k€</b></div><div>Prêt monté<b>${S.n} ans · ${fr(S.rate || 4.2, 2)} %</b></div><div>Couverture<b>${fr(S.covPct)} %</b></div><div>Objections bien défendues<b>${S.answers.filter(a => a === "ok").length} / ${S.answers.length}</b></div></div>
+			<p class="k">Ton dossier (${pieceNames.length} pièces)</p><p style="font-size:13px">${pieceNames.join(" · ")}</p>
+			<p class="k">Les cours du master que tu as pratiqués (${S.learned.length})</p>
+			<ul class="dv-list">${S.learned.map(k => `<li><span>${COURSES[k][0]}</span><b>${COURSES[k][1]}</b> · ${COURSES[k][2]}</li>`).join("")}</ul>
+			<p class="k">La suite du dossier, côté patrimoine</p>
+			<p style="font-size:13.5px">M. Duval a 62 ans et Clara détient déjà 32 % : la transmission approche. Le master t'apprend aussi à la préparer :</p>
+			<ul class="dv-list next">${NEXT.map(n => `<li>${n}</li>`).join("")}</ul>
+			${jpoCard()}${openLead ? `<button class="dv-go" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
+			<a class="dv-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir le Master MBIF ↗</a>
+			<button class="dv-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
+			<button class="dv-alt" data-a="replay">Rejouer</button>`;
+		ov.hidden = false; card.scrollTop = 0;
+	}
+	ov.addEventListener("click", e => {
+		const a = e.target.closest("[data-a]")?.dataset.a; if(!a) return;
+		if(a === "start" && S.phase === "intro"){ ov.hidden = true; S.phase = "play"; ev("start"); canvas.focus({ preventScroll:true }); run(); }
+		if(a === "lead"){ close(); openLead(); }
+		if(a === "fav"){ toggleFav(); e.target.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; }
+		if(a === "replay"){ close(); openAffaires({ formation, audio, isFav, toggleFav, onClose, onEvent, openLead }); }
+	});
+	$(".dv-x").addEventListener("click", close);
+
+	// ?vite : l'horloge du jeu avance même quand l'affichage est en pause, et des gestes simulés pour les tests
+	let pump = 0;
+	if(SPEED > 1){
+		const fake = (s, x, y) => ({ s, obj:s.mesh, x, y, cx:0, cy:0 });
+		const T$ = {
+			S, SH, CALC, pallets, fan, camera, renderer,
+			snap:() => { drawAcc = 1; show(1); },
+			tap:(id, x, y) => { const s = SH[id], h = s.on || (s.ref ? refHandler(s) : null); if(!h) return "rien"; h.down && h.down(fake(s, x, y)); h.up && h.up(fake(s, x, y)); return "ok"; },
+			drag:(id, pts) => { const s = SH[id], h = s.on; if(!h) return "rien"; h.down(fake(s, ...pts[0])); pts.slice(1).forEach(q => h.move && h.move(fake(s, ...q))); h.up(fake(s, ...pts[pts.length - 1])); return "ok"; },
+			circle:(id, zone) => T$.drag(id, ellipse(SH[id].zones[zone])),
+			keys:str => { for(const k of str.split(" ")) calcKey(k); },
+			pal:i => { palHandler.down && palHandler.down({ pal:i }); },
+			piece:(id, zone) => { const f = fan[id], h = f.m.userData.sheet.on; if(!h) return "rien"; const z = zone ? SH[id].zones[zone] : null; h.down({ x:z ? (z[0] + z[2])/2 : 1, y:z ? (z[1] + z[3])/2 : 1 }); return "ok"; },
+			skip:() => skip && skip(),
+			get speaker(){ return speaker; }, get task(){ return $("#dvTask").textContent; }
+		};
+		window.__mbif = T$;
+		pump = setInterval(() => { if(!closed && !T$.pause) tick(.03); }, 30);
+	}
+
+	function close(){
+		if(closed) return; closed = true;
+		cancelAnimationFrame(raf); clearInterval(pump); timers.clear(); anims.clear(); tickers.clear();
+		removeEventListener("resize", resize); document.removeEventListener("keydown", onKey);
+		if(window.__mbif) delete window.__mbif;
+		for(const o of trash) o.dispose && o.dispose();       // les géométries et matériaux du kit sont partagés avec le campus : on ne les libère pas
+		scene.clear();
+		renderer.dispose(); renderer.forceContextLoss();
+		root.remove();
+		onClose && onClose();
+	}
+
 	intro();
-	onEvent && onEvent("start");
-	// mode relecture : étapes où l'enseignant peut sauter directement
-	const jump = id => () => { receive(id); later(300, enter); };
-	onEvent && onEvent("missions", [["Mon agenda", agenda], ["9 h · Karim (écoute)", jump("karim")], ["10 h 30 · Mme Lefèvre (sensibilité)", jump("lefevre")], ["14 h · Inès et Tom (bienveillance)", jump("couple")], ["15 h 30 · Duval Textiles (accompagnement)", jump("duval")], ["17 h · Famille Martin (expertise)", jump("martin")], ["18 h · Directeur d'agence d'un jour", () => { ORDER.forEach(id => S.score[CLIENTS[id].theme] ??= 2); manage(); }], ["Fin de journée", () => { ORDER.forEach(id => S.score[CLIENTS[id].theme] ??= 2); S.mgmt ??= 2; finale(); }]]);
-	if(window.campus) window.campus.game = { S, card, W, receive, enter, agenda, finale, manage, ...STEPS };
+	raf = requestAnimationFrame(frame);
 }
