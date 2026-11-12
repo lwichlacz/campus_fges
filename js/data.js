@@ -64,8 +64,8 @@ export const RENDEZ_VOUS = [
 export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires", ebmd: "telephone", mh: "crise", lpabf: "guichet", ecofi: "ruee" };
 /* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */
 export const GAME_INFO = {
-	ruee:{ fid:"ecofi", title:"La Ruée", icon:"📈", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"4 min",
-		pitch:"Un après-midi de stage dans une société de gestion : 100 000 € à gérer, et les nouvelles qui tombent. Décision de la BCE, dépêche en anglais, rumeur sur les réseaux, krach, start-up qui lève des fonds : anticipe, vérifie, couvre-toi, actualise. Gagner ne suffit pas, il faut bien décider." },
+	ruee:{ fid:"ecofi", title:"La Ruée", icon:"📈", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min",
+		pitch:"Le comité de 18 h : le fonds a perdu 3,2 % dans la journée, et on te demande pourquoi. Mesure les chutes sur la courbe, calcule poids × variation, ajuste la régression, retrouve le ticket d'ordre, puis défends ton dossier devant le comité, preuve et chiffre à l'appui." },
 	guichet:{ fid:"lpabf", title:"Le guichet du samedi", icon:"🏦", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min",
 		pitch:"Samedi, 9 h : la conformité prévient que des fonds suspects transitent par ton agence. Sers bien tes cinq clients (crédit, héritage, Erasmus, dégât des eaux, plombier qui se lance), vérifie leurs pièces et épingle les indices. À midi, qui signales-tu à Tracfin ?" },
 	crise:{ fid:"mh", title:"La cellule de crise", icon:"🔥", where:"ha", whereLabel:"Salle du conseil · Hôtel Académique", dur:"8 min",
