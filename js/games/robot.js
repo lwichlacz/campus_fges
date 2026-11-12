@@ -8,7 +8,7 @@
    Mise en scène illustrative ; contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=4c7bed0933";
+import { jpoCard } from "./jpo.js?v=042f81e786";
 
 const COURSES = {
 	meca:   ["L1", "Mécanique et systèmes numériques", "Un bras robot est une chaîne d'articulations : chaque angle déplace tout ce qui suit. Trois articulations, trois degrés de liberté pour atteindre un point de l'espace."],
