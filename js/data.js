@@ -69,7 +69,7 @@ export const GAME_INFO = {
 	guichet:{ fid:"lpabf", title:"Le guichet du samedi", icon:"🏦", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"4 min",
 		pitch:"Samedi matin, cinq clients font la queue à ton guichet : un jeune couple qui achète, un retraité qui hérite, un Erasmus, un dégât des eaux, un plombier qui se lance. Écoute ce qu'ils disent vraiment, règle le simulateur, réponds sous chrono… et garde un œil sur la conformité." },
 	crise:{ fid:"mh", title:"La cellule de crise", icon:"🔥", where:"ha", whereLabel:"Salle du conseil · Hôtel Académique", dur:"8 min",
-		pitch:"Un bad buzz frappe une chocolaterie roubaisienne. Trie faits et rumeurs, pèse la décision avec Kant, Mill, Aristote et Weber, trouve le bon ton pour chaque collègue, puis écris un communiqué qui tient debout. Un seul geste : lancer." },
+		pitch:"Un bad buzz frappe une chocolaterie roubaisienne, et tout se joue dans le groupe « Cellule de crise » de ton téléphone. Vérifie chaque message avant de l'épingler, chiffre le plan de rappel sous le regard de Kant, Mill, Aristote et Weber, corrige le message de la directrice à son équipe, puis dose ton communiqué en lisant les commentaires en direct." },
 	comptoir:{ fid:"gestion", title:"Le Comptoir", icon:"☕", where:"falise", whereLabel:"Atrium de Michel Falise", dur:"6 min",
 		pitch:"Pilote le café de l'atrium : prix, équipe, imprévus… et ton résultat en direct." },
 	jardin:{ fid:"sv", title:"Mission Jardin Boulay", icon:"🔍", where:"jardin", whereLabel:"Jardin botanique Nicolas Boulay", dur:"7 min",

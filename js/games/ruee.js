@@ -10,9 +10,9 @@
      - toucher, sur la courbe de la journée, la décision qui a coûté le plus.
    Les contenus (nouvelles, chiffres, cours) sont dans ruee-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=4c7bed0933";
-import { jpoCard } from "./jpo.js?v=4c7bed0933";
-import { COURSES, ASSETS, STAKE, FLASHES, REG, RUMOUR, KRACH, STARTUP, CLOSE, van, euro } from "./ruee-data.js?v=4c7bed0933";
+import { makePerson, std, box, cyl } from "../kit.js?v=2803485274";
+import { jpoCard } from "./jpo.js?v=2803485274";
+import { COURSES, ASSETS, STAKE, FLASHES, REG, RUMOUR, KRACH, STARTUP, CLOSE, van, euro } from "./ruee-data.js?v=2803485274";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
