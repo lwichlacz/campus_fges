@@ -85,7 +85,7 @@ export const GAME_INFO = {
 	boutique:{ fid:"ebmd", title:"Courée, la boutique en 3D", icon:"🛍️", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12 min",
 		pitch:"Fais décoller le site d'une jeune marque lilloise : répare le tunnel de commande, grimpe sur les moteurs de recherche, monte une bannière cookies conforme, répartis 3 000 € de pub, cible tes clients… puis tiens le choc du Black Friday en direct. Et regarde tes visiteurs parcourir la boutique en 3D !" },
 	robot:{ fid:"spi", title:"Cellule robotique Wenov", icon:"🦾", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"7 min",
-		pitch:"Pilote un vrai bras robot en 3D, programme le cycle d'une ligne de production, puis donne-lui des yeux pour trier les pièces." },
+		pitch:"Vendredi 15 h : la cellule robotique rejette une pièce sur cinq et le client attend sa livraison lundi. Rejoue les cycles ratés, mesure le jeu du coude au comparateur, lis le chronogramme du capteur, règle l'asservissement sur sa courbe et réapprends la caméra… puis écris au client." },
 	gaming:{ fid:"info", title:"Game Jam 48 h", icon:"🎮", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"8-10 min",
 		pitch:"Un week-end de game jam avec ton équipe de L1 : dessine un niveau faisable, programme le héros en Python et échappe au bug rouge, mets les scores en ligne en SQL, tiens le choc quand 5 000 joueurs débarquent et démasque le tricheur, puis passe devant le jury. Bonus : l’ambiance en réalité virtuelle, et ton propre niveau à partager." },
 	biodata:{ fid:"dmb", title:"From Blood to Decision", icon:"🧬", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"8-10 min",
