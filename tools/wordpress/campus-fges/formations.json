@@ -70,7 +70,13 @@
    "level": "L",
    "levelLabel": "Licences et prépas",
    "url": "https://www.fges.fr/formations/licence-economie-finance/",
-   "game": null
+   "game": {
+    "id": "ruee",
+    "title": "La Ruée",
+    "icon": "📈",
+    "dur": "4 min",
+    "pitch": "Un après-midi de stage dans une société de gestion : 100 000 € à gérer, et les nouvelles qui tombent. Décision de la BCE, dépêche en anglais, rumeur sur les réseaux, krach, start-up qui lève des fonds : anticipe, vérifie, couvre-toi, actualise. Gagner ne suffit pas, il faut bien décider."
+   }
   },
   {
    "id": "cupge",
