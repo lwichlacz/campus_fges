@@ -28,7 +28,7 @@ ACCROCHE = {
     "mbif": "Dans ton agence, cinq clients qui sont d'abord des personnes : écoute, crédit, confiance… et une PME à accompagner pendant huit ans.",
     "dmb": "En anglais, comme le master : du dossier d'un patient à l'étude d'une cohorte, du séquençage au compte rendu clinique.",
     "mh": "Un bad buzz frappe une chocolaterie : trie faits et rumeurs, décide avec Kant et Weber, tiens ton équipe, puis écris le communiqué.",
-    "ecofi": "Un après-midi de stage dans une société de gestion : décision de la BCE, dépêche en anglais, rumeur, krach et start-up. Anticipe, vérifie, couvre-toi, actualise.",
+    "ecofi": "Le comité de 18 h : le fonds a perdu 3,2 % et on te demande pourquoi. Mesure, calcule, ajuste la régression, retrouve le ticket d'ordre, puis défends ton dossier.",
     "lpabf": "Samedi matin, cinq clients à ton guichet : écoute ce qu'ils disent vraiment, règle le simulateur de crédit, réponds sous chrono et garde un œil sur la conformité.",
     "ebmd": "Fais décoller le site d'une jeune marque lilloise : tunnel de commande, référencement, publicité… puis tiens le choc du Black Friday.",
 }
