@@ -128,6 +128,9 @@ const CSS = `
 .gp-delta{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
 .gp-delta span{font-size:12.5px;font-weight:800;border-radius:999px;padding:3px 9px;background:#f3eee0}
 .gp-tip{background:#fff8e6;border-left:4px solid #b08a3e;border-radius:4px;padding:8px 10px;font-size:13.5px;margin:8px 0}
+.gp-gate{background:#1f3d31;color:#f3e3b8;border-radius:10px;padding:12px 14px;margin:12px 0 4px;font-size:14px;line-height:1.4;animation:gpUp .35s both}
+.gp-gate b{display:block;font:700 17px/1.25 Fraunces,Georgia,serif;color:#fff;margin-bottom:4px}
+@media (max-width:${MOBILE - 1}px){ .gp-gate span{display:none} .gp-gate b{margin:0} }      /* téléphone : le bouton « Ouvrir tout le dossier » doit rester à l'écran */
 .gp-real{font-style:italic;color:#6f6a5c;font-size:13.5px;margin:6px 0}
 .gp-sim{font-variant-numeric:tabular-nums;font-size:13.5px;margin:6px 0;padding:0;list-style:none}
 .gp-sim li{display:flex;justify-content:space-between;gap:8px;border-top:1px dashed #e2d8bf;padding:4px 0}
@@ -702,9 +705,10 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		const n = E.pick || 1;
 		say(E.say);
 		if(E.cs) later(150, () => play("chime"));
-		show(`${E.cs ? `<div class="gp-cs"><i>🎲</i><span><b>Coup du sort !</b><small>Une carte tirée au hasard : chaque partie est différente.</small></span></div>` : ""}<span class="gp-year">${E.year}</span><h2 class="gp-h">${E.title}</h2>
+		const pre = E.pre && E.pre();
+		show(`${E.k ? `<div class="gp-k">${E.k}</div>` : ""}${E.cs ? `<div class="gp-cs"><i>🎲</i><span><b>Coup du sort !</b><small>Une carte tirée au hasard : chaque partie est différente.</small></span></div>` : ""}<span class="gp-year">${E.year}</span><h2 class="gp-h">${E.title}</h2>
 			<div class="gp-story">${E.story}<span class="gp-ask">${E.ask}</span></div>
-			${E.pre ? `<div class="gp-pre">${E.pre()}</div>` : ""}
+			${pre ? `<div class="gp-pre">${pre}</div>` : ""}
 			<p class="gp-goal">🎯 ${E.goal}</p>
 			<div class="gp-hand">${E.cards.map((k, i) => { const [ic, t, d] = CARDS[k]; return `<button class="gp-c" data-c="${k}" style="--r:${((i - (E.cards.length - 1)/2)*3).toFixed(1)}deg;--d:${200 + i*90}ms"><span class="ic">${ic}</span><b>${t}</b><small>${d}</small></button>`; }).join("")}</div>
 			<div class="gp-pickhint">${n > 1 ? `Choisis ${n} cartes` : "Choisis une carte"}</div><div data-play></div><div data-res></div>`);
@@ -745,10 +749,10 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 			card.querySelector("[data-res]").innerHTML = `<div class="gp-verdict s${o.stars}"><span class="st">${STARS(o.stars)}</span>${VERDICT[o.stars]}</div>
 				${d ? `<div class="gp-delta">${d}</div>` : ""}<p class="gp-p">${o.txt}</p>
 				${o.stars < 3 && E.best ? `<div class="gp-tip">💡 <b>Le conseil de l'expert :</b> ${E.best}</div>` : ""}
-				${E.real ? `<p class="gp-real">${E.real}</p>` : ""}${(E.courses || []).map(course).join("")}
-				<button class="gp-go" data-a="${E.next}">${E.nextLabel}</button>`;
+				${E.real ? `<p class="gp-real">${E.real}</p>` : ""}${E.gate ? E.gate(o) : `${(E.courses || []).map(course).join("")}
+				<button class="gp-go" data-a="${E.next}">${E.nextLabel}</button>`}`;
 			// on montre le verdict (la carte jouée juste au-dessus), pas le bas de la page
-			later(80, () => { const v = card.querySelector(".gp-verdict"), h = card.querySelector(".gp-hand"); wrap.scrollTo({ top:Math.max(0, (innerWidth < MOBILE ? v.offsetTop - 12 : h.offsetTop - 12)), behavior:"smooth" }); });
+			later(80, () => { const v = card.querySelector(".gp-verdict"), h = card.querySelector(".gp-hand"); wrap.scrollTo({ top:Math.max(0, (innerWidth < MOBILE || E.gate ? v.offsetTop - 12 : h.offsetTop - 12)), behavior:"smooth" }); });
 			E.after && later(1800, E.after);
 		});
 	}
@@ -757,7 +761,9 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 	const EV = {};
 	EV.mariage = { key:"mariage", say:"Bonjour ! Je suis Maître Bonchamp, notaire de la famille. Un mariage, c'est aussi un contrat… même quand on n'en signe pas !", stage:"1967 · Le mariage", era:"mariage", year:"20 juin 1967", title:"Un mariage… et un futur cabinet",
 		story:"Paul, fils d'agriculteurs, est arrivé à Lille en 1959 avec 2 000 F en poche. Aide-comptable dans le textile, il prépare ses diplômes d'expert-comptable et compte ouvrir son cabinet. Il épouse Jeannette Poirier.",
-		ask:"Faut-il un contrat de mariage ?", goal:"Un régime adapté à un futur chef d'entreprise, qui protège aussi le couple.",
+		ask:"Faut-il un contrat de mariage ?",
+		pre:() => S.done.concubin && !S.done.mariage ? "⏪ <b>Retour en 1967, là où tout commence.</b> La famille Deslaurier (fictive) te confie sa vie jusqu'à aujourd'hui. À chaque tournant, une main de cartes ; entre deux, des coups du sort tirés au hasard." : "",
+		goal:"Un régime adapté à un futur chef d'entreprise, qui protège aussi le couple.",
 		setup:() => { W.setPlot("plA", COL.zP, "Biens de Paul"); W.setPlot("plB", COL.zJ, "Biens de Jeannette"); },
 		cards:["legal", "sep", "univ"],
 		out: k => ({ ...({
@@ -1026,6 +1032,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 	function coup(P, key){
 		const k = key || plan[P], E = { ...CS[k], stage:"🎲 Coup du sort", next:POOLS[P][1], nextLabel:POOLS[P][2] };
 		if(k === "arnaque" && P === "C"){ E.era = "remariage"; E.year = "2009"; }
+		if(P === "C" && S.done.concubin){ E.next = "transmettre"; E.nextLabel = "Préparer la transmission →"; }      // Sarah : déjà jouée en ouverture
 		// après le remariage : les parcelles de Paul et de Paulette, séparées par la clôture
 		if(E.era === "remariage"){ const own = E.setup; E.setup = () => { W.setPlot("plA", COL.zP, "Patrimoine de Paul"); W.setPlot("plB", "#b99ad6", "Patrimoine de Paulette (2 M€)"); W.O.fence.g.position.set(0, 0, 1.4); W.popIn("fence"); own && own(); }; }
 		deal(E);
@@ -1033,17 +1040,25 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 	EV.immeuble.next = "cs:A"; EV.placer.next = "cs:B"; EV.paulette.next = "cs:C";
 	draw();
 
-	/* ---------- intro et bilan ---------- */
-	function intro(){
-		stage("Dossier", "intro");
-		later(700, () => say("Bienvenue dans mon étude ! Asseyez-vous, la famille Deslaurier a besoin de vos conseils."));
-		show(`<div class="gp-k">Mini-jeu · ${formation.name}</div><h2 class="gp-h">Le Dossier Deslaurier</h2>
-			<p class="gp-p">Tu es <b>conseiller en gestion de patrimoine</b>. Dans l'étude de Maître Bonchamp, la famille Deslaurier (fictive) te confie sa vie, de 1959 à aujourd'hui : mariage, cabinet, maison, accident, héritage, remariage…</p>
-			<p class="gp-p">À chaque tournant, tu reçois une <b>main de cartes</b> : contrat de mariage, donation, testament, assurance-vie, SCI… Joue la bonne, et regarde les conséquences sur la maquette : l'argent va-t-il à la famille, au fisc, ou finit-il en dispute ?</p>
-			<p class="gp-p">Attention : entre deux étapes, des <b>coups du sort</b> tirés au hasard (héritage surprise, krach, gros lot…) rendent chaque partie différente.</p>
-			<ul class="gp-list"><li><span>💰</span>Ce qui revient à la famille</li><li><span>🏛</span>Ce qui part au fisc</li><li><span>⚡</span>Les conflits</li><li><span>★</span>La qualité de tes conseils</li></ul>
-			<p class="gp-p"><small>D'après un cas pratique utilisé à l'ISEA en initiation à la gestion de patrimoine. Droit d'aujourd'hui, chiffres simplifiés.</small></p>
-			<button class="gp-go" data-a="mariage">Distribuer les cartes</button>`);
+	/* ---------- ouverture à chaud et bilan ----------
+	   Pas d'écran de règles : la partie s'ouvre sur la scène la plus parlante du dossier (Jean-Baptiste et Sarah,
+	   « Aujourd'hui »), jouable en une minute. Un palier propose ensuite d'ouvrir tout le dossier depuis 1967.
+	   La scène compte dans le bilan et n'est pas rejouée à la fin. */
+	function accroche(){
+		deal({ ...EV.concubin, stage:"Dossier urgent", k:`Mini-jeu · ${formation.name}`, title:"Ils s'aiment. La loi ne le sait pas.",
+			say:"Vous tombez bien, un dossier urgent ! Jouez une carte : la maquette vous montrera ce qu'elle change.",
+			story:"Jean-Baptiste vit avec Sarah. Ni mariés, ni pacsés. S'il mourait demain, il laisserait <b>300 000 €</b>.",
+			ask:"Combien en resterait-il pour Sarah ?", goal:"Tu es leur conseiller. Joue la carte qui protège Sarah.",
+			gate:palier });
+	}
+	function palier(o){
+		S.learned.add("fisca");
+		return `<div class="gp-gate"><b>${o.sarah === 300000 ? "Du premier coup : Sarah garde les 300 000 €." : `Ta carte laisse ${euro(o.sarah)} à Sarah, sur 300 000 €.`}</b>
+			<span>Tu viens de faire le métier de conseiller en gestion de patrimoine. Le dossier Deslaurier, c'est 60 ans de la vie d'une famille : mariage, cabinet, accident, héritage, remariage… et des coups du sort tirés au hasard.</span></div>
+			<button class="gp-go" data-a="mariage">Ouvrir tout le dossier, depuis 1967 (≈ 9 min)</button>
+			${openLead ? `<button class="gp-alt" data-a="lead">📄 Recevoir la plaquette du master</button>` : ""}
+			<button class="gp-alt" data-a="quit">Retour au campus</button>
+			<p class="gp-p" style="margin-top:10px"><small>D'après un cas pratique utilisé à l'ISEA en initiation à la gestion de patrimoine. Famille fictive, droit d'aujourd'hui, chiffres simplifiés.</small></p>`;
 	}
 	function finale(){
 		stage("Bilan patrimonial", "end");
@@ -1076,13 +1091,14 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		if(STEPS[k]) return STEPS[k]();
 		if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
 		if(k === "lead"){ close(); return openLead(); }
-		if(k === "replay"){ draw(); Object.assign(S, { errors:0, learned:new Set(), dde:null, done:{} }); ["fam", "fisc", "conf", "stars"].forEach(m => meter(m, 0)); return intro(); }
+		if(k === "quit") return close();
+		if(k === "replay"){ draw(); Object.assign(S, { errors:0, learned:new Set(), dde:null, done:{} }); ["fam", "fisc", "conf", "stars"].forEach(m => meter(m, 0)); return STEPS.mariage(); }      // on rejoue dans l'ordre du dossier, Sarah à la fin
 	});
 	function close(){ if(closed) return; closed = true; removeEventListener("resize", onResize); document.removeEventListener("keydown", onKey); W.dispose(); root.remove(); onClose && onClose(); }
 	function onKey(e){ if(e.key === "Escape") close(); }
 	document.addEventListener("keydown", onKey);
 	root.querySelector(".gp-x").addEventListener("click", close);
-	intro();
+	accroche();
 	onEvent && onEvent("start");
 	// mode relecture : étapes où l'enseignant peut sauter directement
 	onEvent && onEvent("missions", [["1967 · Le mariage", STEPS.mariage], ["1972 · La maison", STEPS.maison], ["1985 · L'immeuble", STEPS.immeuble], ["1991 · La succession", STEPS.deces], ["1991 · Placer l'héritage", STEPS.placer], ["1997 · Le mariage d'Élise", STEPS.contrats], ["Le remariage", STEPS.remariage], ["Protéger Paulette", STEPS.paulette], ["Le concubinage", STEPS.concubin], ["La transmission", STEPS.transmettre], ["Bilan patrimonial", finale],

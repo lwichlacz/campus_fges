@@ -76,7 +76,7 @@ export const GAME_INFO = {
 		pitch:"Les abeilles désertent le jardin botanique Nicolas Boulay. Identifie les suspects à la loupe, prédis l'effet de l'insecticide du voisin, lance des quadrats, compte les fleurs blanches d'un semis… puis remets ton diagnostic au jardinier, preuves agrafées." },
 	audit:{ fid:"cfa", title:"L'Enquête de l'auditeur", icon:"🕵️", where:"falise", whereLabel:"Bâtiment Michel Falise (ISEA)", dur:"8 min",
 		pitch:"Dans un bureau d'audit en 3D, la trésorerie d'une PME fond sans raison : glisse les pièces dans les bannettes, pointe le relevé au crayon, frappe les factures du bon tampon, lis le Kbis… et tends le fil rouge jusqu'au fraudeur." },
-	patrimoine:{ fid:"dgp", title:"Le Dossier Deslaurier", icon:"📜", where:"falise", whereLabel:"Bâtiment Michel Falise (ISEA)", dur:"10 min",
+	patrimoine:{ fid:"dgp", title:"Le Dossier Deslaurier", icon:"📜", where:"falise", whereLabel:"Bâtiment Michel Falise (ISEA)", dur:"10 min, essai en une minute",
 		pitch:"Un jeu de cartes chez le notaire : conseille la famille Deslaurier de 1959 à aujourd'hui. Contrat de mariage, donation, assurance-vie, SCI… chaque carte jouée envoie l'argent à la famille, au fisc, ou finit en dispute. Et gare aux coups du sort !" },
 	affaires:{ fid:"mbif", title:"Le dossier Duval Textiles", icon:"🤝", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"9 min",
 		pitch:"Jeudi, en comité de crédit : prête-t-on 1,2 M€ à une PME textile de Roubaix ? Repère ce qui cloche dans sa liasse, calcule les ratios, compte les palettes à l'usine, monte le prêt et ses garanties, remonte jusqu'aux vrais actionnaires… puis défends ton dossier, pièce par pièce, devant le comité." },
