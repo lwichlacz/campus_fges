@@ -304,56 +304,43 @@ PAGES = {
 		},
 	},
 	"mbif": {
-		"title": "Relecture Une journée du chargé d'affaires",
+		"title": "Relecture Le dossier Duval Textiles",
 		"accent": ("#16324f", "#e2ecf3", "#8fb6dc", "#1a2733"),
 		"cfg": {
-			"id": "mbif", "game": "Une journée du chargé d'affaires (Master Management des Banques et Institutions Financières)", "short": "Une journée du chargé d'affaires",
-			"h1": "Une journée du chargé d'affaires : votre relecture",
-			"lead": "Le mini-jeu du Master Management des Banques et Institutions Financières, dans le campus 3D de la FGES, construit à partir de la proposition « Un geste métier : Univers Chargé d'Affaires et expertise financière ». Le joueur est chargé d'affaires à l'agence Vauban (fictive) : cinq rendez-vous, un par geste métier (l'écoute, la sensibilité, la bienveillance, l'accompagnement, l'expertise), chacun dans l'univers du client en maquette 3D. À chaque scène s'ajoute une touche d'expertise financière (compte de résultat, taux d'endettement, signaux de risque, profil de risque, vigilance). La journée se termine par un défi de directeur d'agence. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux candidats.",
-			"facts": ["Environ 15 min (2 à 3 min par rendez-vous)", "5 rendez-vous dans l'ordre choisi, puis un défi de manager", "Une agence et cinq univers en maquette 3D", "Clients, chiffres et agence fictifs"],
+			"id": "mbif", "game": "Le dossier Duval Textiles (Master Management des Banques et Institutions Financières)", "short": "Le dossier Duval Textiles",
+			"h1": "Le dossier Duval Textiles : votre relecture",
+			"lead": "Le mini-jeu du Master Management des Banques et Institutions Financières, dans le campus 3D de la FGES. Un seul dossier, une seule question : jeudi, en comité de crédit, prête-t-on 1,2 M€ à Duval Textiles (PME textile fictive de Roubaix, 42 salariés) pour sa nouvelle ligne de production ? Le joueur, alternant chargé d'affaires entreprises, instruit le dossier du lundi au jeudi avec les vrais objets du métier : liasse fiscale, ratios, visite d'usine, montage du prêt, KYC, notation, puis défense devant trois membres du comité. Nous avons besoin de l'œil de l'équipe pédagogique avant de le montrer aux candidats.",
+			"facts": ["Environ 9 min", "6 étapes, du lundi au jeudi", "L'agence, l'usine Duval et la salle du comité en 3D", "Entreprise, chiffres et banque fictifs"],
 			"url": SITE + "?jeu=mbif",
-			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Une journée du chargé d'affaires. Le jeu est aussi à Wenov.",
-			"card": {"icon": "🤝", "title": "Une journée du chargé d'affaires", "formation": "Master Management des Banques et Institutions Financières", "steps": [
-				["9 h", "Karim, boulanger · l'écoute"], ["10 h 30", "Mme Lefèvre · la sensibilité"], ["14 h", "Inès et Tom · la bienveillance"],
-				["15 h 30", "Duval Textiles · l'accompagnement"], ["17 h", "Famille Martin · l'expertise"], ["18 h", "Directeur d'agence d'un jour"]]},
+			"howto": "Le bouton ouvre le jeu directement. Sinon : ouvrez le site, barre du bas › Jeux › Le dossier Duval Textiles. Le jeu est aussi à Wenov.",
+			"card": {"icon": "🤝", "title": "Le dossier Duval Textiles", "formation": "Master Management des Banques et Institutions Financières", "steps": [
+				["Lundi 9 h", "La liasse fiscale"], ["Lundi 11 h", "Les ratios"], ["Mardi 10 h", "La visite de l'usine"],
+				["Mercredi 9 h", "Le montage du prêt"], ["Mercredi 15 h", "KYC et notation"], ["Jeudi 14 h", "Le comité de crédit"]]},
 			"publicHint": "Des étudiants de L3 (économie, gestion, banque, AES) qui envisagent le master, et des lycéens curieux lors des journées portes ouvertes.",
-			"dureeHint": "Durée prévue : environ 15 minutes pour la journée complète, 2 à 3 minutes par rendez-vous.",
+			"dureeHint": "Durée prévue : environ 9 minutes, six étapes.",
 			"sections": [
 				{"t": "Le principe", "items": [
-					c("gestes", "Les cinq gestes métier et les cinq clients sont-ils bien choisis ?", "L'écoute : Karim, boulanger (professionnel). La sensibilité : Mme Lefèvre, veuve depuis trois mois (particulier). La bienveillance : Inès et Tom, premier achat immobilier. L'accompagnement : Duval Textiles, PME de 40 salariés à Roubaix. L'expertise : la famille Martin, qui vient de vendre son cabinet (client patrimonial). Le joueur choisit l'ordre des rendez-vous dans l'agenda."),
-					c("cours", "Les cours cités dans les bilans correspondent-ils au programme ?", "Karim : Entrée en relation, Analyse des besoins et risques financiers, Décisions et techniques de financement des professionnels. Mme Lefèvre : Stratégies du conseil, Droit bancaire, Contrôles et audits internes, Éthique et finance. Inès et Tom : Entrée en relation, Droit bancaire, Négociation. Duval : Risque sur la clientèle professionnelle et PME, Gestion des flux bancaires internationaux, Droit du financement de l'entreprise, Holdings – LBO – Transmission. Martin : Épargne Assurance Vie, Épargne salariale – Madelin – PEE – PERCO, Stratégies patrimoniales et fiscales des particuliers, Stratégie d'allocation d'actifs."),
-					c("equilibre", "L'équilibre entre relation client et expertise technique vous convient-il ?", "Chaque scène part du geste relationnel demandé, puis ajoute une vérification chiffrée ou réglementaire.")]},
-				{"t": "9 h · Karim, l'écoute", "sub": "L'iceberg", "items": [
-					c("k_questions", "Les questions ouvertes et maladroites sont-elles bien choisies ?", "Le joueur pose 3 questions parmi 6, tirées dans une banque de 11. Une bonne question par besoin caché (seul au fournil depuis 6 ans, projet de 2e boutique, trésorerie à sec en été) fait baisser l'eau et révèle le besoin. Maladroites : le montant, la marque du four (questions fermées), la carte Premium, les garanties (trop tôt), « êtes-vous sûr de vouloir vous endetter ? » (jugement)."),
-					c("k_reform", "L'étape de reformulation est-elle utile ?", "Trois choix : reformulation complète des besoins entendus, simple reprise de la demande, ou vente d'une carte."),
-					c("k_cr", "Le compte de résultat simplifié est-il vraisemblable pour une boulangerie de quartier ?", "Chiffre d'affaires 240 000 € ; achats 84 000 € ; loyer et charges 30 000 € ; rémunération de Karim et cotisations 60 000 € ; énergie, assurances, divers 36 000 € ; disponible pour rembourser 30 000 € par an (2 500 € par mois) ; prêt de la camionnette 300 € par mois."),
-					c("k_pret", "Le choix du prêt et sa démonstration sont-ils justes ?", "Four à 25 000 €, taux de 4 %. 25 000 € sur 5 ans (environ 460 € par mois) : bonne réponse, jamais à découvert. 25 000 € sur 2 ans (environ 1 090 €) : découvert en août. 60 000 € sur 3 ans pour le four et la boutique (environ 1 780 €) : découvert dès juillet. L'année défile en pièces sur la maquette (août : 900 € dégagés).")]},
-				{"t": "10 h 30 · Mme Lefèvre, la sensibilité", "sub": "La loupe, puis le virement", "items": [
-					c("l_signaux", "Les signaux faibles sont-ils bien choisis ?", "Avec 6 coups de loupe sur 7 objets : le manteau de son mari toujours accroché, un courrier du notaire (succession), la photo de son petit-fils Théo étudiant, des factures pas ouvertes (c'est son mari qui gérait les comptes). Fausses pistes : le chat, la télévision, les plantes."),
-					c("l_approche", "Les trois façons d'aborder la cliente sont-elles justes ?", "Compassion et proposition de prendre le temps (bonne réponse) ; passer directement au virement ; proposer de placer l'argent de la succession (blessant)."),
-					c("l_abus", "La scène du virement et la conduite à tenir face à un possible abus de faiblesse sont-elles justes ?", "Son fils Didier attend dans l'entrée : 18 000 € demandés, après 5 000 € en août et 8 000 € en septembre, trois mois après le décès. Bonne réponse : la recevoir seule, vérifier qu'elle comprend et consent, en parler à la directrice et au service conformité avant d'exécuter. Exécuter sans rien dire : signaux ignorés. Refuser d'office et renvoyer le fils : on décide à sa place."),
-					q("l_vocab", "Faut-il nommer d'autres dispositifs (signalement, mesure de protection, personne de confiance) ?")]},
-				{"t": "14 h · Inès et Tom, la bienveillance", "sub": "Le pont de la confiance", "items": [
-					c("c_calcul", "Le calcul du taux d'endettement est-il juste ?", "Revenus nets 4 000 € par mois (2 150 € et 1 850 €), mensualité envisagée 1 150 € assurance comprise : environ 29 %. Quand Tom avoue un crédit auto de 250 € : 35 %, la limite recommandée par le Haut Conseil de stabilité financière. Une jauge 3D monte au-dessus du pont."),
-					c("c_dialogue", "Les cinq échanges et les trois tons de réponse sont-ils réalistes ?", "Peur des questions bêtes, CDI de quatre mois, crédit auto avoué, peur de ne plus pouvoir payer, besoin de réfléchir. Chaque réponse bienveillante pose une planche du pont, chaque jugement en fait tomber une."),
-					c("c_delai", "Le rappel réglementaire est-il exact ?", "Dix jours de réflexion après réception de l'offre de prêt immobilier, avant de pouvoir l'accepter.")]},
-				{"t": "15 h 30 · Duval Textiles, l'accompagnement", "sub": "De 2027 à 2033", "items": [
-					c("d_tournants", "Les quatre tournants et les bons interlocuteurs sont-ils justes ?", "2027, un client allemand double ses commandes : commerce international (crédit documentaire). 2029, clients payés à 60 jours : financement court terme (affacturage). 2031, une machine à 800 000 € : crédit-bail. 2033, M. Duval a 61 ans : ingénierie patrimoniale avec notaire et avocat, pour transmettre à sa fille Clara. Le choix « attendre de voir » est toujours faux."),
-					c("d_signaux", "Le tableau de bord de 2029 et ses signaux de risque sont-ils crédibles ?", "Signaux : stocks de fil +45 % alors que les ventes ne progressent que de 18 % ; Autolux, premier client, paie à 95 jours au lieu de 60. Fausses pistes : chiffre d'affaires +18 %, effectif stable. S'ils sont manqués, ils reviennent en 2031 : stocks qui débordent (200 000 € immobilisés), faillite d'Autolux (120 000 € de factures perdues).")]},
-				{"t": "17 h · Famille Martin, l'expertise", "sub": "La tour d'équilibre", "items": [
-					c("m_profil", "L'étape « profil d'investisseur » est-elle juste ?", "Trois questions (horizon, réaction à une baisse de 20 %, connaissances), puis le choix du profil : prudent est la bonne réponse. Le profil est consigné dans un document signé par les clients, sur la maquette."),
-					c("m_objectifs", "Leurs objectifs et les produits proposés sont-ils cohérents ?", "Objectifs : garder une réserve disponible, compléter la retraite dans 6 ans, protéger le conjoint, aider leurs deux enfants. Bons blocs : épargne de précaution, plan d'épargne retraite, assurance-vie, prévoyance, notaire partenaire (donation). Inadaptés : carte Platinum, crédit renouvelable, produit structuré complexe (incompatible avec le profil prudent). Deux erreurs et la tour s'effondre."),
-					q("m_regle", "Faut-il citer les textes (directive MIF 2, directive sur la distribution d'assurances) ou rester au « devoir de conseil » ?")]},
-				{"t": "18 h · Directeur d'agence d'un jour", "items": [
-					c("g_situations", "Les trois situations de management sont-elles représentatives ?", "Léo, conseiller découragé (entretien individuel bienveillant / recadrage en réunion / ne rien dire) ; deux demandes de congés la même semaine (compromis équitable / premier arrivé / refus sans explication) ; un objectif de 50 cartes Premium fixé par le siège (le porter sans oublier le devoir de conseil / vendre à tous / l'ignorer)."),
-					c("g_consequences", "Les conséquences sont-elles justes ?", "Léo humilié démissionne et n'est plus là au bilan ; avec une seule bonne décision sur trois, l'ambiance de l'agence devient tendue.")]},
-				{"t": "Fin de journée", "items": [
-					c("mention", "Les rangs sont-ils bien calibrés ?", "Sur 15 étoiles : Chargé d'affaires confirmé (13 et plus, Très bien), Chargé d'affaires (9 et plus, Bien), Chargé d'affaires junior. Le profil s'affiche en pentagone, avec le score de manager."),
-					c("ton", "Le ton (maquette, expressions des clients, petites animations) vous convient-il pour présenter le métier ?")]},
+					c("dossier", "Le dossier et la question sont-ils bien choisis ?", "Duval Textiles demande 1,2 M€ pour une ligne d'enduction, sur la foi d'une lettre d'intention de Volta Mobility. Les comptes cachent un stock qui gonfle (un client automobile, Autolux, a fermé) ; le registre des bénéficiaires effectifs a oublié la fille du dirigeant. La réponse attendue : oui, sous conditions."),
+					c("gestes", "Les gestes demandés sont-ils de vrais gestes du métier ?", "Entourer au doigt une ligne de liasse ou une phrase de lettre ; taper les chiffres sur une calculatrice ; compter les palettes et coller une pastille rouge ; régler durée et garanties sur une tablette avec des jauges qui bougent ; tracer les chaînes de détention ; au comité, montrer la pièce et la ligne qui répondent à l'objection."),
+					c("cours", "La correspondance avec le programme est-elle juste ?", "Analyse financière approfondie, Création d'entreprise – analyse financière, Analyse des besoins et risques financiers, Risque sur la clientèle professionnelle et PME, Conjoncture, Anglais, Décisions et techniques de financement des professionnels, Droit du financement de l'entreprise, Droit bancaire, Régimes matrimoniaux, Système et stratégie bancaire, Droit des sociétés, Contrôles et audits internes, Gestion du risque bancaire, Contrôle de gestion bancaire, Politique économique, Négociation, Parler en public, Éthique et finance. Le volet transmission (Holdings – LBO, Droit de la transmission, démembrement…) est annoncé à la fin, pas joué.")]},
+				{"t": "Lundi · La liasse et les ratios", "items": [
+					c("liasse", "La liasse simplifiée est-elle vraisemblable ?", "Sur 3 ans (k€) : chiffre d'affaires 6 200 / 6 350 / 6 400 ; stocks 900 / 1 250 / 1 850 ; trésorerie 420 / 260 / 90 ; capitaux propres 2 400 / 2 600 / 2 800 ; dettes financières 1 300 / 1 100 / 900 ; résultat net 250 / 230 / 210 ; dotations 300 / 300 / 310. La ligne à entourer : les stocks."),
+					c("ratios", "Les ratios et leurs normes sont-ils justes ?", "Rotation des stocks 105 jours (53 en 2023) ; endettement après prêt 0,75 (norme ≤ 1) ; CAF simplifiée = résultat net + dotations = 520 k€ ; capacité de remboursement 4,0 ans (norme ≤ 4).")]},
+				{"t": "Mardi · La visite de l'usine", "items": [
+					c("palettes", "Le comptage du stock est-il parlant ?", "12 palettes à 150 k€ ; 4 étiquetées Autolux (client fermé) sont invendables : 600 k€ à déprécier, capitaux propres corrigés 2 200 k€, endettement 0,95."),
+					c("volta", "La lettre de Volta (en anglais) est-elle bien piégée ?", "La phrase à entourer : « This letter is non-binding » (ou « subject to the successful qualification of your samples »).")]},
+				{"t": "Mercredi · Le montage, le KYC et la notation", "items": [
+					c("montage", "Les règles du montage sont-elles exactes ?", "Prêt à 4,2 % indicatif ; durée ≤ 8 ans (vie de la machine) ; annuités ≤ 55 % de la CAF prévisionnelle (650 k€) ; couverture par les garanties ≥ 70 % ; caution de M. Duval proportionnée à son patrimoine (350 k€, art. 2300 C. civ.) et limitée à ses biens propres (100 k€) sans accord de son épouse commune en biens (art. 1415) ; Bpifrance jusqu'à 50 % ; nantissement de la ligne retenu 360 k€ ; condition suspensive « contrat Volta signé »."),
+					c("kyc", "Le KYC est-il bien présenté ?", "Jean Duval 60 % et Clara 40 % de JD Participations, qui détient 80 % de l'usine : bénéficiaires effectifs 48 % et 32 % (seuil 25 %). Le registre ne déclare que Jean : la banque signale l'écart au greffe."),
+					c("notation", "La notation et le taux sont-ils justes ?", "Grille fictive 3 × 3 : cote 5, probabilité de défaut 2 %. Perte attendue = 2 % × (prêt − garanties). Taux = ressource 3,0 % + coût du risque + frais 0,6 % + marge 0,2 %.")]},
+				{"t": "Jeudi · Le comité", "items": [
+					c("objections", "Les objections sont-elles réalistes ?", "M. Vasseur (directeur régional) : les stocks ont doublé. Mme Lambert (risques) : combien perd la banque si ça tourne mal ? M. Okafor (conformité) : qui contrôle vraiment l'entreprise ? Mme Lambert : et si Volta ne signe jamais ? Le joueur répond en montrant la pièce et la ligne."),
+					c("issue", "Les issues et la mention sont-elles bien calibrées ?", "Accord sous conditions avec au moins la moitié des points du comité, sinon ajournement. Note sur 100 : Très bien ≥ 85, Bien ≥ 65, Assez bien ≥ 45, sinon De justesse."),
+					c("ton", "Le ton (Nadia, directrice du centre d'affaires, qui guide le joueur ; le dossier qui s'épaissit sur le bureau) vous convient-il ?")]},
 			],
 			"open": [
-				{"k": "alternance", "q": "Une situation vécue en alternance (agence, centre d'affaires, banque privée) à mettre en scène ?"},
-				{"k": "client", "q": "Un client à ajouter ou à remplacer (profession libérale, agriculteur, association, jeune entrepreneur…) ?"},
+				{"k": "alternance", "q": "Une situation vécue en alternance (centre d'affaires, comité de crédit) à mettre en scène ?"},
+				{"k": "cours", "q": "Un cours absent à couvrir (flux internationaux avec le paiement de Volta, assurance homme-clé…) ?"},
 				{"k": "manque", "q": "Qu'est-ce qui manque pour donner envie de rejoindre le master ?"},
 			],
 		},
@@ -484,7 +471,7 @@ GAMES = [
 	{"id": "info", "icon": "🎮", "title": "Game Jam 48 h", "formation": "Licence Informatique", "dur": "12 min"},
 	{"id": "dgp", "icon": "📜", "title": "Le Dossier Deslaurier", "formation": "Master Droit & Gestion du Patrimoine", "dur": "10 min"},
 	{"id": "dmb", "icon": "🧬", "title": "From Blood to Decision", "formation": "Master Data Management in Biosciences", "dur": "12-15 min"},
-	{"id": "mbif", "icon": "🤝", "title": "Une journée du chargé d'affaires", "formation": "Master Management des Banques et Institutions Financières", "dur": "15 min"},
+	{"id": "mbif", "icon": "🤝", "title": "Le dossier Duval Textiles", "formation": "Master Management des Banques et Institutions Financières", "dur": "9 min"},
 	{"id": "ebmd", "icon": "🛍️", "title": "Courée, la boutique en 3D", "formation": "Master E-Business & Marketing Digital", "dur": "12 min"},
 ]
 # une seule page pour tous les jeux (relecture/#dmb, #sv…), servie par GitHub Pages avec le site ;
