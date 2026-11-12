@@ -74,8 +74,8 @@
     "id": "ruee",
     "title": "La Ruée",
     "icon": "📈",
-    "dur": "4 min",
-    "pitch": "Un après-midi de stage dans une société de gestion : 100 000 € à gérer, et les nouvelles qui tombent. Décision de la BCE, dépêche en anglais, rumeur sur les réseaux, krach, start-up qui lève des fonds : anticipe, vérifie, couvre-toi, actualise. Gagner ne suffit pas, il faut bien décider."
+    "dur": "7 min",
+    "pitch": "Le comité de 18 h : le fonds a perdu 3,2 % dans la journée, et on te demande pourquoi. Mesure les chutes sur la courbe, calcule poids × variation, ajuste la régression, retrouve le ticket d'ordre, puis défends ton dossier devant le comité, preuve et chiffre à l'appui."
    }
   },
   {
@@ -140,8 +140,8 @@
     "id": "guichet",
     "title": "Le guichet du samedi",
     "icon": "🏦",
-    "dur": "4 min",
-    "pitch": "Samedi matin, cinq clients font la queue à ton guichet : un jeune couple qui achète, un retraité qui hérite, un Erasmus, un dégât des eaux, un plombier qui se lance. Écoute ce qu'ils disent vraiment, règle le simulateur, réponds sous chrono… et garde un œil sur la conformité."
+    "dur": "7 min",
+    "pitch": "Samedi, 9 h : la conformité prévient que des fonds suspects transitent par ton agence. Sers bien tes cinq clients (crédit, héritage, Erasmus, dégât des eaux, plombier qui se lance), vérifie leurs pièces et épingle les indices. À midi, qui signales-tu à Tracfin ?"
    }
   },
   {
@@ -171,7 +171,7 @@
     "title": "Cellule robotique Wenov",
     "icon": "🦾",
     "dur": "7 min",
-    "pitch": "Pilote un vrai bras robot en 3D, programme le cycle d'une ligne de production, puis donne-lui des yeux pour trier les pièces."
+    "pitch": "Vendredi 15 h : la cellule robotique rejette une pièce sur cinq et le client attend sa livraison lundi. Rejoue les cycles ratés, mesure le jeu du coude au comparateur, lis le chronogramme du capteur, règle l'asservissement sur sa courbe et réapprends la caméra… puis écris au client."
    }
   },
   {

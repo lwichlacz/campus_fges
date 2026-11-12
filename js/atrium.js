@@ -2,7 +2,7 @@
    escaliers croisés et grande verrière. Vue « maison de poupée » : le mur côté
    caméra s'efface tout seul. */
 import * as THREE from "three";
-import { std, box, cyl, mesh, beam, gable, cached, windowBatch, makeStudent, R, rng, pick, BOXC } from "./kit.js?v=43d5f798e9";
+import { std, box, cyl, mesh, beam, gable, cached, windowBatch, makeStudent, R, rng, pick, BOXC } from "./kit.js?v=4ee573b189";
 
 const W = 34, D = 22, FL = 4.2, TOP = 16.4, RIDGE = 20;
 const HX = W/2, HZ = D/2, GAL = 2.4;
