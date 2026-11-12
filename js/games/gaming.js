@@ -12,8 +12,9 @@
    La lumière des fenêtres suit les 48 heures (vendredi 18 h → dimanche 17 h) ; le style choisi habille toute la salle.
    Équipe, joueurs et scores sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
-import { makePerson } from "../kit.js?v=5b80c6e132";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
+import { makePerson } from "../kit.js?v=ace20eca26";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
 
 const COURSES = {
 	gaming: ["L1", "Projet Gaming", "Toute la première année, chaque équipe conçoit et programme son propre jeu vidéo : idée, niveaux, code, tests, présentation devant un jury."],
@@ -704,7 +705,10 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 	function mission1(){
 		scene0(); setHour(0); stage("H+00 · Le niveau"); setMode("edit"); view = "table"; S.levelOk = false; S.custom = null;
 		buildLevel(); respawn(); setScreen({ kind:"title" });
-		show(`<div class="gj-k">H+00 · Projet Gaming · level design</div><h2 class="gj-h">Ce niveau est-il faisable ?</h2>
+		const hot = !S.teased;
+		show(`<div class="gj-k">${hot ? `Game Jam 48 h · ${formation.name}` : "H+00 · Projet Gaming · level design"}</div><h2 class="gj-h">Ce niveau est-il faisable ?</h2>
+			${hot ? `<p class="gj-p">Vendredi 18 h : ton équipe a <b>48 heures</b> pour créer un jeu vidéo sur le thème « Rentrer à temps ». Choisis le style :</p>
+			<div class="gj-styles">${Object.entries(STYLES).map(([k, s]) => `<button data-style="${k}" class="${k === S.style ? "on" : ""}"><i>${s.icon}</i>${s.name}</button>`).join("")}</div>` : ""}
 			${say("ines", "J'ai dessiné le niveau, mais je crois qu'il y a un trou trop large… et un mur trop haut. Tu as <b>3 blocs</b> pour arranger ça.")}
 			<div class="gj-rule"><span>⬆️ monte 1 bloc au plus</span><span>↔️ saute 2 trous au plus</span></div>
 			<p class="gj-p"><b>Touche une colonne</b> de la maquette pour y poser un bloc (touche un bloc jaune pour le reprendre). Blocs restants : <b id="gjBud">${BUDGET} / ${BUDGET}</b></p>
@@ -751,6 +755,11 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		setMode("idle"); S.levelOk = true; play("good");
 		msg(live, "ok", `✓ Le drapeau est atteignable ! En jaune : le plus court chemin trouvé, ${res.path.length - 1} sauts. ${used() < BUDGET ? `Et il te reste ${BUDGET - used()} bloc${BUDGET - used() > 1 ? "s" : ""} : niveau économe.` : ""}`);
 		card.querySelector("[data-a=reset]").hidden = true; card.querySelector("[data-a=bfs]").hidden = true;
+		// fin de la scène d'ouverture : le niveau est jouable
+		if(!S.teased){ S.teased = true; setTimeout(() => !closed && palier({ id:"gaming", onEvent, openLead, quit:close,
+			titre:"Ton niveau est jouable : le parcours en largeur l'a prouvé.",
+			texte:"Il reste 47 heures : programmer le héros en Python, mettre les scores en ligne, tenir quand le jeu buzze, puis passer devant le jury.",
+			suite:"Vivre toute la jam (≈ 7 min)" }), 2400); }
 		card.querySelector("[data-end]").innerHTML = `${say("ines", "Parfait. Et Yanis a une idée : se servir du même parcours en largeur pour faire courir un ennemi vers le héros…")}${course("gaming")}${course("algo")}<button class="gj-go" data-a="m2">⏩ H+06 · Coder le héros</button>`;
 	}
 	// l'obstacle qui bloque : la première colonne pleine après la plus lointaine atteinte
@@ -1167,7 +1176,7 @@ LIMIT ${sel("lim")};</div>
 		if(GO[k]) return GO[k]();
 		if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
 		if(k === "lead"){ close(); return openLead(); }
-		if(k === "replay"){ Object.assign(S, { errors:0, learned:new Set(), extra:Array(N).fill(0), custom:null, levelOk:false, phys:null, physOk:false, coins:0, falls:0, stomps:0 }); $("#gjErr").textContent = "🐞 0 erreur"; buildLevel(); return intro(); }
+		if(k === "replay"){ Object.assign(S, { errors:0, learned:new Set(), extra:Array(N).fill(0), custom:null, levelOk:false, phys:null, physOk:false, coins:0, falls:0, stomps:0 }); $("#gjErr").textContent = "🐞 0 erreur"; buildLevel(); return mission1(); }
 	});
 	// pendant la démo devant le jury, « Laisser Yanis finir » reprend la même fin de partie
 	function juryAuto(){ const cb = run && run.onEnd; stopRun(); startRun("auto", cb); card.querySelector("[data-a=auto]")?.remove(); }
@@ -1214,7 +1223,9 @@ LIMIT ${sel("lim")};</div>
 		renderer.dispose(); renderer.forceContextLoss(); root.remove(); onClose && onClose();
 	}
 
-	applyStyle(); buildLevel(); respawn(); drawLed(0); resize(); intro(); loop();
+	applyStyle(); buildLevel(); respawn(); drawLed(0); resize();
+	if(SHARED) intro(); else mission1();      // ouverture à chaud : le niveau à réparer tout de suite (l'accueil ne sert plus qu'au niveau partagé)
+	loop();
 	onEvent && onEvent("start");
 	// mode relecture : étapes où l'enseignant peut sauter directement
 	onEvent && onEvent("missions", [["H+00 · Le niveau (algorithmique)", mission1], ["H+06 · Le héros (Python)", mission2], ["H+20 · Les scores (SQL, API)", mission3], ["H+36 · Le serveur (réseau, cyber)", mission4], ["H+47 · Le jury", mission5], ["Bilan", finale], ["Bonus · L'ambiance (réalité virtuelle)", missionVR], ["Bonus · Éditeur de niveau", freeEditor]]);

@@ -11,8 +11,9 @@
    Entreprise, personnes, sociétés et documents sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { mountTable, MOBILE } from "./table.js?v=5b80c6e132";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
+import { mountTable, MOBILE } from "./table.js?v=ace20eca26";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
 
 const COURSES = {
 	compta:   ["L1", "Comptabilité financière", "Classer chaque opération : une charge, un produit, ou un investissement qui s'amortit sur plusieurs années."],
@@ -688,22 +689,6 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 		});
 	}
 
-	/* ---------- intro ---------- */
-	function intro(){
-		enter(); W.only([]); stage("Enquête", "intro");
-		// le dossier fermé, posé au milieu du bureau
-		const folder = W.doc(6.4, 8.2, (x, w, h) => { x.fillStyle = "#d9b98a"; x.fillRect(0, 0, w, h); x.fillStyle = "#c9a874"; x.fillRect(0, 0, w, 40); x.fillStyle = "#fffdf6"; x.fillRect(90, 230, w - 180, 250); x.strokeStyle = "#1e305e"; x.lineWidth = 3; x.strokeRect(90, 230, w - 180, 250);
-			W.T(x, "DOSSIER D'AUDIT", w/2, 290, 30, { a:"center", w:900, c:"#1e305e" }); W.T(x, "La Fabrique à Gaufres", w/2, 350, 30, { a:"center", w:700, f:"Fraunces, Georgia, serif", c:"#1b2140" }); W.T(x, "3e trimestre 2026", w/2, 400, 24, { a:"center", c:"#3e434c" });
-			W.T(x, "CONFIDENTIEL", w/2, 560, 34, { a:"center", w:900, c:"#b91c1c" }); });
-		folder.g.position.set(0, 0, 1.2); folder.g.rotation.y = -.08; W.dyn.add(folder.g);
-		sheet("intro", "000", h2(`Mini-jeu · ${esc(formation.name)}`, "L'Enquête de l'auditeur"), `
-			<p class="aw-p"><b>La Fabrique à Gaufres</b> (entreprise fictive), 12 salariés à Lille. Sa gérante, Mme Garnier, ne comprend pas : les ventes sont bonnes, mais la trésorerie fond. Elle a fait appel à ton cabinet.</p>
-			<p class="aw-p">Tu es <b>auditeur en alternance</b>, à ton bureau du bâtiment Michel Falise. Le dossier est sur la table : à toi de trouver où part l'argent, <b>avec tes mains</b>. Glisse les pièces, tape sur la calculatrice, tends les fils, frappe les tampons.</p>
-			<ul class="aw-list"><li><span>L1</span>Trier les pièces, calculer la TVA, rapprocher la banque</li><li><span>L2</span>Analyser les écarts du budget</li><li><span>L3</span>Contrôler les pièces, lire le Kbis, confondre le coupable</li></ul>
-			<div class="aw-tm"><span><b>✓</b> pointé</span><span><b class="r">?</b> à justifier</span><span><b>Σ</b> recalculé</span></div>`);
-		live(go("tri", "Ouvrir le dossier"));
-	}
-
 	/* ---------- A · L1 · trier les pièces dans les bannettes ---------- */
 	function tri(){
 		enter(); W.only(["trays"]); stage("L1 · Comptabilité", "tri"); T.showHint("✋ Glisse chaque pièce dans sa bannette");
@@ -753,7 +738,7 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 				solved = true; play("good"); T.showHint(""); W.onCalc = null;
 				p.lines = [["Total HT", "400,00 €"], ["TVA 20 %", "80,00 €"], ["Total TTC", "Σ 480,00 €"]]; D.redraw();
 				clearNote();
-				live(`<p class="aw-ok">Σ 400 × 20 % = 80 € de TVA, soit 480 € TTC.</p><p class="aw-p">Ces 80 € ne sont pas une charge : l'entreprise les récupère auprès de l'État (TVA déductible). Attention, le taux dépend du produit : la farine et les gaufres, produits alimentaires, sont au taux réduit de <b>5,5 %</b>.</p>${course("compta")}${course("fisca")}${go("bank", "Passer au relevé bancaire →")}`); T.scrollEnd();
+				live(`<p class="aw-ok">Σ 400 × 20 % = 80 € de TVA, soit 480 € TTC.</p><p class="aw-p">Ces 80 € ne sont pas une charge : l'entreprise les récupère auprès de l'État (TVA déductible). Attention, le taux dépend du produit : la farine et les gaufres, produits alimentaires, sont au taux réduit de <b>5,5 %</b>.</p>${course("compta")}${course("fisca")}${S.bankDone ? go("budget", "Passer en L2 : le budget →") : go("bank", "Passer au relevé bancaire →")}`); T.scrollEnd();
 				return;
 			}
 			err();
@@ -773,7 +758,8 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 			{ id:"c", l:"Cartonnages de Flandre", ht:400, ttc:480, col:"#8a6440" }, { id:"d", l:"Fours Pro Équipement", ht:6400, ttc:7680, col:"#5d6b7a" }
 		]);
 		const st = W.buildBank(lines, invoices);
-		sheet("bank", "C-1", h2("L1 · rapprochement bancaire", "Le relevé ne ment pas"), `<p class="aw-p">Chaque mouvement du compte doit avoir sa pièce justificative. <b>Tire un trait de crayon</b> depuis une ligne du relevé jusqu'à la facture qui lui correspond (ou touche la ligne, puis la facture). Attention : la banque voit les montants <b>TTC</b>.</p>`);
+		const hot = !S.bankDone && tab === "intro";
+		sheet("bank", "C-1", h2(hot ? `Mini-jeu · ${esc(formation.name)}` : "L1 · rapprochement bancaire", "Le relevé ne ment pas"), `${hot ? `<p class="aw-p"><b>La Fabrique à Gaufres</b> (fictive) vend bien, mais sa trésorerie fond. Tu es <b>auditeur</b> : à toi de trouver où part l'argent. Commence par le relevé de banque.</p>` : ""}<p class="aw-p">Chaque mouvement du compte doit avoir sa pièce justificative. <b>Tire un trait de crayon</b> depuis une ligne du relevé jusqu'à la facture qui lui correspond (ou touche la ligne, puis la facture). Attention : la banque voit les montants <b>TTC</b>.</p>`);
 		const render = () => live(`<div class="aw-k" style="margin-top:4px">${st.done.size} / 4 lignes pointées</div>`);
 		render();
 		W.setDrags(st.rows.filter(r => !st.done.has(r.id)).map(r => ({ id:r.id, hit:r.hit, line:{ from:r.anchor, col:"#4a4a52" }, lift:.12 })));
@@ -791,7 +777,13 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 				W.setDrags([]); st.sus = true; W.bankRedraw(); play("chime"); T.showHint(""); proof();
 				append(`<p class="aw-p" style="margin-top:6px"><b>Il reste une ligne : − 2 940,00 € vers « Dupont Conseil Services ».</b> Aucune facture dans le dossier. Que conclus-tu ?</p><div data-q></div>`);
 				qcm(card.querySelector("[data-live] [data-q]"), shuffle([["sus", "Mouvement sans justificatif : à creuser"], ["ok", "C'est normal, les petites dépenses n'ont pas besoin de pièce"], ["err", "C'est sûrement une erreur de la banque"]]), "sus", a => {
-					a.innerHTML = `<p class="aw-p" style="margin-top:8px">Bon réflexe : un paiement sans pièce justificative est un signal d'alerte. Gardons-le en tête…</p>${course("banque")}${go("budget", "Passer en L2 : le budget →")}`;
+					S.bankDone = true;
+					a.innerHTML = `<p class="aw-p" style="margin-top:8px">Bon réflexe : un paiement sans pièce justificative est un signal d'alerte. Gardons-le en tête…</p>${course("banque")}${hot ? "" : go("budget", "Passer en L2 : le budget →")}`;
+					// fin de la scène d'ouverture : la suite reprend le dossier depuis le début (trier, la TVA), puis le budget
+					if(hot) later(2200, () => palier({ id:"audit", onEvent, openLead, quit:T.close,
+						titre:"2 940 € sont partis vers une société sans facture.",
+						texte:"Qui se cache derrière « Dupont Conseil Services » ? Pour le prouver, il faut des comptes propres, un budget qui parle, des pièces contrôlées et un extrait Kbis.",
+						suite:"Mener toute l'enquête (≈ 7 min)" }).then(() => { tri(); note("On reprend le dossier depuis le début : des comptes propres d'abord."); }));
 				});
 			}
 		};
@@ -945,9 +937,9 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 		if(STEPS[k]) return STEPS[k]();
 		if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
 		if(k === "lead"){ T.close(); return openLead(); }
-		if(k === "replay"){ Object.assign(S, { errors:0, learned:new Set(), found:0, proofs:0 }); meter("err", 0); meter("prv", 0); return intro(); }
+		if(k === "replay"){ Object.assign(S, { errors:0, learned:new Set(), found:0, proofs:0, bankDone:false }); meter("err", 0); meter("prv", 0); return tri(); }
 	});
-	intro();
+	bank();      // ouverture à chaud : la scène du relevé, sans écran de règles
 	onEvent && onEvent("start");
 	// mode relecture : étapes où l'enseignant peut sauter directement
 	onEvent && onEvent("missions", [["L1 · Trier les pièces", tri], ["L1 · La TVA", tva], ["L1 · Rapprochement bancaire", bank], ["L2 · Budget et réel", budget], ["L3 · Tamponner les pièces", stamp], ["L3 · Tableau d'enquête", board], ["Rapport d'audit", finale]]);

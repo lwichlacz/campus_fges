@@ -10,7 +10,8 @@
    Cas : hémochromatose HFE C282Y homozygote. Séquences, cohorte et chiffres sont simulés ; contenu à relire par l'équipe du master. */
 
 import * as THREE from "three";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
 
 const COURSES = {
 	protect: ["M2", "Data protection & health data", "GDPR, data minimisation, pseudonymisation, certified hosting (HDS): health data are handled before they are analysed."],
@@ -415,7 +416,9 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	let m1 = null;
 	function mission1(){
 		begin(1, "Data governance", "data protection",
-			`<span class="bd-step">Step 1 of 2 · minimise the data</span><p>Alex's record is about to enter the lab's research database. GDPR asks for <b>data minimisation</b>: for each field, decide whether it is <b>kept</b>, <b>transformed</b> (made less precise) or <b>removed</b>.</p><p class="bd-live" id="m1live"></p>`);
+			`${S.teased ? "" : `<div class="bd-say"><div class="av">${av("alex", "🧑")}</div><div class="bub">I've been unusually tired for months, and nothing helps.</div></div>
+			<div class="bd-say doc"><div class="av">${av("doctor", "👩‍⚕️")}</div><div class="bub">Your iron levels are very high. I'd like a genetic analysis.</div></div>
+			<p>🇬🇧 In English, like the Master. You join the health data team: take Alex's sample from consent to the medical decision.</p>`}<span class="bd-step">Step 1 of 2 · minimise the data</span><p>Alex's record is about to enter the lab's research database. GDPR asks for <b>data minimisation</b>: for each field, decide whether it is <b>kept</b>, <b>transformed</b> (made less precise) or <b>removed</b>.</p><p class="bd-live" id="m1live"></p>`);
 		m1 = { ans:Object.fromEntries(FIELDS.map(f => [f.id, "keep"])), slots:Array(PIPE.length).fill(null) };
 		renderFields();
 		log("Mission 1: record P-0412 enters the research database", "inf");
@@ -429,9 +432,21 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 			const wrong = FIELDS.filter(f => m1.ans[f.id] !== f.a);
 			if(wrong.length){ err(`Export blocked by the data protection officer: ${wrong.length} field${wrong.length > 1 ? "s" : ""} to reconsider`); wrong.slice(0, 3).forEach(f => log(`${f.f}: ${f.why}`, "ko")); $("#m1live").textContent = "Fields in red need another decision."; return renderFields(wrong.map(f => f.id)); }
 			log("Dataset exported: 3 fields removed, 2 generalised, 5 kept"); play("good");
-			mis.querySelector(".bd-step").textContent = "Step 2 of 2 · the full chain";
-			mis.querySelector("p").innerHTML = "Now order the full chain, from consent to the report. One card must <b>never</b> be part of it.";
-			renderPipe();
+			const step2 = () => {
+				if(closed) return;
+				mis.querySelectorAll(".bd-say, p:not(.bd-live)").forEach(n => n.remove());      // l'accroche d'Alex laisse la place à la consigne
+				const st = mis.querySelector(".bd-step");
+				st.textContent = "Step 2 of 2 · the full chain";
+				st.insertAdjacentHTML("afterend", "<p>Now order the full chain, from consent to the report. One card must <b>never</b> be part of it.</p>");
+				renderPipe();
+			};
+			// fin de la scène d'ouverture : le dossier d'Alex est prêt pour la recherche
+			if(S.teased) return step2();
+			S.teased = true;
+			setTimeout(() => !closed && palier({ id:"biodata", en:true, onEvent, openLead, quit:close,
+				titre:"Alex's record is GDPR-ready: minimised and pseudonymised.",
+				texte:"Next: build the full data chain, read Alex's DNA to find the variant behind the iron overload, then scale up to a cohort and a screening model.",
+				suite:"Solve the whole case (≈ 8 min)" }).then(step2), 1200);
 		});
 	}
 	function renderPipe(){
@@ -701,18 +716,6 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 			<button class="bd-alt" data-a="fav">${isFav() ? "♥ In my notebook" : "♡ Add to my notebook"}</button>
 			<button class="bd-alt" data-a="replay">Play again</button>`);
 	}
-	function intro(){
-		stage("Bio-data lab"); dots();
-		mis.innerHTML = `<span class="k">Wenov · École du Numérique</span><h3>From Blood to Decision</h3><p>Four missions, the way a health data scientist works: governance, variant interpretation, cohort statistics, machine learning.</p>`;
-		work.innerHTML = `<p style="margin:0;font-size:14px;color:#5b6b7a">The missions will appear here.</p>`;
-		card(`<span class="bd-lang">🇬🇧 In English, like the Master</span><span class="bd-lang">⏱ 8–10 min</span><div class="k">Mini-game · ${formation.name}</div><h2>From Blood to Decision</h2>
-			<div class="bd-say"><div class="av">${av("alex", "🧑")}</div><div class="bub">Doctor, I've been feeling unusually tired for several months, and the treatments I've tried haven't really helped.</div></div>
-			<div class="bd-say doc"><div class="av">${av("doctor", "👩‍⚕️")}</div><div class="bub">Your iron levels are very high. I'd like a genetic analysis and a closer look at your biological data.</div></div>
-			<p>You join the health data team. Take Alex's sample from consent to the medical decision, then scale up to the whole cohort.</p>
-			<ul><li><span>1</span>Data governance (GDPR, consent)</li><li><span>2</span>Variant interpretation & consent</li><li><span>3</span>Cohort biostatistics</li><li><span>4</span>Machine learning for screening</li></ul>
-			<button class="bd-btn dark" data-a="m1">Start the case</button>`);
-	}
-
 	/* ---------- actions ---------- */
 	const GO = { m1:mission1, m3:mission3, m4:mission4, m5:mission5, end:() => { play("win"); finale(); } };
 	root.addEventListener("click", e => {
@@ -732,7 +735,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	document.addEventListener("keydown", onKey);
 	$(".bd-x").addEventListener("click", close);
 	if(PT.alex) $("#bdWho").innerHTML = `<img src="${PT.alex}" alt="Alex"><span style="font-size:12.5px;font-weight:700;color:#5b6b7a">Patient P-0412<br>seen by Dr Lemaire, internal medicine</span>`;
-	intro();
+	mission1();      // ouverture à chaud : Alex et sa médecin en deux bulles, puis le dossier à protéger tout de suite
 	onEvent && onEvent("start");
 	// mode relecture : étapes où l'enseignant peut sauter directement
 	onEvent && onEvent("missions", [["Mission 1 · Data governance", mission1], ["Mission 2 · Variant interpretation & consent", mission3], ["Mission 3 · Cohort biostatistics", mission4], ["Mission 4 · Machine learning", mission5]]);

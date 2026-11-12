@@ -9,9 +9,10 @@
      - au comité, la pièce du dossier qu'on prend sur la table, puis le chiffre qu'on montre du doigt.
    Le dossier, les chiffres et les cours sont dans ruee-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=5b80c6e132";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
-import { COURSES, FUND, CURVE, NEWS, BCE, REG, ORDERS, LYS, KRACH, PIECES, BOARD, QUESTIONS, fr, pct, hhmm, at } from "./ruee-data.js?v=5b80c6e132";
+import { makePerson, std, box, cyl } from "../kit.js?v=ace20eca26";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
+import { COURSES, FUND, CURVE, NEWS, BCE, REG, ORDERS, LYS, KRACH, PIECES, BOARD, QUESTIONS, fr, pct, hhmm, at } from "./ruee-data.js?v=ace20eca26";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -870,10 +871,15 @@ export function openRuee({ formation, audio, isFav, toggleFav, onClose, onEvent,
 	async function run(){
 		L.mode = { kind:"idle" }; R.mode = { kind:"news" };
 		focus("desk", 0);
-		say("17 h 30. Le fonds a perdu <b>3,2 %</b> aujourd'hui, 320 000 €. À 18 h, le comité veut savoir : <b>pourquoi, et que fait-on ?</b> On a trente minutes pour monter le dossier.", 8000);
-		await wait(4200); if(closed) return;
+		say("17 h 30. Le fonds a perdu <b>3,2 %</b> aujourd'hui. À 18 h, le comité veut savoir <b>pourquoi</b>. Commence par la courbe.", 6000);
+		await wait(2600); if(closed) return;
 		S.inv = true; shownMin = -1; setClock(S.gmin);
 		await courbe(); if(closed) return;
+		// fin de la scène d'ouverture : l'horloge du comité s'arrête pendant le palier
+		if(!S.late){ S.inv = false; await palier({ id:"ruee", onEvent:ev, openLead, quit:close,
+			titre:"Les chutes sont mesurées : −3,2 %, le compte est bon.",
+			texte:"Reste à expliquer chacune (une annonce de la BCE, un ordre passé trop tôt, une action qui plonge), puis à défendre ton dossier devant le comité de 18 h.",
+			suite:"Monter tout le dossier (≈ 6 min)" }); if(closed) return; S.inv = true; }
 		await bce(); if(closed) return;
 		await regression(); if(closed) return;
 		await lys(); if(closed) return;
@@ -952,19 +958,6 @@ export function openRuee({ formation, audio, isFav, toggleFav, onClose, onEvent,
 
 	/* ---------- début, fin, fermeture ---------- */
 	const ov = $("#ruOv"), card = $("#ruCard");
-	function intro(){
-		card.innerHTML = `<p class="k">Licence Économie-Finance · un dossier de stage</p>
-			<h2>La Ruée · Le comité de 18 h</h2>
-			<p>17 h 30, une société de gestion lilloise. Le fonds d'Inès, la gérante qui t'encadre, a perdu <b>3,2 %</b> aujourd'hui. À 18 h, le comité demande : <b>pourquoi, et que fait-on ?</b> Tu as trente minutes pour monter le dossier, puis tu le défends.</p>
-			<div class="ru-legend">
-				<div><b>📏</b>Pose la règle sur une courbe : appuie au début, glisse jusqu'à la fin.</div>
-				<div><b>🧮</b>Le téléphone est ta calculatrice : le bon résultat remplit le tableur.</div>
-				<div><b>📈</b>Saisis une droite de régression et tourne-la pour lire le bêta.</div>
-				<div><b>📄</b>Au comité : prends la bonne pièce, puis montre le chiffre.</div>
-			</div>
-			<p>L'horloge tourne. La mention récompense la justesse du raisonnement, pas la vitesse. Environ 7 minutes.</p>
-			<button class="ru-go" data-a="start">Ouvrir le dossier</button>`;
-	}
 	function finish(){
 		S.phase = "done"; play("win");
 		const score100 = Math.max(0, Math.min(100, Math.round(S.pts/MAXP*100)));
@@ -987,7 +980,6 @@ export function openRuee({ formation, audio, isFav, toggleFav, onClose, onEvent,
 	}
 	ov.addEventListener("click", e => {
 		const a = e.target.closest("[data-a]")?.dataset.a; if(!a) return;
-		if(a === "start" && S.phase === "intro"){ ov.hidden = true; S.phase = "play"; ev("start"); canvas.focus({ preventScroll:true }); run(); }
 		if(a === "lead"){ close(); openLead(); }
 		if(a === "fav"){ toggleFav(); e.target.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; }
 		if(a === "replay"){ close(); openRuee({ formation, audio, isFav, toggleFav, onClose, onEvent, openLead }); }
@@ -1010,6 +1002,7 @@ export function openRuee({ formation, audio, isFav, toggleFav, onClose, onEvent,
 		onClose && onClose();
 	}
 
-	intro();
+	// ouverture à chaud : pas d'écran de règles, Inès explique chaque geste au moment de le faire
+	ov.hidden = true; S.phase = "play"; ev("start"); run();
 	raf = requestAnimationFrame(frame);
 }

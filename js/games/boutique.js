@@ -6,7 +6,8 @@
    ceux qui font demi-tour sont des ventes perdues. Chiffres simplifiés et illustratifs, à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
 
 const COURSES = {
 	ux:    ["UX design, UI et accessibilité", "Observer les utilisateurs, simplifier les parcours, rendre un site lisible par tous (contrastes, formulaires, WCAG)."],
@@ -787,25 +788,6 @@ export function openBoutique({ formation, audio, isFav, toggleFav, onClose, onEv
 			<button class="eb-btn vio" data-a="${next}">${nextLabel}</button>`;
 	}
 
-	/* ---------- accueil ---------- */
-	function intro(){
-		stage("intro"); W.focus(0, -.6, 1); W.hot(null);
-		show(`<p class="eb-kick">Mini-jeu · ${formation.name}</p><h2 class="eb-h">Courée, la boutique en 3D</h2>
-			<p class="eb-p"><b>Courée</b> est une jeune marque lilloise de sweats brodés (fictive). Son site vient d'ouvrir, et tu arrives en alternance pour le faire décoller, jusqu'au <b>Black Friday</b>.</p>
-			<p class="eb-p">À gauche, le site vu de l'intérieur : les visiteurs arrivent par les portails du web, parcourent la boutique… et beaucoup font demi-tour. Chaque personnage représente un groupe de visiteurs.</p>
-			<ul class="eb-list">
-				<li><i>🛒</i><span>Le tunnel de commande<small>UX, UI et accessibilité</small></span></li>
-				<li><i>🔎</i><span>Le référencement<small>Être trouvé sur les moteurs de recherche</small></span></li>
-				<li><i>🍪</i><span>La bannière cookies<small>RGPD et consentement</small></span></li>
-				<li><i>📣</i><span>Le budget d'acquisition<small>Publicité, influence, e-mail, ROAS</small></span></li>
-				<li><i>💌</i><span>Le CRM<small>Le bon message à la bonne personne</small></span></li>
-				<li><i>⚡</i><span>Le Black Friday, en direct<small>Performance, stock, livraison, avis</small></span></li></ul>
-			<button class="eb-btn vio" data-a="ux">Ouvrir le back-office →</button>
-			<p class="eb-fine">Environ 12 minutes. Marque, sites et chiffres fictifs et simplifiés.</p>`, "couree.fr/admin", "Bienvenue");
-		ines("Salut ! Moi c'est Inès, head of growth chez Courée. Bienvenue dans l'équipe 👋", 500);
-		ines("Regarde la boutique : du monde entre… et presque personne ne paie. On s'y met ?", 300);
-	}
-
 	/* ---------- 1. le tunnel de commande ---------- */
 	function ux(){
 		stage("ux"); W.focus(9.5, -1.6, 1.75); W.hot("caisse"); W.pulse("caisse");
@@ -836,7 +818,7 @@ export function openBoutique({ formation, audio, isFav, toggleFav, onClose, onEv
 		const sprint = () => `<div class="eb-sprint"><span>Sprint</span><span class="bar">${[0, 1, 2, 3].map(i => `<i class="${i < sel.size ? "on" : ""}"></i>`).join("")}</span><span>${sel.size}/4 corrections</span></div>`;
 		const draw = () => {
 			show(`<p class="eb-kick">Étape 1 · Tunnel de commande</p><h2 class="eb-h">82 paniers sur 100 abandonnés</h2>
-				<div class="eb-brief"><b class="t">Le brief</b>Les visiteurs ajoutent au panier… puis s'en vont à la caisse. Les développeurs ont un sprint avant le lancement : <b>4 corrections au maximum</b>.</div>
+				<div class="eb-brief"><b class="t">Le brief</b>${S.teased ? "" : "Tu arrives en alternance chez <b>Courée</b>, jeune marque lilloise de sweats (fictive), pour faire décoller son site jusqu'au Black Friday. "}Les visiteurs ajoutent au panier… puis s'en vont à la caisse. Les développeurs ont un sprint avant le lancement : <b>4 corrections au maximum</b>.</div>
 				<p class="eb-goal">Touche directement sur la page les éléments à faire corriger.</p>
 				<div class="eb-row"><button class="eb-chip" data-a="heat" aria-pressed="${heat}">🔥 Carte de chaleur</button><span class="eb-meta">Où les visiteurs cliquent… et s'énervent</span></div>
 				${heat ? `<div class="eb-legend"><i></i>Clics répétés et hésitations</div>` : ""}
@@ -867,6 +849,11 @@ export function openBoutique({ formation, audio, isFav, toggleFav, onClose, onEv
 					courses:["ux"], next:"seo", nextLabel:"Étape 2 · Le référencement →" })}</div>`);
 			H.uxv = b => { root.querySelector("#ebMock").innerHTML = render(b.dataset.v === "1" ? sel : new Set()); root.querySelectorAll('[data-a="uxv"]').forEach(x => x.setAttribute("aria-pressed", x === b)); if(b.dataset.v === "0") root.querySelector("#ebMock .st").classList.add("locked"); };
 			scrollTo(root.querySelector("#ebRes"));
+			// fin de la scène d'ouverture : le tunnel est corrigé
+			if(!S.teased){ S.teased = true; later(2600, () => palier({ id:"boutique", onEvent, openLead, quit:close,
+				titre:`Tunnel corrigé : ${Math.round(M.p[3]*100)} % des visiteurs paient à la caisse.`,
+				texte:"Cinq étapes jusqu'au Black Friday : le référencement, la bannière cookies, le budget de pub, le CRM, puis la journée en direct.",
+				suite:"Faire décoller Courée (≈ 10 min)" })); }
 		};
 	}
 
@@ -1185,7 +1172,7 @@ export function openBoutique({ formation, audio, isFav, toggleFav, onClose, onEv
 
 	/* ---------- actions ---------- */
 	const H = {};
-	const GO = { intro, ux, seo, rgpd, acq, crm, bf, end:finale };
+	const GO = { ux, seo, rgpd, acq, crm, bf, end:finale };
 	root.addEventListener("click", e => {
 		const hs = e.target.closest("[data-hs]");
 		if(hs && !hs.closest(".locked") && H.hs) return H.hs(hs.dataset.hs);
@@ -1195,14 +1182,15 @@ export function openBoutique({ formation, audio, isFav, toggleFav, onClose, onEv
 		if(k === "bfgo") return bfLive();
 		if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
 		if(k === "lead"){ close(); return openLead(); }
-		if(k === "replay"){ W.setEntrepot(""); M = M0(); Object.assign(S, { done:{}, learned:new Set(), errors:0, log:{} }); delete S.bf; kpi("rgpd", 0, "À vérifier", ""); sync(); return intro(); }
+		if(k === "replay"){ W.setEntrepot(""); M = M0(); Object.assign(S, { done:{}, learned:new Set(), errors:0, log:{} }); delete S.bf; kpi("rgpd", 0, "À vérifier", ""); sync(); return ux(); }
 		if(H[k]) H[k](a);
 	});
 	function close(){ if(closed) return; closed = true; clearInterval(liveT); removeEventListener("resize", layout); document.removeEventListener("keydown", onKey); W.dispose(); root.remove(); onClose && onClose(); }
 	function onKey(e){ if(e.key === "Escape") close(); }
 	document.addEventListener("keydown", onKey);
 	root.querySelector(".eb-x").addEventListener("click", close);
-	sync(); intro();
+	sync(); ux();      // ouverture à chaud : le tunnel de commande tout de suite, Inès plante le décor
+	ines("Salut ! Moi c'est Inès, head of growth chez Courée. Du monde entre… et presque personne ne paie. On s'y met ?", 500);
 	onEvent && onEvent("start");
 	// mode relecture : étapes où l'enseignant peut sauter directement
 	onEvent && onEvent("missions", [["1 · Tunnel de commande", ux], ["2 · Référencement", seo], ["3 · Bannière cookies", rgpd], ["4 · Budget d'acquisition", acq], ["5 · CRM", crm], ["6 · Black Friday", bf], ["Rapport final", finale]]);

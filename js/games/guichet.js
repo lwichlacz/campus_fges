@@ -8,9 +8,10 @@
    comparer des pièces, compter des jours ouvrés, régler le simulateur, couper un budget, maintenir « Stop ».
    Les contenus (répliques, chiffres, indices, cours) sont dans guichet-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=5b80c6e132";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
-import { COURSES, CLIENTS, NOTE, PINS, ALERTS, SUSPECTS, CULPRIT, IMMO, immoCalc, immoBest, euro } from "./guichet-data.js?v=5b80c6e132";
+import { makePerson, std, box, cyl } from "../kit.js?v=ace20eca26";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
+import { COURSES, CLIENTS, NOTE, PINS, ALERTS, SUSPECTS, CULPRIT, IMMO, immoCalc, immoBest, euro } from "./guichet-data.js?v=ace20eca26";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -724,9 +725,15 @@ export function openGuichet({ formation, audio, isFav, toggleFav, onClose, onEve
 		if(talk){ talk.remove(); talk = null; }
 	}
 	async function run(){
-		say("Le carnet est sur le comptoir : j'y épingle tout ce qui peut servir à l'enquête. Touche « Carnet » en haut pour le relire.", 7000);
+		say("Samedi, 9 h. La conformité est formelle : <b>quelqu'un blanchit de l'argent par notre agence</b>. Sers bien chaque client, et j'épingle dans le carnet tout ce qui cloche.", 7000);
 		await wait(2600);
-		for(let ci = 0; ci < CLIENTS.length; ci++){ await serve(ci); if(closed) return; }
+		for(let ci = 0; ci < CLIENTS.length; ci++){
+			await serve(ci); if(closed) return;
+			if(ci === 0){ await palier({ id:"guichet", onEvent:ev, openLead, quit:close,      // fin de la scène d'ouverture : le premier client
+				titre:"Premier client servi, premier indice dans le carnet.",
+				texte:"Quatre clients font encore la queue : un héritage, un étudiant Erasmus, un dégât des eaux, un plombier qui se lance. À midi, tu désignes qui blanchit, preuves à l'appui.",
+				suite:"Ouvrir tout le guichet (≈ 6 min)" }); if(closed) return; }
+		}
 		await wait(1200); if(closed) return;
 		S.ci = null; ev("stage", "Midi · le carnet de Nadia");
 		await enquete(); if(closed) return;
@@ -861,23 +868,6 @@ export function openGuichet({ formation, audio, isFav, toggleFav, onClose, onEve
 
 	/* ---------- début, fin, fermeture ---------- */
 	const ov = $("#gqOv"), card = $("#gqCard");
-	function intro(){
-		card.className = "gq-cardx";
-		card.innerHTML = `<p class="k">Licence Pro Assurance-Banque-Finance · chargé de clientèle</p>
-			<h2>Le guichet du samedi</h2>
-			<p>Samedi, 9 h, ton agence de Lambersart. Tu es en alternance, cinq clients font déjà la queue. Nadia, ta tutrice, te tend une note de la conformité :</p>
-			<div class="gq-memo"><div class="hd">Note de la conformité · ${NOTE.date}</div>${NOTE.lead}
-				<ol>${NOTE.items.map(([k, t]) => `<li><b>${k}</b>${t}</li>`).join("")}</ol>${NOTE.end}</div>
-			<p><b>Qui blanchit ?</b> Sers bien chaque client : le conseil et la conformité comptent toujours. Et note tout ce qui peut servir.</p>
-			<div class="gq-legend">
-				<div><b>👂</b>Écoute : touche ce que le client dit d'important, avant que ça s'efface.</div>
-				<div><b>📜</b>Vérifie les pièces : pointe, compare, compte, repère ce qui cloche.</div>
-				<div><b>🖥️</b>Règle le simulateur : les chiffres bougent en direct.</div>
-				<div><b>📓</b>À midi, relie chaque soupçon à sa preuve, puis signale le bon dossier.</div>
-			</div>
-			<p>Environ 7 minutes.</p>
-			<button class="gq-go" data-a="start">Ouvrir le guichet</button>`;
-	}
 	function finish(){
 		S.phase = "done"; play("win"); S.cur = null;
 		learn(["stats", "relation"]);
@@ -910,7 +900,6 @@ export function openGuichet({ formation, audio, isFav, toggleFav, onClose, onEve
 	}
 	ov.addEventListener("click", e => {
 		const a = e.target.closest("[data-a]")?.dataset.a; if(!a) return;
-		if(a === "start" && S.phase === "intro"){ ov.hidden = true; S.phase = "play"; ev("start"); run(); }
 		if(a === "lead"){ close(); openLead(); }
 		if(a === "fav"){ toggleFav(); e.target.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; }
 		if(a === "replay"){ close(); openGuichet({ formation, audio, isFav, toggleFav, onClose, onEvent, openLead }); }
@@ -933,6 +922,7 @@ export function openGuichet({ formation, audio, isFav, toggleFav, onClose, onEve
 		onClose && onClose();
 	}
 
-	intro();
+	// ouverture à chaud : pas d'écran de règles, le premier client arrive tout de suite (la note de la conformité est dans le carnet)
+	ov.hidden = true; S.phase = "play"; ev("start"); run();
 	raf = requestAnimationFrame(frame);
 }

@@ -12,7 +12,8 @@
    Entreprise, personnes et chiffres fictifs. Contenu à relire par l'équipe pédagogique (docs/validation-licence-mh.md). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (tests automatiques)
 const MOBILE = 760;
@@ -632,18 +633,6 @@ export function openCrise({ formation, audio, isFav, toggleFav, onClose, onEvent
 	}
 	const views = () => Math.max(80000, 80000 + (S.crise - 60)*3000 + S.minute*450);
 
-	/* ---------- intro ---------- */
-	function intro(){
-		reset("Mme Lambert, Chloé, Karim, Léa, Sami, Nadia, toi"); S.pinned = []; renderPins();
-		stage("Lundi 8 h", "intro", 0); W.seatAll(); W.showBusts(false);
-		tvNews(80000); W.ticker("80 000 vues en une heure pour la vidéo d'une cliente · Roubaix : la chocolaterie Verbrugge sous pression · la direction réunit une cellule de crise ·");
-		add(sys(`Mini-jeu · ${esc(formation.name)}`) + day("Lundi 16 novembre") + sys("Mme Lambert t'a ajouté au groupe « Cellule de crise »"));
-		say("Chloé · Communication", "#4a78c8", "📱 Vous avez vu ? Une cliente a filmé une boîte de la <b>Chocolaterie Verbrugge</b> ouverte, le chocolat tout blanchi. <b>80 000 vues</b> en une heure…", { fast:true });
-		lam("Merci d'être venu si vite. Vous dirigez la cellule de crise avec moi, dans la salle du conseil. D'ici 15 h, on doit <b>comprendre</b>, <b>décider</b>, <b>tenir l'équipe</b> et <b>parler au public</b>.");
-		lam("Tout se passe ici, dans ce groupe. Les messages vont pleuvoir : on ne répète rien qu'on n'a pas vérifié.");
-		after(() => add(sys("D'après un exercice de la Licence Management & Humanités. Entreprise, personnes et chiffres fictifs.") + `<button class="cc-go" data-a="tri">Ouvrir les messages</button>`));
-	}
-
 	/* ---------- moment 1 : trier l'info ---------- */
 	let M1 = null;
 	function tri(){
@@ -656,7 +645,13 @@ export function openCrise({ formation, audio, isFav, toggleFav, onClose, onEvent
 		order.splice(Math.floor(Math.random()*2), 0, FACTS[0]);
 		order.splice(order.indexOf(FACTS[0]) + 2 + Math.floor(Math.random()*2), 0, RECOUP);
 		M1 = { list:order.map(m => ({ ...m, fact:FACTS.includes(m), rev:{}, state:"new", recouped:false })), next:0, open:null, flag:false, recoupMode:false, errors:0, blind:0, done:0 };
-		add(day("8 h 05"));
+		if(!S.hot){      // ouverture à chaud : la vidéo, puis le tri tout de suite
+			S.hot = true;
+			W.seatAll(); W.showBusts(false);
+			add(sys(`Mini-jeu · ${esc(formation.name)} · entreprise et personnes fictives`) + day("Lundi 16 novembre, 8 h 05") + sys("Mme Lambert t'a ajouté au groupe « Cellule de crise »"));
+			say("Chloé · Communication", "#4a78c8", "📱 Vous avez vu ? Une cliente a filmé une boîte de la <b>Chocolaterie Verbrugge</b> ouverte, le chocolat tout blanchi. <b>80 000 vues</b> en une heure…", { fast:true });
+			lam("Vous dirigez la cellule de crise avec moi. Les messages vont pleuvoir : on ne répète rien qu'on n'a pas vérifié.", { fast:true });
+		} else add(day("8 h 05"));
 		lam("Avant d'agir, on trie. <b>Touchez chaque message</b> et vérifiez-le : qui l'écrit, d'où il sort, de quand il date, ce que montre la photo.", { fast:true });
 		lam("Un fait vérifié, on l'<b>épingle</b> : il servira toute la journée. Une rumeur, on la <b>signale</b>, preuve à l'appui.");
 		after(() => deliver());
@@ -754,6 +749,11 @@ export function openCrise({ formation, audio, isFav, toggleFav, onClose, onEvent
 		verdict("tri", stars, `${stars === 3 ? "Impeccable." : "C'est trié."} Au dossier : <b>15 % du lot B</b> mal scellé (63 sur 420), <b>230 réclamations</b> sans aucun malade, <b>6 000 boîtes</b> dont 4 200 déjà bloquées, et les coûts d'un rappel. Le reste n'était que bruit.`);
 		after(() => add(course("erreur") + course("stats") + `<button class="cc-go" data-a="plan">2 · Décider →</button>`));
 		W.face("chloe", null); W.face("marc", null);
+		// fin de la scène d'ouverture : les faits sont triés
+		after(() => timers.add(setTimeout(() => !closed && palier({ id:"crise", onEvent:ev, openLead, quit:close,
+			titre:"Faits épinglés, rumeurs démasquées : la cellule sait enfin de quoi elle parle.",
+			texte:"D'ici 15 h, il te reste à décider quoi rappeler, à tenir une équipe à bout de nerfs, puis à publier le communiqué que 80 000 personnes attendent.",
+			suite:"Diriger toute la crise (≈ 6 min)" }), 1800)));
 	}
 
 	/* ---------- moment 2 : décider ---------- */
@@ -1088,7 +1088,7 @@ export function openCrise({ formation, audio, isFav, toggleFav, onClose, onEvent
 		if(k === "replay"){
 			Object.assign(S, { stars:{}, learned:new Set(), pinned:[], planDone:null, comm:null });
 			gauge("crise", 75); gauge("clim", 60); $("[data-stars]").textContent = "★ 0 / 12";
-			return intro();
+			return tri();
 		}
 	});
 	function onKey(e){ if(e.key === "Escape") close(); }
@@ -1106,7 +1106,7 @@ export function openCrise({ formation, audio, isFav, toggleFav, onClose, onEvent
 		onClose && onClose();
 	}
 
-	intro();
+	tri();      // ouverture à chaud : la vidéo, puis les messages à trier, sans écran d'accueil
 	ev("start");
 	ev("missions", [["1 · Trier l'info", tri], ["2 · Décider", plan], ["3 · Tenir l'équipe", equipe], ["4 · Le communiqué", communique], ["Bilan", finale]]);
 	const hook = { S, W, get M1(){ return M1; }, get draft(){ return draft; }, snap:() => W.snap(), ...STEPS, close };

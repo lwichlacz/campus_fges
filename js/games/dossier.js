@@ -6,7 +6,8 @@
    Mécaniques : recherche par mots-clés (à la Her Story), captures d'écran à cadrer, graphique trompeur à démasquer,
    assistant IA qui invente parfois, batterie comme budget, notifications à saisir au vol, navigation privée sur le site,
    et comité en appel vidéo où l'on objecte en gardant le doigt sur la personne qui parle. */
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
 
 const CODE = "2021", T0 = 16*60 + 30, T1 = 18*60, SEC_MIN = 3, BAT0 = 50;
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -528,6 +529,7 @@ export function openDossier(opts = {}){
 	let invT = 0, lastProgress = 0, hintLevel = 0, docOpenedAt = 0;
 	function startInvestigation(){
 		if(investigating) return; investigating = true; invT = 0; lastProgress = 0;
+		onEvent && onEvent("stage", "L'enquête dans le téléphone");
 		$(".dc-hb").classList.add("pulse"); pulseApp("dossier", false);
 		if(view === "home") hint("Touche la barre de recherche en haut", 5000);
 		LIVE.forEach(([at, id, ic, c, who, txt]) => later(at*1000, () => { if(investigating && !comiteOn) banner({ ic, c, who, txt, keep:id }); }));
@@ -650,7 +652,14 @@ export function openDossier(opts = {}){
 		const blur = facts.length > 2;
 		captures.push({ id:++capSeq, doc, facts, blur });
 		badge("dossier", captures.length);
-		if(HINTS.some(h => h.need.some(f => facts.includes(f))) && !blur) progress();
+		if(HINTS.some(h => h.need.some(f => facts.includes(f))) && !blur){
+			progress();
+			// fin de la scène d'ouverture : la première vraie preuve est au dossier ; l'horloge et la batterie s'arrêtent pendant le palier
+			if(!teased){ teased = true; later(1600, () => { paused = true; palier({ id:"telephone", onEvent, openLead, quit:close,
+				titre:"Première preuve au dossier. Marc a tort, et tu commences à le prouver.",
+				texte:"À 18 h, le comité Black Friday commence en visio. D'ici là : les marges, la logistique, la pub, le RGPD… et un assistant IA qui invente parfois.",
+				suite:"Monter tout le dossier (≈ 7 min)" }).then(() => { paused = false; lastTs = 0; }); }); }
+		}
 		hint(fromNotif ? "📌 Notification gardée dans le Dossier" : facts.length === 0 ? "Capture sans info chiffrée… elle ne prouvera pas grand-chose" : blur ? "Capture trop chargée : au comité, on ne verra pas ce que tu veux montrer" : "📁 Capture ajoutée au Dossier", 3200);
 		if(fromNotif) play("stamp");
 	}
@@ -715,7 +724,7 @@ export function openDossier(opts = {}){
 	}
 	let cm = null;
 	function startComite(){
-		hint(""); go("comite");
+		hint(""); go("comite"); onEvent && onEvent("stage", "Le comité de 18 h");
 		cm = { i:-1, t:0, dur:0, cred:50, res:[], hold:null, sheet:false, wait:0, typed:0 };
 		const v = V("comite");
 		v.innerHTML = `<div class="top">Crédibilité<span class="dc-cred"><i style="width:50%"></i></span></div>
@@ -888,11 +897,11 @@ export function openDossier(opts = {}){
 	addEventListener("resize", layout);
 
 	/* ---------- boucle ---------- */
-	let raf = 0, lastTs = 0, acc = 0;
+	let raf = 0, lastTs = 0, acc = 0, paused = false, teased = false;
 	function loop(ts){
 		if(closed) return;
 		const dt = Math.min(.1, (ts - (lastTs || ts))/1000); lastTs = ts;
-		if(investigating && !dead){
+		if(investigating && !dead && !paused){
 			invT += dt; clockMin = Math.min(T1, T0 + invT/SEC_MIN); battery -= dt*.03; if(battery <= 0) die();
 			acc += dt; if(acc > .5){ acc = 0; setClock(); tickHints(); }
 			if(clockMin >= T1) incomingCall();
@@ -913,5 +922,6 @@ export function openDossier(opts = {}){
 		state:() => ({ view, clockMin, battery, invT, captures:captures.map(c => ({ doc:c.doc, facts:c.facts, blur:c.blur })), cm:cm && { i:cm.i, cred:cm.cred, res:cm.res.map(r => r.r) } }), skip:s => { invT += s; }
 	};
 	layout(); setClock(); raf = requestAnimationFrame(loop);
+	onEvent && onEvent("start");      // le jeu s'ouvre déjà à chaud : un téléphone qui vibre sur un banc
 	return root;
 }

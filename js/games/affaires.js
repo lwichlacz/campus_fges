@@ -9,10 +9,11 @@
      6. jeudi : devant le comité, répondre à chaque objection en montrant la pièce et la ligne qui le prouvent.
    Le dossier s'épaissit sur le bureau à chaque pièce. Environ 9 minutes. Contenus dans affaires-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=5b80c6e132";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
+import { makePerson, std, box, cyl } from "../kit.js?v=ace20eca26";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
 import { PRET, TAUX, CAF_PREV, SERVICE, VIE, PATRI, PROPRES, NANT, BPI_MAX, PAL, annuite, LIASSE, RATIOS, PALLETS, ORDERS, LETTER, ORG, RBE, GRID,
-	PIECES, MEMBERS, objections, COURSES, NEXT } from "./affaires-data.js?v=5b80c6e132";
+	PIECES, MEMBERS, objections, COURSES, NEXT } from "./affaires-data.js?v=ace20eca26";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -671,7 +672,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 	async function stepLiasse(){
 		ev("stage", "Liasse"); setDay("Lundi 9 h", "Agence"); lightAt(0);
 		SH.liasse.mesh.visible = true; dirty("liasse"); view("agency");
-		await talk("nadia", "Bienvenue au centre d'affaires ! M. Duval, client depuis vingt ans, demande <b>1,2 M€</b> pour une nouvelle ligne de production. Jeudi, c'est toi qui présentes son dossier au comité de crédit.");
+		await talk("nadia", "Duval Textiles, 42 salariés, nous demande <b>1,2 M€</b>. Jeudi, c'est toi qui défends son dossier au comité de crédit : prête-t-on, oui ou non ?");
 		if(closed) return;
 		view("liasse");
 		await talk("nadia", "On commence toujours par les comptes. Voici sa liasse fiscale : trois ans de chiffres. <b>Entoure au doigt la ligne qui cloche.</b>", 4200);
@@ -1017,6 +1018,10 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 	/* ---------- déroulé ---------- */
 	async function run(){
 		await stepLiasse(); if(closed) return;
+		await palier({ id:"affaires", onEvent:ev, openLead, quit:close,      // fin de la scène d'ouverture
+			titre:"Tu as trouvé ce que cachent les comptes : un stock qui a doublé.",
+			texte:"Il reste trois jours avant le comité : calculer les ratios, vérifier sur place à l'usine, monter le prêt, puis le défendre pièce par pièce.",
+			suite:"Instruire tout le dossier (≈ 8 min)" }); if(closed) return;
 		await stepRatios(); if(closed) return;
 		await stepVisite(); if(closed) return;
 		await stepMontage(); if(closed) return;
@@ -1064,20 +1069,6 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 
 	/* ---------- début, fin, fermeture ---------- */
 	const ov = $("#dvOv"), card = $("#dvCard");
-	function intro(){
-		card.innerHTML = `<p class="k">Master Management des Banques et Institutions Financières</p>
-			<h2>Le dossier Duval Textiles</h2>
-			<p>Tu es chargé·e d'affaires en alternance au Crédit des Flandres, à Roubaix. Lundi matin, Duval Textiles, une PME de 42 salariés, demande un prêt pour une nouvelle ligne de production.</p>
-			<p class="dv-q">Jeudi, en comité de crédit : prête-t-on 1,2 M€ à Duval Textiles ?</p>
-			<div class="dv-legend">
-				<div><b>✍</b>Entoure au doigt ce qui cloche dans les documents.</div>
-				<div><b>🧮</b>Calcule les ratios avec les chiffres que tu lis.</div>
-				<div><b>📦</b>Vérifie sur place, à l'usine.</div>
-				<div><b>📄</b>Au comité, prouve chaque réponse avec une pièce.</div>
-			</div>
-			<p>Du lundi au jeudi, environ 9 minutes. Entreprise et personnes fictives.</p>
-			<button class="dv-go" data-a="start">Ouvrir le dossier</button>`;
-	}
 	function finish(){
 		S.phase = "done"; play("win"); task(null); hush();
 		const score = S.max ? Math.round(S.pts/S.max*100) : 0;
@@ -1103,7 +1094,6 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 	}
 	ov.addEventListener("click", e => {
 		const a = e.target.closest("[data-a]")?.dataset.a; if(!a) return;
-		if(a === "start" && S.phase === "intro"){ ov.hidden = true; S.phase = "play"; ev("start"); canvas.focus({ preventScroll:true }); run(); }
 		if(a === "lead"){ close(); openLead(); }
 		if(a === "fav"){ toggleFav(); e.target.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; }
 		if(a === "replay"){ close(); openAffaires({ formation, audio, isFav, toggleFav, onClose, onEvent, openLead }); }
@@ -1142,6 +1132,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 		onClose && onClose();
 	}
 
-	intro();
+	// ouverture à chaud : pas d'écran de règles, Nadia explique chaque geste au moment de le faire
+	ov.hidden = true; S.phase = "play"; ev("start"); run();
 	raf = requestAnimationFrame(frame);
 }

@@ -6,7 +6,7 @@
    On raisonne avec le droit d'aujourd'hui. Famille fictive. Contenu à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
 
 const COURSES = {
 	famille: ["Droit de la famille", "Régimes matrimoniaux, PACS, concubinage : qui possède quoi dans un couple, et que changer quand la vie change."],
@@ -1052,7 +1052,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 			gate:palier });
 	}
 	function palier(o){
-		S.learned.add("fisca");
+		S.learned.add("fisca"); onEvent && onEvent("palier");
 		return `<div class="gp-gate"><b>${o.sarah === 300000 ? "Du premier coup : Sarah garde les 300 000 €." : `Ta carte laisse ${euro(o.sarah)} à Sarah, sur 300 000 €.`}</b>
 			<span>Tu viens de faire le métier de conseiller en gestion de patrimoine. Le dossier Deslaurier, c'est 60 ans de la vie d'une famille : mariage, cabinet, accident, héritage, remariage… et des coups du sort tirés au hasard.</span></div>
 			<button class="gp-go" data-a="mariage">Ouvrir tout le dossier, depuis 1967 (≈ 9 min)</button>
@@ -1088,6 +1088,7 @@ export function openPatrimoine({ formation, audio, isFav, toggleFav, onClose, on
 		const a = e.target.closest("[data-a]"); if(!a) return;
 		const k = a.dataset.a; play("pop");
 		if(k.startsWith("cs:")) return coup(k.slice(3));
+		if(k === "mariage" && S.done.concubin && !S.done.mariage) onEvent && onEvent("suite");      // le joueur continue après l'ouverture
 		if(STEPS[k]) return STEPS[k]();
 		if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
 		if(k === "lead"){ close(); return openLead(); }

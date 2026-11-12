@@ -10,8 +10,9 @@
    Personnage, rucher et chiffres sont fictifs. Contenus à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { std, mesh, box, cyl, mulberry32 } from "../kit.js?v=5b80c6e132";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
+import { std, mesh, box, cyl, mulberry32 } from "../kit.js?v=ace20eca26";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : animations 6 fois plus rapides (tests)
 
@@ -471,13 +472,6 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 	function note(n, pistes){ say(null); S.clue = Math.max(S.clue, n); Object.assign(S.pistes, pistes); drawCarnet(); play("chime"); }
 
 	/* ---------- le dossier ---------- */
-	function intro(){
-		stage = "intro"; setStage("Le dossier");
-		show(`<div class="jd-k">Mini-jeu · ${formation.name}</div><h2 class="jd-h">Le jardin se tait</h2>
-			<div class="jd-letter">« Fin septembre. Cet été, je n'ai presque pas vu d'abeilles ni de bourdons, et les pommiers ont donné trois fois moins de fruits. Le jardin se tait. Je commande les semis et le matériel avant le printemps : dis-moi pourquoi, et quoi faire. »<br><b>Thibault, jardinier du jardin botanique Nicolas Boulay</b></div>
-			<p class="jd-p">Ton labo de licence mène l'enquête. Ton carnet de terrain t'attend sur la table : <b>cinq pistes</b> à vérifier, <b>quatre indices</b> à trouver. Attention, toutes les pistes ne sont pas bonnes.</p>
-			<button class="jd-go" data-a="carnet">Ouvrir le carnet de terrain</button>`);
-	}
 	function openCarnet(){
 		stage = "carnet0"; flyTo("carnet", 1.8);
 		show(`<div class="jd-k">Le carnet de terrain</div><h2 class="jd-h">Cinq pistes, quatre indices</h2>
@@ -491,7 +485,8 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		stage = "hunt"; hide(); flyTo("rucher", 1.6); setStage("Indice 1 · Terrain (L1)");
 		Object.values(SPEC).forEach(s => s.tag.visible = false); S.ids.clear();
 		huntBar();
-		say("Devant les ruches, des abeilles mortes. Trois insectes rayés traînent autour : touche chacun pour l'examiner à la loupe 🔍", 7000);
+		say(S.clue ? "Devant les ruches, des abeilles mortes. Trois insectes rayés traînent autour : touche chacun pour l'examiner à la loupe 🔍"
+			: "Thibault, le jardinier : « Cet été, presque plus d'abeilles, et trois fois moins de pommes. Pourquoi ? » Devant les ruches, des abeilles mortes et trois insectes rayés : <b>touche chacun pour l'examiner à la loupe</b> 🔍", 9000);
 	}
 	const huntBar = () => setBar(`Suspects examinés : <b>${S.ids.size}/3</b>`);
 	function examine(id){
@@ -536,6 +531,11 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 			<div class="jd-note">Frelon asiatique en vol stationnaire devant les ruches : il attrape les abeilles au retour. Elles restent cloîtrées et ne butinent plus.</div>
 			<p class="jd-p">La piste de Thibault était à moitié juste : la « guêpe » de la lavande est un <b>syrphe</b>, une mouche qui imite les guêpes et qui pollinise ! Et le frelon européen est indigène : ce n'est pas lui. <b>Page 5 du carnet : fausse piste écartée.</b></p>
 			${course("cle")}<button class="jd-go" data-a="web">Piste suivante : le voisin →</button>`, true);
+		// fin de la scène d'ouverture : premier indice dans le carnet
+		later(() => palier({ id:"jardin", onEvent, openLead, quit:close,
+			titre:"Premier indice : un frelon asiatique chasse devant les ruches.",
+			texte:"Mais il n'explique pas tout. Trois pistes t'attendent (le voisin, la prairie, le semis) avant de répondre à Thibault avec des preuves.",
+			suite:"Mener toute l'enquête (≈ 7 min)" }), 2400);
 	}
 
 	/* ---------- Indice 2 · L1 réseau trophique : prédire, puis observer ---------- */
@@ -880,7 +880,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 		if(k === "replay"){
 			Object.assign(S, fresh()); rnd = mulberry32(Date.now() % 100000);
 			buildMeadow(); buildSemis(); drawCarnet(); Object.values(SPEC).forEach(s => s.tag.visible = false);
-			return intro();
+			return startHunt();
 		}
 	});
 	$("#jdBook").addEventListener("click", () => { play("pop"); peek.querySelector("img").src = carnetCv.toDataURL("image/jpeg", .85); peek.hidden = false; });
@@ -950,7 +950,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 	document.addEventListener("keydown", onKey);
 	$(".jd-x").addEventListener("click", close);
 	buildMeadow(); buildSemis();
-	intro();
+	startHunt();      // ouverture à chaud : directement au rucher, la lettre de Thibault tient dans la bulle
 	raf = requestAnimationFrame(loop);
 	let pump = 0;      // ?vite : l'affichage avance même quand le navigateur bride requestAnimationFrame (tests automatiques)
 	if(SPEED > 1) pump = setInterval(() => frame(performance.now()), 40);

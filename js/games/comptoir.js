@@ -5,8 +5,9 @@
      seuil de rentabilité, décision d'investissement) qui révèle le cours de la licence.
    Les chiffres sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
-import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=5b80c6e132";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
+import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=ace20eca26";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
 
 /* ---------- Économie du Comptoir (à valider par l'enseignant) ---------- */
 const ECO = { amortVelo:7, cafe:.25, lait:.20, gobelet:.10, tasse:.55, croissantAchat:.45, croissantPrix:1.2, salaire:25,
@@ -640,13 +641,6 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	function hide(){ panel.hidden = true; }
 	function courseCard(key){ const [y, n, t] = COURSES[key]; S.learned.add(key); return `<div class="cz-course"><span class="tag">📚 En Licence Gestion · ${y}</span><b>${n}</b><span>${t}</span></div>`; }
 
-	function intro(){
-		show(`<div class="cz-k">Mini-jeu · ${formation.name}</div><h2 class="cz-h">Le Comptoir</h2>
-			<div class="cz-big">☕</div>
-			<p class="cz-p">Tu reprends le café de l'atrium pendant ta licence. Chaque matin, tu fixes le prix, tu commandes les croissants et tu organises ton équipe. Puis c'est le service : ${MODE === "caisse" ? "tu tiens toi-même la caisse, tu composes les commandes au plus vite" : "tu pilotes en direct (prix, happy hour, renfort, réassort, gestes commerciaux)"} et tu réagis aux imprévus… pour prouver que tu sais piloter une entreprise.</p>
-			<ul class="cz-list"><li><span>L1</span>Prix, équipe et compte de résultat</li><li><span>L2</span>Coût variable et seuil de rentabilité</li><li><span>L3</span>Investir pour grandir</li></ul>
-			<button class="cz-go" data-a="prep">Ouvrir le Comptoir</button>`);
-	}
 	function prep(){
 		const def = DAYS[S.day];
 		onEvent && onEvent("stage", `${def.year} · ${def.title.split(" · ")[0]}`);
@@ -667,6 +661,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 			paintMenu();
 		};
 		show(`<div class="cz-k">${def.year} · préparation</div><h2 class="cz-h">${def.title}</h2>
+			${def.tuto && !S.results.length ? `<p class="cz-p"><b>Tu reprends le café de l'atrium</b> pendant ta licence. Ce soir, ton compte de résultat dira si tu gagnes de l'argent.</p>` : ""}
 			<p class="cz-p">${def.tuto ? "Avant d'ouvrir, trois décisions de gestionnaire. Pour cette première journée, on t'a préparé des réglages raisonnables : tu peux les garder." : "Ajuste tes décisions selon la journée d'hier."}</p>
 			<div class="cz-row"><div class="t">💶 Prix du café <span data-price></span></div>
 				<input type="range" min="1" max="3.5" step=".1" value="${S.price}" aria-label="Prix du café">
@@ -713,6 +708,11 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 			</table>
 			<div class="cz-hint" style="background:#fff;border:1px solid #ead9bf;color:#5b4f5f;line-height:1.5">${tips.join("<br>")}</div>
 			<button class="cz-go" data-a="next">Continuer</button>`);
+		// fin de la scène d'ouverture : la première matinée et son compte de résultat
+		if(S.day === 0) setTimeout(() => !closed && palier({ id:"comptoir", onEvent, openLead, quit:close,
+			titre:r.resultat >= 0 ? `Première matinée : ${euro(r.resultat)} de bénéfice.` : `Première matinée : ${euro(Math.abs(r.resultat))} de perte.`,
+			texte:"Trois années de licence t'attendent au comptoir : le rush de 10 h, le seuil de rentabilité, puis un vélo cargo à financer pour grandir.",
+			suite:"Tenir le Comptoir jusqu'en L3 (≈ 5 min)" }), 2200);
 	}
 	function next(){
 		const def = DAYS[S.day];
@@ -872,7 +872,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 			if(k === "next") return next();
 			if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
 			if(k === "lead"){ close(); return openLead(); }
-			if(k === "replay"){ Object.assign(S, { day:0, price:2.0, stock:30, staff:2, rep:.6, bike:false, results:[], learned:new Set(), seuil:null, totalProfit:0 }); return intro(); }
+			if(k === "replay"){ Object.assign(S, { day:0, price:2.0, stock:30, staff:2, rep:.6, bike:false, results:[], learned:new Set(), seuil:null, totalProfit:0 }); return prep(); }
 		}
 		const st = e.target.closest("[data-st]"); if(st){ S.stock = Math.max(0, Math.min(80, S.stock + +st.dataset.st)); card.querySelector("[data-stock]").textContent = S.stock; return; }
 		const sf = e.target.closest("[data-staff]"); if(sf){ S.staff = +sf.dataset.staff; card.querySelectorAll("[data-staff]").forEach(b => b.setAttribute("aria-pressed", String(b === sf))); const ev = card.querySelector("input[type=range]"); ev && ev.dispatchEvent(new Event("input")); }
@@ -912,7 +912,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	document.addEventListener("keydown", onKey);
 	$(".cz-x").addEventListener("click", close);
 	paintMenu();
-	intro();
+	prep();      // ouverture à chaud : les réglages du matin tout de suite, le service suit
 	// mode relecture : étapes où l'enseignant peut sauter directement (le service en cours est arrêté)
 	const stopDay = () => { running = false; tray.hidden = true; root.classList.remove("serving"); $("#czFF").hidden = true; say(null); };
 	const day = n => () => { stopDay(); S.day = n; prep(); };

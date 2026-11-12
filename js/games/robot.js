@@ -12,8 +12,9 @@
    Mise en scène illustrative (cellule, client et chiffres fictifs) ; contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { makePerson } from "../kit.js?v=5b80c6e132";
-import { jpoCard } from "./jpo.js?v=5b80c6e132";
+import { makePerson } from "../kit.js?v=ace20eca26";
+import { jpoCard } from "./jpo.js?v=ace20eca26";
+import { palier } from "./palier.js?v=ace20eca26";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -471,18 +472,6 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 		Mercredi : tapis démonté pour nettoyage, capteur remonté.<br>
 		Jeudi : épaule réglée « plus nerveuse » pour gagner en cadence (gain 20 → ${SERVO.kp0}, amortissement 6 → ${SERVO.kd0}).<br>
 		Coude : aucune intervention depuis 3 ans.</div>`;
-	function intro(){
-		S.step = "intro"; stage("Panne avant lundi"); clearParts();
-		J.splice(0, 3, 40, 70, 110);
-		card(`<div class="k">Cellule robotique Wenov · ${formation.name}</div><h2>Panne avant lundi</h2>
-			<div class="rb-big">🦾</div>
-			<p>Vendredi, 15 h, plateau robotique de Wenov. Tu es en stage dans l'équipe qui suit cette cellule : un bras prend des pièces sur un tapis, la caméra de sa pince les contrôle, il les range sur une palette.</p>
-			<p>Depuis mardi, la cellule rejette <b>une pièce sur cinq</b>. Le client attend <b>${ORDER.toLocaleString("fr-FR")} pièces lundi 8 h</b>, et la cellule ne tourne que samedi, de 6 h à 22 h. À ce rythme, on ne livrera pas.</p>
-			<p><b>Ta mission :</b> trouver les causes, les prouver par des mesures, réparer, puis écrire au client.</p>
-			${MEMO}
-			<button class="rb-btn dark" data-a="obs">Ouvrir la boîte noire du contrôleur</button>`);
-	}
-
 	/* ===================== 1 · OBSERVER : rejouer les cycles rejetés ===================== */
 	const OBS_TXT = {
 		coude:   () => `<b>Cycle 212 · dépose</b> : la pièce arrive <b>9 mm</b> à côté de sa poche et bascule. Pourtant la consigne du coude est la bonne.`,
@@ -495,7 +484,9 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 		resetRun(); setStep("obs", "1 · Observer"); clearParts();
 		S.obs = { i:0, found:new Set(), useless:0 };
 		J.splice(0, 3, ...ik(V(BELT.stop, UP_Y, BELT.z)));
-		dossier("Étape 1 · observer", "Où et quand le bras rate-t-il ?", `
+		const hot = !S.obsDone;
+		dossier(hot ? `Panne avant lundi · ${formation.name}` : "Étape 1 · observer", "Où et quand le bras rate-t-il ?", `
+			${hot ? `<p>Vendredi, 15 h. La cellule rejette <b>une pièce sur cinq</b>, et le client attend <b>${ORDER.toLocaleString("fr-FR")} pièces lundi 8 h</b>. Trouve pourquoi.</p>` : ""}
 			<p>Le contrôleur a gardé les <b>4 derniers cycles rejetés</b>. Rejoue-les au ralenti : le bras n'avance que tant que tu <b>maintiens le bouton d'homme mort</b>, comme en mode manuel.</p>
 			<p>Dès que quelque chose cloche, <b>lâche</b> : tout se fige. Puis <b>relève</b> l'instant.</p>`);
 		say("Moi je te le dis : c'est la pince. Elle est usée, les pièces glissent. On en commande une neuve et c'est réglé.");
@@ -556,8 +547,14 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 			if(S.obs.useless === 3) err("Trois relevés pour rien sur ce cycle : observe avant de relever");
 		}
 	}
-	function obsDone(){
-		S.obs.running = false; hint(""); play("win");
+	function obsDone(again){
+		S.obs.running = false; hint(""); if(!again) play("win");
+		const hot = !S.obsDone; S.obsDone = true;
+		// fin de la scène d'ouverture : le palier, puis la carte de synthèse de l'étape 1
+		if(hot) return palier({ id:"robot", onEvent:ev, openLead, quit:close,
+			titre:"Quatre pannes trouvées, et ce n'est pas la pince.",
+			texte:"Il reste à prouver chaque cause par une mesure (le jeu du coude, le capteur, l'asservissement de l'épaule, la caméra), à réparer, puis à relancer la production avant lundi.",
+			suite:"Réparer la cellule (≈ 6 min)" }).then(() => { if(!closed) obsDone(true); });
 		card(`<div class="k">Étape 1 · observation</div><h2>Quatre pannes, quatre endroits</h2>
 			<p>Un rebut sur cinq, mais pas toujours au même moment : <b>à la saisie, à la levée, au contrôle caméra, à la dépose</b>. Quatre causes possibles, à prouver une par une.</p>
 			<p>Relis le cahier de maintenance : chaque intervention de la semaine pointe vers un symptôme… sauf le coude, que personne n'a touché.</p>
@@ -1225,7 +1222,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 	document.addEventListener("keydown", onKey); document.addEventListener("keyup", onKeyUp);
 	$(".rb-x").addEventListener("click", close);
 
-	applyJoints(); setGauges(); intro();
+	applyJoints(); setGauges(); stepObs();      // ouverture à chaud : la boîte noire tout de suite, le contexte tient en deux lignes
 	raf = requestAnimationFrame(frame);
 	ev("start");
 	// mode relecture : étapes où l'enseignant peut sauter directement
