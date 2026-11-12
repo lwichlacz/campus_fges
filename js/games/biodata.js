@@ -1,18 +1,16 @@
 /* « From Blood to Decision » — mini-jeu du Master Data Management in Biosciences (École du Numérique).
-   En anglais, comme le master (enseigné 100 % en anglais), et au niveau d'un candidat en master (bac+3/4) : environ 12 à 15 minutes.
+   En anglais, comme le master (enseigné 100 % en anglais), et au niveau d'un candidat en master (bac+3/4) : environ 8 à 10 minutes.
    D'après la maquette des relations presse (un patient fatigué, une prise de sang, « from biology to data, from data to decision »),
-   prolongée du cas individuel à l'étude de cohorte, en six missions :
+   prolongée du cas individuel à l'étude de cohorte, en quatre missions (contrôle qualité du séquençage et compte rendu clinique retirés le 12/11/2026 pour tenir en 10 minutes) :
    1. data governance : minimisation et pseudonymisation du dossier, chaîne complète (consentement, hébergeur certifié HDS) ;
-   2. sequencing QC : coupe des lectures sur la courbe de qualité par position, contrôle de 8 échantillons
-      (dont une inversion d'échantillons repérée par le contrôle du sexe génétique et un doublon) ;
-   3. variant interpretation : fréquence allélique (VAF) et zygotie, classement de type ACMG à partir de preuves ;
-   4. cohort biostatistics : 240 patients simulés, choix du test sur une distribution asymétrique, p-value, effet du sexe ;
-   5. machine learning : choix des variables (fuites de données), découpage par patient, seuil sur la courbe ROC ;
-   6. report & ethics : compte rendu clinique prudent, découverte fortuite (BRCA2) traitée selon le consentement.
+   2. variant interpretation : fréquence allélique (VAF) et zygotie, classement de type ACMG à partir de preuves,
+      puis découverte fortuite (BRCA2) traitée selon le consentement signé en mission 1 ;
+   3. cohort biostatistics : 240 patients simulés, choix du test sur une distribution asymétrique, p-value, effet du sexe ;
+   4. machine learning : choix des variables (fuites de données), découpage par patient, seuil sur la courbe ROC ;
    Cas : hémochromatose HFE C282Y homozygote. Séquences, cohorte et chiffres sont simulés ; contenu à relire par l'équipe du master. */
 
 import * as THREE from "three";
-import { jpoCard } from "./jpo.js?v=4c7bed0933";
+import { jpoCard } from "./jpo.js?v=43d5f798e9";
 
 const COURSES = {
 	protect: ["M2", "Data protection & health data", "GDPR, data minimisation, pseudonymisation, certified hosting (HDS): health data are handled before they are analysed."],
@@ -26,7 +24,7 @@ const COURSES = {
 	clin:    ["M2", "Clinical trials & regulation", "Reports that clinicians can act on, consent, and incidental findings handled the right way."]
 };
 const MENTIONS = { "Très bien":"Highest distinction", "Bien":"Distinction", "Assez bien":"Pass" };
-const NM = 6;
+const NM = 4;
 
 /* ---------- petite boîte à outils ---------- */
 function rng(seed){ let a = seed >>> 0; return () => { a += 0x6D2B79F5; let t = a; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0)/4294967296; }; }
@@ -458,84 +456,11 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 			lis.forEach((li, k) => { li.classList.add("ok"); li.insertAdjacentHTML("beforeend", `<span class="ph" style="animation-delay:${k*.1}s">${PIPE.find(p => p.id === s[k]).ph}</span>`); });
 			log("Pipeline validated: consent → sample → protection → generation → storage → preprocessing → analysis → interpretation");
 			$("#m1b").disabled = true;
-			setTimeout(() => complete(1, "Governance first", "Before a single base is sequenced, the patient has consented, the data are minimised and pseudonymised, and the storage is certified. In health data science, this is not paperwork: it is what makes the rest legal and trustworthy.", ["protect"], ["m2", "Mission 2 · sequencing QC"]), 900);
+			setTimeout(() => complete(1, "Governance first", "Before a single base is sequenced, the patient has consented, the data are minimised and pseudonymised, and the storage is certified. In health data science, this is not paperwork: it is what makes the rest legal and trustworthy.", ["protect"], ["m3", "Mission 2 · variant interpretation"]), 900);
 			return;
 		}
 		lis.forEach((li, k) => li.classList.toggle("bad", s[k] !== ideal[k]));
 		err(s[0] !== "consent" ? "Nothing happens before the patient's informed consent" : "Some steps are in the wrong place (in red)");
-	}
-
-	/* ===================== MISSION 2 · sequencing QC ===================== */
-	const QPOS = p => p <= 100 ? 36 - p*.008 : 36 - .8 - .012*(p - 100)**2;          // qualité moyenne (Phred) par position, lectures de 150 bases
-	const RUNS = [
-		{ id:"P-0398", q:36, map:97, cont:.4, dp:42, sex:"F", y:.00, conc:61 },
-		{ id:"P-0405", q:24, map:93, cont:.6, dp:38, sex:"M", y:.21, conc:58, why:"mean quality 24 < 30" },
-		{ id:"P-0412", q:35, map:96, cont:.3, dp:45, sex:"M", y:.24, conc:60, alex:true },
-		{ id:"P-0417", q:34, map:95, cont:7.2, dp:40, sex:"F", y:.01, conc:62, why:"7.2 % contamination by foreign DNA" },
-		{ id:"P-0421", q:37, map:98, cont:.2, dp:51, sex:"F", y:.19, conc:59, why:"declared female but many chrY reads: probable sample swap" },
-		{ id:"P-0426", q:35, map:96, cont:.5, dp:47, sex:"M", y:.23, conc:99.8, twin:"P-0433", why:"99.8 % genotype concordance with P-0433: the same person sequenced twice (keep the deeper run)" },
-		{ id:"P-0430", q:31, map:91, cont:1.6, dp:33, sex:"M", y:.22, conc:57 },
-		{ id:"P-0433", q:36, map:97, cont:.5, dp:52, sex:"M", y:.22, conc:99.8, twin:"P-0426" }
-	];
-	const PASS = r => r.q >= 30 && r.map >= 90 && r.cont <= 2 && r.dp >= 30 && (r.sex === "M" ? r.y > .1 : r.y < .05) && !(r.conc > 99 && r.dp < 50);
-	let m2 = null;
-	function mission2(){
-		begin(2, "Sequencing quality control", "data preprocessing",
-			`<span class="bd-step">Step 1 of 2 · trim the reads</span><p>Each read is 150 bases long, and sequencers lose accuracy towards the end of the read. Choose where to <b>trim</b>: keep only positions where the mean quality is at least <b>Phred 25</b> (about 1 error in 300 bases), while keeping as much data as possible.</p><p class="bd-live" id="m2live"></p>`);
-		m2 = { trim:150, keep:Object.fromEntries(RUNS.map(r => [r.id, true])) };
-		renderTrim();
-		log("Mission 2: run 2026-10-13, 8 samples, 2 × 150 bp reads", "inf");
-	}
-	function renderTrim(){
-		work.innerHTML = `<h4>Mean base quality by position in the read</h4><canvas class="bd-chart" id="m2c"></canvas>
-			<div class="bd-slider"><span>Trim reads at base</span><input type="range" min="60" max="150" step="1" value="${m2.trim}" id="m2s"><b id="m2v"></b></div>
-			<div class="bd-kpi" id="m2k"></div>
-			${code(`<span class="c"># preprocessing step of the pipeline</span>\n<span class="k">trim</span> --input P-0412_R1.fastq --max-length <span class="s" id="m2code">${m2.trim}</span> --min-quality <span class="s">25</span>`)}
-			<div class="bd-row"><button class="bd-btn dark" id="m2a">▶ Apply trimming</button></div>`;
-		const s = $("#m2s"); s.addEventListener("input", () => { m2.trim = +s.value; drawTrim(); });
-		$("#m2a").addEventListener("click", () => {
-			const q = QPOS(m2.trim);
-			if(q < 25){ err(`At base ${m2.trim}, mean quality is ${fmt(q, 1)}: below 25, you keep too many errors`); return; }
-			if(m2.trim < 120){ err(`Trimming at ${m2.trim} throws away ${fmt(100 - m2.trim/1.5)} % of good data: you can keep more`); return; }
-			log(`Reads trimmed at base ${m2.trim}: mean quality ≥ 25 everywhere`); play("good");
-			mis.querySelector(".bd-step").textContent = "Step 2 of 2 · sample-level checks";
-			mis.querySelector("p").innerHTML = "Now check the 8 samples of the run and keep only those that pass <b>every</b> rule. Two checks catch human errors, not machine errors: the <b>genetic sex</b> (a woman has no chromosome Y) and <b>genotype concordance</b> (two samples 99.8 % identical are the same person: keep only the deeper run).";
-			renderQC();
-		});
-		drawTrim();
-	}
-	function drawTrim(){
-		const [x, w, h] = chart("m2c"), pad = 40, X = p => pad + (w - pad - 12)*(p - 1)/149, Y = q => h - pad - (h - pad - 14)*(q - 10)/28;
-		axes(x, w, h, pad, "Phred", "position in read");
-		x.fillStyle = "rgba(255,77,94,.08)"; x.fillRect(pad, Y(25), w - pad - 12, Y(10) - Y(25));
-		x.strokeStyle = "#d6213a"; x.setLineDash([8, 6]); x.lineWidth = 2; x.beginPath(); x.moveTo(pad, Y(25)); x.lineTo(w - 12, Y(25)); x.stroke(); x.setLineDash([]);
-		x.fillStyle = "#d6213a"; x.fillText("Phred 25", pad + 8, Y(25) - 6);
-		x.strokeStyle = "#21b6ce"; x.lineWidth = 3; x.beginPath();
-		for(let p=1;p<=150;p++){ const q = Math.max(10, QPOS(p)); p === 1 ? x.moveTo(X(p), Y(q)) : x.lineTo(X(p), Y(q)); }
-		x.stroke();
-		x.fillStyle = "rgba(30,48,94,.12)"; x.fillRect(X(m2.trim), 10, w - 12 - X(m2.trim), h - pad - 10);
-		x.strokeStyle = "#1e305e"; x.lineWidth = 2.5; x.beginPath(); x.moveTo(X(m2.trim), 10); x.lineTo(X(m2.trim), h - pad); x.stroke();
-		x.fillStyle = "#5b6b7a"; for(const p of [1, 50, 100, 150]) x.fillText(p, X(p) - (p === 150 ? 28 : 8), h - pad + 18);
-		let e = 0; for(let p=1;p<=m2.trim;p++) e += Math.pow(10, -QPOS(p)/10);
-		const q = QPOS(m2.trim);
-		$("#m2v").textContent = m2.trim; const cs = $("#m2code"); if(cs) cs.textContent = m2.trim;
-		$("#m2k").innerHTML = `<div class="${m2.trim >= 120 ? "good" : "bad"}"><b>${fmt(m2.trim/1.5)} %</b><span>bases kept</span></div><div class="${q >= 25 ? "good" : "bad"}"><b>${fmt(q, 1)}</b><span>quality at cut</span></div><div><b>${fmt(e/m2.trim*1e4, 1)}</b><span>errors / 10,000 bases</span></div>`;
-	}
-	function renderQC(wrong = []){
-		work.innerHTML = `<div class="bd-rules"><span>Quality ≥ 30</span><span>Mapped ≥ 90 %</span><span>Contamination ≤ 2 %</span><span>Depth ≥ 30×</span><span>Sex check</span><span>Concordance &lt; 99 %</span></div>
-			<div class="bd-scroll"><table class="bd-tbl"><thead><tr><th>Sample</th><th>Qual.</th><th>Mapped</th><th>Contam.</th><th>Depth</th><th>Declared sex</th><th>chrY reads</th><th>Max concordance</th><th>Decision</th></tr></thead><tbody>
-			${RUNS.map(r => `<tr class="${r.alex ? "alex" : ""} ${wrong.includes(r.id) ? "wrong" : ""}"><td>${r.id}${r.alex ? " · Alex" : ""}</td><td>${r.q}</td><td>${r.map} %</td><td>${r.cont} %</td><td>${r.dp}×</td><td>${r.sex === "M" ? "Male" : "Female"}</td><td>${fmt(r.y, 2)} %</td><td>${r.conc} %${r.twin ? ` <small>(${r.twin})</small>` : ""}</td>
-				<td><button class="bd-tog ${m2.keep[r.id] ? "keep" : "drop"}" data-r="${r.id}">${m2.keep[r.id] ? "✓ Keep" : "✗ Exclude"}</button></td></tr>`).join("")}
-			</tbody></table></div>
-			<div class="bd-row"><button class="bd-btn dark" id="m2b">▶ Release the samples for analysis</button></div>`;
-		work.querySelectorAll("[data-r]").forEach(b => b.addEventListener("click", () => { m2.keep[b.dataset.r] = !m2.keep[b.dataset.r]; play("pop"); renderQC(wrong.filter(id => id !== b.dataset.r)); }));
-		$("#m2b").addEventListener("click", () => {
-			const bad = RUNS.filter(r => m2.keep[r.id] !== PASS(r)).map(r => r.id);
-			if(bad.length){ err(`QC failed: ${bad.length} decision${bad.length > 1 ? "s" : ""} to fix`); bad.forEach(id => { const r = RUNS.find(x => x.id === id); log(PASS(r) ? `${id}: passes every rule, keep it` : `${id}: ${r.why}`, "ko"); }); $("#m2live").textContent = "Rows in red need another decision."; return renderQC(bad); }
-			RUNS.filter(r => !PASS(r)).forEach(r => log(`${r.id} excluded: ${r.why}`));
-			$("#m2b").disabled = true;
-			complete(2, "Clean data, honest results", "You trimmed the noisy ends of the reads, then excluded four samples: one of poor quality, one contaminated, one swapped (a 'woman' with a Y chromosome) and one sequenced twice. Analysed anyway, they would have produced false variants, or worse, results given to the wrong patient.", ["biotech", "stats"], ["m3", "Mission 3 · variant interpretation"]);
-		});
 	}
 
 	/* ===================== MISSION 3 · variant interpretation ===================== */
@@ -564,11 +489,11 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	const CLASSES = [["P", "Pathogenic"], ["LP", "Likely pathogenic"], ["VUS", "Uncertain (VUS)"], ["LB", "Likely benign"], ["B", "Benign"]];
 	let m3 = null;
 	function mission3(){
-		begin(3, "Variant interpretation", "bioinformatics",
-			`<span class="bd-step">Step 1 of 2 · zygosity from the reads</span><p>Alex's reads are aligned on gene HFE (reference in blue; a dot = same base as the reference). For each candidate position, compute the <b>variant allele fraction</b> (VAF = reads with the change ÷ all reads). This window shows <b>12 of the 45 reads</b> covering these positions (depth 45×, above the 30× QC threshold); the full set gives the same picture. Decide: <b>artefact</b>, <b>heterozygous</b> (~50 %) or <b>homozygous</b> (~100 %). <small>(Illustrative sequence.)</small></p><p class="bd-live" id="m3live"></p>`);
+		begin(2, "Variant interpretation", "bioinformatics",
+			`<span class="bd-step">Step 1 of 3 · zygosity from the reads</span><p>Alex's reads are aligned on gene HFE (reference in blue; a dot = same base as the reference). For each candidate position, compute the <b>variant allele fraction</b> (VAF = reads with the change ÷ all reads). This window shows <b>12 of the 45 reads</b> covering these positions (depth 45×, above the 30× QC threshold); the full set gives the same picture. Decide: <b>artefact</b>, <b>heterozygous</b> (~50 %) or <b>homozygous</b> (~100 %). <small>(Illustrative sequence.)</small></p><p class="bd-live" id="m3live"></p>`);
 		m3 = { z:{}, cls:{} };
 		renderZyg();
-		log("Mission 3: HFE exon 4 (chromosome 6), depth 45×, 12 reads shown", "inf");
+		log("Mission 2: HFE exon 4 (chromosome 6), depth 45×, 12 reads shown", "inf");
 	}
 	function renderZyg(bad = []){
 		work.innerHTML = `<h4>Read alignment · HFE</h4><div class="bd-pile"><span class="ref">${REF}</span>  reference\n${READS.join("\n")}</div>
@@ -580,7 +505,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 			const wrong = Object.keys(CAND).filter(k => m3.z[k] !== CAND[k].z);
 			if(wrong.length){ err(`Genotype call rejected: ${wrong.length} position${wrong.length > 1 ? "s" : ""} to review`); wrong.forEach(k => log(`Position ${k.toUpperCase()}: VAF = ${CAND[k].n}/12 = ${fmt(CAND[k].n/12*100)} %${CAND[k].lq ? ", on a single low-quality base" : ""}`, "ko")); return renderZyg(wrong); }
 			log("Genotypes called: A artefact (VAF 8 %), B homozygous (VAF 100 %), C heterozygous (VAF 50 %)"); play("good");
-			mis.querySelector(".bd-step").textContent = "Step 2 of 2 · classify the variants";
+			mis.querySelector(".bd-step").textContent = "Step 2 of 3 · classify the variants";
 			mis.querySelector("p").innerHTML = "A genotype is not a diagnosis. Classify each variant on the <b>5-tier scale</b> used by clinical labs (ACMG), from the evidence gathered in the databases.";
 			renderCls();
 		});
@@ -593,8 +518,17 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 		$("#m3b").addEventListener("click", () => {
 			const wrong = VARS.filter(v => !v.ans.includes(m3.cls[v.id])).map(v => v.id);
 			if(wrong.length){ err("The clinical biologist sends the classification back"); wrong.forEach(id => log({ b:"C282Y: frequent, but strong functional and case evidence: it is pathogenic", c:"31 % of the population and synonymous: benign", d:"Rare but with no solid evidence either way: this is exactly what a VUS is" }[id], "ko")); return renderCls(wrong); }
-			log("C282Y pathogenic · common change benign · rare missense VUS");
-			complete(3, "A variant, read and weighed", "You measured allele fractions to tell an artefact from real genotypes, then weighed population, database, functional and case evidence. Alex is homozygous for C282Y, the cause of most hereditary haemochromatosis in Europe. And a rare variant with no evidence stays a VUS: it is not reported as a cause.", ["bioinf", "disease"], ["m4", "Mission 4 · cohort biostatistics"]);
+			log("C282Y pathogenic · common change benign · rare missense VUS"); play("good");
+			mis.querySelector(".bd-step").textContent = "Step 3 of 3 · an unexpected finding";
+			mis.querySelector("p").innerHTML = "The pipeline flags something else in Alex's data: a <b>pathogenic BRCA2 variant</b> (higher risk of several cancers). It has nothing to do with fatigue. Read the consent form Alex signed in mission 1, then decide what happens to this finding.";
+			work.innerHTML = `<div class="bd-consent">📄 <b>Alex's consent form (signed in mission 1)</b><br>☑ Analysis for the diagnosis of fatigue and iron overload<br>☑ Pseudonymised use for research<br>☑ <b>To be informed of actionable secondary findings</b></div><div class="bd-choice"></div>`;
+			q1(shuffle([
+				["ok", "Alex asked to be informed of actionable findings: confirm the variant, then disclose it through a dedicated genetic counselling consultation."],
+				["hide", "Say nothing: it is unrelated to the question the doctor asked."],
+				["foot", "Add it as a footnote at the bottom of the fatigue report sent to the GP."]
+			], 40), () => { log("Secondary finding: confirmation, then genetic counselling consultation");
+				complete(2, "A variant, read and weighed", "You measured allele fractions to tell an artefact from real genotypes, then weighed population, database, functional and case evidence. Alex is homozygous for C282Y, the cause of most hereditary haemochromatosis in Europe; a rare variant with no evidence stays a VUS. And the unexpected BRCA2 finding follows Alex's consent: confirmed, then disclosed in a genetic counselling consultation.", ["bioinf", "disease", "clin"], ["m4", "Mission 3 · cohort biostatistics"]); },
+			{ hide:"Alex explicitly consented to be told about actionable findings: hiding it would break that consent", foot:"A cancer-risk finding is never disclosed as a footnote: it needs confirmation and a dedicated counselling consultation" });
 		});
 	}
 
@@ -607,10 +541,10 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 		return (U - n1*n2/2)/Math.sqrt(n1*n2*(n1 + n2 + 1)/12);
 	}
 	function mission4(){
-		begin(4, "Cohort biostatistics", "biostatistics & epidemiology",
+		begin(3, "Cohort biostatistics", "biostatistics & epidemiology",
 			`<span class="bd-step">Step 1 of 3 · choose the test</span><p>Alex is one of <b>240 patients</b> seen for unexplained fatigue in the same clinic (simulated cohort). <b>24</b> are C282Y homozygous. Does their ferritin differ from the others'? Look at the distribution first.</p>`);
 		renderTest();
-		log("Mission 4: cohort of 240 patients loaded (24 C282Y/C282Y)", "inf");
+		log("Mission 3: cohort of 240 patients loaded (24 C282Y/C282Y)", "inf");
 	}
 	function renderTest(){
 		work.innerHTML = `<h4>Ferritin, all 240 patients (µg/L)</h4><canvas class="bd-chart" id="m4h"></canvas>
@@ -658,7 +592,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 			["ok", "Penetrance is higher in men (women lose iron through menstruation and pregnancy): report results stratified by sex, not only pooled."],
 			["pool", "Sex is irrelevant: report the pooled result only, it has more statistical power."],
 			["prot", "Women carry a protective version of the genotype."]
-		], 13), () => { log("Results reported by sex: penetrance differs between men and women"); complete(4, "From one patient to a population", "You chose a test suited to skewed data, read the p-value for what it is, and spotted that sex modifies the effect. Exactly the reasoning of an epidemiological study: effect sizes, uncertainty, and the right sub-groups.", ["epi"], ["m5", "Mission 5 · machine learning"]); },
+		], 13), () => { log("Results reported by sex: penetrance differs between men and women"); complete(3, "From one patient to a population", "You chose a test suited to skewed data, read the p-value for what it is, and spotted that sex modifies the effect. Exactly the reasoning of an epidemiological study: effect sizes, uncertainty, and the right sub-groups.", ["stats", "epi"], ["m5", "Mission 4 · machine learning"]); },
 		{ pool:"Pooling hides that the effect differs strongly between men and women", prot:"Same genotype in both sexes: the difference comes from physiology (iron losses), not from the DNA" });
 	}
 
@@ -675,11 +609,11 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	];
 	let m5 = null;
 	function mission5(){
-		begin(5, "Machine learning for screening", "AI & data mining",
+		begin(4, "Machine learning for screening", "AI & data mining",
 			`<span class="bd-step">Step 1 of 3 · choose the features</span><p>Genetic tests are expensive. The clinic wants a model that uses <b>routine data</b> to decide who should be offered HFE testing (target: C282Y homozygous). Choose the input features, train, then validate. Beware of features that would not be available, or would not make sense, <b>at the time of the decision</b>.</p>`);
 		m5 = { feats:new Set(["ts", "fer", "phleb", "id"]), thr:.5, roc:null, need:.6 };
 		renderFeats();
-		log("Mission 5: 240 patients, 30 % held out as test set", "inf");
+		log("Mission 4: 240 patients, 30 % held out as test set", "inf");
 	}
 	function renderFeats(res){
 		work.innerHTML = `<h4>Candidate features</h4><div class="bd-feat">${FEATS.map(f => `<label class="${m5.feats.has(f.id) ? "on" : ""}" data-f="${f.id}">${m5.feats.has(f.id) ? "☑" : "☐"} <span>${f.l}<small>${f.d}</small></span></label>`).join("")}</div>
@@ -731,7 +665,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 			if(p.spec < m5.need){ err(`Specificity ${fmt(p.spec*100)} %: almost everyone gets tested, the model brings nothing`); return; }
 			log(`Threshold ${fmt(m5.thr, 2)}: sensitivity ${fmt(p.sens*100)} %, specificity ${fmt(p.spec*100)} %`);
 			$("#m5b").disabled = true;
-			complete(5, "A model that stays honest", "You removed features that leak the answer, validated on patients the model had never seen, and chose a threshold for a screening goal rather than for a pretty score. That is the difference between a demo and a tool a hospital can trust.", ["ml", "bigdata"], ["m6", "Mission 6 · report & ethics"]);
+			complete(4, "A model that stays honest", "You removed features that leak the answer, validated on patients the model had never seen, and chose a threshold for a screening goal rather than for a pretty score. That is the difference between a demo and a tool a hospital can trust.", ["ml", "bigdata"], ["end", "Close the case"]);
 		});
 		drawRoc();
 	}
@@ -752,50 +686,15 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	}
 
 	/* ===================== MISSION 6 · report & ethics ===================== */
-	const REPORT = [
-		{ t:"Finding", o:[["ok", "Homozygous HFE c.845G>A p.(Cys282Tyr) detected (VAF 100 %, depth 45×)."], ["over", "C282Y found: the patient has haemochromatosis."], ["vague", "Three HFE mutations found, including position A."]] },
-		{ t:"Interpretation", o:[["ok", "Genotype consistent with HFE haemochromatosis; penetrance is incomplete, iron studies are needed to confirm iron overload."], ["cert", "Penetrance is complete: severe disease is certain."], ["vus", "Result of uncertain significance."]] },
-		{ t:"Recommendation", o:[["ok", "Repeat transferrin saturation and ferritin, specialist referral; offer cascade testing to first-degree relatives with genetic counselling."], ["mail", "Start phlebotomies today and inform the family by e-mail."], ["none", "No follow-up needed."]] }
-	];
-	const WHY6 = { over:"A genotype is not a diagnosis: iron studies confirm the disease", vague:"Position A was a sequencing artefact: it does not belong in a report", cert:"Penetrance of C282Y homozygosity is incomplete, especially in women", vus:"C282Y is pathogenic, not uncertain", mail:"Treatment needs confirmation; relatives are informed through genetic counselling, never by e-mail", none:"A pathogenic genotype with high iron markers needs follow-up" };
-	let m6 = null;
-	function mission6(){
-		begin(6, "Report & ethics", "clinical trials & regulation",
-			`<span class="bd-step">Step 1 of 2 · the clinical report</span><p>Write the conclusion of Alex's report, one sentence per section. It will be read by a doctor, then explained to Alex: it must be <b>exact, cautious and actionable</b>.</p>`);
-		m6 = { pick:{} };
-		renderReport();
-		log("Mission 6: drafting report P-0412", "inf");
-	}
-	function renderReport(bad = []){
-		work.innerHTML = REPORT.map((sec, i) => `<div class="bd-var ${bad.includes(i) ? "bad" : ""}"><h5>${sec.t}</h5><div class="bd-choice" data-i="${i}">${shuffle([...sec.o], 30 + i).map(([k, t]) => `<button class="${m6.pick[i] === k ? "on" : ""}" data-k="${k}">${t}</button>`).join("")}</div></div>`).join("") +
-			`<div class="bd-row"><button class="bd-btn dark" id="m6a">▶ Sign the report</button></div>`;
-		work.querySelectorAll(".bd-choice[data-i]").forEach(g => g.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { m6.pick[g.dataset.i] = b.dataset.k; play("pop"); renderReport(bad.filter(i => i !== +g.dataset.i)); })));
-		$("#m6a").addEventListener("click", () => {
-			const wrong = REPORT.map((s, i) => i).filter(i => m6.pick[i] !== "ok");
-			if(wrong.length){ err("The clinical biologist refuses to sign"); wrong.forEach(i => log(WHY6[m6.pick[i]] || `${REPORT[i].t}: choose a sentence`, "ko")); return renderReport(wrong); }
-			log("Report signed and sent to Alex's doctor"); play("good");
-			mis.querySelector(".bd-step").textContent = "Step 2 of 2 · an unexpected finding";
-			mis.querySelector("p").innerHTML = "While re-checking the run, the pipeline flags something else in Alex's data: a <b>pathogenic BRCA2 variant</b> (higher risk of several cancers). It has nothing to do with fatigue. What do you do?";
-			work.innerHTML = `<div class="bd-consent">📄 <b>Alex's consent form (signed in mission 1)</b><br>☑ Analysis for the diagnosis of fatigue and iron overload<br>☑ Pseudonymised use for research<br>☑ <b>To be informed of actionable secondary findings</b></div><div class="bd-choice"></div>`;
-			q1(shuffle([
-				["ok", "Alex asked to be informed of actionable findings: confirm the variant, then disclose it through a dedicated genetic counselling consultation."],
-				["hide", "Say nothing: it is unrelated to the question the doctor asked."],
-				["foot", "Add it as a footnote at the bottom of the fatigue report sent to the GP."]
-			], 40), () => { log("Secondary finding: confirmation, then genetic counselling consultation"); S.done.add(6); dots(); play("win"); setTimeout(finale, 500); },
-			{ hide:"Alex explicitly consented to be told about actionable findings: hiding it would break that consent", foot:"A cancer-risk finding is never disclosed as a footnote: it needs confirmation and a dedicated counselling consultation" });
-		});
-	}
-
 	/* ===================== fin ===================== */
 	function finale(){
 		const e = S.errors, code = e <= 3 ? "Très bien" : e <= 8 ? "Bien" : "Assez bien";
 		onEvent && onEvent("win", code);
-		const order = ["protect", "biotech", "stats", "bioinf", "disease", "epi", "ml", "bigdata", "clin"];
+		const order = ["protect", "bioinf", "disease", "clin", "stats", "epi", "ml", "bigdata"];
 		card(`<div class="k">Case closed · ${MENTIONS[code]}</div><h2>From biology to data, from data to decision</h2>
 			${PT.alex ? `<div class="bd-duo"><img src="${PT.alex}" alt="Alex"><img src="${PT.doctor}" alt="Alex's doctor"></div>
 			<div class="bd-say"><div class="av">${av("alex", "🧑")}</div><div class="bub">Thanks to all of you, I finally know why I was so exhausted. And my brother is getting tested too.</div></div>` : `<div class="bd-big">🧬📊🩺</div>`}
-			<p>Alex's blood test became a decision: governed data, clean reads, a variant weighed on evidence, a cohort analysed without traps, a screening model that stays honest, and a report that respects consent. <b>This is what the Master in Data Management in Biosciences is about.</b> ${e ? `Errors on the way: ${e}.` : "Not a single error!"}</p>
-			${course("clin")}
+			<p>Alex's blood test became a decision: governed data, a variant weighed on evidence, a finding handled as the patient consented, a cohort analysed without traps, and a screening model that stays honest. <b>This is what the Master in Data Management in Biosciences is about.</b> ${e ? `Errors on the way: ${e}.` : "Not a single error!"}</p>
 			<ul>${order.map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
 			${jpoCard("en")}${openLead ? `<button class="bd-btn dark" data-a="lead">📄 Get the programme brochure</button>` : ""}
 			<a class="bd-alt" href="${formation.url}" target="_blank" rel="noopener">Discover the Master ↗</a>
@@ -804,18 +703,18 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	}
 	function intro(){
 		stage("Bio-data lab"); dots();
-		mis.innerHTML = `<span class="k">Wenov · École du Numérique</span><h3>From Blood to Decision</h3><p>Six missions, the way a health data scientist works: governance, sequencing quality, variant interpretation, cohort statistics, machine learning, clinical reporting.</p>`;
+		mis.innerHTML = `<span class="k">Wenov · École du Numérique</span><h3>From Blood to Decision</h3><p>Four missions, the way a health data scientist works: governance, variant interpretation, cohort statistics, machine learning.</p>`;
 		work.innerHTML = `<p style="margin:0;font-size:14px;color:#5b6b7a">The missions will appear here.</p>`;
-		card(`<span class="bd-lang">🇬🇧 In English, like the Master</span><span class="bd-lang">⏱ 12–15 min</span><div class="k">Mini-game · ${formation.name}</div><h2>From Blood to Decision</h2>
+		card(`<span class="bd-lang">🇬🇧 In English, like the Master</span><span class="bd-lang">⏱ 8–10 min</span><div class="k">Mini-game · ${formation.name}</div><h2>From Blood to Decision</h2>
 			<div class="bd-say"><div class="av">${av("alex", "🧑")}</div><div class="bub">Doctor, I've been feeling unusually tired for several months, and the treatments I've tried haven't really helped.</div></div>
 			<div class="bd-say doc"><div class="av">${av("doctor", "👩‍⚕️")}</div><div class="bub">Your iron levels are very high. I'd like a genetic analysis and a closer look at your biological data.</div></div>
 			<p>You join the health data team. Take Alex's sample from consent to the medical decision, then scale up to the whole cohort.</p>
-			<ul><li><span>1</span>Data governance (GDPR, consent)</li><li><span>2</span>Sequencing quality control</li><li><span>3</span>Variant interpretation</li><li><span>4</span>Cohort biostatistics</li><li><span>5</span>Machine learning for screening</li><li><span>6</span>Clinical report & ethics</li></ul>
+			<ul><li><span>1</span>Data governance (GDPR, consent)</li><li><span>2</span>Variant interpretation & consent</li><li><span>3</span>Cohort biostatistics</li><li><span>4</span>Machine learning for screening</li></ul>
 			<button class="bd-btn dark" data-a="m1">Start the case</button>`);
 	}
 
 	/* ---------- actions ---------- */
-	const GO = { m1:mission1, m2:mission2, m3:mission3, m4:mission4, m5:mission5, m6:mission6 };
+	const GO = { m1:mission1, m3:mission3, m4:mission4, m5:mission5, end:() => { play("win"); finale(); } };
 	root.addEventListener("click", e => {
 		const a = e.target.closest("[data-a]"); if(!a) return;
 		const k = a.dataset.a; play("pop");
@@ -836,6 +735,6 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	intro();
 	onEvent && onEvent("start");
 	// mode relecture : étapes où l'enseignant peut sauter directement
-	onEvent && onEvent("missions", [["Mission 1 · Data governance", mission1], ["Mission 2 · Sequencing QC", mission2], ["Mission 3 · Variant interpretation", mission3], ["Mission 4 · Cohort biostatistics", mission4], ["Mission 5 · Machine learning", mission5], ["Mission 6 · Report & ethics", mission6]]);
-	if(window.campus) window.campus.game = { S, GO, cohort, FIELDS, RUNS, PASS, CAND, VARS, REPORT, get m5(){ return m5; }, fitPredict, rocOf };
+	onEvent && onEvent("missions", [["Mission 1 · Data governance", mission1], ["Mission 2 · Variant interpretation & consent", mission3], ["Mission 3 · Cohort biostatistics", mission4], ["Mission 4 · Machine learning", mission5]]);
+	if(window.campus) window.campus.game = { S, GO, cohort, FIELDS, CAND, VARS, get m5(){ return m5; }, fitPredict, rocOf };
 }

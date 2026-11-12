@@ -26,11 +26,11 @@ ACCROCHE = {
     "info": "Un week-end de game jam avec ton équipe : dessine un niveau, programme le héros en Python, mets les scores en ligne, puis passe devant le jury.",
     "dgp": "Un jeu de cartes chez le notaire : conseille la famille Deslaurier de 1959 à aujourd'hui, du contrat de mariage à la SCI.",
     "mbif": "Dans ton agence, cinq clients qui sont d'abord des personnes : écoute, crédit, confiance… et une PME à accompagner pendant huit ans.",
-    "dmb": "En anglais, comme le master : du dossier d'un patient à l'étude d'une cohorte, du séquençage au compte rendu clinique.",
+    "dmb": "En anglais, comme le master : du dossier d'un patient à l'étude d'une cohorte : un variant à interpréter, un consentement à respecter, un modèle à garder honnête.",
     "mh": "Un bad buzz frappe une chocolaterie : trie faits et rumeurs, décide avec Kant et Weber, tiens ton équipe, puis écris le communiqué.",
     "ecofi": "Un après-midi de stage dans une société de gestion : décision de la BCE, dépêche en anglais, rumeur, krach et start-up. Anticipe, vérifie, couvre-toi, actualise.",
     "lpabf": "Samedi matin, cinq clients à ton guichet : écoute ce qu'ils disent vraiment, règle le simulateur de crédit, réponds sous chrono et garde un œil sur la conformité.",
-    "ebmd": "Fais décoller le site d'une jeune marque lilloise : tunnel de commande, référencement, publicité… puis tiens le choc du Black Friday.",
+    "ebmd": "Un téléphone oublié sur un banc de Wenov : fouille les données de Camille, démasque le graphique trompeur et contredis le comité Black Friday, preuves à l'appui.",
 }
 
 

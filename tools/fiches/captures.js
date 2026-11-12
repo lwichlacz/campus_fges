@@ -22,6 +22,7 @@ export const VUES = {
 	robot:      { lieu:"eura",    cam:[75, 100, 110],   cible:[1, 6, 7],      fov:20 },
 	gaming:     { lieu:"eura",    cam:[-90, 100, 95],   cible:[1, 6, 7],      fov:20 },
 	boutique:   { lieu:"eura",    cam:[105, 95, -55],   cible:[1, 6, 7],      fov:20 },
+	telephone:  { lieu:"eura",    cam:[40, 70, 120],    cible:[1, 4, 7],      fov:20 },
 	biodata:    { lieu:"eura",    cam:[-85, 100, -65],  cible:[1, 6, 7],      fov:20 },
 	affaires:   { lieu:"eura",    cam:[60, 150, 185],   cible:[-12, 0, 18],   fov:26 },
 	crise:      { lieu:"ext",     cam:[78, 92, 88],     cible:[0, 8, -6],     fov:20 },

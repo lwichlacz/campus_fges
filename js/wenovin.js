@@ -3,7 +3,7 @@
    l'espace du Campus Cyber Hauts-de-France, le coworking et son café, le hall et la passerelle de l'étage.
    Les murs côté caméra s'effacent tout seuls. */
 import * as THREE from "three";
-import { std, box, cyl, mesh, beam, makeStudent, makePerson, mulberry32 } from "./kit.js?v=4c7bed0933";
+import { std, box, cyl, mesh, beam, makeStudent, makePerson, mulberry32 } from "./kit.js?v=43d5f798e9";
 
 const W = 44, D = 34, FL = 4.2, WING = 8;
 const HX = W/2, HZ = D/2, PX = HX - WING, PZ = HZ - WING;      // patio : 28 × 18
@@ -263,8 +263,8 @@ export function createWenovIn({ background }){
 			{ id:"cyber", icon:"🛡️", name:"Campus Cyber Hauts-de-France", pos:[11, 5.6, zN] },
 			{ id:"hiptown", icon:"☕", name:"Coworking et café", pos:[-HX + 4, 5, 3] },
 			{ id:"robot", icon:"🦾", name:"Plateau robotique · mini-jeu", pos:[HX - 4, 4.6, -4] },
-			{ id:"boutique", icon:"🛍️", name:"Studio e-commerce · mini-jeu (Master E-Business)", pos:[6, 4.6, PZ + 4] },
-			{ id:"telephone", icon:"📱", name:"Un téléphone vibre sur ce banc… · prototype (Master E-Business)", pos:[8.75, 2.6, 6.45] },
+			{ id:"boutique", icon:"🛍️", name:"Studio e-commerce · autre version du jeu (Master E-Business)", pos:[6, 4.6, PZ + 4] },
+			{ id:"telephone", icon:"📱", name:"Un téléphone vibre sur ce banc… · mini-jeu (Master E-Business)", pos:[8.75, 2.6, 6.45] },
 			{ id:"biolab", icon:"🧬", name:"Laboratoire bio-data · mini-jeu (en anglais)", pos:[-4, 4.6, PZ + 4] },
 			{ id:"sortir", icon:"🚪", name:"Ressortir dans le quartier", pos:[HX - 4, 4.4, 12] }
 		]

@@ -61,7 +61,7 @@ export const RENDEZ_VOUS = [
 ];
 
 /* Mini-jeux disponibles : id de formation → id du jeu */
-export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires", ebmd: "boutique", mh: "crise", lpabf: "guichet", ecofi: "ruee" };
+export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires", ebmd: "telephone", mh: "crise", lpabf: "guichet", ecofi: "ruee" };
 /* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */
 export const GAME_INFO = {
 	ruee:{ fid:"ecofi", title:"La Ruée", icon:"📈", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"4 min",
@@ -81,14 +81,16 @@ export const GAME_INFO = {
 		pitch:"Un jeu de cartes chez le notaire : conseille la famille Deslaurier de 1959 à aujourd'hui. Contrat de mariage, donation, assurance-vie, SCI… chaque carte jouée envoie l'argent à la famille, au fisc, ou finit en dispute. Et gare aux coups du sort !" },
 	affaires:{ fid:"mbif", title:"Une journée du chargé d'affaires", icon:"🤝", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12 min",
 		pitch:"Dans ton agence, cinq clients qui sont d'abord des personnes. Fais émerger l'iceberg des besoins d'un boulanger, repère les signaux faibles chez une veuve, construis le pont de la confiance avec un jeune couple, accompagne une PME pendant huit ans et bâtis la solution d'une famille sans faire tomber la tour." },
+	telephone:{ fid:"ebmd", title:"Le dossier de Camille", icon:"📱", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"8 min",
+		pitch:"Le téléphone de Camille, e-commerce manager de Courée, vibre sur un banc de Wenov. À 18 h, le comité Black Friday veut −50 % sur tout et 30 000 € de pub. Fouille ses messages et ses données, démasque le graphique trompeur, méfie-toi de l'assistant IA, puis contredis le comité preuve à l'appui." },
 	boutique:{ fid:"ebmd", title:"Courée, la boutique en 3D", icon:"🛍️", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12 min",
 		pitch:"Fais décoller le site d'une jeune marque lilloise : répare le tunnel de commande, grimpe sur les moteurs de recherche, monte une bannière cookies conforme, répartis 3 000 € de pub, cible tes clients… puis tiens le choc du Black Friday en direct. Et regarde tes visiteurs parcourir la boutique en 3D !" },
 	robot:{ fid:"spi", title:"Cellule robotique Wenov", icon:"🦾", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"7 min",
 		pitch:"Pilote un vrai bras robot en 3D, programme le cycle d'une ligne de production, puis donne-lui des yeux pour trier les pièces." },
-	gaming:{ fid:"info", title:"Game Jam 48 h", icon:"🎮", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12 min",
-		pitch:"Un week-end de game jam avec ton équipe de L1 : dessine un niveau faisable, programme le héros en Python et échappe au bug rouge, mets les scores en ligne en SQL, crée l’ambiance en réalité virtuelle, tiens le choc quand 5 000 joueurs débarquent, puis passe devant le jury. Bonus : crée et partage ton niveau." },
-	biodata:{ fid:"dmb", title:"From Blood to Decision", icon:"🧬", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"12-15 min",
-		pitch:"En anglais, comme le master : du dossier d'un patient fatigué à l'étude d'une cohorte. RGPD, contrôle qualité du séquençage, interprétation d'un variant, biostatistiques, machine learning et compte rendu clinique." }
+	gaming:{ fid:"info", title:"Game Jam 48 h", icon:"🎮", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"8-10 min",
+		pitch:"Un week-end de game jam avec ton équipe de L1 : dessine un niveau faisable, programme le héros en Python et échappe au bug rouge, mets les scores en ligne en SQL, tiens le choc quand 5 000 joueurs débarquent et démasque le tricheur, puis passe devant le jury. Bonus : l’ambiance en réalité virtuelle, et ton propre niveau à partager." },
+	biodata:{ fid:"dmb", title:"From Blood to Decision", icon:"🧬", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"8-10 min",
+		pitch:"En anglais, comme le master : du dossier d'un patient fatigué à l'étude d'une cohorte. RGPD, interprétation d'un variant et consentement, biostatistiques et machine learning, en quatre missions." }
 };
 
 export const PROFILES = {

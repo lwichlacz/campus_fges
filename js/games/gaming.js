@@ -5,15 +5,15 @@
    - H+6  · L1 programmation (Python) : écrire gravité, saut et sol du héros ; le code choisi tourne vraiment, puis on joue
             le niveau, poursuivi par un ennemi qui calcule son chemin avec le même parcours en largeur ;
    - H+20 · L1 bases de données, L2 back-end : la requête SQL du classement, servie par l'API du jeu ;
-   - H+28 · parcours IoT et réalité virtuelle : lumière, brouillard et caméra, puis un tour en vue subjective ;
-   - H+36 · réseaux et cloud, parcours Cyber : le jeu buzze, le serveur sature ; cache, serveurs, tricheur, scores signés ;
+   - H+36 · réseaux et cloud, parcours Cyber : le jeu buzze, le serveur sature ; cache et serveurs, puis scores signés à vérifier ;
    - H+47 · le jury joue le niveau en direct et note l'équipe.
-   Bonus : un éditeur de niveau libre, avec un lien à partager (?jeu=info&niveau=…).
+   Bonus après le bilan : l'ambiance en réalité virtuelle (parcours IoT et VR : lumière, brouillard, caméra, tour en vue subjective)
+   et un éditeur de niveau libre, avec un lien à partager (?jeu=info&niveau=…).
    La lumière des fenêtres suit les 48 heures (vendredi 18 h → dimanche 17 h) ; le style choisi habille toute la salle.
    Équipe, joueurs et scores sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
-import { makePerson } from "../kit.js?v=4c7bed0933";
-import { jpoCard } from "./jpo.js?v=4c7bed0933";
+import { makePerson } from "../kit.js?v=43d5f798e9";
+import { jpoCard } from "./jpo.js?v=43d5f798e9";
 
 const COURSES = {
 	gaming: ["L1", "Projet Gaming", "Toute la première année, chaque équipe conçoit et programme son propre jeu vidéo : idée, niveaux, code, tests, présentation devant un jury."],
@@ -680,15 +680,6 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 	const say = (who, t) => `<div class="gj-say"><i>${who === "ines" ? "🎨" : who === "yanis" ? "🎧" : who === "jury" ? "⚖️" : "📢"}</i><div><b>${TEAM[who] ? TEAM[who][0] : who === "jury" ? "Le jury" : "Annonce"}</b> · ${t}</div></div>`;
 	function msg(el, cls, t){ el.className = "gj-msg " + cls; el.innerHTML = t; el.hidden = false; }
 	function hint(t){ const h = $("#gjHint"); h.hidden = !t; if(t) h.textContent = t; }
-	function qcm(el, opts, good, onOk){
-		el.innerHTML = `<div class="gj-opts">${opts.map(([v, t]) => `<button class="gj-opt" data-q="${v}">${t}</button>`).join("")}</div><div class="gj-msg" hidden></div><div data-after></div>`;
-		el.querySelectorAll("[data-q]").forEach(b => b.addEventListener("click", () => {
-			if(el.querySelector(".gj-opt.ok")) return;
-			const o = opts.find(x => x[0] === b.dataset.q);
-			if(b.dataset.q !== good){ err(b.textContent); b.classList.add("ko"); if(o[2]) msg(el.querySelector(".gj-msg"), "ko", o[2]); return; }
-			b.classList.add("ok"); play("good"); el.querySelector(".gj-msg").hidden = true; onOk(el.querySelector("[data-after]"));
-		}));
-	}
 	function setMode(m){ S.mode = m; if(m !== "edit" && m !== "free") ghost.visible = false; canvas.style.cursor = ""; }
 	function scene0(){ stopRun(); clearTiles(); S.vrActive = false; scene.fog = null; dioSun.intensity = 0; podium.visible = false; portal.visible = false; pkMesh.visible = false; cheatPk.visible = false; cheatTag.visible = false; alarm.visible = false; jury.visible = false; jurors.forEach(j => j.note.visible = false); }
 
@@ -700,8 +691,8 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 			<p class="gj-p">Vendredi 18 h, salle de l'École du Numérique à Wenov. Comme toutes les équipes de L1 du <b>Projet Gaming</b>, la tienne a <b>48 heures</b> pour créer un jeu vidéo et le présenter au jury.</p>
 			${say("ines", "Le thème est tombé : <b>« Rentrer à temps »</b>. Un petit héros doit atteindre le drapeau. J'ai déjà posé la maquette du niveau sur la table. Tu choisis le style ?")}
 			<div class="gj-styles">${Object.entries(STYLES).map(([k, s]) => `<button data-style="${k}" class="${k === S.style ? "on" : ""}"><i>${s.icon}</i>${s.name}</button>`).join("")}</div>
-			<ul class="gj-list"><li><span>H+00</span>Dessiner un niveau faisable</li><li><span>H+06</span>Programmer le héros en Python</li><li><span>H+20</span>Mettre les scores en ligne</li><li><span>H+28</span>Créer l'ambiance en réalité virtuelle</li><li><span>H+36</span>Tenir quand le jeu buzze</li><li><span>H+47</span>Passer devant le jury</li></ul>
-			<p class="gj-p" style="font-size:13px;color:#5d5978">Pas besoin de savoir programmer : tout s'apprend en licence.</p>
+			<ul class="gj-list"><li><span>H+00</span>Dessiner un niveau faisable</li><li><span>H+06</span>Programmer le héros en Python</li><li><span>H+20</span>Mettre les scores en ligne</li><li><span>H+36</span>Tenir quand le jeu buzze</li><li><span>H+47</span>Passer devant le jury</li></ul>
+			<p class="gj-p" style="font-size:13px;color:#5d5978">Environ 8 minutes. Pas besoin de savoir programmer : tout s'apprend en licence. En bonus après le bilan : l'ambiance en réalité virtuelle.</p>
 			<button class="gj-go" data-a="m1">C'est parti ⏱</button>`);
 	}
 
@@ -880,7 +871,7 @@ LIMIT ${sel("lim")};</div>
 → [ { "pseudo": "${r.rows[0][0]}", "meilleur": ${r.rows[0][1]} },
     { "pseudo": "${r.rows[1][0]}", "meilleur": ${r.rows[1][1]} },
     { "pseudo": "${r.rows[2][0]}", "meilleur": ${r.rows[2][1]} } ]</div>
-				${course("bdd")}${course("back")}<button class="gj-go" data-a="mvr">⏩ H+28 · L'ambiance en VR</button>`;
+				${course("bdd")}${course("back")}<button class="gj-go" data-a="m4">⏩ H+36 · Le jeu buzze</button>`;
 			return;
 		}
 		err("sql");
@@ -930,16 +921,13 @@ LIMIT ${sel("lim")};</div>
 		msg(live, "ok", `✓ ${latencyOf(u)} ms, ${S.servers} serveurs : le <b>cache</b> évite de recalculer le podium 3 250 fois par seconde, et la charge est <b>répartie</b> entre les serveurs.`);
 		launchCheat("score : 999 999 en 3 s", "#ff3b3b");
 		const end = card.querySelector("[data-end]");
-		end.innerHTML = `${say("ines", "Attends… un paquet rouge : <b>« xX_Max_Xx : 999 999 points en 3 secondes »</b>. Le niveau rapporte au plus 3 pièces ! Il a modifié le jeu sur son ordinateur.")}<p class="gj-p"><b>Où faut-il vérifier les scores ?</b></p><div data-q></div>`;
-		qcm(end.querySelector("[data-q]"), shuffle([
-			["srv", "Sur le serveur : il refuse un score impossible (durée de la partie, pièces ramassées)"],
-			["client", "Dans le jeu, sur l'ordinateur du joueur, avant l'envoi", "Le tricheur contrôle son ordinateur : il peut modifier le jeu et sauter cette vérification. Ce qui compte se vérifie là où il n'a pas la main."],
-			["chiffre", "On chiffre le score pour qu'il ne puisse pas le lire", "Chiffrer protège un message des regards, mais n'empêche pas d'envoyer un faux score… chiffré."]
-		]), "srv", x => {
-			srv.phase = "blocked";
-			x.innerHTML = `<p class="gj-p" style="margin-top:8px">🛡️ Le serveur rejette le paquet : <b>jamais confiance au client</b>. C'est la première règle des parcours Cyber, et du back-end.</p>
-				${say("ines", "Max ne lâche pas : il prend une vraie partie à <b>1 990</b> points et change juste le chiffre en route. Le serveur ne peut pas deviner que c'est faux… sauf si chaque score est <b>signé</b>.")}
-				<p class="gj-p">À la fin d'une partie, le serveur calcule une <b>signature</b> : l'empreinte de <i>clé secrète + pseudo + score</i>. Changer un seul chiffre change toute l'empreinte. Vérifie les trois scores qui arrivent :</p>
+		end.innerHTML = `${say("ines", "Attends… un paquet rouge : <b>« xX_Max_Xx : 999 999 points en 3 secondes »</b>. Le niveau rapporte au plus 3 pièces ! Il a modifié le jeu sur son ordinateur. Le serveur l'a rejeté : <b>jamais confiance au client</b>.")}<div data-q></div>`;
+		setTimeout(() => { if(!closed && srv) srv.phase = "blocked"; }, 1600);
+		setTimeout(() => { if(!closed && srv && !srv.maxDone) launchCheat("xX_Max_Xx : 2 990 pts", "#d9822b"); }, 3200);
+		{
+			const x = end.querySelector("[data-q]");
+			x.innerHTML = `${say("ines", "Max ne lâche pas : il prend une vraie partie à <b>1 990</b> points et change juste le chiffre en route. Le serveur ne peut pas deviner que c'est faux… sauf si chaque score est <b>signé</b>.")}
+				<p class="gj-p">À la fin d'une partie, le serveur calcule une <b>signature</b> : l'empreinte de <i>clé secrète + pseudo + score</i>. Changer un seul chiffre change toute l'empreinte. Recalcule la signature des trois scores qui arrivent, puis accepte ou rejette chacun :</p>
 				<div class="gj-pk">${SIGNED.map(([p, s, real], i) => `<div data-i="${i}">${p} · <em>${s.toLocaleString("fr-FR")}</em> pts<br>signature reçue <em>${sign(p, real)}</em><div class="row"><button data-sig="check">🔏 Recalculer la signature</button></div></div>`).join("")}</div>
 				<div class="gj-msg" hidden data-sigmsg></div><div data-sigend></div>`;
 			setTimeout(() => { if(!closed && srv && !srv.maxDone) launchCheat("xX_Max_Xx : 2 990 pts", "#d9822b"); }, 1300);
@@ -959,22 +947,14 @@ LIMIT ${sel("lim")};</div>
 				done.add(i); b.classList.add("ok"); play("good"); m.hidden = true;
 				row.querySelectorAll("button").forEach(z => z.disabled = true);
 				if(!good){ srv.maxDone = true; srv.phase = "blocked"; }
-				if(done.size === SIGNED.length) sigQuiz(x.querySelector("[data-sigend]"));
+				if(done.size === SIGNED.length) sigEnd(x.querySelector("[data-sigend]"));
 			});
-		});
+		}
 		pan.scrollTo({ top:pan.scrollHeight, behavior:"smooth" });
 	}
 	function launchCheat(text, color){ cheatPk.visible = true; cheatPk.scale.setScalar(1); cheatPk.material.color.set(color); setLabel(cheatTag, text, color); cheatTag.visible = true; srv.cheatT = 0; srv.phase = "cheat"; }
-	function sigQuiz(el){
-		el.innerHTML = `<p class="gj-p" style="margin-top:10px"><b>Pourquoi Max ne peut-il pas fabriquer la bonne signature pour 2 990 ?</b></p><div data-q></div>`;
-		qcm(el.querySelector("[data-q]"), shuffle([
-			["cle", "Il ne connaît pas la clé secrète : elle ne quitte jamais le serveur"],
-			["long", "La signature est trop longue à recopier", "Recopier 8 caractères, c'est facile. Ce qui manque à Max, c'est de quoi les calculer."],
-			["cesar", "Elle est protégée par un code de César", "Un code de César se casse en 25 essais. Ici, sans la clé secrète, impossible de calculer l'empreinte."]
-		]), "cle", y => {
-			y.innerHTML = `<p class="gj-p" style="margin-top:8px">🔏 C'est le principe d'une signature : sans la clé, impossible de produire une empreinte valide, et la moindre modification se voit. On en trouve partout : paiements, mises à jour, connexions sécurisées.</p>${course("cloud")}${course("cyber")}${course("crypto")}<button class="gj-go" data-a="m5">⏩ H+47 · Le jury</button>`;
-			pan.scrollTo({ top:pan.scrollHeight, behavior:"smooth" });
-		});
+	function sigEnd(el){
+		el.innerHTML = `<p class="gj-p" style="margin-top:10px">🔏 Max ne peut pas fabriquer la bonne signature pour 2 990 : il lui faudrait la <b>clé secrète</b>, qui ne quitte jamais le serveur. C'est le principe d'une signature : sans la clé, impossible de produire une empreinte valide, et la moindre modification se voit. On en trouve partout : paiements, mises à jour, connexions sécurisées.</p>${course("cloud")}${course("cyber")}${course("crypto")}<button class="gj-go" data-a="m5">⏩ H+47 · Le jury</button>`;
 		pan.scrollTo({ top:pan.scrollHeight, behavior:"smooth" });
 	}
 	const P0 = new THREE.Vector3(), P1 = new THREE.Vector3(), P2 = new THREE.Vector3();
@@ -1052,6 +1032,7 @@ LIMIT ${sel("lim")};</div>
 			<ul class="gj-list">${order.map(k => `<li><span>${COURSES[k][0]}</span>${COURSES[k][1]}</li>`).join("")}</ul>
 			${jpoCard()}${openLead ? `<button class="gj-go" data-a="lead">📄 Recevoir la plaquette de la licence</button>` : ""}
 			<a class="gj-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir la Licence Informatique ↗</a>
+			<button class="gj-alt" data-a="mvr">🥽 Bonus : l'ambiance en réalité virtuelle</button>
 			<button class="gj-alt" data-a="free">🛠️ Bonus : créer mon propre niveau</button>
 			<button class="gj-alt" data-a="fav">${isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"}</button>
 			<button class="gj-alt" data-a="replay">Rejouer</button>`);
@@ -1076,7 +1057,7 @@ LIMIT ${sel("lim")};</div>
 	}
 	function brief(){ const el = $("#gjBrief"); if(el) el.innerHTML = vrChecks().map(([i, t, ok]) => `<li>${i} ${t}<b>${ok ? "✅" : "⬜"}</b></li>`).join(""); }
 	function missionVR(){
-		scene0(); ensureLevel(); ensurePhys(); setHour(28); stage("H+28 · L'ambiance VR"); setMode("idle"); respawn();
+		scene0(); ensureLevel(); ensurePhys(); setHour(28); stage("Bonus · L'ambiance VR"); setMode("idle"); respawn();
 		S.vr = { el:60, col:"neutre", fog:0, cam:"table" }; S.vrActive = true; applyVr(); setScreen({ kind:"title" });
 		show(`<div class="gj-k">H+28 · parcours IoT et réalité virtuelle</div><h2 class="gj-h">Samedi 22 h : le jeu est tout plat</h2>
 			${say("ines", "Le jeu marche, mais il n'a aucune ambiance. Le jury note aussi l'image… et Yanis a apporté son <b>casque de réalité virtuelle</b> ! Voilà ce que je veux :")}
@@ -1111,7 +1092,7 @@ LIMIT ${sel("lim")};</div>
 		const end = card.querySelector("[data-end]"), b = card.querySelector("[data-a=vrtour]");
 		if(!b || b.disabled) return;
 		b.disabled = true;
-		startRun("auto", () => { view = "fps"; end.insertAdjacentHTML("beforeend", `${course("vr")}<button class="gj-go" data-a="m4">⏩ H+36 · Le jeu buzze</button>`); pan.scrollTo({ top:pan.scrollHeight, behavior:"smooth" }); });
+		startRun("auto", () => { view = "fps"; end.insertAdjacentHTML("beforeend", `${course("vr")}<button class="gj-go" data-a="bilan">⏩ Retour au bilan</button>`); pan.scrollTo({ top:pan.scrollHeight, behavior:"smooth" }); });
 		view = "fps";
 	}
 
@@ -1172,7 +1153,7 @@ LIMIT ${sel("lim")};</div>
 		bfs:startBfs, reset:() => { if(S.mode !== "edit") return; S.extra = Array(N).fill(0); buildLevel(); clearTiles(); refreshBudget(); },
 		test:testPhys, play:() => playLevel("play", afterPlay2), auto:() => { if(run && run.mode === "play"){ stopRun(); } playLevel("auto", afterPlay2); },
 		sql:runSql, deploy, jplay:() => juryRun("play"), jauto:() => juryRun("auto"),
-		mvr:missionVR, vrok:vrValidate, vrtour:vrTour,
+		mvr:missionVR, bilan:() => finale(true), vrok:vrValidate, vrtour:vrTour,
 		free:freeEditor, ftest:freeTest, flink:freeLink, bilan:() => finale(true), shared:sharedPlay,
 		fshare:() => navigator.share?.({ title:"Mon niveau · Game Jam 48 h", text:"Essaie de finir mon niveau dans le campus 3D de la FGES !", url:shareUrl() }).catch(() => {}),
 		freset:() => { if(S.mode !== "free") return; S.custom = BASE.map((h, i) => h + S.extra[i]); buildLevel(); clearTiles(); respawn(); }
@@ -1236,7 +1217,7 @@ LIMIT ${sel("lim")};</div>
 	applyStyle(); buildLevel(); respawn(); drawLed(0); resize(); intro(); loop();
 	onEvent && onEvent("start");
 	// mode relecture : étapes où l'enseignant peut sauter directement
-	onEvent && onEvent("missions", [["H+00 · Le niveau (algorithmique)", mission1], ["H+06 · Le héros (Python)", mission2], ["H+20 · Les scores (SQL, API)", mission3], ["H+28 · L'ambiance (réalité virtuelle)", missionVR], ["H+36 · Le serveur (réseau, cyber)", mission4], ["H+47 · Le jury", mission5], ["Bilan", finale], ["Bonus · Éditeur de niveau", freeEditor]]);
+	onEvent && onEvent("missions", [["H+00 · Le niveau (algorithmique)", mission1], ["H+06 · Le héros (Python)", mission2], ["H+20 · Les scores (SQL, API)", mission3], ["H+36 · Le serveur (réseau, cyber)", mission4], ["H+47 · Le jury", mission5], ["Bilan", finale], ["Bonus · L'ambiance (réalité virtuelle)", missionVR], ["Bonus · Éditeur de niveau", freeEditor]]);
 	if(window.campus) window.campus.game = { S, hero, foe, get run(){ return run; }, mission1, mission2, mission3, missionVR, mission4, mission5, finale, freeEditor, sharedPlay, bfs:(...a) => bfs(heights(), ...a), startRun, scene, camera, get view(){ return view; },
 		advance(sec){ for(let i = 0; i < sec*60; i++){ tickBfs(1/60); tickRun(1/60); tickSrv(1/60, i/60); tickCamera(1/60, 0); } } };      // essais : faire avancer la simulation sans attendre l'affichage
 }

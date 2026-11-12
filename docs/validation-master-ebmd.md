@@ -1,4 +1,31 @@
-# Fiche de validation · Mini-jeu « Courée, la boutique en 3D » (Master E-Business & Marketing Digital)
+# Fiche de validation · Master E-Business & Marketing Digital
+
+Le master a deux jeux. **Le jeu principal est désormais « Le dossier de Camille »** (lien direct `?jeu=ebmd`, épingle « Un téléphone vibre sur ce banc… » dans le patio de Wenov). « Courée, la boutique en 3D » reste jouable en variante (épingle « Studio e-commerce »). Les deux jeux sont décrits ci-dessous.
+
+## A. « Le dossier de Camille » (jeu principal)
+
+**Durée :** environ 8 minutes (horloge du jeu de 16 h 30 à 18 h).
+**Fichier du jeu :** `js/games/dossier.js` (contenus en haut du fichier : `FACTS`, `CLAIMS`, `PLAN`, `DOCS`).
+**Scénario :** le téléphone de Camille, e-commerce manager de Courée (marque fictive), vibre sur un banc. À 18 h, le comité Black Friday veut −50 % sur tout et 30 000 € de pub sur les réseaux. Le joueur fouille le téléphone par mots-clés, cadre des captures d'écran comme preuves, démasque un graphique à l'axe tronqué, se méfie d'un assistant IA qui invente un chiffre, puis contredit le comité en appel vidéo en présentant la bonne preuve au bon moment.
+
+| Affirmation du comité | Preuve attendue | Cours |
+|---|---|---|
+| « Le Black Friday a fait +400 % » | Vraie hausse : +4 % (axe tronqué) | Web analytics |
+| « −50 % sur tout, le volume fait la marge » | À 26 €, perte de 6,40 € par sweat (coût de revient 32,40 €) | Contrôle de gestion |
+| « L'entrepôt suit quel que soit le volume » | LogiNord : 800 colis par jour au maximum ; stock L : 140 pièces | E-logistics |
+| « Retours à 8 % d'après l'IA » | Taux réel 23 %, avis « trop petit » (l'IA n'avait pas de source) | IA appliquée au marketing |
+| « 30 000 € de pub sur les réseaux » | ROAS réseaux 0,8 contre 4,1 en recherche et 9,2 en e-mail | Acquisition et stratégies de croissance |
+| « On garde la bannière pré-cochée » | Cases pré-cochées : consentement non valable, sanction jusqu'à 4 % du CA | Droit du numérique |
+| « Les assistants IA ne nous concernent pas » | Courée n'est jamais citée par l'assistant | Référencement (SEO et GEO) |
+| Deux affirmations vraies (coût 32,40 €, fidèles = 60 % du CA) | Ne rien objecter | Contrôle de gestion, CRM |
+
+- [ ] Les situations et les chiffres sont-ils plausibles pour une PME e-commerce ?
+- [ ] Les deux pièges (affirmations vraies, chiffre inventé par l'IA) sont-ils pertinents ?
+
+---
+
+## B. « Courée, la boutique en 3D » (variante)
+
 
 **À relire par :** la responsable pédagogique du Master E-Business & Marketing Digital
 **Objectif du jeu :** faire vivre le métier de chef de projet e-commerce / marketing digital à un candidat bac+3, en lui montrant que chaque décision (UX, référencement, RGPD, acquisition, CRM, logistique) se voit dans les chiffres du site.

@@ -155,8 +155,8 @@
     "id": "gaming",
     "title": "Game Jam 48 h",
     "icon": "🎮",
-    "dur": "12 min",
-    "pitch": "Un week-end de game jam avec ton équipe de L1 : dessine un niveau faisable, programme le héros en Python et échappe au bug rouge, mets les scores en ligne en SQL, crée l’ambiance en réalité virtuelle, tiens le choc quand 5 000 joueurs débarquent, puis passe devant le jury. Bonus : crée et partage ton niveau."
+    "dur": "8-10 min",
+    "pitch": "Un week-end de game jam avec ton équipe de L1 : dessine un niveau faisable, programme le héros en Python et échappe au bug rouge, mets les scores en ligne en SQL, tiens le choc quand 5 000 joueurs débarquent et démasque le tricheur, puis passe devant le jury. Bonus : l’ambiance en réalité virtuelle, et ton propre niveau à partager."
    }
   },
   {
@@ -332,8 +332,8 @@
     "id": "biodata",
     "title": "From Blood to Decision",
     "icon": "🧬",
-    "dur": "12-15 min",
-    "pitch": "En anglais, comme le master : du dossier d'un patient fatigué à l'étude d'une cohorte. RGPD, contrôle qualité du séquençage, interprétation d'un variant, biostatistiques, machine learning et compte rendu clinique."
+    "dur": "8-10 min",
+    "pitch": "En anglais, comme le master : du dossier d'un patient fatigué à l'étude d'une cohorte. RGPD, interprétation d'un variant et consentement, biostatistiques et machine learning, en quatre missions."
    }
   },
   {
@@ -344,11 +344,11 @@
    "levelLabel": "Masters",
    "url": "https://www.fges.fr/formations/master-e-business-et-marketing-digital/",
    "game": {
-    "id": "boutique",
-    "title": "Courée, la boutique en 3D",
-    "icon": "🛍️",
-    "dur": "12 min",
-    "pitch": "Fais décoller le site d'une jeune marque lilloise : répare le tunnel de commande, grimpe sur les moteurs de recherche, monte une bannière cookies conforme, répartis 3 000 € de pub, cible tes clients… puis tiens le choc du Black Friday en direct. Et regarde tes visiteurs parcourir la boutique en 3D !"
+    "id": "telephone",
+    "title": "Le dossier de Camille",
+    "icon": "📱",
+    "dur": "8 min",
+    "pitch": "Le téléphone de Camille, e-commerce manager de Courée, vibre sur un banc de Wenov. À 18 h, le comité Black Friday veut −50 % sur tout et 30 000 € de pub. Fouille ses messages et ses données, démasque le graphique trompeur, méfie-toi de l'assistant IA, puis contredis le comité preuve à l'appui."
    }
   },
   {
