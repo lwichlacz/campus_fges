@@ -1,7 +1,7 @@
 /* Encart « Viens le vivre en vrai » des écrans de fin : le prochain rendez-vous sur le campus (RENDEZ_VOUS, data.js).
    Même encart dans tous les jeux, au moment où le visiteur est le plus convaincu. Ne s'affiche plus quand aucun
    rendez-vous n'est à venir. Le jaune est celui du banc du patio de Wenov : il ne se confond avec aucun habillage. */
-import { RENDEZ_VOUS } from "../data.js?v=4c7bed0933";
+import { RENDEZ_VOUS } from "../data.js?v=1d668366aa";
 
 export function nextRendezVous(now = new Date()){
 	const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
