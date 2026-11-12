@@ -1,127 +1,154 @@
-# Fiche de validation · Mini-jeu « Mission Jardin Boulay » (Licence Sciences de la Vie)
+# Fiche de validation · Mini-jeu « Le jardin se tait » (Licence Sciences de la Vie)
 
 **À relire par :** un enseignant de la Licence Sciences de la Vie
-**Objectif du jeu :** faire vivre à un lycéen le travail d'un biologiste (terrain, identification, écologie, comptage, génétique) à partir d'un lieu réel du campus.
-**Scénario :** la Ville se demande si le jardin botanique Nicolas Boulay mérite le label « refuge de biodiversité ». Le labo de licence du joueur fait l'inventaire.
-**Durée d'une partie :** environ 7 minutes. On peut ensuite rejouer directement la L3 pour découvrir les autres parcours.
-**Fichier du jeu :** `js/games/jardin.js` (les contenus sont regroupés en haut du fichier : `SPECIES`, `KEY`, `WEB_NODES`, `WEB_OK`, `COURSES`).
+**Objectif du jeu :** faire vivre à un lycéen le travail d'un biologiste de terrain : observer, identifier, compter, calculer, confronter une hypothèse aux données, puis défendre un diagnostic avec des preuves.
+**Fichier du jeu :** `js/games/jardin.js` (chargeur `jardin`, formation `sv`). Les contenus sont regroupés en haut du fichier : `TAXA`, `KEY`, `NET`, `TRUTH`, `RELEVE`, `PISTES`, `CLUES`, `HYPS`, `ACTIONS`, `COURSES`.
+**Durée d'une partie :** 7 à 9 minutes (estimation : 8 min pour un lycéen qui lit les textes). L'écran de fin affiche la durée réelle.
 
 Merci de cocher, corriger ou commenter chaque point.
 
 ---
 
-## 1. Déroulé : un tronc commun, puis la spécialisation de L3
+## 1. Le dossier et la question
 
-| Étape | Année | Ce que fait le joueur | Cours révélé |
+Fin septembre, au jardin botanique Nicolas Boulay. Thibault, le jardinier (personnage fictif), écrit : cet été, presque pas d'abeilles ni de bourdons, et les pommiers ont donné trois fois moins de fruits. « Le jardin se tait. »
+
+**La question :** pourquoi les pollinisateurs disparaissent-ils, et que faire avant le printemps ?
+
+Le joueur mène un **seul diagnostic**. Son **carnet de terrain** (un objet 3D posé sur une table de terrain, consultable à tout moment avec le bouton « Carnet ») contient :
+- à gauche, les **cinq pistes de Thibault** : « des guêpes rôdent près des ruches », « le voisin traite ses rosiers », « la prairie fleurit moins », « des bourraches blanches dans mon semis », « l'antenne-relais du toit voisin » (rumeur) ;
+- à droite, les **indices** que le joueur y écrit au fil de l'enquête (pages 1 à 4), plus une **page 5 « fausse piste »**.
+
+Deux fausses pistes : la « guêpe » de la lavande (un syrphe, pollinisateur) et l'antenne-relais (aucune mesure ne la soutient).
+
+- [ ] Le scénario est-il plausible pour un jardin botanique urbain ? (Le rucher du jardin est fictif.)
+- [ ] Les causes retenues (frelon asiatique, insecticide, appauvrissement floral, semis à fleurs blanches) sont-elles crédibles ensemble ?
+
+## 2. Déroulé : quatre indices, un rapport
+
+| Étape | Année | Ce que fait le joueur (geste du biologiste) | Ce qu'il produit | Cours révélé |
+|---|---|---|---|---|
+| Indice 1 · Terrain | L1 | Touche dans la scène 3D trois insectes rayés près des ruches ; pour chacun, promène une **loupe** sur le dessin (flou à l'œil nu, net sous la lentille) pour observer le caractère demandé, puis avance dans la **clé de détermination** | L'identification de chaque suspect | Biologie des organismes |
+| Indice 2 · Réseau trophique | L1 | **Prédit** pour cinq maillons du réseau (glisser la case vers le haut ou le bas) l'effet de l'insecticide six semaines plus tard, puis **observe** le relevé de Thibault | Cinq prédictions, confrontées aux mesures | Écologie |
+| Indice 3 · Quadrats | L2 | **Lance** le cadre d'1 m² sans viser (le point de chute est tiré au hasard), **compte** les fleurs dans le cadre en les touchant une à une, quatre fois, puis **calcule** la densité et la compare à l'inventaire de 2023 sur un pavé numérique | La densité (fleurs/m²) et le rapport avec 2023 | Écologie quantitative |
+| Indice 4 · Génétique | L3 | **Compte** les pieds blancs du semis de bourrache dans la scène, **règle le génotype** des deux parents (toucher un allèle le fait passer de B à b) jusqu'à ce que l'échiquier prédise le nombre de blanches observé, puis **calcule** les visites par pied | Le génotype des parents (Bb × Bb) et le taux de visite | Génétique |
+| Rapport au jardinier | — | **Agrafe** une page du carnet à chaque cause qu'elle prouve, **écarte** les pistes sans preuve, puis choisit **deux actions**, chacune agrafée à la page qui la justifie | Le diagnostic et le plan d'action | — |
+
+Aucune étape ne se joue par glisser-déposer ni en choisissant une réponse dans une liste : le joueur observe, compte, calcule, règle une hypothèse et l'appuie sur une preuve. Les seuls choix à deux options sont les couplets de la clé de détermination, et ils ne se débloquent qu'après l'observation à la loupe.
+
+- [ ] Les années associées à chaque notion sont-elles justes (quadrats en L2, génétique en L3) ?
+- [ ] Les gestes sont-ils représentatifs des TP et sorties de terrain de la licence ?
+
+## 3. Indice 1 · La clé de détermination (simplifiée)
+
+| Couplet | Caractère observé à la loupe | Réponses |
+|---|---|---|
+| 1. Combien d'ailes ? | les ailes | Deux ailes, une seule paire → **Syrphe ceinturé** (*Episyrphus balteatus*, Diptères) · Quatre ailes, deux paires → couplet 2 |
+| 2. Couleur du thorax ? | le thorax | Brun-roux → **Frelon européen** (*Vespa crabro*) · Noir → couplet 3 |
+| 3. Abdomen et pattes ? | l'abdomen et le bout des pattes | Abdomen sombre à un large anneau orange, bout des pattes jaune → **Frelon asiatique** (*Vespa velutina*) · Abdomen jaune rayé de noir → **Guêpe commune** (*Vespula vulgaris*, aucun spécimen dans le jeu) |
+
+Les trois spécimens : le frelon asiatique en vol stationnaire devant les ruches, le syrphe au-dessus de la lavande, le frelon européen sur un tronc. Le dessin du syrphe montre une seule paire d'ailes et les deux balanciers ; ceux des frelons montrent deux paires d'ailes.
+
+| Espèce | Fiche affichée |
+|---|---|
+| Syrphe ceinturé | Imite une guêpe (mimétisme) mais n'a pas de dard et butine : un pollinisateur, pas un suspect |
+| Frelon européen | Indigène, chasse surtout d'autres insectes et ne s'attaque que rarement aux ruches ; on ne le détruit pas |
+| Frelon asiatique | Exotique envahissant, arrivé en France vers 2004 ; chasse en vol stationnaire devant les ruches, les abeilles n'osent plus sortir |
+
+- [ ] La clé est-elle juste malgré la simplification ? Le couplet « couleur du thorax » sépare-t-il correctement les deux frelons ?
+- [ ] Faut-il citer la date d'arrivée du frelon asiatique (2004, dans le Lot-et-Garonne) ?
+
+## 4. Indice 2 · Réseau trophique et effet en cascade
+
+Réseau affiché (la flèche va de celui qui est mangé vers celui qui mange) : Rosiers → Pucerons → Coccinelles · Fleurs → Abeilles → Frelons asiatiques · en pointillés, l'abeille pollinise les fleurs, qui font des graines.
+
+Scénario : en juin, le voisin a ressorti un vieux bidon d'insecticide (interdit aux jardiniers amateurs depuis 2019, loi Labbé). Le produit tue pucerons, coccinelles et abeilles qu'il touche. Thibault avait fait un relevé la veille, puis six semaines plus tard.
+
+| Relevé | Avant | Mi-juillet | Prédiction attendue |
 |---|---|---|---|
-| Terrain | L1 | Cherche 6 petites bêtes cachées dans le jardin en 3D et identifie chacune avec une clé de détermination | Biologie des organismes |
-| Réseau trophique | L1 | Relie « qui mange qui », puis prédit l'effet d'un insecticide | Écologie |
-| Génétique | L2 | Croisement de Mendel : prédit la F1, remplit l'échiquier de croisement, sème 40 graines et compare l'observé à l'attendu | Génétique |
-| **Choix de la spécialisation** | L3 | Choisit l'un des trois parcours ci-dessous (une médaille par parcours) | — |
-| 🌿 Écologie opérationnelle | L3 | Quadrats : échantillonne une prairie, compte, estime la population | Parcours Écologie opérationnelle |
-| 🧬 Biotechnologies | L3 | Labo de bioproduction (5 étapes, voir § 6) | Parcours Biotechnologies |
-| ⚙️ Ingénieur | L3 | Ferme urbaine du Palais Rameau (3 étapes, voir § 7) | Parcours Ingénieur |
-| Rapport de mission | — | Bilan, mention, cours rencontrés, invitation à essayer les autres parcours | — |
+| Pucerons par rameau | 4 | 31 | ↑ (effet rebond : ils se reproduisent vite et n'ont plus de prédateurs) |
+| Coccinelles sur les rosiers | 9 | 1 | ↓ |
+| Abeilles sur la lavande (10 min) | 38 | 14 | ↓ |
+| Graines par fleur de bourrache (4 au plus) | 3,6 | 1,9 | ↓ (moins de pollinisation) |
+| Feuilles saines des rosiers | 90 % | 55 % | ↓ |
 
-- [ ] Les activités sont-elles représentatives de la licence ?
-- [ ] Les années associées à chaque notion sont-elles justes (la génétique est passée en L2) ?
-- [ ] Les intitulés des trois parcours sont-ils exacts ?
+Chaque mauvaise prédiction compte une erreur et reçoit son explication. Conclusion : effet en cascade ; la parade est la **lutte biologique** (lâcher des larves de coccinelles).
 
-## 2. Terrain : la clé de détermination (simplifiée)
+- [ ] Les chiffres du relevé sont-ils plausibles (ils sont inventés) ?
+- [ ] Le rappel de la loi Labbé est-il exact et bien formulé ?
 
-| Question | Réponses |
+## 5. Indice 3 · Quadrats
+
+- Prairie de 20 m² (5 × 4 mètres carrés). Chaque mètre carré porte entre 3 et 9 fleurs.
+- Les quatre quadrats tombent au hasard, sur des carrés choisis pour que la moyenne tombe juste : 24 fleurs au total, soit **6 fleurs par m²** (exemples de tirages : 5, 7, 4, 8 ou 6, 6, 5, 7).
+- Le joueur compte en touchant les fleurs dans le cadre (un comptage incomplet est refusé), puis tape la densité : (somme) ÷ 4 = 6. Une réponse égale au total (24) déclenche l'explication « il faut partager entre 4 m² ».
+- Comparaison : inventaire 2023, même semaine, même protocole, **12 fleurs par m²** ; le joueur tape 12 ÷ 6 = **2** : deux fois moins de fleurs.
+- Message : un cercle vicieux (moins de pollinisateurs → moins de graines → moins de fleurs → moins de nourriture) ; le tirage au hasard évite le biais d'échantillonnage.
+
+- [ ] Le vocabulaire (quadrat, densité, protocole, biais) est-il juste ?
+- [ ] La règle des fleurs « à cheval sur le cadre » mériterait-elle d'être jouée ? (Aujourd'hui, aucune fleur ne touche le cadre.)
+
+## 6. Indice 4 · Génétique (L3)
+
+- Semis de l'an dernier : les graines de deux bourraches **bleues** du jardin. 32 pieds : **23 bleues, 9 blanches**.
+- Le gène de la couleur a deux allèles : **B** (bleu, dominant) et **b** (blanc, récessif). Une fleur est blanche seulement si elle est bb.
+- Le joueur règle le génotype des deux parents ; l'échiquier de croisement et le nombre de blanches attendu sur 32 se mettent à jour. Un parent bb est refusé (il aurait été blanc). BB × BB ou BB × Bb donnent 0 blanche attendue : l'hypothèse est rejetée face aux 9 observées (une erreur).
+- Bonne hypothèse : **Bb × Bb**, 3:1 attendu, soit 24 et 8 ; observé 23 et 9 : écart dû au hasard (un test du χ² le confirmerait). Origine de l'allèle b : une bourrache blanche plantée à côté il y a deux ans.
+- Visites notées par Thibault en 30 min : 69 sur les 23 pieds bleus, 9 sur les 9 pieds blancs. Le joueur tape 69 ÷ 23 = **3** visites par pied bleu, contre 1 par pied blanc.
+- Message : arracher les blanches ne suffit pas, deux bleues sur trois sont Bb en moyenne.
+
+- [ ] **À vérifier en priorité :** chez la bourrache (*Borago officinalis*), la fleur blanche est-elle bien un caractère récessif monogénique ? Sinon, quelle espèce mellifère prendre ?
+- [ ] Les fleurs blanches de bourrache sont-elles réellement moins visitées ? (Les chiffres sont inventés pour le jeu.)
+- [ ] La notation (B / b, même lettre, majuscule pour le dominant) convient-elle ?
+
+## 7. Le rapport au jardinier
+
+**Les causes** (agrafer une page ou écarter) :
+
+| Cause proposée | Attendu |
 |---|---|
-| 1. Son corps est couvert de… | Plumes → **Mésange bleue** (Oiseaux) · Poils ou piquants → **Hérisson d'Europe** (Mammifères) · Ni l'un ni l'autre → question 2 |
-| 2. A-t-il des pattes ? | Non → **Lombric** (Annélides) · Oui → question 3 |
-| 3. Combien de pattes ? | 8 → **Épeire diadème** (Arachnides) · 6 → question 4 |
-| 4. Ses ailes de devant sont… | Dures et colorées (élytres) → **Coccinelle à sept points** (Insectes, Coléoptères) · Fines et transparentes → **Abeille domestique** (Insectes, Hyménoptères) |
+| Un prédateur chasse les abeilles devant les ruches | page 1 (frelon) |
+| Un produit chimique tue ou affaiblit les insectes | page 2 (insecticide) |
+| Les pollinisateurs trouvent moins de fleurs à butiner | page 3 (quadrats) |
+| Une partie des fleurs attire moins les pollinisateurs | page 4 (semis) |
+| Les insectes rayés de la lavande sont des guêpes dangereuses | écartée (la page 5 prouve le contraire) |
+| Les ondes de l'antenne-relais font fuir les abeilles | écartée (aucune preuve) |
 
-Chaque espèce est présentée par un dessin (le joueur compte les pattes, observe les ailes) et une anecdote :
+**Deux actions** parmi six, chacune agrafée à la page qui la justifie :
 
-| Espèce | Anecdote affichée |
+| Action | Justification attendue |
 |---|---|
-| Coccinelle | Dévore des dizaines de pucerons par jour : utilisée comme insecticide naturel |
-| Abeille | Transporte le pollen de fleur en fleur : la pollinisation |
-| Épeire | Huit pattes, pas d'antennes, pas d'ailes : un arachnide, pas un insecte |
-| Lombric | Digère les feuilles mortes et aère le sol |
-| Mésange bleue | Un couple apporte des milliers de chenilles à ses petits au printemps |
-| Hérisson | Chasse la nuit limaces, vers et insectes ; espèce protégée |
+| Faire détruire le nid de frelons asiatiques par un professionnel, et poser des grilles d'entrée sur les ruches | page 1 |
+| Expliquer au voisin la loi Labbé, et lui proposer des coccinelles contre les pucerons (lutte biologique) | page 2 |
+| Semer des fleurs sauvages locales dans la prairie, et la faucher plus tard | page 3 |
+| Ressemer avec des graines de bourrache bleue de lignée pure (BB) | page 4 |
+| Poser des pièges sucrés contre tous les insectes rayés du jardin | piège : tuerait aussi syrphes, frelons européens et abeilles |
+| Déplacer les ruches loin de l'antenne-relais | piège : aucune preuve |
 
-- [ ] La clé est-elle juste scientifiquement, malgré la simplification ?
-- [ ] Les rangs taxonomiques et les anecdotes sont-ils corrects ?
-- [ ] Faut-il d'autres espèces (une plante, un champignon) ?
+Toute paire de deux actions justes, chacune avec sa bonne page, est acceptée.
 
-## 3. Réseau trophique
-
-La flèche va **de celui qui est mangé vers celui qui mange** (sens du flux d'énergie). Le joueur doit tracer au moins ces liens :
-Rosier → Puceron · Puceron → Coccinelle · Puceron ou Coccinelle → Mésange · Mésange → Épervier · Feuilles mortes → Lombric · Lombric → Hérisson.
-Le lien Coccinelle → Hérisson est aussi accepté. Une flèche dans le mauvais sens déclenche un message sur la convention.
-
-Question finale : un insecticide non sélectif tue pucerons et coccinelles ; les pucerons reviennent plus vite que leurs prédateurs, donc les rosiers sont plus attaqués. Le jeu conclut sur la **lutte biologique**.
-
-- [ ] Les liens acceptés et refusés sont-ils justes (mettre « feuilles mortes » dans un réseau trophique est-il acceptable, ou faut-il parler de réseau détritivore) ?
-- [ ] Le scénario de l'insecticide est-il correct ?
-
-## 4. Parcours Écologie opérationnelle : quadrats
-
-- Prairie de 100 m², découpée en 100 quadrats d'1 m². Les fleurs sont plus denses côté soleil : entre environ 1 et 14 par quadrat, soit 450 à 600 au total.
-- Le joueur choisit 4 quadrats, ou les tire au hasard, puis compte les fleurs en les touchant une à une.
-- Estimation = moyenne × 100. Le vrai total est ensuite révélé.
-- Si le joueur a choisi lui-même ses quadrats et que l'écart dépasse 15 %, le jeu explique le **biais d'échantillonnage** et l'intérêt du tirage aléatoire. Si les quadrats étaient tirés au hasard, il explique l'effet du faible nombre de quadrats.
-
-- [ ] Le vocabulaire (quadrat, échantillonnage, biais, estimation) est-il juste ?
-- [ ] Faut-il évoquer l'intervalle de confiance, ou est-ce trop pour des lycéens ?
-
-## 5. Génétique (tronc commun, L2)
-
-- Pois à fleurs violettes (allèle V, dominant) × pois à fleurs blanches (allèle v, récessif), lignées pures. F1 : tous Vv, donc violets. Le jeu signale que « mauve » est faux : les caractères ne se mélangent pas dans ce cas.
-- Échiquier de croisement Vv × Vv : VV, Vv, Vv, vv. Proportion de blanches attendue : 1/4.
-- Le joueur sème 40 graines : tirage aléatoire à 25 % de blanches. Le jeu compare à l'attendu (30 / 10), explique que l'écart vient du hasard, et cite le **test du χ²**.
-
-- [ ] La notation des allèles (V / v, même lettre, majuscule pour le dominant) convient-elle, ou préférez-vous celle utilisée en cours (par exemple entre crochets) ?
-- [ ] Le test du χ² est-il bien enseigné en L3 (ou plus tôt) ?
-
-## 6. Parcours Biotechnologies : le labo de bioproduction
-
-Scénario : faire produire une enzyme par des bactéries.
-
-| Étape | Exercice | Bonne réponse / réussite |
-|---|---|---|
-| 1. Amorce de PCR | Face au brin 3'-ATGCGTAC-5', construire base par base (A–T, G–C) l'amorce antiparallèle, écrite de 5' vers 3' | 5'-TACGCATG-3' |
-| 2. Gel d'électrophorèse | Trouver le puits dont la bande est à 750 pb, face à une échelle 1000 / 750 / 500 / 250 pb | Le puits à la hauteur du repère 750 |
-| 3. Dilutions en série | Geste de pipette : maintenir le doigt appuyé et relâcher à 100 µL (tolérance 85 à 115 µL), trois fois ; puis calculer la dilution finale | 1/1 000 |
-| 4. Bioréacteur en direct (24 s) | Garder 37 °C et pH 7 malgré deux imprévus (chauffage qui s'emballe, acidification du milieu) ; la croissance suit une courbe logistique | Score = densité atteinte / objectif |
-| 5. Comptage de colonies | Compter N colonies sur une boîte de Petri (0,1 mL de la dilution au 1/1 000), puis calculer la concentration | N × 10 000 bactéries par mL |
-
-- [ ] L'orientation des brins (antiparallèles, amorce allongée par son extrémité 3') est-elle bien présentée ?
-- [ ] Les valeurs (37 °C, pH 7, 750 pb, volumes) sont-elles crédibles ?
-- [ ] Le terme « bactéries par mL » convient-il, ou faut-il introduire les UFC ?
-
-## 7. Parcours Ingénieur : la ferme urbaine du Palais Rameau
-
-| Étape | Exercice | Bonne réponse / réussite |
-|---|---|---|
-| 1. Dimensionner | 60 salades par semaine, 5 semaines de pousse → salades en culture ; 12 salades par bac → nombre de bacs ; 2 L/h par bac → choix de la pompe (30, 60 ou 120 L/h) | 300 salades, 25 bacs, pompe de 60 L/h (il faut 50 L/h) |
-| 2. Modéliser | Mesures de masse tous les 2 jours : choisir le modèle (droite, exponentielle, courbe en S), puis lire le jour où la salade atteint 200 g | Croissance logistique ; jour 27 |
-| 3. Piloter la serre (24 s) | Régler lumière, nutriments (idéal vers 1,8) et aération (canicule en cours de partie) sans dépasser un budget de 30 kWh | Meilleur compromis vers 70 % de lumière (score ≈ 88 %) ; plus de lumière dépasse le budget |
-
-- [ ] Le parcours « Ingénieur » prépare-t-il bien aux écoles d'ingénieurs (agro, bio) ? Le ton est-il juste ?
-- [ ] Faut-il un autre exemple qu'une ferme urbaine (bioprocédé industriel, traitement de l'eau) ?
+- [ ] Les actions sont-elles réalistes et bien formulées (destruction du nid, grilles d'entrée, fauche tardive) ?
+- [ ] Faut-il imposer une action prioritaire (par exemple le frelon) ?
 
 ## 8. Mention
 
-| Mention | Condition |
+| Mention | Erreurs sur toute la partie |
 |---|---|
-| Très bien | 3 erreurs au plus et score du parcours ≥ 70 % |
-| Bien | 8 erreurs au plus et score du parcours ≥ 40 % |
-| Assez bien | Au-delà |
+| Très bien | 3 au plus |
+| Bien | 4 à 7 |
+| Assez bien | 8 à 12 |
+| De justesse | au-delà |
 
-Une erreur, c'est une mauvaise réponse dans la clé, une mauvaise flèche, une mauvaise réponse à une question ou un pipetage raté. Le score du parcours vient de l'écart des quadrats (Écologie), du rendement du bioréacteur (Biotech) ou du pilotage de la serre (Ingénieur).
+Une erreur, c'est : une mauvaise réponse dans la clé, une prédiction fausse du réseau, un comptage incomplet, un calcul faux, une hypothèse génétique rejetée, une cause mal classée ou une action injustifiée.
 
-## 9. Questions ouvertes pour l'enseignant
+## 9. Ce qui reste de l'ancienne version
 
-1. Une sortie de terrain, un TP ou un stage emblématique de la licence qu'on pourrait mettre en scène ?
-2. Faut-il illustrer les parcours de L3 (écologie, biologie santé…) ?
-3. Le ton (« ton labo de licence », label « refuge de biodiversité ») vous convient-il ?
+L'ancien jeu (« Mission Jardin Boulay ») proposait ensuite trois parcours de L3 jouables (écologie, biotechnologies, ingénieur). Ils ne sont plus joués : l'écran de fin les présente en une phrase. Le carnet de médailles « par parcours » ne s'affiche donc plus pour ce jeu.
+
+## 10. Questions ouvertes pour l'enseignant
+
+1. Le jardin Boulay a-t-il un rucher, ou faut-il parler d'abeilles sauvages et de bourdons seulement ?
+2. Une sortie de terrain ou un TP de la licence ressemble-t-il à l'une de ces étapes ? On pourrait en reprendre les vrais chiffres.
+3. Faut-il remettre un aperçu des parcours de L3 dans le jeu ?
 
 **Validé par :** ____________________ **Date :** __________ **Remarques :**
