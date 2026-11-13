@@ -20,7 +20,7 @@
     "id": "jardin",
     "title": "Le jardin se tait",
     "icon": "🔍",
-    "dur": "8 min",
+    "dur": "8 min, essai en une minute",
     "pitch": "Les abeilles désertent le jardin botanique Nicolas Boulay. Identifie les suspects à la loupe, prédis l'effet de l'insecticide du voisin, lance des quadrats, compte les fleurs blanches d'un semis… puis remets ton diagnostic au jardinier, preuves agrafées."
    }
   },
@@ -44,7 +44,7 @@
     "id": "crise",
     "title": "La cellule de crise",
     "icon": "🔥",
-    "dur": "8 min",
+    "dur": "8 min, essai en une minute",
     "pitch": "Un bad buzz frappe une chocolaterie roubaisienne, et tout se joue dans le groupe « Cellule de crise » de ton téléphone. Vérifie chaque message avant de l'épingler, chiffre le plan de rappel sous le regard de Kant, Mill, Aristote et Weber, corrige le message de la directrice à son équipe, puis dose ton communiqué en lisant les commentaires en direct."
    }
   },
@@ -59,7 +59,7 @@
     "id": "comptoir",
     "title": "Le Comptoir",
     "icon": "☕",
-    "dur": "6 min",
+    "dur": "6 min, essai en une minute",
     "pitch": "Pilote le café de l'atrium : prix, équipe, imprévus… et ton résultat en direct."
    }
   },
@@ -74,7 +74,7 @@
     "id": "ruee",
     "title": "La Ruée",
     "icon": "📈",
-    "dur": "7 min",
+    "dur": "7 min, essai en une minute",
     "pitch": "Le comité de 18 h : le fonds a perdu 3,2 % dans la journée, et on te demande pourquoi. Mesure les chutes sur la courbe, calcule poids × variation, ajuste la régression, retrouve le ticket d'ordre, puis défends ton dossier devant le comité, preuve et chiffre à l'appui."
    }
   },
@@ -103,7 +103,13 @@
    "level": "L",
    "levelLabel": "Licences et prépas",
    "url": "https://www.fges.fr/formations/licence-internationale-deconomie-et-de-gestion/",
-   "game": null
+   "game": {
+    "id": "cargo",
+    "title": "Cargo",
+    "icon": "🚢",
+    "dur": "7 min, essai en une minute",
+    "pitch": "En anglais, comme la licence : un fabricant lillois de vélos électriques part à la conquête du monde. Bloque le cours de la livre au bon moment, règle ton prix face à la foule de Hambourg, joue la bonne carte Incoterm avant que ton cargo affronte l'Atlantique, négocie en visio avec Austin… puis choisis ton marché et ta ville d'échange."
+   }
   },
   {
    "id": "aese",
@@ -112,7 +118,13 @@
    "level": "L",
    "levelLabel": "Licences et prépas",
    "url": "https://www.fges.fr/formations/licence-administration-economique-sociale-environnementale/",
-   "game": null
+   "game": {
+    "id": "marquelle",
+    "title": "Marquelle",
+    "icon": "🏘️",
+    "dur": "7 min, essai en une minute",
+    "pitch": "L'usine ferme, la ville miniature retient son souffle. Fais tourner l'horloge pour interroger les vrais habitants (pas seulement ceux du marché), renvoie chaque demande au bon échelon, aménage la friche sous une carte de chaleur, remplis les bocaux du budget sans tricher… puis gagne le vote du conseil municipal, élu par élu."
+   }
   },
   {
    "id": "cfa",
@@ -125,7 +137,7 @@
     "id": "audit",
     "title": "L'Enquête de l'auditeur",
     "icon": "🕵️",
-    "dur": "8 min",
+    "dur": "8 min, essai en une minute",
     "pitch": "Dans un bureau d'audit en 3D, la trésorerie d'une PME fond sans raison : glisse les pièces dans les bannettes, pointe le relevé au crayon, frappe les factures du bon tampon, lis le Kbis… et tends le fil rouge jusqu'au fraudeur."
    }
   },
@@ -140,7 +152,7 @@
     "id": "guichet",
     "title": "Le guichet du samedi",
     "icon": "🏦",
-    "dur": "7 min",
+    "dur": "7 min, essai en une minute",
     "pitch": "Samedi, 9 h : la conformité prévient que des fonds suspects transitent par ton agence. Sers bien tes cinq clients (crédit, héritage, Erasmus, dégât des eaux, plombier qui se lance), vérifie leurs pièces et épingle les indices. À midi, qui signales-tu à Tracfin ?"
    }
   },
@@ -155,7 +167,7 @@
     "id": "gaming",
     "title": "Game Jam 48 h",
     "icon": "🎮",
-    "dur": "8-10 min",
+    "dur": "8-10 min, essai en une minute",
     "pitch": "Un week-end de game jam avec ton équipe de L1 : dessine un niveau faisable, programme le héros en Python et échappe au bug rouge, mets les scores en ligne en SQL, tiens le choc quand 5 000 joueurs débarquent et démasque le tricheur, puis passe devant le jury. Bonus : l’ambiance en réalité virtuelle, et ton propre niveau à partager."
    }
   },
@@ -170,7 +182,7 @@
     "id": "robot",
     "title": "Cellule robotique Wenov",
     "icon": "🦾",
-    "dur": "7 min",
+    "dur": "7 min, essai en une minute",
     "pitch": "Vendredi 15 h : la cellule robotique rejette une pièce sur cinq et le client attend sa livraison lundi. Rejoue les cycles ratés, mesure le jeu du coude au comparateur, lis le chronogramme du capteur, règle l'asservissement sur sa courbe et réapprends la caméra… puis écris au client."
    }
   },
@@ -230,7 +242,7 @@
     "id": "patrimoine",
     "title": "Le Dossier Deslaurier",
     "icon": "📜",
-    "dur": "10 min",
+    "dur": "10 min, essai en une minute",
     "pitch": "Un jeu de cartes chez le notaire : conseille la famille Deslaurier de 1959 à aujourd'hui. Contrat de mariage, donation, assurance-vie, SCI… chaque carte jouée envoie l'argent à la famille, au fisc, ou finit en dispute. Et gare aux coups du sort !"
    }
   },
@@ -281,7 +293,7 @@
     "id": "affaires",
     "title": "Le dossier Duval Textiles",
     "icon": "🤝",
-    "dur": "9 min",
+    "dur": "9 min, essai en une minute",
     "pitch": "Jeudi, en comité de crédit : prête-t-on 1,2 M€ à une PME textile de Roubaix ? Repère ce qui cloche dans sa liasse, calcule les ratios, compte les palettes à l'usine, monte le prêt et ses garanties, remonte jusqu'aux vrais actionnaires… puis défends ton dossier, pièce par pièce, devant le comité."
    }
   },
@@ -332,7 +344,7 @@
     "id": "biodata",
     "title": "From Blood to Decision",
     "icon": "🧬",
-    "dur": "8-10 min",
+    "dur": "8-10 min, essai en une minute",
     "pitch": "En anglais, comme le master : du dossier d'un patient fatigué à l'étude d'une cohorte. RGPD, interprétation d'un variant et consentement, biostatistiques et machine learning, en quatre missions."
    }
   },
@@ -347,7 +359,7 @@
     "id": "telephone",
     "title": "Le dossier de Camille",
     "icon": "📱",
-    "dur": "8 min",
+    "dur": "8 min, essai en une minute",
     "pitch": "Le téléphone de Camille, e-commerce manager de Courée, vibre sur un banc de Wenov. À 18 h, le comité Black Friday veut −50 % sur tout et 30 000 € de pub. Fouille ses messages et ses données, démasque le graphique trompeur, méfie-toi de l'assistant IA, puis contredis le comité preuve à l'appui."
    }
   },

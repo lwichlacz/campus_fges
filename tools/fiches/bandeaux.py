@@ -30,6 +30,8 @@ ACCROCHE = {
     "mh": "Un bad buzz frappe une chocolaterie : trie faits et rumeurs, décide avec Kant et Weber, tiens ton équipe, puis écris le communiqué.",
     "ecofi": "Le comité de 18 h : le fonds a perdu 3,2 % et on te demande pourquoi. Mesure, calcule, ajuste la régression, retrouve le ticket d'ordre, puis défends ton dossier.",
     "lpabf": "Samedi, 9 h : des fonds suspects transitent par ton agence. Sers tes cinq clients, vérifie leurs pièces, épingle les indices… et trouve qui blanchit.",
+    "lieg": "En anglais, comme la licence : bloque le cours de la livre, règle ton prix, envoie un cargo à travers l'Atlantique et négocie avec Austin.",
+    "aese": "Une ville miniature, une usine qui ferme : interroge les vrais habitants, aménage la friche, remplis les bocaux du budget et gagne le vote du conseil.",
     "ebmd": "Un téléphone oublié sur un banc de Wenov : fouille les données de Camille, démasque le graphique trompeur et contredis le comité Black Friday, preuves à l'appui.",
 }
 

@@ -27,7 +27,9 @@ export const VUES = {
 	affaires:   { lieu:"eura",    cam:[60, 150, 185],   cible:[-12, 0, 18],   fov:26 },
 	crise:      { lieu:"ext",     cam:[78, 92, 88],     cible:[0, 8, -6],     fov:20 },
 	guichet:    { lieu:"ext",     cam:[10, 80, 45],     cible:[9, 4, -37],    fov:21 },
-	ruee:       { lieu:"ext",     cam:[-35, 90, -125],  cible:[9, 4, -37],    fov:21 }
+	ruee:       { lieu:"ext",     cam:[-35, 90, -125],  cible:[9, 4, -37],    fov:21 },
+	cargo:      { lieu:"ext",     cam:[-110, 80, -60],  cible:[9, 4, -37],    fov:20 },
+	marquelle:  { lieu:"ext",     cam:[95, 70, -100],   cible:[9, 4, -37],    fov:21 }
 };
 
 const C = () => { if(!window.campus) throw new Error("ouvrir le campus avec ?debug"); return window.campus; };

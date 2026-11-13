@@ -48,6 +48,8 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/games/audit.js` | Mini-jeu « L'Enquête de l'auditeur » (Licence Comptabilité-Finance-Audit) |
 | `js/games/robot.js` | Mini-jeu « Cellule robotique Wenov » (Licence Sciences pour l'Ingénieur) : bras 3D, programmation, vision |
 | `js/games/boutique.js` | Mini-jeu « Courée, la boutique en 3D » (Master E-Business & Marketing Digital) : le site vu de l'intérieur, tunnel de commande, SEO, cookies, acquisition, CRM, Black Friday en direct |
+| `js/games/cargo.js` | Mini-jeu « Cargo » (Licence Internationale Économie & Gestion), en anglais : une carte du monde de nuit, le cours de la livre en direct, les cartes Incoterms, un cargo dans l'Atlantique, une négociation en visio |
+| `js/games/marquelle.js` | Mini-jeu « Marquelle » (Licence AES-E) : une ville miniature qui vit selon l'heure, l'enquête par quotas, les échelons, l'aménagement de la friche, les bocaux du budget, l'hémicycle |
 | `js/games/palier.js` | Le « teasing » commun aux mini-jeux : chaque jeu s'ouvre à chaud sur une scène d'une minute, puis ce palier propose de continuer, de recevoir la plaquette ou de revenir au campus (compté dans l'entonnoir : `jeu-palier`, `jeu-suite`) |
 | `docs/validation-*.md` | Fiches de validation des mini-jeux (contenus validés par les enseignants) |
 | `docs/mise-en-ligne.md` | **Mise en ligne** : GitHub Pages, branchement du formulaire sur le CRM |

@@ -61,9 +61,13 @@ export const RENDEZ_VOUS = [
 ];
 
 /* Mini-jeux disponibles : id de formation → id du jeu */
-export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires", ebmd: "telephone", mh: "crise", lpabf: "guichet", ecofi: "ruee" };
+export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires", ebmd: "telephone", mh: "crise", lpabf: "guichet", ecofi: "ruee", lieg: "cargo", aese: "marquelle" };
 /* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */
 export const GAME_INFO = {
+	cargo:{ fid:"lieg", title:"Cargo", icon:"🚢", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min, essai en une minute",
+		pitch:"En anglais, comme la licence : un fabricant lillois de vélos électriques part à la conquête du monde. Bloque le cours de la livre au bon moment, règle ton prix face à la foule de Hambourg, joue la bonne carte Incoterm avant que ton cargo affronte l'Atlantique, négocie en visio avec Austin… puis choisis ton marché et ta ville d'échange." },
+	marquelle:{ fid:"aese", title:"Marquelle", icon:"🏘️", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min, essai en une minute",
+		pitch:"L'usine ferme, la ville miniature retient son souffle. Fais tourner l'horloge pour interroger les vrais habitants (pas seulement ceux du marché), renvoie chaque demande au bon échelon, aménage la friche sous une carte de chaleur, remplis les bocaux du budget sans tricher… puis gagne le vote du conseil municipal, élu par élu." },
 	ruee:{ fid:"ecofi", title:"La Ruée", icon:"📈", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min, essai en une minute",
 		pitch:"Le comité de 18 h : le fonds a perdu 3,2 % dans la journée, et on te demande pourquoi. Mesure les chutes sur la courbe, calcule poids × variation, ajuste la régression, retrouve le ticket d'ordre, puis défends ton dossier devant le comité, preuve et chiffre à l'appui." },
 	guichet:{ fid:"lpabf", title:"Le guichet du samedi", icon:"🏦", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min, essai en une minute",
