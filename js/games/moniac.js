@@ -8,17 +8,17 @@
    4 · statistique et économétrie : une corrélation trompeuse, et la variable cachée qui l'explique ;
    puis les débouchés : ENS Paris-Saclay, magistères, écoles.
    Modèles simplifiés ; contenu à relire par l'équipe de la prépa. */
-import { stage3d, THREE } from "./stage3d.js?v=c97a9c5f6a";
-import { makePerson } from "../kit.js?v=c97a9c5f6a";
-import { jpoCard } from "./jpo.js?v=c97a9c5f6a";
-import { palier } from "./palier.js?v=c97a9c5f6a";
+import { stage3d, THREE } from "./stage3d.js?v=9db2c7b8a3";
+import { makePerson } from "../kit.js?v=9db2c7b8a3";
+import { jpoCard } from "./jpo.js?v=9db2c7b8a3";
+import { palier } from "./palier.js?v=9db2c7b8a3";
 
 const COURSES = {
 	macro: ["Macroéconomie", "Revenu, consommation, multiplicateur : comment une dépense se propage dans toute l'économie."],
 	keynes:["Histoire de la pensée économique", "Keynes, le paradoxe de l'épargne, et pourquoi la vertu d'un ménage peut devenir le problème d'un pays."],
 	game:  ["Microeconomics · game theory (in English)", "Strategies, payoffs, cooperation: the maths of decisions that depend on others."],
 	stats: ["Statistique et économétrie", "Corrélation n'est pas causalité : chercher la variable cachée avant de conclure."],
-	conc:  ["Les concours", "La D2 prépare l'ENS Paris-Saclay (département d'économie et gestion), les magistères et les grandes écoles, avec une licence en parallèle."]
+	conc:  ["Les concours", "La D2 prépare l'ENS Paris-Saclay (économie-gestion), les magistères d'économie et le Pré-Master de l'EDHEC, avec en parallèle la Licence internationale d'économie-gestion de la FGES."]
 };
 const STEPS_UI = [["mult", "1 · Multiplicateur"], ["epargne", "2 · Épargne"], ["game", "3 · Game theory"], ["stats", "4 · Corrélation"]];
 const Y0 = 400, TARGET = 500;

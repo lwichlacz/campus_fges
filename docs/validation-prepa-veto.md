@@ -1,7 +1,7 @@
 # Fiche de validation · Mini-jeu « La clinique rurale » (Prépa concours B Véto et Agro)
 
 **À relire par :** un enseignant de la prépa (parcours de la Licence Sciences de la Vie)
-**⚠ À savoir :** le programme détaillé de la prépa n'a pas pu être consulté ; le jeu s'appuie sur les matières classiques du concours B (biologie, chimie, géologie, physique, maths). **À corriger en priorité si besoin.**
+**Vérifié en partie (13/11/2026) :** la plaquette FGES 2025-2026 décrit la Licence Sciences de la Vie (convention UPHF, 100 étudiants en L1, poursuites en écoles d'ingénieurs agro : ISA, ISARA, UniLaSalle, AgroParisTech…) mais pas encore la préparation au concours B, plus récente. Le jeu s'appuie sur les épreuves nationales du concours B (biologie, chimie, géologie, physique, maths) et cite les quatre écoles vétérinaires publiques.
 **Objectif du jeu :** faire vivre une journée de vétérinaire rural où chaque cas mobilise une matière du concours B, jusqu'à l'oral.
 **Univers :** une ferme-clinique au petit matin (la Clinique des Prés, fictive), une table d'examen, une stalle, une carrière, un champ ; la docteure Hélène Vasseur (fictive) guide le joueur ; l'interface est une application de dossier clinique.
 **Durée :** environ 7 minutes ; la première consultation se joue en une minute, puis un palier propose de continuer.

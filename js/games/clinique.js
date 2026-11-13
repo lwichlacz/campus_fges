@@ -8,9 +8,9 @@
    4 · agronomie : une rotation sur trois ans, avec une jauge d'azote du sol ;
    5 · l'oral du concours, puis le choix entre école vétérinaire et école d'agronomie.
    Personnes et animaux fictifs ; contenus simplifiés, à relire par l'équipe de la prépa. */
-import { stage3d, THREE } from "./stage3d.js?v=c97a9c5f6a";
-import { jpoCard } from "./jpo.js?v=c97a9c5f6a";
-import { palier } from "./palier.js?v=c97a9c5f6a";
+import { stage3d, THREE } from "./stage3d.js?v=9db2c7b8a3";
+import { jpoCard } from "./jpo.js?v=9db2c7b8a3";
+import { palier } from "./palier.js?v=9db2c7b8a3";
 
 const COURSES = {
 	bio:   ["Biologie", "Physiologie, métabolisme, microbiologie : comprendre le vivant pour le soigner. Première matière du concours B."],

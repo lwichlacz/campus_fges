@@ -3,7 +3,7 @@
 
 const U = "https://www.fges.fr/formations/";
 export const FORMATIONS = [
-	["apes","APES · Année préparatoire aux études scientifiques","FGES","prep","falise",24,"1 an · formation initiale","Une année pour prendre pied en sciences avant la licence. 94 % de réussite.","apes-annee-de-preparation-aux-etudes-scientifiques/"],
+	["apes","APES · Année préparatoire aux études scientifiques","FGES","prep","falise",24,"1 an · formation initiale","Une année pour prendre pied en sciences avant la licence, en petit effectif avec un suivi personnalisé.","apes-annee-de-preparation-aux-etudes-scientifiques/"],
 	["sv","Licence Sciences de la Vie","FGES","L","falise",100,"L1-L3 · 1 stage par an","Biologie, écologie, génétique… et une sortie terrain à Ambleteuse.","licence-science-de-la-vie/"],
 	["veto","Prépa concours B Véto et Agro","FGES","L","falise",0,"Parcours de la Licence Sciences de la Vie","Préparer les concours des écoles vétérinaires et d'agronomie, en même temps que la licence.","licence-science-de-la-vie/"],
 	["mh","Licence Management & Humanités","FGES","L","falise",40,"L1-L3 · 1 stage par an","La gestion et la philosophie dans le même cursus.","humanites-management/"],

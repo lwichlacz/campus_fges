@@ -5,9 +5,9 @@
    grossissement, tracer la mauvaise courbe), puis l'atelier de méthode montre comment faire : c'est le cœur de l'APES,
    apprendre à apprendre. La valeur de g, trouvée au pendule, se retrouve à la fin sur la courbe.
    Personnes fictives ; valeurs simplifiées. Contenu à relire par l'équipe de l'APES. */
-import { stage3d, THREE } from "./stage3d.js?v=c97a9c5f6a";
-import { jpoCard } from "./jpo.js?v=c97a9c5f6a";
-import { palier } from "./palier.js?v=c97a9c5f6a";
+import { stage3d, THREE } from "./stage3d.js?v=9db2c7b8a3";
+import { jpoCard } from "./jpo.js?v=9db2c7b8a3";
+import { palier } from "./palier.js?v=9db2c7b8a3";
 
 const COURSES = {
 	chimie: ["Chimie", "Dosages, concentrations, équivalence : la chimie des solutions, en TP comme en cours."],
@@ -393,7 +393,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 		show(`<div class="tp-k">${formation.name} · bilan</div><div class="tp-h">La porte s'ouvre !</div>
 			<div class="tp-stars">${s} / ${max} ★ · ${mention}</div>
 			<table class="tp-tbl"><tr><td>Équivalence du dosage</td><td>${S.veq ? fr(S.veq, 2) + " mL" : "—"}</td></tr><tr><td>g au pendule</td><td>${S.g ? fr(S.g, 2) + " m/s²" : "—"}</td></tr><tr><td>g sur la courbe</td><td>${S.slope ? fr(2*S.slope, 1) + " m/s²" : "—"}</td></tr><tr><td>Erreurs</td><td>${S.errors}</td></tr></table>
-			<p class="tp-p">Quatre fois, le premier essai a buté, et quatre fois la méthode t'a fait réussir. C'est l'APES : une année pour prendre pied en sciences avant la licence, en <b>Sciences de la Vie</b> ou en <b>Maths-Physique-Chimie</b> (avec bases de données et programmation au second semestre). 94 % de réussite.</p>
+			<p class="tp-p">Quatre fois, le premier essai a buté, et quatre fois la méthode t'a fait réussir. C'est l'APES : une année pour prendre pied en sciences avant la licence, en <b>Sciences de la Vie</b> ou en <b>Maths-Physique-Chimie</b> (avec bases de données et programmation au second semestre). Petit effectif, suivi personnalisé, et ensuite la licence de ton choix : Sciences de la Vie, Sciences du Numérique, Management & Numérique, une prépa ingénieur ou PASS.</p>
 			<ul class="tp-list">${[...S.learned].map(k => `<li>✓ ${COURSES[k][0]}</li>`).join("")}</ul>
 			${jpoCard()}${openLead ? `<button class="tp-go" data-a="lead">📄 Recevoir la plaquette de l'APES</button>` : ""}
 			<a class="tp-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir l'APES ↗</a>

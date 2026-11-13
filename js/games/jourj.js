@@ -9,18 +9,18 @@
        qui s'éclairent ou se ferment ;
    6 · le tableau des résultats : admis en AST1 ou en AST2.
    Écoles réelles citées comme débouchés ; personnes et questions fictives. Contenu à relire par l'équipe de la prépa. */
-import { stage3d, THREE } from "./stage3d.js?v=c97a9c5f6a";
-import { makePerson } from "../kit.js?v=c97a9c5f6a";
-import { jpoCard } from "./jpo.js?v=c97a9c5f6a";
-import { palier } from "./palier.js?v=c97a9c5f6a";
+import { stage3d, THREE } from "./stage3d.js?v=9db2c7b8a3";
+import { makePerson } from "../kit.js?v=9db2c7b8a3";
+import { jpoCard } from "./jpo.js?v=9db2c7b8a3";
+import { palier } from "./palier.js?v=9db2c7b8a3";
 
 const COURSES = {
-	tage:  ["Prépa 1", "Tests TAGE · logique", "Suites, calcul, raisonnement : des tests chronométrés qu'on apprend à apprivoiser, semaine après semaine."],
-	fr:    ["Prépa 1", "Tests TAGE · français", "Accords, homophones, tournures : écrire juste, et vite."],
+	tage:  ["Prépa 2", "Tests TAGE · logique", "Suites, calcul, raisonnement : des tests chronométrés qu'on apprend à apprivoiser, semaine après semaine."],
+	fr:    ["Prépa 2", "Tests TAGE · français", "Accords, homophones, tournures : écrire juste, et vite."],
 	cg:    ["Prépa 1", "Culture générale", "Situer un événement, relier l'histoire à l'économie : la culture qui fait la différence à l'oral."],
-	en:    ["Prépa 1", "Anglais et LV2", "Écrire et parler en contexte professionnel, avant un semestre à l'étranger en prépa 3."],
+	en:    ["Prépa 2", "Anglais et LV2", "Écrire et parler en contexte professionnel, avant un semestre à l'étranger en prépa 3."],
 	oral:  ["Prépa 2", "Entretiens de motivation", "Raconter ses expériences pour montrer qui l'on est : on s'y entraîne devant des jurys blancs."],
-	ast:   ["Prépa 2 et 3", "Concours AST1 et AST2", "En prépa 2, les écoles en AST1 (SKEMA, Grenoble EM, KEDGE, NEOMA…) ; en prépa 3, l'AST2 (HEC, ESCP, emlyon, EDHEC, Audencia, IESEG…)."]
+	ast:   ["Prépa 2 et 3", "Concours AST1 et AST2", "En prépa 2, les écoles en AST1 (Audencia, SKEMA, Grenoble EM, NEOMA, KEDGE…) ; en prépa 3, l'AST2 (HEC, ESCP, emlyon, EDHEC…) ou un master sélectif."]
 };
 const STEPS_UI = [["tage", "Logique"], ["fr", "Français"], ["cg", "Culture G"], ["en", "Anglais"], ["oral", "Entretien"], ["res", "Résultats"]];
 const TAGE = [
@@ -226,7 +226,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 			const n = good === 5 ? 3 : good >= 3 ? 2 : 1;
 			show(`<div class="jj-h">Épreuve de logique</div>${stars(n)}
 				<p class="jj-p">${timeout ? "<b>Temps écoulé.</b> " : ""}<b>${good} / 5</b>${!timeout ? `, avec ${Math.round(left)} s d'avance` : ""}.</p>
-				${whisper(good >= 4 ? "Pas mal pour un premier jour ! En prépa, on fait ces tests chaque semaine : on finit par voir les pièges venir." : "Normal de buter au début. En prépa 1, on s'entraîne chaque semaine : la vitesse vient avec les réflexes.")}
+				${whisper(good >= 4 ? "Pas mal pour un premier jour ! En prépa, on fait ces tests chaque semaine : on finit par voir les pièges venir." : "Normal de buter au début. En prépa, on s'entraîne chaque semaine : la vitesse vient avec les réflexes.")}
 				${course("tage")}${first ? "" : next("fr", "Épreuve suivante : français →")}`);
 			S.tageDone = true;
 			if(first) later(2200, () => palier({ id:"jourj", onEvent, openLead, quit:close,
@@ -349,7 +349,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 		show(`<div class="jj-k">${formation.name} · résultats</div><div class="jj-h">Admis${ast2 ? " en AST2" : " en AST1"} !</div>
 			<div class="jj-stars">${s} / 15 ★ · ${mention}</div>
 			<table class="jj-tbl"><tr><td>Logique</td><td>${S.tage} / 5</td></tr><tr><td>Français</td><td>${S.fr} / 4</td></tr><tr><td>Culture générale</td><td>${S.cg} / 5</td></tr><tr><td>Anglais</td><td>${S.en} / 3</td></tr><tr><td>Entretien</td><td>${S.oral} / 6</td></tr><tr><td>Total</td><td>${total} / ${max}</td></tr></table>
-			<p class="jj-p">${ast2 ? "Ton score ouvre les portes de l'<b>AST2</b> : HEC, ESCP, emlyon, EDHEC, Audencia, IESEG… C'est l'objectif de la prépa 3, avec un semestre à l'étranger." : "Ton score ouvre les portes de l'<b>AST1</b> : SKEMA, Grenoble EM, KEDGE, NEOMA… C'est l'objectif de la prépa 2. Et la prépa 3 vise l'AST2."} En parallèle, la licence : un diplôme assuré, quoi qu'il arrive aux concours.</p>
+			<p class="jj-p">${ast2 ? "Ton score ouvre les portes de l'<b>AST2</b> : HEC, ESCP, emlyon, EDHEC… C'est l'objectif de la prépa 3, avec un semestre à l'étranger." : "Ton score ouvre les portes de l'<b>AST1</b> : Audencia, SKEMA, Grenoble EM, NEOMA, KEDGE… C'est l'objectif de la prépa 2. Et la prépa 3 vise l'AST2."} En parallèle, la licence : un diplôme assuré, quoi qu'il arrive aux concours.</p>
 			${course("ast")}
 			${jpoCard()}${openLead ? `<button class="jj-go" data-a="lead">📄 Recevoir la plaquette de la prépa</button>` : ""}
 			<a class="jj-alt" href="${formation.url}" target="_blank" rel="noopener">Découvrir la prépa ↗</a>

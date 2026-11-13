@@ -20,7 +20,8 @@ Merci de cocher, corriger ou commenter chaque point.
 - [ ] Les quatre manipulations sont-elles représentatives des TP de l'APES ?
 - [ ] Le calcul c(acide) = c(soude) × V(éq) ÷ V(acide) = 0,10 × 12,4 ÷ 20 = 0,062 mol/L convient-il ?
 - [ ] L'élodée est donnée comme exemple de cellule végétale (paroi, chloroplastes) ; la joue comme cellule animale (pas de paroi) ; les lactobacilles comme bactéries (pas de noyau). Correct ?
-- [ ] Les deux parcours (Sciences de la Vie, Maths-Physique-Chimie) sont cités au bilan, avec « 94 % de réussite » : chiffre à confirmer.
+- [x] Les deux parcours (Sciences de la Vie, Maths-Physique-Chimie) sont confirmés par la plaquette FGES « Licences & Masters 2025-2026 », comme le programme (maths, physique, chimie, SVTU, anglais, ateliers méthodologiques, bases de données et programmation).
+- [x] « 94 % de réussite » **retiré** : la plaquette annonce 57 % de réussite en 2023-24 (20 étudiants). Le bilan parle désormais du petit effectif, du suivi personnalisé et des poursuites d'études listées par la plaquette.
 
 ## 2. Remarques libres
 

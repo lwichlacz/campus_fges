@@ -1,7 +1,7 @@
 # Fiche de validation · Mini-jeu « La machine de l'économiste » (Prépa D2 Économie-Gestion)
 
 **À relire par :** un enseignant de la prépa D2
-**⚠ À savoir :** le programme détaillé de la D2 n'a pas pu être consulté ; le jeu s'appuie sur l'accroche de la fiche (ENS Paris-Saclay, magistères, 50 % en anglais) et sur le programme classique d'une D2 (économie, mathématiques, gestion, droit). **À corriger en priorité si besoin.**
+**Vérifié (13/11/2026) :** la page « Prépa ENS D2 » de Marcq Institution confirme l'ouverture en septembre 2027, la Licence internationale d'économie-gestion de la FGES et les concours visés (ENS Paris-Saclay économie-gestion option 1, magistères d'économie, Pré-Master EDHEC), désormais cités au bilan. Le programme détaillé n'est pas publié : les quatre notions du jeu restent celles d'une D2 classique.
 **Objectif du jeu :** montrer qu'en D2, l'économie se modélise : multiplicateur, paradoxe de l'épargne, théorie des jeux, économétrie.
 **Univers :** un amphithéâtre boisé, au centre une machine hydraulique inspirée de la MONIAC de Bill Phillips (1949), où l'eau joue l'argent ; le professeur Laurent Okoye (fictif) annote une fiche bleue façon plan d'ingénieur.
 **Durée :** environ 6 minutes ; le multiplicateur se joue en ouverture, puis un palier propose de continuer.
