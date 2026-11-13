@@ -9,10 +9,10 @@
      - au comité, la pièce du dossier qu'on prend sur la table, puis le chiffre qu'on montre du doigt.
    Le dossier, les chiffres et les cours sont dans ruee-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=50ccfe85e2";
-import { jpoCard } from "./jpo.js?v=50ccfe85e2";
-import { palier } from "./palier.js?v=50ccfe85e2";
-import { COURSES, FUND, CURVE, NEWS, BCE, REG, ORDERS, LYS, KRACH, PIECES, BOARD, QUESTIONS, fr, pct, hhmm, at } from "./ruee-data.js?v=50ccfe85e2";
+import { makePerson, std, box, cyl } from "../kit.js?v=0c6917bfb6";
+import { jpoCard } from "./jpo.js?v=0c6917bfb6";
+import { palier } from "./palier.js?v=0c6917bfb6";
+import { COURSES, FUND, CURVE, NEWS, BCE, REG, ORDERS, LYS, KRACH, PIECES, BOARD, QUESTIONS, fr, pct, hhmm, at } from "./ruee-data.js?v=0c6917bfb6";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -24,46 +24,46 @@ const lerp = (a, b, t) => a + (b - a)*t;
 const MAXP = 4 + 3 + 2 + 3 + 4 + QUESTIONS.length*3 + 1;
 
 const CSS = `
-.ru{position:fixed;inset:0;z-index:40;font-family:Nunito,system-ui,sans-serif;color:#23201b;background:#efe9df;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;animation:ruIn .3s ease both}
+.ru{position:fixed;inset:0;z-index:40;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#23201b;background:#e9f7fa;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;animation:ruIn .3s ease both}
 @keyframes ruIn{from{opacity:0}to{opacity:1}}
 .ru canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .ru-top{position:absolute;left:0;right:0;top:0;display:flex;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 12px) 6px calc(env(safe-area-inset-left) + 12px);z-index:5;pointer-events:none}
 .ru-top>*{pointer-events:auto}
-.ru-tag{background:#fffaf2;border:1px solid #d9cdb8;border-radius:8px;padding:6px 11px;font-weight:900;font-size:13px;white-space:nowrap;box-shadow:0 2px 6px rgba(60,45,20,.12);font-variant-numeric:tabular-nums}
-.ru-tag.n{background:#1d3b33;border-color:#1d3b33;color:#f3efe6}
+.ru-tag{background:#fffaf2;border:1px solid #e9f7fa;border-radius:8px;padding:6px 11px;font-weight:900;font-size:13px;white-space:nowrap;box-shadow:0 2px 6px rgba(15,49,104,.12);font-variant-numeric:tabular-nums}
+.ru-tag.n{background:#0f3168;border-color:#0f3168;color:#e9f7fa}
 .ru-tag.late{background:#fbe3dc;color:#a8361f;border-color:#eab2a3}
-.ru-x{margin-left:auto;width:48px;height:48px;border-radius:50%;border:1px solid #d9cdb8;background:#fffaf2;font-size:24px;cursor:pointer;color:#23201b;box-shadow:0 2px 6px rgba(60,45,20,.15)}
+.ru-x{margin-left:auto;width:48px;height:48px;border-radius:50%;border:1px solid #e9f7fa;background:#fffaf2;font-size:24px;cursor:pointer;color:#23201b;box-shadow:0 2px 6px rgba(15,49,104,.15)}
 .ru-say{position:absolute;z-index:4;max-width:min(360px,calc(100% - 24px));transform:translate(-50%,-100%);pointer-events:none;transition:opacity .3s}
 .ru-say.off{opacity:0}
-.ru-say .b{background:#fffaf2;border:2px solid #1d3b33;border-radius:14px;padding:8px 12px;font-size:14px;line-height:1.4;box-shadow:0 6px 18px rgba(40,30,10,.2)}
-.ru-say .who{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#2f7d62;font-weight:900}
+.ru-say .b{background:#fffaf2;border:2px solid #0f3168;border-radius:14px;padding:8px 12px;font-size:14px;line-height:1.4;box-shadow:0 6px 18px rgba(40,30,10,.2)}
+.ru-say .who{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#0f3168;font-weight:900}
 .ru-say.fix{transform:none}
 .ru-say.cm .b{border-color:#3d4f7a}.ru-say.cm .who{color:#3d4f7a}
 .ru-say.me{left:50%!important;top:auto!important;bottom:calc(env(safe-area-inset-bottom) + 14px);transform:translateX(-50%)}
-.ru-say.me .b{background:#1d3b33;color:#f3efe6;border-color:#1d3b33}.ru-say.me .who{color:#9fd3b2}
+.ru-say.me .b{background:#0f3168;color:#e9f7fa;border-color:#0f3168}.ru-say.me .who{color:#21b7cb}
 .ru-notes{position:absolute;left:calc(env(safe-area-inset-left) + 12px);bottom:calc(env(safe-area-inset-bottom) + 12px);z-index:3;display:flex;flex-direction:column-reverse;gap:8px;align-items:flex-start;pointer-events:none;max-width:min(260px,46%)}
-.ru-note{background:#fff3a6;color:#3b3510;border-radius:2px;padding:7px 10px 9px;font-size:12.5px;font-weight:800;line-height:1.3;box-shadow:2px 4px 10px rgba(60,50,10,.22);transform:rotate(-1.5deg);animation:ruNote 4.2s ease both}
-.ru-note:nth-child(2n){transform:rotate(1.2deg);background:#ffe7a0}
-.ru-note span{display:block;font-size:10px;color:#7a6a14;letter-spacing:.06em;text-transform:uppercase}
+.ru-note{background:#e9f7fa;color:#0f3168;border-radius:2px;padding:7px 10px 9px;font-size:12.5px;font-weight:800;line-height:1.3;box-shadow:2px 4px 10px rgba(15,49,104,.22);transform:rotate(-1.5deg);animation:ruNote 4.2s ease both}
+.ru-note:nth-child(2n){transform:rotate(1.2deg);background:#e9f7fa}
+.ru-note span{display:block;font-size:10px;color:#0f3168;letter-spacing:.06em;text-transform:uppercase}
 @keyframes ruNote{0%{opacity:0;translate:0 14px}10%{opacity:1;translate:0 0}85%{opacity:1}100%{opacity:0}}
 .ru-ov{position:absolute;inset:0;z-index:9;display:grid;place-items:center;padding:14px;background:rgba(35,32,27,.4)}
 .ru-ov[hidden]{display:none}
 .ru-card{max-width:560px;width:100%;max-height:100%;overflow:auto;background:#fffaf2;border-radius:16px;padding:20px 18px;box-shadow:0 20px 60px rgba(0,0,0,.35);user-select:text;-webkit-user-select:text}
-.ru-card h2{font:800 26px/1.15 Fraunces,Georgia,serif;margin:4px 0 8px;color:#1d3b33}
-.ru-card .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#2f7d62;font-weight:900;margin:0 0 4px}
+.ru-card h2{font:300 26px/1.15 Tiempos Headline,Georgia,serif;margin:4px 0 8px;color:#0f3168}
+.ru-card .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#0f3168;font-weight:900;margin:0 0 4px}
 .ru-card p{font-size:14.5px;line-height:1.5;margin:0 0 10px}
 .ru-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0 12px}
-.ru-legend div{background:#f1ebe0;border-radius:10px;padding:7px 9px;font-size:13px;line-height:1.3}
+.ru-legend div{background:#e9f7fa;border-radius:10px;padding:7px 9px;font-size:13px;line-height:1.3}
 .ru-legend b{font-size:18px;display:block}
-.ru-go{display:block;width:100%;border:0;border-radius:12px;padding:12px;font:900 16px Nunito,sans-serif;background:#1d3b33;color:#fff;cursor:pointer;min-height:48px;box-shadow:0 4px 0 #0f221d}
-.ru-go:focus-visible{outline:3px solid #f4c430}
-.ru-alt{display:block;text-align:center;margin-top:8px;font-weight:800;color:#1d3b33;background:none;border:0;cursor:pointer;width:100%;font-size:14px;text-decoration:underline;min-height:44px}
+.ru-go{display:block;width:100%;border:0;border-radius:12px;padding:12px;font:700 16px Inter,system-ui,sans-serif;background:#0f3168;color:#fff;cursor:pointer;min-height:48px;box-shadow:0 4px 0 #0f221d}
+.ru-go:focus-visible{outline:3px solid #21b7cb}
+.ru-alt{display:block;text-align:center;margin-top:8px;font-weight:800;color:#0f3168;background:none;border:0;cursor:pointer;width:100%;font-size:14px;text-decoration:underline;min-height:44px}
 .ru-stats{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
-.ru-stats div{flex:1 1 110px;background:#f1ebe0;border-radius:10px;padding:6px 9px;font-size:12px;font-weight:800;color:#6b6152}
+.ru-stats div{flex:1 1 110px;background:#e9f7fa;border-radius:10px;padding:6px 9px;font-size:12px;font-weight:800;color:#6b6152}
 .ru-stats b{display:block;font-size:18px;color:#23201b}
 .ru-list{list-style:none;margin:0 0 10px;padding:0}
-.ru-list li{background:#f6f1e8;border-radius:10px;padding:7px 9px;margin:5px 0;font-size:13px;line-height:1.35}
-.ru-list li span{display:inline-block;background:#1d3b33;color:#fff;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:900;margin-right:5px}
+.ru-list li{background:#e9f7fa;border-radius:10px;padding:7px 9px;margin:5px 0;font-size:13px;line-height:1.35}
+.ru-list li span{display:inline-block;background:#0f3168;color:#fff;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:900;margin-right:5px}
 .ru-big{font-size:46px;text-align:center;margin:0}
 .ru-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (max-width:640px){.ru-tag{font-size:12px;padding:5px 8px}.ru-tag.hide-s{display:none}.ru-say .b{font-size:13px}.ru-notes{max-width:58%}}
@@ -183,9 +183,9 @@ export function openRuee({ formation, audio, isFav, toggleFav, onClose, onEvent,
 	/* ---------- dessin des écrans ---------- */
 	const C = { bg:"#121820", panel:"#1b2430", hi:"#25354a", txt:"#e9eef2", dim:"#8d9bab", up:"#3ccf8e", down:"#ff6b52", gold:"#f4c430", line:"#2c3a4c", teal:"#5fd0c0", warn:"#ff9f43" };
 	function rr(x, c, X, Y, W, H, r){ x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + W, Y, X + W, Y + H, r); x.arcTo(X + W, Y + H, X, Y + H, r); x.arcTo(X, Y + H, X, Y, r); x.arcTo(X, Y, X + W, Y, r); x.closePath(); x.fillStyle = c; x.fill(); }
-	function txt(x, s, X, Y, size, col = C.txt, w = 700, al = "left"){ x.font = `${w} ${size}px Nunito, system-ui, sans-serif`; x.fillStyle = col; x.textAlign = al; x.textBaseline = "alphabetic"; x.fillText(s, X, Y); }
+	function txt(x, s, X, Y, size, col = C.txt, w = 700, al = "left"){ x.font = `${w} ${size}px Inter,system-ui,sans-serif`; x.fillStyle = col; x.textAlign = al; x.textBaseline = "alphabetic"; x.fillText(s, X, Y); }
 	function wrap(x, s, X, Y, maxW, size, col, w = 800, lh = 1.2){
-		x.font = `${w} ${size}px Nunito, system-ui, sans-serif`; const words = s.split(" "); let line = "", yy = Y;
+		x.font = `${w} ${size}px Inter,system-ui,sans-serif`; const words = s.split(" "); let line = "", yy = Y;
 		for(const wd of words){ const t = line ? line + " " + wd : wd; if(x.measureText(t).width > maxW && line){ txt(x, line, X, yy, size, col, w); line = wd; yy += size*lh; } else line = t; }
 		if(line) txt(x, line, X, yy, size, col, w); return yy;
 	}

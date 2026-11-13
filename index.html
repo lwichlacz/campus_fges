@@ -20,8 +20,16 @@
 <link rel="icon" href="img/icone.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&family=Inter:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
 <style>
+/* charte de l'université : Tiempos Headline (titres) ; fichiers sous licence, hors du dépôt public (voir fonts/LISEZMOI.md) */
+@font-face{font-family:"Tiempos Headline";src:url(fonts/tiempos/tiempos-headline-regular.woff2) format("woff2");font-weight:300 400;font-style:normal;font-display:swap}
+@font-face{font-family:"Tiempos Headline";src:url(fonts/tiempos/tiempos-headline-regular-italic.woff2) format("woff2");font-weight:300 400;font-style:italic;font-display:swap}
+b,strong{font-weight:700}
+/* couleurs de l'école du jeu ouvert (main.js pose data-ecole) : relevées sur les fiches de fges.fr, marine commun aux trois */
+:root,[data-ecole=FGES]{--ec:#21b7cb;--ec-fort:#0f3168;--ec-texte:#0f3168;--ec-pale:#e9f7fa}
+[data-ecole=ISEA]{--ec:#872850;--ec-fort:#872850;--ec-texte:#872850;--ec-pale:#fbf5f8}
+[data-ecole=EDN]{--ec:#cb971a;--ec-fort:#96711a;--ec-texte:#96711a;--ec-pale:#fdf8ec}      /* Inter n'est chargée qu'en 300 et 700 : le gras doit viser 700 */
 :root{
 	--cream:#fff8ec; --cream2:#f6ead6; --ink:#2b2233; --ink2:#5b4f5f; --muted:#8a7d86;
 	--navy:#1e305e; --brand:#21b6ce; --brand-ink:#0b7a8e; --on-brand:#0b2f67; --brand-soft:#e4f6f9; --gold:#d9a441; --line:#ead9bf;
@@ -493,16 +501,16 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 <script type="importmap">
 {"imports":{"three":"./vendor/three-0.165.0/build/three.module.min.js","three/addons/":"./vendor/three-0.165.0/examples/jsm/"}}
 </script>
-<link rel="modulepreload" href="js/main.js?v=50ccfe85e2">
-<link rel="modulepreload" href="js/kit.js?v=50ccfe85e2">
-<link rel="modulepreload" href="js/data.js?v=50ccfe85e2">
-<link rel="modulepreload" href="js/details.js?v=50ccfe85e2">
-<link rel="modulepreload" href="js/vauban.js?v=50ccfe85e2">
-<link rel="modulepreload" href="js/city.js?v=50ccfe85e2">
-<link rel="modulepreload" href="js/render.js?v=50ccfe85e2">
-<link rel="modulepreload" href="js/landmarks.js?v=50ccfe85e2">
-<link rel="modulepreload" href="js/monuments.js?v=50ccfe85e2">
-<link rel="modulepreload" href="js/audio.js?v=50ccfe85e2">
+<link rel="modulepreload" href="js/main.js?v=0c6917bfb6">
+<link rel="modulepreload" href="js/kit.js?v=0c6917bfb6">
+<link rel="modulepreload" href="js/data.js?v=0c6917bfb6">
+<link rel="modulepreload" href="js/details.js?v=0c6917bfb6">
+<link rel="modulepreload" href="js/vauban.js?v=0c6917bfb6">
+<link rel="modulepreload" href="js/city.js?v=0c6917bfb6">
+<link rel="modulepreload" href="js/render.js?v=0c6917bfb6">
+<link rel="modulepreload" href="js/landmarks.js?v=0c6917bfb6">
+<link rel="modulepreload" href="js/monuments.js?v=0c6917bfb6">
+<link rel="modulepreload" href="js/audio.js?v=0c6917bfb6">
 <link rel="modulepreload" href="vendor/three-0.165.0/build/three.module.min.js">
 <link rel="modulepreload" href="vendor/three-0.165.0/examples/jsm/controls/OrbitControls.js">
 </head>
@@ -695,7 +703,7 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 	<div class="pb" id="pbody"></div>
 </aside>
 
-<script type="module" src="js/main.js?v=50ccfe85e2"></script>
+<script type="module" src="js/main.js?v=0c6917bfb6"></script>
 <!-- mesure d audience anonyme, sans cookie (GoatCounter) -->
 <script data-goatcounter="https://lucas-wichlacz.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <!-- cache hors ligne (sw.js) : la borne de la JPO survit à une coupure du Wi-Fi ; installé après le chargement, sans retarder le campus.

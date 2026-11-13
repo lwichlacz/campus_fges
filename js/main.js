@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=50ccfe85e2";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=50ccfe85e2";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=50ccfe85e2";
-import { MAP } from "./vauban.js?v=50ccfe85e2";
-import { buildLandmarks } from "./landmarks.js?v=50ccfe85e2";
-import { buildMonuments } from "./monuments.js?v=50ccfe85e2";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=50ccfe85e2";
-import { buildStation } from "./station.js?v=50ccfe85e2";
-import { createRame } from "./rame.js?v=50ccfe85e2";
-import { Audio } from "./audio.js?v=50ccfe85e2";
-import { DETAILS } from "./details.js?v=50ccfe85e2";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=0c6917bfb6";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=0c6917bfb6";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=0c6917bfb6";
+import { MAP } from "./vauban.js?v=0c6917bfb6";
+import { buildLandmarks } from "./landmarks.js?v=0c6917bfb6";
+import { buildMonuments } from "./monuments.js?v=0c6917bfb6";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=0c6917bfb6";
+import { buildStation } from "./station.js?v=0c6917bfb6";
+import { createRame } from "./rame.js?v=0c6917bfb6";
+import { Audio } from "./audio.js?v=0c6917bfb6";
+import { DETAILS } from "./details.js?v=0c6917bfb6";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -1442,7 +1442,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=50ccfe85e2").then(({ FAR }) => {
+	import("./vauban_far.js?v=0c6917bfb6").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1958,27 +1958,27 @@ setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=50ccfe85e2").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=50ccfe85e2").then(m => m.createChapelle), eura:() => import("./eura.js?v=50ccfe85e2").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=50ccfe85e2").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=50ccfe85e2").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=0c6917bfb6").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=0c6917bfb6").then(m => m.createChapelle), eura:() => import("./eura.js?v=0c6917bfb6").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=0c6917bfb6").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=0c6917bfb6").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=50ccfe85e2").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=50ccfe85e2").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=50ccfe85e2").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=50ccfe85e2").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=50ccfe85e2").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=50ccfe85e2").then(m => m.openBiodata),
-	crise:() => import("./games/crise.js?v=50ccfe85e2").then(m => m.openCrise),
-	patrimoine:() => import("./games/patrimoine.js?v=50ccfe85e2").then(m => m.openPatrimoine),
-	affaires:() => import("./games/affaires.js?v=50ccfe85e2").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=50ccfe85e2").then(m => m.openBoutique),
-	ruee:() => import("./games/ruee.js?v=50ccfe85e2").then(m => m.openRuee),
-	tp:() => import("./games/tp.js?v=50ccfe85e2").then(m => m.openTP),
-	clinique:() => import("./games/clinique.js?v=50ccfe85e2").then(m => m.openClinique),
-	jourj:() => import("./games/jourj.js?v=50ccfe85e2").then(m => m.openJourJ),
-	moniac:() => import("./games/moniac.js?v=50ccfe85e2").then(m => m.openMoniac),
-	cargo:() => import("./games/cargo.js?v=50ccfe85e2").then(m => m.openCargo),
-	marquelle:() => import("./games/marquelle.js?v=50ccfe85e2").then(m => m.openMarquelle),
-	guichet:() => import("./games/guichet.js?v=50ccfe85e2").then(m => m.openGuichet),
-	telephone:() => import("./games/dossier.js?v=50ccfe85e2").then(m => m.openDossier)
+	comptoir:() => import("./games/comptoir.js?v=0c6917bfb6").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=0c6917bfb6").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=0c6917bfb6").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=0c6917bfb6").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=0c6917bfb6").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=0c6917bfb6").then(m => m.openBiodata),
+	crise:() => import("./games/crise.js?v=0c6917bfb6").then(m => m.openCrise),
+	patrimoine:() => import("./games/patrimoine.js?v=0c6917bfb6").then(m => m.openPatrimoine),
+	affaires:() => import("./games/affaires.js?v=0c6917bfb6").then(m => m.openAffaires),
+	boutique:() => import("./games/boutique.js?v=0c6917bfb6").then(m => m.openBoutique),
+	ruee:() => import("./games/ruee.js?v=0c6917bfb6").then(m => m.openRuee),
+	tp:() => import("./games/tp.js?v=0c6917bfb6").then(m => m.openTP),
+	clinique:() => import("./games/clinique.js?v=0c6917bfb6").then(m => m.openClinique),
+	jourj:() => import("./games/jourj.js?v=0c6917bfb6").then(m => m.openJourJ),
+	moniac:() => import("./games/moniac.js?v=0c6917bfb6").then(m => m.openMoniac),
+	cargo:() => import("./games/cargo.js?v=0c6917bfb6").then(m => m.openCargo),
+	marquelle:() => import("./games/marquelle.js?v=0c6917bfb6").then(m => m.openMarquelle),
+	guichet:() => import("./games/guichet.js?v=0c6917bfb6").then(m => m.openGuichet),
+	telephone:() => import("./games/dossier.js?v=0c6917bfb6").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2948,6 +2948,16 @@ function gameClosed(){
 	gameExit.guard = false;
 	if(gameExit.pushed){ gameExit.pushed = false; gameExit.ignorePop = true; history.back(); }      // retire l'entrée posée à l'ouverture
 }
+/* Polices de la charte (Tiempos Headline pour les titres, Inter pour le texte) : chargées avant d'ouvrir un jeu,
+   car les étiquettes 3D sont dessinées sur canevas et ne se redessinent pas toutes seules. 2,5 s au plus. */
+let charteP = null;
+function charteFonts(){
+	if(!document.fonts) return Promise.resolve();
+	return charteP = charteP || Promise.race([
+		Promise.all(["300 20px 'Tiempos Headline'", "300 20px Inter", "700 20px Inter", "italic 300 20px Inter"].map(f => document.fonts.load(f))).catch(() => {}),
+		new Promise(r => setTimeout(r, 2500))
+	]);
+}
 function openGame(fid, loader){
 	const f = F.find(x => x.id === fid);
 	const kind = GAMES[fid], load = GAME_LOADERS[loader || kind];      // loader : une autre version du jeu de la formation (prototype)
@@ -2956,8 +2966,9 @@ function openGame(fid, loader){
 	let won = false, mention = null, counted = false, stageN = 0;
 	const stagesSeen = new Set();
 	gamePaused = true;
+	document.documentElement.dataset.ecole = f.school;      // couleurs de l'école pour le palier et la carte JPO
 	const label = `${loader || kind} · ${fid}`, g = loader || kind;
-	load().then(open => { countEvent(`jeu-lance/${g}`, label); gameNow = g; lastGame = kind; gameOpened(g); return open({
+	Promise.all([load(), charteFonts()]).then(([open]) => { countEvent(`jeu-lance/${g}`, label); gameNow = g; lastGame = kind; gameOpened(g); return open({
 		openLead:() => openLead([fid], g),
 		formation:f, audio:Audio,
 		isFav:() => favs.has(fid), toggleFav:() => toggleFav(fid),

@@ -23,3 +23,6 @@ tools/verif/
 tools/film/_*.jpg
 tools/film/_*.mp4
 tools/film/_plans.json
+
+# Tiempos Headline : licence web Klim limitée au domaine univ-catholille.fr, à ne pas publier dans ce dépôt public
+fonts/tiempos/

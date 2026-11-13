@@ -11,16 +11,16 @@
    - quit : ferme le jeu (sa fonction close) ; openLead : ouvre le formulaire de plaquette, après fermeture
    L'entonnoir compte « palier » (scène d'ouverture finie) et « suite » (le joueur a choisi de continuer). */
 const CSS = `
-.pl-ov{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(10,18,14,.38);font-family:Nunito,system-ui,sans-serif;animation:plIn .3s ease both}
+.pl-ov{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(10,18,14,.38);font-family:Inter,system-ui,sans-serif;font-weight:300;animation:plIn .3s ease both}
 @keyframes plIn{from{opacity:0}}
 .pl-card{width:100%;max-width:430px;max-height:100%;overflow:auto;background:#fffcf3;color:#24302a;border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.45);padding:18px 18px 14px;box-sizing:border-box;animation:plUp .4s cubic-bezier(.2,.8,.2,1) both;border-top:6px solid var(--pl,#b08a3e)}
 @keyframes plUp{from{opacity:0;transform:translateY(24px)}}
-.pl-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pl,#8a6a24)}
-.pl-h{font:700 21px/1.2 Fraunces,Georgia,serif;margin:6px 0 8px;color:#1f2b26}
+.pl-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pl,var(--ec-texte,#0f3168))}
+.pl-h{font:300 21px/1.2 Tiempos Headline,Georgia,serif;margin:6px 0 8px;color:#1f2b26}
 .pl-p{margin:0 0 6px;font-size:14.5px;line-height:1.45;color:#4a5450}
-.pl-go{display:block;width:100%;border:0;border-radius:12px;padding:14px;background:#1f2b26;color:#fff;font:800 16px Nunito,sans-serif;cursor:pointer;margin-top:12px}
-.pl-alt{display:block;width:100%;border:2px solid #ddd3bb;border-radius:12px;padding:11px;background:#fff;color:#1f2b26;font:800 14px Nunito,sans-serif;cursor:pointer;margin-top:8px}
-.pl-go:focus-visible,.pl-alt:focus-visible{outline:3px solid var(--pl,#b08a3e);outline-offset:2px}
+.pl-go{display:block;width:100%;border:0;border-radius:12px;padding:14px;background:var(--ec-fort,#0f3168);color:#fff;font:700 16px Inter,system-ui,sans-serif;cursor:pointer;margin-top:12px}
+.pl-alt{display:block;width:100%;border:2px solid #ddd3bb;border-radius:12px;padding:11px;background:#fff;color:#1f2b26;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;margin-top:8px}
+.pl-go:focus-visible,.pl-alt:focus-visible{outline:3px solid var(--pl,var(--ec,#21b7cb));outline-offset:2px}
 @media (max-width:759px){
 	.pl-ov{align-items:flex-end;padding:0}
 	.pl-card{max-width:none;border-radius:18px 18px 0 0;padding:16px 16px 20px}

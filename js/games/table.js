@@ -6,7 +6,7 @@
 export const MOBILE = 760;
 
 const CSS = `
-.tb{position:fixed;inset:0;z-index:40;font-family:Nunito,system-ui,sans-serif;color:var(--ink);background:var(--bg);animation:tbIn .35s ease both;overflow:hidden}
+.tb{position:fixed;inset:0;z-index:40;font-family:Inter,system-ui,sans-serif;font-weight:300;color:var(--ink);background:var(--bg);animation:tbIn .35s ease both;overflow:hidden}
 @keyframes tbIn{from{opacity:0}to{opacity:1}}
 .tb canvas{position:absolute;left:0;top:0;display:block;touch-action:none}
 .tb-top{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;gap:8px;align-items:center;padding:10px;pointer-events:none}
@@ -36,16 +36,16 @@ const CSS = `
 	.tb-tl{bottom:auto}
 }
 .tb-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ink)}
-.tb-h{font:700 22px/1.15 Fraunces,Georgia,serif;margin:4px 0 6px;color:var(--dark)}
+.tb-h{font:300 22px/1.15 Tiempos Headline,Georgia,serif;margin:4px 0 6px;color:var(--dark)}
 .tb-p{margin:0 0 10px;color:#4a4f58;font-size:14.5px}
-.tb-year{display:inline-block;font:700 13px Fraunces,Georgia,serif;background:var(--dark);color:#f3e3b8;border-radius:6px;padding:3px 9px;margin-bottom:6px}
+.tb-year{display:inline-block;font:300 13px Inter,system-ui,sans-serif;background:var(--dark);color:#f3e3b8;border-radius:6px;padding:3px 9px;margin-bottom:6px}
 .tb-story{background:var(--paper2);border-left:4px solid var(--accent);border-radius:4px;padding:10px 12px;margin:8px 0 12px;font-size:14px;color:#3a3530}
-.tb-go{display:block;width:100%;border:0;border-radius:12px;padding:14px;background:var(--dark);color:#fff;font:800 16px Nunito,sans-serif;cursor:pointer;margin-top:12px;text-align:center;text-decoration:none}
+.tb-go{display:block;width:100%;border:0;border-radius:12px;padding:14px;background:var(--dark);color:#fff;font:700 16px Inter,system-ui,sans-serif;cursor:pointer;margin-top:12px;text-align:center;text-decoration:none}
 .tb-go:disabled{opacity:.35;cursor:default}
-.tb-alt{display:block;width:100%;border:2px solid var(--line);border-radius:12px;padding:12px;background:#fff;color:var(--dark);font:800 14px Nunito,sans-serif;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none;box-sizing:border-box}
+.tb-alt{display:block;width:100%;border:2px solid var(--line);border-radius:12px;padding:12px;background:#fff;color:var(--dark);font:700 14px Inter,system-ui,sans-serif;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none;box-sizing:border-box}
 .tb-course{background:#fff;border:2px solid var(--accent);border-radius:10px;padding:12px 14px;margin:10px 0 4px}
 .tb-course .tag{display:inline-block;background:var(--paper2);color:var(--accent-ink);font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px;margin-bottom:6px}
-.tb-course b{display:block;font:700 16px Fraunces,Georgia,serif;margin-bottom:3px;color:var(--dark)}
+.tb-course b{display:block;font:300 16px Tiempos Headline,Georgia,serif;margin-bottom:3px;color:var(--dark)}
 .tb-course span{font-size:13.5px;color:#4a4f58}
 .tb-list{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
 .tb-list li{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px;font-weight:700}
@@ -67,7 +67,7 @@ const CSS = `
 .tb-bubble svg{flex:none;width:64px;height:64px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
 .tb-bubble p{flex:1;position:relative;margin:0;background:var(--paper);border:2px solid var(--dark);border-radius:14px;padding:8px 14px;font-size:14.5px;font-weight:700;line-height:1.35;color:var(--dark);box-shadow:0 8px 20px rgba(0,0,0,.3);min-height:20px}
 .tb-bubble p:before{content:"";position:absolute;left:-9px;top:50%;width:14px;height:14px;background:var(--paper);border:2px solid var(--dark);border-top:0;border-right:0;transform:translateY(-50%) rotate(45deg)}
-.tb-bubble p b{display:block;font:800 10.5px Nunito,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:2px}
+.tb-bubble p b{display:block;font:700 10.5px Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:2px}
 @media (max-width:520px){ .tb-bubble svg{width:46px;height:46px} .tb-bubble p{font-size:12.5px;padding:6px 10px} .tb-meters{gap:4px;left:8px;right:60px} .tb-m{min-width:0;padding:4px 7px;font-size:12px} .tb-m small{display:none}
 	.tb-tl .l{display:none} .tb-tl .s{display:inline} .tb-tl li{font-size:10.5px} .tb-tl{padding:7px 9px 5px} }
 @media (max-width:440px){ .tb-h{font-size:19px} .tb-story{font-size:13.5px} }

@@ -9,11 +9,11 @@
      6. jeudi : devant le comité, répondre à chaque objection en montrant la pièce et la ligne qui le prouvent.
    Le dossier s'épaissit sur le bureau à chaque pièce. Environ 9 minutes. Contenus dans affaires-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=50ccfe85e2";
-import { jpoCard } from "./jpo.js?v=50ccfe85e2";
-import { palier } from "./palier.js?v=50ccfe85e2";
+import { makePerson, std, box, cyl } from "../kit.js?v=0c6917bfb6";
+import { jpoCard } from "./jpo.js?v=0c6917bfb6";
+import { palier } from "./palier.js?v=0c6917bfb6";
 import { PRET, TAUX, CAF_PREV, SERVICE, VIE, PATRI, PROPRES, NANT, BPI_MAX, PAL, annuite, LIASSE, RATIOS, PALLETS, ORDERS, LETTER, ORG, RBE, GRID,
-	PIECES, MEMBERS, objections, COURSES, NEXT } from "./affaires-data.js?v=50ccfe85e2";
+	PIECES, MEMBERS, objections, COURSES, NEXT } from "./affaires-data.js?v=0c6917bfb6";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -25,42 +25,42 @@ const FX = 60, CX = -60, DY = .77;          // l'usine, la salle du comité ; ha
 const NAVY = "#16324f", INK = "#1f2a36", GREY = "#66727e", RED = "#c0392b", GREEN = "#2e7d4f", GOLD = "#b8871b", PAPER = "#fbf9f4";
 
 const CSS = `
-.dv{position:fixed;inset:0;z-index:40;font-family:Nunito,system-ui,sans-serif;color:${INK};background:#e7ebee;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;animation:dvIn .3s ease both}
+.dv{position:fixed;inset:0;z-index:40;font-family:Inter,system-ui,sans-serif;font-weight:300;color:${INK};background:#e7ebee;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;animation:dvIn .3s ease both}
 @keyframes dvIn{from{opacity:0}to{opacity:1}}
 .dv canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .dv-top{position:absolute;left:0;right:0;top:0;display:flex;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 12px) 6px calc(env(safe-area-inset-left) + 12px);z-index:5;pointer-events:none}
 .dv-top>*{pointer-events:auto}
-.dv-tag{background:#fff;border:1px solid #cdd6de;border-radius:6px;padding:6px 11px;font-weight:900;font-size:13px;white-space:nowrap;box-shadow:0 2px 6px rgba(20,35,55,.12)}
-.dv-tag.n{background:${NAVY};border-color:${NAVY};color:#f1e6c8;font-family:Fraunces,Georgia,serif;font-weight:700}
+.dv-tag{background:#fff;border:1px solid #cdd6de;border-radius:6px;padding:6px 11px;font-weight:900;font-size:13px;white-space:nowrap;box-shadow:0 2px 6px rgba(15,49,104,.12)}
+.dv-tag.n{background:${NAVY};border-color:${NAVY};color:#e9f7fa;font-family:Tiempos Headline,Georgia,serif;font-weight:700}
 .dv-tag.f{transition:transform .25s}
 .dv-tag.f.pop{transform:scale(1.18)}
-.dv-x{margin-left:auto;width:48px;height:48px;border-radius:50%;border:1px solid #cdd6de;background:#fff;font-size:24px;cursor:pointer;color:${INK};box-shadow:0 2px 6px rgba(20,35,55,.15)}
+.dv-x{margin-left:auto;width:48px;height:48px;border-radius:50%;border:1px solid #cdd6de;background:#fff;font-size:24px;cursor:pointer;color:${INK};box-shadow:0 2px 6px rgba(15,49,104,.15)}
 .dv-say{position:absolute;z-index:6;max-width:min(390px,calc(100% - 24px));transform:translate(-50%,-100%);transition:opacity .25s;cursor:pointer}
 .dv-say.off{opacity:0;pointer-events:none}
-.dv-say .b{background:#fff;border-left:5px solid ${NAVY};border-radius:6px;padding:9px 12px 7px;font-size:14.5px;line-height:1.42;box-shadow:0 6px 18px rgba(20,35,55,.22)}
+.dv-say .b{background:#fff;border-left:5px solid ${NAVY};border-radius:6px;padding:9px 12px 7px;font-size:14.5px;line-height:1.42;box-shadow:0 6px 18px rgba(15,49,104,.22)}
 .dv-say .who{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:${GOLD};font-weight:900}
 .dv-say .nx{display:block;text-align:right;font-size:11px;color:#97a2ad;font-weight:800}
 .dv-say.fix{transform:none}
 .dv-say.me .b{border-left-color:${GOLD}}
-.dv-task{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 10px);z-index:5;background:${NAVY};color:#fff;border-radius:10px;padding:9px 14px;font-weight:800;font-size:14px;line-height:1.35;width:max-content;max-width:calc(100% - 24px);text-align:center;box-shadow:0 6px 18px rgba(20,35,55,.3);pointer-events:none}
+.dv-task{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 10px);z-index:5;background:${NAVY};color:#fff;border-radius:10px;padding:9px 14px;font-weight:800;font-size:14px;line-height:1.35;width:max-content;max-width:calc(100% - 24px);text-align:center;box-shadow:0 6px 18px rgba(15,49,104,.3);pointer-events:none}
 .dv-task[hidden]{display:none}
-.dv-task b{color:#f1d27a}
+.dv-task b{color:#21b7cb}
 .dv-notes{position:absolute;right:calc(env(safe-area-inset-right) + 12px);bottom:calc(env(safe-area-inset-bottom) + 70px);z-index:5;display:flex;flex-direction:column-reverse;gap:8px;align-items:flex-end;pointer-events:none;max-width:min(270px,48%)}
-.dv-note{background:#fff;border-radius:3px;border-top:4px solid ${GOLD};padding:6px 10px 8px;font-size:12.5px;font-weight:800;line-height:1.3;box-shadow:2px 4px 12px rgba(20,35,55,.2);animation:dvNote 4.4s ease both;background-image:repeating-linear-gradient(transparent 0 17px,#d6e4f0 17px 18px)}
+.dv-note{background:#fff;border-radius:3px;border-top:4px solid ${GOLD};padding:6px 10px 8px;font-size:12.5px;font-weight:800;line-height:1.3;box-shadow:2px 4px 12px rgba(15,49,104,.2);animation:dvNote 4.4s ease both;background-image:repeating-linear-gradient(transparent 0 17px,#e9f7fa 17px 18px)}
 .dv-note span{display:block;font-size:10px;color:${GOLD};letter-spacing:.06em;text-transform:uppercase}
 @keyframes dvNote{0%{opacity:0;translate:0 14px}10%{opacity:1;translate:0 0}85%{opacity:1}100%{opacity:0}}
 .dv-ov{position:absolute;inset:0;z-index:9;display:grid;place-items:center;padding:14px;background:rgba(15,25,40,.42)}
 .dv-ov[hidden]{display:none}
 .dv-card{max-width:580px;width:100%;max-height:100%;overflow:auto;background:${PAPER};border-radius:10px;border-top:6px solid ${NAVY};padding:20px 18px;box-shadow:0 20px 60px rgba(0,0,0,.35);user-select:text;-webkit-user-select:text}
-.dv-card h2{font:700 27px/1.15 Fraunces,Georgia,serif;margin:4px 0 8px;color:${NAVY}}
+.dv-card h2{font:300 27px/1.15 Tiempos Headline,Georgia,serif;margin:4px 0 8px;color:${NAVY}}
 .dv-card .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:${GOLD};font-weight:900;margin:0 0 4px}
 .dv-card p{font-size:14.5px;line-height:1.5;margin:0 0 10px}
-.dv-q{background:#eef2f6;border-left:4px solid ${NAVY};padding:9px 12px;font:600 16px/1.4 Fraunces,Georgia,serif;color:${NAVY};margin:0 0 12px}
+.dv-q{background:#e9f7fa;border-left:4px solid ${NAVY};padding:9px 12px;font:300 16px/1.4 Tiempos Headline,Georgia,serif;color:${NAVY};margin:0 0 12px}
 .dv-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0 12px}
 .dv-legend div{background:#eef1f3;border-radius:8px;padding:7px 9px;font-size:13px;line-height:1.3}
 .dv-legend b{font-size:18px;display:block}
-.dv-go{display:block;width:100%;border:0;border-radius:10px;padding:12px;font:900 16px Nunito,sans-serif;background:${NAVY};color:#fff;cursor:pointer;min-height:48px;box-shadow:0 4px 0 #0b1c2e}
-.dv-go:focus-visible{outline:3px solid #f1d27a}
+.dv-go{display:block;width:100%;border:0;border-radius:10px;padding:12px;font:700 16px Inter,system-ui,sans-serif;background:${NAVY};color:#fff;cursor:pointer;min-height:48px;box-shadow:0 4px 0 #0b1c2e}
+.dv-go:focus-visible{outline:3px solid #21b7cb}
 .dv-alt{display:block;text-align:center;margin-top:8px;font-weight:800;color:${NAVY};background:none;border:0;cursor:pointer;width:100%;font-size:14px;text-decoration:underline;min-height:44px}
 .dv-stats{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
 .dv-stats div{flex:1 1 120px;background:#eef1f3;border-radius:8px;padding:6px 9px;font-size:12px;font-weight:800;color:${GREY}}
@@ -68,9 +68,9 @@ const CSS = `
 .dv-list{list-style:none;margin:0 0 10px;padding:0}
 .dv-list li{background:#f1f3f5;border-radius:8px;padding:7px 9px;margin:5px 0;font-size:13px;line-height:1.35}
 .dv-list li span{display:inline-block;background:${NAVY};color:#fff;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:900;margin-right:5px}
-.dv-list.next li{background:#fdf6e3}
+.dv-list.next li{background:#e9f7fa}
 .dv-big{font-size:46px;text-align:center;margin:0}
-.dv-stamp{display:inline-block;border:3px solid currentColor;border-radius:6px;padding:3px 10px;font:900 15px Nunito,sans-serif;letter-spacing:.08em;transform:rotate(-4deg);margin:2px 0 10px}
+.dv-stamp{display:inline-block;border:3px solid currentColor;border-radius:6px;padding:3px 10px;font:700 15px Inter,system-ui,sans-serif;letter-spacing:.08em;transform:rotate(-4deg);margin:2px 0 10px}
 .dv-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (max-width:640px){.dv-tag{font-size:12px;padding:5px 8px}.dv-tag.hide-s{display:none}.dv-say .b{font-size:13.5px}.dv-task{font-size:13px}.dv-notes{max-width:60%}}
 @media (prefers-reduced-motion:reduce){.dv,.dv-note{animation:none}}
@@ -154,18 +154,18 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 	box(scene, .3, .02, .2, M.black, .3, DY, -.42); box(scene, .05, .32, .05, M.black, .3, DY, -.47);
 	const monG = new THREE.Group(); monG.position.set(.3, DY + .5, -.45); monG.rotation.x = -.1; scene.add(monG);
 	box(monG, 1.08, .68, .04, M.black, 0, -.34, -.03);
-	{ const sc = canvasPlane(monG, 800, 480, 1.04, (x, W, H) => { x.fillStyle = "#0f2236"; x.fillRect(0, 0, W, H); x.fillStyle = "#f1e6c8"; x.font = "700 64px Fraunces, Georgia, serif"; x.textAlign = "center"; x.fillText("Crédit des Flandres", W/2, 230); x.font = "800 30px Nunito, sans-serif"; x.fillStyle = "#8fa3b8"; x.fillText("Centre d'affaires de Roubaix", W/2, 290); }); sc.m.position.z = .001; }
+	{ const sc = canvasPlane(monG, 800, 480, 1.04, (x, W, H) => { x.fillStyle = "#0f2236"; x.fillRect(0, 0, W, H); x.fillStyle = "#f1e6c8"; x.font = "300 64px Tiempos Headline,Georgia,serif"; x.textAlign = "center"; x.fillText("Crédit des Flandres", W/2, 230); x.font = "700 30px Inter,system-ui,sans-serif"; x.fillStyle = "#8fa3b8"; x.fillText("Centre d'affaires de Roubaix", W/2, 290); }); sc.m.position.z = .001; }
 	// la calculatrice
 	box(scene, .34, .03, .48, M.black, 1.06, DY, .16);
 	// une étagère de classeurs, une plante, le nom de la banque
 	box(scene, 1.6, 2, .35, M.oak, -4.6, 0, -2.8);
 	for(let i = 0; i < 9; i++) box(scene, .14, .34, .28, [M.navy, M.manila, M.frame][i % 3], -5.25 + i*.16, 1.02, -2.8, 0, false);
 	cyl(scene, .3, .24, .5, M.pot, 4.6, 0, -2.4); { const p = new THREE.Mesh(geo(new THREE.IcosahedronGeometry(.55, 0)), M.plant); p.position.set(4.6, 1, -2.4); p.castShadow = true; scene.add(p); }
-	{ const sg = canvasPlane(scene, 900, 160, 3, (x, W, H) => { x.fillStyle = NAVY; x.fillRect(0, 0, W, H); x.fillStyle = "#f1e6c8"; x.font = "700 64px Fraunces, Georgia, serif"; x.fillText("Crédit des Flandres", 40, 82); x.font = "800 34px Nunito, sans-serif"; x.fillText("Centre d'affaires de Roubaix", 42, 132); }, false); sg.m.position.set(0, 3.1, -3.08); }
+	{ const sg = canvasPlane(scene, 900, 160, 3, (x, W, H) => { x.fillStyle = NAVY; x.fillRect(0, 0, W, H); x.fillStyle = "#f1e6c8"; x.font = "300 64px Tiempos Headline,Georgia,serif"; x.fillText("Crédit des Flandres", 40, 82); x.font = "700 34px Inter,system-ui,sans-serif"; x.fillText("Centre d'affaires de Roubaix", 42, 132); }, false); sg.m.position.set(0, 3.1, -3.08); }
 	// le dossier Duval, qui s'épaissit à chaque pièce
 	const folder = new THREE.Group(); folder.position.set(-1.18, DY, -.32); folder.rotation.y = .12; scene.add(folder);
 	box(folder, .36, .006, .46, M.manila, 0, 0, 0);
-	{ const t = canvasPlane(folder, 360, 120, .3, (x, W, H) => { x.fillStyle = "#d8b878"; x.fillRect(0, 0, W, H); x.fillStyle = NAVY; x.font = "900 44px Nunito, sans-serif"; x.fillText("DUVAL", 18, 56); x.font = "800 28px Nunito, sans-serif"; x.fillText("Textiles · crédit 1,2 M€", 18, 100); }, false);
+	{ const t = canvasPlane(folder, 360, 120, .3, (x, W, H) => { x.fillStyle = "#d8b878"; x.fillRect(0, 0, W, H); x.fillStyle = NAVY; x.font = "700 44px Inter,system-ui,sans-serif"; x.fillText("DUVAL", 18, 56); x.font = "700 28px Inter,system-ui,sans-serif"; x.fillText("Textiles · crédit 1,2 M€", 18, 100); }, false);
 		t.m.rotation.x = -Math.PI/2; t.m.position.set(0, .0075, .1); folder.userData.lab = t.m; }
 	// Nadia, directrice du centre d'affaires
 	const nadia = makePerson(scene, false, "pro"); nadia.g.position.set(1.95, 0, -1.05); nadia.g.rotation.y = -.7;
@@ -185,7 +185,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 		const cl = new THREE.Mesh(geo(new THREE.PlaneGeometry(2, 1.1)), M.bob[(i + 1) % 5]); cl.rotation.x = -1.05; cl.position.set(lx, 1.25, -3.05); fac.add(cl);
 	}
 	for(const [w, d, x, z] of [[3.6, .08, 6.5, -.3], [3.6, .08, 6.5, 1.9], [.08, 2.2, 4.7, .8], [.08, 2.2, 8.3, .8]]) box(fac, w, .012, d, M.yellow, x, 0, z, 0, false);
-	{ const fl = canvasPlane(fac, 760, 180, 2.6, (x, W, H) => { x.clearRect(0, 0, W, H); x.fillStyle = "#e9c02b"; x.font = "900 52px Nunito, sans-serif"; x.fillText("NOUVELLE LIGNE", 20, 70); x.font = "800 40px Nunito, sans-serif"; x.fillText("d'enduction · emplacement", 20, 140); });
+	{ const fl = canvasPlane(fac, 760, 180, 2.6, (x, W, H) => { x.clearRect(0, 0, W, H); x.fillStyle = "#e9c02b"; x.font = "700 52px Inter,system-ui,sans-serif"; x.fillText("NOUVELLE LIGNE", 20, 70); x.font = "700 40px Inter,system-ui,sans-serif"; x.fillText("d'enduction · emplacement", 20, 140); });
 		fl.m.material.transparent = true; fl.m.rotation.x = -Math.PI/2; fl.m.position.set(6.5, .02, .8); }
 	// les racks et les 12 palettes
 	const pallets = [];
@@ -213,11 +213,11 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 		const P = pallets[i], x = P.tag.x, [client, ref, date, dead] = P.p, n = [...S.counted].indexOf(i) + 1;
 		x.fillStyle = dead ? "#e9e4d8" : "#ffffff"; x.fillRect(0, 0, 320, 200);
 		x.strokeStyle = "#333"; x.lineWidth = 4; x.strokeRect(2, 2, 316, 196);
-		x.fillStyle = "#2a5db0"; x.font = "900 54px Nunito, sans-serif"; x.fillText(String(n), 16, 60);
-		x.fillStyle = "#222"; x.font = "900 30px Nunito, sans-serif"; x.fillText(client, 82, 46);
-		x.font = "800 24px Nunito, sans-serif"; x.fillText(ref, 18, 110); x.fillText("Entrée : " + date, 18, 150);
-		x.fillStyle = "#666"; x.font = "800 20px Nunito, sans-serif"; x.fillText("150 k€ · inventaire", 18, 186);
-		if(S.stick.has(i)){ x.fillStyle = "#d22f27"; x.beginPath(); x.arc(276, 150, 34, 0, 7); x.fill(); x.fillStyle = "#fff"; x.font = "900 34px Nunito, sans-serif"; x.textAlign = "center"; x.fillText("✕", 276, 162); x.textAlign = "left"; }
+		x.fillStyle = "#2a5db0"; x.font = "700 54px Inter,system-ui,sans-serif"; x.fillText(String(n), 16, 60);
+		x.fillStyle = "#222"; x.font = "700 30px Inter,system-ui,sans-serif"; x.fillText(client, 82, 46);
+		x.font = "700 24px Inter,system-ui,sans-serif"; x.fillText(ref, 18, 110); x.fillText("Entrée : " + date, 18, 150);
+		x.fillStyle = "#666"; x.font = "700 20px Inter,system-ui,sans-serif"; x.fillText("150 k€ · inventaire", 18, 186);
+		if(S.stick.has(i)){ x.fillStyle = "#d22f27"; x.beginPath(); x.arc(276, 150, 34, 0, 7); x.fill(); x.fillStyle = "#fff"; x.font = "700 34px Inter,system-ui,sans-serif"; x.textAlign = "center"; x.fillText("✕", 276, 162); x.textAlign = "left"; }
 		P.tag.tex.needsUpdate = true; P.tag.m.visible = true;
 	}
 	// le tableau des commandes, avec la lettre de Volta épinglée ; le pupitre de la fiche de visite
@@ -233,7 +233,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 	{ const w = new THREE.Mesh(geo(new THREE.PlaneGeometry(1.6, 2.2)), M.sky); w.rotation.y = Math.PI/2; w.position.set(-4.88, 1.7, -1.5); com.add(w); }
 	box(com, 5.2, .05, 2.1, M.table, 0, DY - .05, -1.15);
 	for(const dx of [-2.4, 2.4]) for(const dz of [-1.9, -.4]) box(com, .08, DY - .05, .08, M.leg, dx, 0, dz, 0, false);
-	{ const sc = canvasPlane(com, 1000, 420, 2.4, (x, W, H) => { x.fillStyle = "#1d2024"; x.fillRect(0, 0, W, H); x.fillStyle = "#f1e6c8"; x.font = "700 62px Fraunces, Georgia, serif"; x.fillText("Comité de crédit", 50, 120); x.font = "800 40px Nunito, sans-serif"; x.fillStyle = "#cfd8e0"; x.fillText("Jeudi 14 h · Duval Textiles · 1 200 k€", 50, 200); x.fillText("Rapporteur : le chargé d'affaires", 50, 260); x.fillText("Décision : accord / refus / ajournement", 50, 320); }); sc.m.position.set(0, 2.2, -4.08); }
+	{ const sc = canvasPlane(com, 1000, 420, 2.4, (x, W, H) => { x.fillStyle = "#1d2024"; x.fillRect(0, 0, W, H); x.fillStyle = "#f1e6c8"; x.font = "300 62px Tiempos Headline,Georgia,serif"; x.fillText("Comité de crédit", 50, 120); x.font = "700 40px Inter,system-ui,sans-serif"; x.fillStyle = "#cfd8e0"; x.fillText("Jeudi 14 h · Duval Textiles · 1 200 k€", 50, 200); x.fillText("Rapporteur : le chargé d'affaires", 50, 260); x.fillText("Décision : accord / refus / ajournement", 50, 320); }); sc.m.position.set(0, 2.2, -4.08); }
 	const members = {};
 	[["lambert", -1.5], ["vasseur", 0], ["okafor", 1.5]].forEach(([id, x], i) => {
 		box(com, .55, .48, .55, M.chair, x, 0, -2.75, 0, false);
@@ -264,9 +264,9 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 
 	// le crayon : rectangles arrondis, texte, paragraphes
 	function rr(x, X, Y, W, H, r, fill, stroke, lw = 3){ x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + W, Y, X + W, Y + H, r); x.arcTo(X + W, Y + H, X, Y + H, r); x.arcTo(X, Y + H, X, Y, r); x.arcTo(X, Y, X + W, Y, r); x.closePath(); if(fill){ x.fillStyle = fill; x.fill(); } if(stroke){ x.strokeStyle = stroke; x.lineWidth = lw; x.stroke(); } }
-	function T(x, s, X, Y, size, col = INK, w = 700, al = "left", fam = "Nunito, system-ui, sans-serif"){ x.font = `${w} ${size}px ${fam}`; x.fillStyle = col; x.textAlign = al; x.textBaseline = "alphabetic"; x.fillText(s, X, Y); }
+	function T(x, s, X, Y, size, col = INK, w = 700, al = "left", fam = "Inter, system-ui, sans-serif"){ x.font = `${w} ${size}px ${fam}`; x.fillStyle = col; x.textAlign = al; x.textBaseline = "alphabetic"; x.fillText(s, X, Y); }
 	function P(x, s, X, Y, maxW, size, col = INK, w = 700, lh = 1.25){
-		x.font = `${w} ${size}px Nunito, system-ui, sans-serif`; let line = "", yy = Y;
+		x.font = `${w} ${size}px Inter,system-ui,sans-serif`; let line = "", yy = Y;
 		for(const wd of s.split(" ")){ const t = line ? line + " " + wd : wd; if(x.measureText(t).width > maxW && line){ T(x, line, X, yy, size, col, w); line = wd; yy += size*lh; } else line = t; }
 		if(line) T(x, line, X, yy, size, col, w); return yy;
 	}
@@ -441,7 +441,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 	/* -- l'extrait du registre des bénéficiaires effectifs -- */
 	sheet("rbe", 1000, 560, .8, (x, s) => {
 		paper(x, s, "REGISTRE DES BÉNÉFICIAIRES EFFECTIFS", "extrait · Duval Textiles SAS · RCS Lille Métropole 000 318 442 (fictif)");
-		RBE.forEach(([id, t], i) => { const y = 150 + i*98; s.zones[id] = [24, y - 6, s.W - 24, y + 86]; rr(x, 30, y, s.W - 60, 84, 8, "#fff", "#e0dbcf", 2); const two = (x.font = "800 24px Nunito, sans-serif", x.measureText(t).width > s.W - 110); P(x, t, 50, y + (two ? 34 : 52), s.W - 110, 24, INK, 800, 1.15); });
+		RBE.forEach(([id, t], i) => { const y = 150 + i*98; s.zones[id] = [24, y - 6, s.W - 24, y + 86]; rr(x, 30, y, s.W - 60, 84, 8, "#fff", "#e0dbcf", 2); const two = (x.font = "700 24px Inter,system-ui,sans-serif", x.measureText(t).width > s.W - 110); P(x, t, 50, y + (two ? 34 : 52), s.W - 110, 24, INK, 800, 1.15); });
 	});
 	/* -- la grille de notation -- */
 	sheet("grille", 1000, 780, .8, (x, s) => {
@@ -487,7 +487,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 			P(x, `${live} palettes en rotation normale : ${fr(live*PAL)} k€`, 40, 360, 620, 26, GREEN, 900);
 			P(x, `4 palettes Autolux invendables (client fermé) : 600 k€ à déprécier`, 40, 470, 620, 26, RED, 900);
 			P(x, "Capitaux propres corrigés : 2 200 k€, endettement après prêt 0,95 (sous 1, de justesse)", 40, 610, 620, 22, INK, 800);
-			T(x, "Vu sur place ✍", 640, 840, 34, NAVY, 700, "right", "Fraunces, Georgia, serif");
+			T(x, "Vu sur place ✍", 640, 840, 34, NAVY, 300, "right", "Tiempos Headline, Georgia, serif");
 		}
 	});
 	/* -- le tableau de l'usine : carnet de commandes et lettre de Volta -- */

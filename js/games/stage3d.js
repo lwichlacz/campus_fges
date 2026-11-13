@@ -32,7 +32,7 @@ export function stage3d(canvas, o = {}){
 	const cyl = (rt, rb, h, c, x, y, z, parent, seg = 20) => mesh(G(new THREE.CylinderGeometry(rt, rb, h, seg)), c, x, y + h/2, z, parent);
 	function canvasTex(w, h, draw){ const c = document.createElement("canvas"); c.width = w; c.height = h; const x = c.getContext("2d"); draw && draw(x, w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; own.push(t); t.ctx = x; t.redraw = f => { f(x, w, h); t.needsUpdate = true; }; return t; }
 	function label(text, op = {}){
-		const c = document.createElement("canvas"), x = c.getContext("2d"), f = `${op.weight || 900} 40px ${op.font || "Nunito, system-ui, sans-serif"}`;
+		const c = document.createElement("canvas"), x = c.getContext("2d"), f = `${op.weight || 700} 40px ${op.font || "Inter, system-ui, sans-serif"}`;
 		x.font = f; const w = Math.ceil(x.measureText(text).width) + 36, h = 62; c.width = w; c.height = h; x.font = f;
 		x.fillStyle = op.bg || "#fffdf7"; x.beginPath(); x.roundRect(2, 2, w - 4, h - 4, 12); x.fill();
 		if(op.line){ x.strokeStyle = op.line; x.lineWidth = 3; x.stroke(); }

@@ -1,7 +1,7 @@
 /* Encart « Viens le vivre en vrai » des écrans de fin : le prochain rendez-vous sur le campus (RENDEZ_VOUS, data.js).
    Même encart dans tous les jeux, au moment où le visiteur est le plus convaincu. Ne s'affiche plus quand aucun
    rendez-vous n'est à venir. Le jaune est celui du banc du patio de Wenov : il ne se confond avec aucun habillage. */
-import { RENDEZ_VOUS } from "../data.js?v=50ccfe85e2";
+import { RENDEZ_VOUS } from "../data.js?v=0c6917bfb6";
 
 export function nextRendezVous(now = new Date()){
 	const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -17,7 +17,7 @@ export function jpoCard(lang = "fr"){
 	const what = en ? `Open day on ${day}` : `Journée portes ouvertes le ${day}`;
 	const hours = en ? "" : `, ${r.hours}`;
 	const where = en ? "Vauban campus, Lille" : "Campus Vauban, Lille";
-	return `<a href="${r.url}" target="_blank" rel="noopener" data-jpo="${r.date}" style="display:flex;gap:12px;align-items:center;margin:14px 0 6px;padding:12px 14px;min-height:48px;border-radius:12px;background:#fdf3c7;border:2px solid #f4c430;color:#3d2e00;text-decoration:none;text-align:left;font:inherit;line-height:1.35;box-sizing:border-box;width:100%">`
+	return `<a href="${r.url}" target="_blank" rel="noopener" data-jpo="${r.date}" style="display:flex;gap:12px;align-items:center;margin:14px 0 6px;padding:12px 14px;min-height:48px;border-radius:12px;background:var(--ec-pale,#e9f7fa);border:2px solid var(--ec,#21b7cb);color:#0f3168;text-decoration:none;text-align:left;font:inherit;line-height:1.35;box-sizing:border-box;width:100%">`
 		+ `<span aria-hidden="true" style="font-size:26px;line-height:1">📅</span>`
 		+ `<span style="flex:1;min-width:0"><b style="display:block;font-size:15px">${title}</b>`
 		+ `<span style="font-size:14px">${what}${hours}. ${where}.</span></span>`

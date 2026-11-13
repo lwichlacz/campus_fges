@@ -12,9 +12,9 @@
    Commune, personnes et chiffres sont fictifs. Programme de la licence et contenus à relire par l'équipe pédagogique. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { makePerson, std } from "../kit.js?v=50ccfe85e2";
-import { jpoCard } from "./jpo.js?v=50ccfe85e2";
-import { palier } from "./palier.js?v=50ccfe85e2";
+import { makePerson, std } from "../kit.js?v=0c6917bfb6";
+import { jpoCard } from "./jpo.js?v=0c6917bfb6";
+import { palier } from "./palier.js?v=0c6917bfb6";
 
 const COURSES = {
 	enq:   ["L2", "Méthodes d'enquête", "Un échantillon doit ressembler à la population : âges, activités, horaires. Sinon, l'enquête dit ce qu'on veut entendre."],
@@ -107,71 +107,71 @@ const CONCERNS = { budget:["💶", "le budget"], climat:["🌳", "le climat"], e
 const UNDECIDED = ["budget", "budget", "budget", "climat", "climat", "climat", "emploi", "emploi", "parking", "parking"];
 
 const CSS = `
-.mq{position:fixed;inset:0;z-index:40;background:#cfe6f5;font-family:Nunito,system-ui,sans-serif;color:#1d2a22;overflow:hidden;animation:mqIn .4s ease both}
+.mq{position:fixed;inset:0;z-index:40;background:#e9f7fa;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#1d2a22;overflow:hidden;animation:mqIn .4s ease both}
 @keyframes mqIn{from{opacity:0}}
 .mq canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .mq-mast{position:absolute;left:12px;top:10px;z-index:3;background:#fffdf7;border-radius:4px;box-shadow:0 6px 18px rgba(30,40,30,.18);padding:6px 12px 7px;max-width:calc(100% - 90px);border-top:4px solid #1d2a22}
-.mq-mast small{display:block;font:900 10px Nunito,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#7a2e1e}
-.mq-mast b{display:block;font:700 18px/1.15 Georgia,"Times New Roman",serif;color:#1d2a22}
+.mq-mast small{display:block;font:700 10px Inter,system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#7a2e1e}
+.mq-mast b{display:block;font:300 18px/1.15 Tiempos Headline,Georgia,serif;color:#1d2a22}
 .mq-x{position:absolute;right:12px;top:10px;z-index:3;width:40px;height:40px;border-radius:50%;border:0;background:#1d2a22;color:#fffdf7;font-size:22px;cursor:pointer}
 .mq-steps{position:absolute;left:12px;bottom:12px;z-index:3;display:flex;gap:4px;flex-wrap:wrap;max-width:calc(100% - 430px)}
 .mq-steps span{font-size:11.5px;font-weight:800;background:rgba(255,253,247,.85);color:#8a948c;border-radius:999px;padding:4px 9px}
-.mq-steps span.done{color:#2f6b45}.mq-steps span.now{background:#2f6b45;color:#fff}
+.mq-steps span.done{color:#0f3168}.mq-steps span.now{background:#0f3168;color:#fff}
 .mq-hud{position:absolute;right:62px;top:14px;z-index:3;display:flex;gap:6px}
 .mq-hud span{background:#fffdf7;border-radius:999px;padding:6px 11px;font-size:12.5px;font-weight:800;box-shadow:0 4px 12px rgba(30,40,30,.15)}
 .mq-panel{position:absolute;right:12px;top:62px;bottom:12px;width:390px;z-index:3;overflow:auto;background:#fffdf7;border-radius:14px;box-shadow:0 16px 40px rgba(30,40,30,.25);padding:14px;box-sizing:border-box;scrollbar-width:thin}
 .mq-say{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
-.mq-av{flex:none;width:42px;height:42px;border-radius:50%;background:#2f6b45;color:#fff;display:grid;place-items:center;font:900 15px Nunito,sans-serif}
-.mq-say p{margin:0;background:#eef5ee;border-radius:4px 14px 14px 14px;padding:8px 11px;font-size:14px;line-height:1.45}
-.mq-say p small{display:block;font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#2f6b45;margin-bottom:2px}
+.mq-av{flex:none;width:42px;height:42px;border-radius:50%;background:#0f3168;color:#fff;display:grid;place-items:center;font:700 15px Inter,system-ui,sans-serif}
+.mq-say p{margin:0;background:#e9f7fa;border-radius:4px 14px 14px 14px;padding:8px 11px;font-size:14px;line-height:1.45}
+.mq-say p small{display:block;font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#0f3168;margin-bottom:2px}
 .mq-k{font-size:10.5px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#7a2e1e}
-.mq-h{font:700 20px/1.2 Georgia,"Times New Roman",serif;margin:2px 0 8px}
+.mq-h{font:300 20px/1.2 Tiempos Headline,Georgia,serif;margin:2px 0 8px}
 .mq-p{margin:0 0 8px;font-size:14px;line-height:1.5;color:#3a463e}
 .mq-clock{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:6px 0 10px}
-.mq-clock button{border:2px solid #d5dccf;background:#fff;border-radius:10px;padding:7px 2px;font:900 15px Nunito,sans-serif;cursor:pointer;color:#1d2a22}
+.mq-clock button{border:2px solid #d5dccf;background:#fff;border-radius:10px;padding:7px 2px;font:700 15px Inter,system-ui,sans-serif;cursor:pointer;color:#1d2a22}
 .mq-clock button small{display:block;font-size:10.5px;font-weight:700;color:#6b756c}
-.mq-clock button.on{border-color:#2f6b45;background:#2f6b45;color:#fff}.mq-clock button.on small{color:#d7ead9}
+.mq-clock button.on{border-color:#0f3168;background:#0f3168;color:#fff}.mq-clock button.on small{color:#e9f7fa}
 .mq-quota{display:grid;gap:5px;margin:4px 0 8px}
 .mq-quota div{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800}
 .mq-quota div span{flex:1}
 .mq-quota i{display:inline-block;width:18px;height:18px;border-radius:50%;border:2px solid #9aa79c;margin-left:3px}
-.mq-quota i.f{background:#2f6b45;border-color:#2f6b45}
-.mq-quote{background:#fff;border-left:4px solid #2f6b45;border-radius:4px;padding:7px 10px;margin:6px 0;font-size:13.5px;box-shadow:0 2px 6px rgba(30,40,30,.08)}
+.mq-quota i.f{background:#0f3168;border-color:#0f3168}
+.mq-quote{background:#fff;border-left:4px solid #0f3168;border-radius:4px;padding:7px 10px;margin:6px 0;font-size:13.5px;box-shadow:0 2px 6px rgba(30,40,30,.08)}
 .mq-quote b{display:block;font-size:12px;color:#6b756c}
-.mq-quote.full{border-color:#c4532f;opacity:.8}
+.mq-quote.full{border-color:#0f3168;opacity:.8}
 .mq-bars{display:grid;gap:4px;margin:6px 0}
 .mq-bars div{display:grid;grid-template-columns:120px 1fr 34px;gap:6px;align-items:center;font-size:12.5px;font-weight:700}
-.mq-bars em{display:block;height:12px;border-radius:6px;background:#2f6b45}
-.mq-bars em.b{background:#c4532f}
-.mq-go{display:block;width:100%;border:0;border-radius:12px;padding:13px;margin-top:10px;background:#2f6b45;color:#fff;font:900 15.5px Nunito,sans-serif;cursor:pointer}
+.mq-bars em{display:block;height:12px;border-radius:6px;background:#0f3168}
+.mq-bars em.b{background:#0f3168}
+.mq-go{display:block;width:100%;border:0;border-radius:12px;padding:13px;margin-top:10px;background:#0f3168;color:#fff;font:700 15.5px Inter,system-ui,sans-serif;cursor:pointer}
 .mq-go:disabled{opacity:.35;cursor:default}
-.mq-alt{display:block;width:100%;border:2px solid #d5dccf;border-radius:12px;padding:11px;margin-top:8px;background:#fff;color:#1d2a22;font:800 14px Nunito,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
-.mq-ask{background:#fff7e6;border:2px solid #e0a33a;border-radius:10px;padding:9px 11px;margin:6px 0;font-size:14px}
+.mq-alt{display:block;width:100%;border:2px solid #d5dccf;border-radius:12px;padding:11px;margin-top:8px;background:#fff;color:#1d2a22;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
+.mq-ask{background:#e9f7fa;border:2px solid #21b7cb;border-radius:10px;padding:9px 11px;margin:6px 0;font-size:14px}
 .mq-ask b{display:block;font-size:15px}
 .mq-ask small{color:#6b756c}
-.mq-ok{color:#2f6b45;font-weight:800;font-size:13.5px;margin:4px 0}
+.mq-ok{color:#0f3168;font-weight:800;font-size:13.5px;margin:4px 0}
 .mq-pal{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:6px 0}
-.mq-pal button{display:flex;gap:6px;align-items:center;border:2px solid #d5dccf;background:#fff;border-radius:10px;padding:7px 8px;font:800 13px Nunito,sans-serif;cursor:pointer;color:#1d2a22;text-align:left}
+.mq-pal button{display:flex;gap:6px;align-items:center;border:2px solid #d5dccf;background:#fff;border-radius:10px;padding:7px 8px;font:700 13px Inter,system-ui,sans-serif;cursor:pointer;color:#1d2a22;text-align:left}
 .mq-pal button i{font-style:normal;font-size:18px}
-.mq-pal button.on{border-color:#2f6b45;box-shadow:0 0 0 3px rgba(47,107,69,.2)}
+.mq-pal button.on{border-color:#0f3168;box-shadow:0 0 0 3px rgba(47,107,69,.2)}
 .mq-gauges{display:grid;gap:6px;margin:8px 0}
 .mq-g{font-size:12.5px;font-weight:800}
 .mq-g span{display:flex;justify-content:space-between}
 .mq-g em{display:block;height:9px;border-radius:5px;background:#e3e8e0;overflow:hidden;margin-top:2px}
 .mq-g em i{display:block;height:100%;border-radius:5px;transition:width .4s,background .4s}
 .mq-news{background:#1d2a22;color:#fffdf7;border-radius:6px;padding:8px 10px;margin:6px 0;font-size:13.5px}
-.mq-news b{display:block;font:700 15px Georgia,serif;color:#ffd77a}
-.mq-course{border:2px solid #e0a33a;border-radius:10px;padding:8px 10px;margin:8px 0;background:#fffaf0}
-.mq-course small{display:block;font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#a0661a}
-.mq-course b{display:block;font:700 15px Georgia,serif}
+.mq-news b{display:block;font:300 15px Inter,system-ui,sans-serif;color:#21b7cb}
+.mq-course{border:2px solid #21b7cb;border-radius:10px;padding:8px 10px;margin:8px 0;background:#fffaf0}
+.mq-course small{display:block;font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#0f3168}
+.mq-course b{display:block;font:300 15px Inter,system-ui,sans-serif}
 .mq-course span{font-size:13px;color:#4a564e}
-.mq-stars{font-size:20px;letter-spacing:3px;color:#e0a33a}
+.mq-stars{font-size:20px;letter-spacing:3px;color:#21b7cb}
 .mq-cards{display:grid;gap:6px;margin:6px 0}
-.mq-card{display:flex;gap:8px;align-items:center;text-align:left;border:2px solid #d5dccf;background:#fff;border-radius:10px;padding:8px 10px;font:700 13px/1.3 Nunito,sans-serif;cursor:pointer;color:#1d2a22}
+.mq-card{display:flex;gap:8px;align-items:center;text-align:left;border:2px solid #d5dccf;background:#fff;border-radius:10px;padding:8px 10px;font:300 13px/1.3 Inter,system-ui,sans-serif;cursor:pointer;color:#1d2a22}
 .mq-card i{font-style:normal;font-size:22px}
-.mq-card.on{border-color:#2f6b45;box-shadow:0 0 0 3px rgba(47,107,69,.2)}
+.mq-card.on{border-color:#0f3168;box-shadow:0 0 0 3px rgba(47,107,69,.2)}
 .mq-card.weak{opacity:.55}
-.mq-votes{font:900 26px Nunito,sans-serif;font-variant-numeric:tabular-nums;margin:4px 0}
+.mq-votes{font:300 26px Tiempos Headline,Georgia,serif;font-variant-numeric:tabular-nums;margin:4px 0}
 .mq-votes small{font-size:12px;color:#6b756c;font-weight:800}
 .mq-tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0}
 .mq-tbl td{padding:5px 3px;border-top:1px solid #e3e8e0}.mq-tbl td:last-child{text-align:right;font-weight:800}
@@ -228,7 +228,7 @@ export function openMarquelle({ formation, audio, isFav, toggleFav, onClose, onE
 		const m = mesh(g, typeof c === "string" ? M(c) : c, x, y, z, parent); m.rotation.y = ry; return m;
 	}
 	function label(text, o = {}){
-		const c = document.createElement("canvas"), x = c.getContext("2d"), f = `900 40px Nunito, system-ui, sans-serif`;
+		const c = document.createElement("canvas"), x = c.getContext("2d"), f = `700 40px Inter, system-ui, sans-serif`;
 		x.font = f; const w = Math.ceil(x.measureText(text).width) + 36, h = 62; c.width = w; c.height = h; x.font = f;
 		x.fillStyle = o.bg || "#fffdf7"; x.beginPath(); x.roundRect(2, 2, w - 4, h - 4, 12); x.fill();
 		x.fillStyle = o.fg || "#1d2a22"; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(text, w/2, h/2 + 2);
@@ -362,7 +362,7 @@ export function openMarquelle({ formation, audio, isFav, toggleFav, onClose, onE
 		mesh(G(new THREE.CylinderGeometry(.06, .06, 3.2, 6)), M("#555"), 0, 1.6, 0, g);
 		const c = document.createElement("canvas"); c.width = 360; c.height = 150; const x = c.getContext("2d");
 		x.fillStyle = s.col; x.beginPath(); x.roundRect(4, 4, 352, 142, 16); x.fill(); x.fillStyle = "#fff"; x.textAlign = "center";
-		x.font = "900 56px Nunito, sans-serif"; x.fillText(s.t, 180, 72); x.font = "700 21px Nunito, sans-serif"; x.fillText(s.d, 180, 118);
+		x.font = "700 56px Inter,system-ui,sans-serif"; x.fillText(s.t, 180, 72); x.font = "700 21px Inter,system-ui,sans-serif"; x.fillText(s.d, 180, 118);
 		const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; own.push(t);
 		const board = mesh(G(new THREE.BoxGeometry(3.4, 1.4, .1)), [M(s.col), M(s.col), M(s.col), M(s.col), new THREE.MeshStandardMaterial({ map:t }), M(s.col)], 0, 3.6, 0, g);
 		signHits.push({ id:s.id, g, board });

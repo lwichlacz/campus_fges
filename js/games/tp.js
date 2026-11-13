@@ -5,9 +5,9 @@
    grossissement, tracer la mauvaise courbe), puis l'atelier de méthode montre comment faire : c'est le cœur de l'APES,
    apprendre à apprendre. La valeur de g, trouvée au pendule, se retrouve à la fin sur la courbe.
    Personnes fictives ; valeurs simplifiées. Contenu à relire par l'équipe de l'APES. */
-import { stage3d, THREE } from "./stage3d.js?v=50ccfe85e2";
-import { jpoCard } from "./jpo.js?v=50ccfe85e2";
-import { palier } from "./palier.js?v=50ccfe85e2";
+import { stage3d, THREE } from "./stage3d.js?v=0c6917bfb6";
+import { jpoCard } from "./jpo.js?v=0c6917bfb6";
+import { palier } from "./palier.js?v=0c6917bfb6";
 
 const COURSES = {
 	chimie: ["Chimie", "Dosages, concentrations, équivalence : la chimie des solutions, en TP comme en cours."],
@@ -27,47 +27,47 @@ const SLIDES = [
 ];
 
 const CSS = `
-.tp{position:fixed;inset:0;z-index:40;background:#141c2b;font-family:Nunito,system-ui,sans-serif;color:#eef3ea;overflow:hidden;animation:tpIn .4s ease both}
+.tp{position:fixed;inset:0;z-index:40;background:#141c2b;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#eef3ea;overflow:hidden;animation:tpIn .4s ease both}
 @keyframes tpIn{from{opacity:0}}
 .tp canvas.tp-3d{position:absolute;inset:0;display:block;touch-action:none}
 .tp-x{position:absolute;right:12px;top:10px;z-index:4;width:40px;height:40px;border-radius:50%;border:2px solid #c9d8c2;background:#22382c;color:#fff;font-size:22px;cursor:pointer}
 .tp-locks{position:absolute;left:12px;top:10px;z-index:3;display:flex;gap:6px}
 .tp-locks span{display:flex;align-items:center;gap:5px;background:rgba(20,28,43,.82);border:1px solid rgba(238,243,234,.2);border-radius:999px;padding:6px 10px;font-size:12.5px;font-weight:800;color:#9aa5b1}
 .tp-locks span.open{color:#9fe0a8;border-color:#9fe0a8}
-.tp-locks span.now{color:#ffd57a;border-color:#ffd57a}
+.tp-locks span.now{color:#21b7cb;border-color:#21b7cb}
 .tp-board{position:absolute;right:12px;top:60px;bottom:12px;width:400px;z-index:3;overflow:auto;box-sizing:border-box;padding:16px;border-radius:6px;scrollbar-width:thin;
 	background:radial-gradient(ellipse at 30% 20%,#2f4a3b,#22382c 70%);border:10px solid #7a5a3a;box-shadow:inset 0 0 40px rgba(0,0,0,.45),0 18px 40px rgba(0,0,0,.5)}
-.tp-chalk{font:600 22px/1.15 Caveat,"Segoe Print","Bradley Hand",cursive;color:#f4f1e4;margin:0 0 6px}
-.tp-chalk small{display:block;font:800 10.5px Nunito,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ffd57a;margin-bottom:2px}
-.tp-k{font-size:10.5px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#ffd57a}
-.tp-h{font:600 30px/1.05 Caveat,"Segoe Print",cursive;color:#fff;margin:2px 0 8px}
+.tp-chalk{font:300 22px/1.15 Inter,system-ui,sans-serif;color:#e9f7fa;margin:0 0 6px}
+.tp-chalk small{display:block;font:700 10.5px Inter,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#21b7cb;margin-bottom:2px}
+.tp-k{font-size:10.5px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#21b7cb}
+.tp-h{font:300 30px/1.05 Inter,system-ui,sans-serif;color:#fff;margin:2px 0 8px}
 .tp-p{margin:0 0 8px;font-size:14px;line-height:1.5;color:#dfe7da}
 .tp-p b{color:#fff}
 .tp-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0}
-.tp-num{font:900 26px Nunito,sans-serif;font-variant-numeric:tabular-nums}
+.tp-num{font:300 26px Tiempos Headline,Georgia,serif;font-variant-numeric:tabular-nums}
 .tp-num small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#a9c0a8}
-.tp-btn{border:2px solid #f4f1e4;background:transparent;color:#f4f1e4;border-radius:12px;padding:11px 14px;font:800 14.5px Nunito,sans-serif;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none}
-.tp-btn.on{background:#f4f1e4;color:#22382c}
+.tp-btn{border:2px solid #e9f7fa;background:transparent;color:#e9f7fa;border-radius:12px;padding:11px 14px;font:700 14.5px Inter,system-ui,sans-serif;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none}
+.tp-btn.on{background:#e9f7fa;color:#22382c}
 .tp-btn:disabled{opacity:.35;cursor:default}
-.tp-go{display:block;width:100%;border:0;border-radius:12px;padding:13px;margin-top:10px;background:#ffd57a;color:#22382c;font:900 15.5px Nunito,sans-serif;cursor:pointer}
+.tp-go{display:block;width:100%;border:0;border-radius:12px;padding:13px;margin-top:10px;background:#21b7cb;color:#22382c;font:700 15.5px Inter,system-ui,sans-serif;cursor:pointer}
 .tp-go:disabled{opacity:.35}
-.tp-alt{display:block;width:100%;border:2px solid rgba(244,241,228,.45);border-radius:12px;padding:11px;margin-top:8px;background:transparent;color:#f4f1e4;font:800 14px Nunito,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
-.tp-note{border-left:3px solid #ffd57a;padding:4px 0 4px 10px;margin:8px 0;font:600 20px/1.15 Caveat,"Segoe Print",cursive;color:#ffe9b0}
+.tp-alt{display:block;width:100%;border:2px solid rgba(233,247,250,.45);border-radius:12px;padding:11px;margin-top:8px;background:transparent;color:#e9f7fa;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
+.tp-note{border-left:3px solid #21b7cb;padding:4px 0 4px 10px;margin:8px 0;font:300 20px/1.15 Inter,system-ui,sans-serif;color:#e9f7fa}
 .tp-ko{color:#ffb3a1;font-weight:800;font-size:13.5px;margin:6px 0}
 .tp-ok{color:#9fe0a8;font-weight:800;font-size:13.5px;margin:6px 0}
-.tp-course{border:2px dashed rgba(255,213,122,.6);border-radius:10px;padding:8px 10px;margin:8px 0}
-.tp-course small{display:block;font-size:10.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#ffd57a}
-.tp-course b{display:block;font:600 22px Caveat,"Segoe Print",cursive;color:#fff}
+.tp-course{border:2px dashed rgba(33,183,203,.6);border-radius:10px;padding:8px 10px;margin:8px 0}
+.tp-course small{display:block;font-size:10.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#21b7cb}
+.tp-course b{display:block;font:300 22px Inter,system-ui,sans-serif;color:#fff}
 .tp-course span{font-size:13px;color:#dfe7da}
-.tp-stars{font-size:20px;letter-spacing:3px;color:#ffd57a}
+.tp-stars{font-size:20px;letter-spacing:3px;color:#21b7cb}
 .tp-view{display:block;margin:8px auto;border-radius:50%;box-shadow:0 0 0 8px #111,0 0 0 10px #555;background:#000;touch-action:none}
 .tp-graph{display:block;width:100%;border-radius:8px;background:#1d3226;margin:8px 0}
-.tp-range{width:100%;accent-color:#ffd57a;height:34px}
+.tp-range{width:100%;accent-color:#21b7cb;height:34px}
 .tp-opts{display:grid;gap:6px;margin:6px 0}
-.tp-opts button{text-align:left;border:2px solid rgba(244,241,228,.4);background:transparent;color:#f4f1e4;border-radius:10px;padding:9px 11px;font:700 14px Nunito,sans-serif;cursor:pointer}
-.tp-opts button:hover{border-color:#ffd57a}
+.tp-opts button{text-align:left;border:2px solid rgba(233,247,250,.4);background:transparent;color:#e9f7fa;border-radius:10px;padding:9px 11px;font:700 14px Inter,system-ui,sans-serif;cursor:pointer}
+.tp-opts button:hover{border-color:#21b7cb}
 .tp-tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0}
-.tp-tbl td{padding:4px 3px;border-top:1px dashed rgba(244,241,228,.25)}.tp-tbl td:last-child{text-align:right;font-weight:800}
+.tp-tbl td{padding:4px 3px;border-top:1px dashed rgba(233,247,250,.25)}.tp-tbl td:last-child{text-align:right;font-weight:800}
 .tp-list{margin:6px 0;padding:0;list-style:none;display:grid;gap:3px}
 .tp-list li{font-size:13.5px}
 @media (max-width:759px){
@@ -79,7 +79,6 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	const play = n => audio && audio.play(n);
 	const ev = (...a) => onEvent && onEvent(...a);
 	if(!document.getElementById("tp-css")){ const st = document.createElement("style"); st.id = "tp-css"; st.textContent = CSS; document.head.appendChild(st); }
-	if(!document.getElementById("aw-font")){ const l = document.createElement("link"); l.id = "aw-font"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap"; document.head.appendChild(l); }
 	const root = document.createElement("div"); root.className = "tp";
 	root.setAttribute("role", "dialog"); root.setAttribute("aria-modal", "true"); root.setAttribute("aria-label", "Mini-jeu La salle de TP");
 	root.innerHTML = `<canvas class="tp-3d" aria-hidden="true"></canvas>
@@ -356,7 +355,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 				x.fillStyle = cv === null ? "#26402f" : "#1d3226"; x.fillRect(0, 0, w, h);
 				const P = (vx, vy) => [60 + vx/xmax*(w - 90), h - 50 - vy/2*(h - 80)];
 				x.strokeStyle = "rgba(244,241,228,.85)"; x.lineWidth = 3; x.beginPath(); x.moveTo(...P(0, 2)); x.lineTo(...P(0, 0)); x.lineTo(...P(xmax, 0)); x.stroke();
-				x.fillStyle = "#f4f1e4"; x.font = `600 ${Math.round(w/22)}px Caveat, cursive`; x.fillText("d (m)", 10, 30); x.fillText(axis === "t" ? "t (s)" : "t² (s²)", w - 80, h - 12);
+				x.fillStyle = "#f4f1e4"; x.font = `700 ${Math.round(w/22)}px Inter,system-ui,sans-serif`; x.fillText("d (m)", 10, 30); x.fillText(axis === "t" ? "t (s)" : "t² (s²)", w - 80, h - 12);
 				x.strokeStyle = "#ffd57a"; x.lineWidth = 4; x.beginPath(); x.moveTo(...P(0, 0)); x.lineTo(...P(xmax, a*xmax)); x.stroke();
 				x.fillStyle = "#9fe0a8"; DROP.forEach(([, d], i) => { const [X, Y] = P(xs[i], d); x.beginPath(); x.arc(X, Y, w/90, 0, 7); x.fill(); });
 			};

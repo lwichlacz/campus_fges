@@ -12,9 +12,9 @@
    Mise en scène illustrative (cellule, client et chiffres fictifs) ; contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { makePerson } from "../kit.js?v=50ccfe85e2";
-import { jpoCard } from "./jpo.js?v=50ccfe85e2";
-import { palier } from "./palier.js?v=50ccfe85e2";
+import { makePerson } from "../kit.js?v=0c6917bfb6";
+import { jpoCard } from "./jpo.js?v=0c6917bfb6";
+import { palier } from "./palier.js?v=0c6917bfb6";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -52,93 +52,93 @@ const LOG = [
 ];
 
 const CSS = `
-.rb{position:fixed;inset:0;z-index:40;font-family:Nunito,system-ui,sans-serif;color:#22303d;background:#e6eaee;overflow:auto;animation:rbIn .35s ease both}
+.rb{position:fixed;inset:0;z-index:40;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#22303d;background:#e6eaee;overflow:auto;animation:rbIn .35s ease both}
 @keyframes rbIn{from{opacity:0}to{opacity:1}}
 .rb canvas.rb-3d{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
 .rb-grid{position:relative;z-index:1;display:grid;grid-template-columns:300px 1fr 290px;grid-template-rows:auto minmax(420px,1fr);gap:10px;padding:10px;min-height:100%;box-sizing:border-box;pointer-events:none}
 .rb-grid>*{pointer-events:auto}
 .rb-top{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.rb-chip{background:#fff;border-radius:999px;padding:7px 12px;font-weight:800;font-size:13px;box-shadow:0 4px 14px rgba(30,48,94,.12);font-variant-numeric:tabular-nums}
-.rb-chip.st{background:#1e305e;color:#fff}
+.rb-chip{background:#fff;border-radius:999px;padding:7px 12px;font-weight:800;font-size:13px;box-shadow:0 4px 14px rgba(15,49,104,.12);font-variant-numeric:tabular-nums}
+.rb-chip.st{background:#0f3168;color:#fff}
 .rb-chip.rj{background:#fde3e0;color:#a3271c;transition:background .4s,color .4s}
 .rb-chip.rj.good{background:#dff3e6;color:#11603d}
-.rb-x{margin-left:auto;width:44px;height:44px;border-radius:50%;border:0;background:#fff;font-size:22px;cursor:pointer;box-shadow:0 4px 14px rgba(30,48,94,.15)}
+.rb-x{margin-left:auto;width:44px;height:44px;border-radius:50%;border:0;background:#fff;font-size:22px;cursor:pointer;box-shadow:0 4px 14px rgba(15,49,104,.15)}
 .rb-col{display:flex;flex-direction:column;gap:10px;min-width:0}
-.rb-pan{background:rgba(255,255,255,.95);border:1px solid #d3dae1;border-radius:14px;padding:10px 12px;box-shadow:0 6px 18px rgba(30,48,94,.08)}
+.rb-pan{background:rgba(255,255,255,.95);border:1px solid #d3dae1;border-radius:14px;padding:10px 12px;box-shadow:0 6px 18px rgba(15,49,104,.08)}
 .rb-pan h4{margin:0 0 8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#5b6b7a}
 .rb-view{position:relative;border-radius:14px;border:1px solid #c9d2db;pointer-events:none;min-height:300px}
 .rb-view .lbl{position:absolute;left:10px;top:8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#5b6b7a;font-weight:800;background:rgba(255,255,255,.8);padding:3px 8px;border-radius:6px}
-.rb-hint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);max-width:92%;text-align:center;background:rgba(30,48,94,.9);color:#fff;font-weight:800;font-size:13px;padding:8px 14px;border-radius:14px;box-shadow:0 6px 18px rgba(30,48,94,.25);transition:opacity .4s}
+.rb-hint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);max-width:92%;text-align:center;background:rgba(15,49,104,.9);color:#fff;font-weight:800;font-size:13px;padding:8px 14px;border-radius:14px;box-shadow:0 6px 18px rgba(15,49,104,.25);transition:opacity .4s}
 .rb-hint:empty{opacity:0}
 .rb-cam{position:relative;aspect-ratio:4/3;border-radius:10px;border:1px solid #c9d2db;overflow:hidden}
-.rb-cam .rec{position:absolute;left:8px;top:6px;font:800 11px ui-monospace,Consolas,monospace;color:#d6213a;background:rgba(255,255,255,.75);padding:1px 6px;border-radius:5px}
-.rb-cam .cross{position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border:2px solid rgba(11,122,142,.8);border-radius:50%}
-.rb-cam .hue{position:absolute;left:6px;right:6px;bottom:6px;font:800 12px/1.3 ui-monospace,Consolas,monospace;background:rgba(22,32,43,.88);color:#b9f3d0;padding:3px 7px;border-radius:5px;text-align:center}
+.rb-cam .rec{position:absolute;left:8px;top:6px;font:700 11px Inter,system-ui,sans-serif;color:#d6213a;background:rgba(255,255,255,.75);padding:1px 6px;border-radius:5px}
+.rb-cam .cross{position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border:2px solid rgba(150,113,26,.8);border-radius:50%}
+.rb-cam .hue{position:absolute;left:6px;right:6px;bottom:6px;font:700 12px/1.3 Inter,system-ui,sans-serif;background:rgba(22,32,43,.88);color:#b9f3d0;padding:3px 7px;border-radius:5px;text-align:center}
 .rb-cam .hue.ko{color:#ffb3ba}
 .rb-cam .hue:empty{display:none}
 .rb-gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .rb-g{text-align:center;font-size:11px;font-weight:800;color:#5b6b7a}
-.rb-g .ring{width:60px;height:60px;margin:0 auto 3px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#21b6ce var(--a),#e3e8ed 0)}
+.rb-g .ring{width:60px;height:60px;margin:0 auto 3px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#cb971a var(--a),#e3e8ed 0)}
 .rb-g .ring b{width:46px;height:46px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:14px;color:#22303d}
 .rb-force{width:100%;height:64px;display:block}
-.rb-fval{font:800 13px ui-monospace,Consolas,monospace;color:#0b7a8e;float:right;margin-top:-22px}
-.rb-term{font:600 12px/1.45 ui-monospace,Consolas,monospace;background:#16202b;color:#b9f3d0;border-radius:10px;padding:8px 10px;min-height:80px;max-height:140px;overflow:auto}
-.rb-term .ko{color:#ff8b95}.rb-term .inf{color:#9ad7ff}
-.rb-mis b.t{display:block;font:700 18px/1.2 Fraunces,Georgia,serif;margin:2px 0 4px}
+.rb-fval{font:700 13px Inter,system-ui,sans-serif;color:#96711a;float:right;margin-top:-22px}
+.rb-term{font:300 12px/1.45 Inter,system-ui,sans-serif;background:#16202b;color:#b9f3d0;border-radius:10px;padding:8px 10px;min-height:80px;max-height:140px;overflow:auto}
+.rb-term .ko{color:#ff8b95}.rb-term .inf{color:#fdf8ec}
+.rb-mis b.t{display:block;font:300 18px/1.2 Tiempos Headline,Georgia,serif;margin:2px 0 4px}
 .rb-mis p{margin:0 0 6px;font-size:13.5px;line-height:1.45}
-.rb-mis .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#0b7a8e;font-weight:800}
-.rb-say{background:#fff6e3;border-left:4px solid #e0a030;border-radius:10px;padding:7px 10px;font-size:13px;line-height:1.4;margin:6px 0}
+.rb-mis .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#96711a;font-weight:800}
+.rb-say{background:#fdf8ec;border-left:4px solid #cb971a;border-radius:10px;padding:7px 10px;font-size:13px;line-height:1.4;margin:6px 0}
 .rb-say:empty{display:none}
-.rb-say b{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#a66a10}
+.rb-say b{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#96711a}
 .rb-carnet{list-style:none;margin:6px 0 0;padding:0;font-size:12.5px;line-height:1.35}
 .rb-carnet li{padding:5px 8px;border-radius:8px;background:#f2f5f7;margin:4px 0}
-.rb-carnet li.ok{background:#e5f6ec}.rb-carnet li.no{background:#f1f1f1;color:#6b7680}.rb-carnet li.obs{background:#fdf1e7}
+.rb-carnet li.ok{background:#e5f6ec}.rb-carnet li.no{background:#f1f1f1;color:#6b7680}.rb-carnet li.obs{background:#fdf8ec}
 .rb-carnet:empty:before{content:"Rien encore : chaque mesure relevée s'inscrit ici.";color:#8a95a1;font-size:12px}
-.rb-btn{border:0;border-radius:12px;padding:10px 12px;font:800 14px Nunito,sans-serif;cursor:pointer;background:#21b6ce;color:#0b2f67;width:100%;margin-top:6px;min-height:44px}
-.rb-btn.alt{background:#fff;border:2px solid #d3dae1;color:#1e305e}
-.rb-btn.dark{background:#1e305e;color:#fff}
+.rb-btn{border:0;border-radius:12px;padding:10px 12px;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;background:#cb971a;color:#0f3168;width:100%;margin-top:6px;min-height:44px}
+.rb-btn.alt{background:#fff;border:2px solid #d3dae1;color:#0f3168}
+.rb-btn.dark{background:#0f3168;color:#fff}
 .rb-btn:disabled{opacity:.45;cursor:default}
-.rb-hold{display:block;width:100%;border:0;border-radius:14px;padding:14px 10px;font:900 15px Nunito,sans-serif;background:#f2c63c;color:#3b2a00;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 4px 0 #b8901c;min-height:56px}
+.rb-hold{display:block;width:100%;border:0;border-radius:14px;padding:14px 10px;font:700 15px Inter,system-ui,sans-serif;background:#cb971a;color:#3b2a00;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 4px 0 #cb971a;min-height:56px}
 .rb-hold.on{background:#3bd16f;box-shadow:0 1px 0 #1f8f48;transform:translateY(3px)}
 .rb-small{font-size:12.5px;color:#5b6b7a;line-height:1.4;margin:6px 0}
 .rb-log{list-style:none;margin:0 0 6px;padding:0;font-size:12.5px}
 .rb-log li{display:flex;gap:6px;align-items:center;padding:5px 7px;border-radius:8px;background:#f2f5f7;margin:3px 0;font-weight:700}
-.rb-log li.cur{background:#dff3f7;outline:2px solid #21b6ce}
+.rb-log li.cur{background:#fdf8ec;outline:2px solid #cb971a}
 .rb-log li.done{background:#e5f6ec;color:#11603d}
 .rb-log li i{margin-left:auto;font-style:normal}
 .rb-dial{width:160px;height:160px;display:block;margin:0 auto;cursor:pointer;touch-action:manipulation}
 .rb-read{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
 .rb-read div{background:#f2f5f7;border-radius:10px;padding:5px 8px;font-size:11px;font-weight:800;color:#5b6b7a}
-.rb-read b{display:block;font:800 17px ui-monospace,Consolas,monospace;color:#22303d}
+.rb-read b{display:block;font:300 17px Inter,system-ui,sans-serif;color:#22303d}
 .rb-in{display:flex;gap:6px;align-items:center;font-weight:800;font-size:13px;margin-top:6px}
-.rb-in input{width:80px;font:800 16px ui-monospace,Consolas,monospace;padding:8px;border:2px solid #c9d2db;border-radius:10px;text-align:center}
+.rb-in input{width:80px;font:300 16px Inter,system-ui,sans-serif;padding:8px;border:2px solid #c9d2db;border-radius:10px;text-align:center}
 .rb-in .rb-btn{width:auto;flex:1;margin:0}
 .rb-plot{width:100%;height:auto;display:block;background:#f7f9fb;border-radius:8px;touch-action:manipulation}
-.rb-plot.tap{cursor:crosshair;outline:2px dashed #21b6ce;outline-offset:2px}
+.rb-plot.tap{cursor:crosshair;outline:2px dashed #cb971a;outline-offset:2px}
 .rb-knobs{display:flex;gap:10px;justify-content:space-around;margin:8px 0 2px;background:#2b3138;border-radius:12px;padding:10px 6px 8px;color:#dfe6ec}
 .rb-knob{text-align:center;font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;outline:none}
 .rb-knob .kb{width:62px;height:62px;margin:0 auto 4px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#5d6873,#1d2228);border:3px solid #11161b;position:relative;cursor:ns-resize;touch-action:none;box-shadow:0 3px 8px rgba(0,0,0,.5)}
-.rb-knob:focus-visible .kb{outline:3px solid #21b6ce}
-.rb-knob .kb i{position:absolute;left:50%;top:5px;width:4px;height:18px;margin-left:-2px;background:#f2c63c;border-radius:2px;transform-origin:2px 26px}
-.rb-knob b{display:block;font:800 18px ui-monospace,Consolas,monospace;color:#b9f3d0;letter-spacing:0}
+.rb-knob:focus-visible .kb{outline:3px solid #cb971a}
+.rb-knob .kb i{position:absolute;left:50%;top:5px;width:4px;height:18px;margin-left:-2px;background:#cb971a;border-radius:2px;transform-origin:2px 26px}
+.rb-knob b{display:block;font:300 18px Inter,system-ui,sans-serif;color:#b9f3d0;letter-spacing:0}
 .rb-ov{position:fixed;inset:0;z-index:5;display:grid;place-items:center;padding:14px;background:rgba(20,30,45,.35)}
 .rb-ov[hidden]{display:none}
 .rb-card{max-width:520px;width:100%;max-height:100%;overflow:auto;background:#fff;border-radius:18px;padding:20px 18px;box-shadow:0 20px 50px rgba(20,30,45,.35);animation:rbUp .3s ease both}
 @keyframes rbUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.rb-card h2{font:700 24px/1.15 Fraunces,Georgia,serif;margin:4px 0 8px}
-.rb-card .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#0b7a8e;font-weight:800}
+.rb-card h2{font:300 24px/1.15 Tiempos Headline,Georgia,serif;margin:4px 0 8px}
+.rb-card .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#96711a;font-weight:800}
 .rb-card p{font-size:14.5px;line-height:1.5;margin:0 0 10px}
 .rb-card ul{list-style:none;margin:0 0 12px;padding:0}
 .rb-card li{display:flex;gap:8px;align-items:flex-start;background:#f2f5f7;border-radius:10px;padding:8px 10px;margin:5px 0;font-size:13.5px;line-height:1.4}
-.rb-card li span{background:#1e305e;color:#fff;border-radius:6px;padding:2px 7px;font-size:12px;font-weight:800;flex:none}
+.rb-card li span{background:#0f3168;color:#fff;border-radius:6px;padding:2px 7px;font-size:12px;font-weight:800;flex:none}
 .rb-card li.no{background:#f4f4f4;color:#5b6b7a}
-.rb-course{background:#eef8fa;border-left:4px solid #21b6ce;border-radius:10px;padding:8px 10px;margin:8px 0;font-size:13px}
-.rb-course .tag{display:block;font-size:11px;font-weight:800;color:#0b7a8e;text-transform:uppercase;letter-spacing:.08em}
+.rb-course{background:#fdf8ec;border-left:4px solid #cb971a;border-radius:10px;padding:8px 10px;margin:8px 0;font-size:13px}
+.rb-course .tag{display:block;font-size:11px;font-weight:800;color:#96711a;text-transform:uppercase;letter-spacing:.08em}
 .rb-course b{display:block;margin:2px 0}
-.rb-memo{background:#fbf8ef;border:1px solid #e6dcc0;border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.45;margin:8px 0}
-.rb-memo b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7a6a14}
+.rb-memo{background:#fdf8ec;border:1px solid #fdf8ec;border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.45;margin:8px 0}
+.rb-memo b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#96711a}
 .rb-big{font-size:42px;text-align:center;margin:4px 0}
-.rb-alt{display:block;text-align:center;margin-top:8px;font-weight:800;color:#1e305e;background:none;border:0;cursor:pointer;width:100%;font-size:14px;text-decoration:none;min-height:40px}
+.rb-alt{display:block;text-align:center;margin-top:8px;font-weight:800;color:#0f3168;background:none;border:0;cursor:pointer;width:100%;font-size:14px;text-decoration:none;min-height:40px}
 @media (max-width:820px){
 	.rb{overflow:hidden;--tb:calc(env(safe-area-inset-top) + 54px);--v3:max(34vh,200px)}
 	.rb-grid{position:fixed;left:0;right:0;bottom:0;top:calc(var(--tb) + var(--v3) + 8px);display:flex;flex-direction:column;min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 10px calc(14px + env(safe-area-inset-bottom))}
@@ -235,7 +235,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 		const m = M("#c63b2c", { roughness:.55 });
 		add(boxG(.9, .1, .9), m, g, 0, .05, 0);
 		for(const [w, d, px, pz] of [[.9, .06, 0, .42], [.9, .06, 0, -.42], [.06, .9, .42, 0], [.06, .9, -.42, 0]]) add(boxG(w, .7, d), m, g, px, .35, pz);
-		const t = document.createElement("canvas"); t.width = 128; t.height = 48; const x2 = t.getContext("2d"); x2.fillStyle = "#fff"; x2.font = "bold 30px Arial"; x2.textAlign = "center"; x2.fillText("REBUT", 64, 34);
+		const t = document.createElement("canvas"); t.width = 128; t.height = 48; const x2 = t.getContext("2d"); x2.fillStyle = "#fff"; x2.font = "700 30px Inter,system-ui,sans-serif"; x2.textAlign = "center"; x2.fillText("REBUT", 64, 34);
 		const tex = new THREE.CanvasTexture(t); own.push(tex);
 		const tag = new THREE.Mesh(G(new THREE.PlaneGeometry(.7, .26)), new THREE.MeshBasicMaterial({ map:tex, transparent:true })); own.push(tag.material); tag.position.set(0, .45, .456); g.add(tag);
 	}
@@ -388,7 +388,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 		fx.strokeStyle = "#e3e8ed"; fx.lineWidth = 1;
 		for(const n of [20, 40, 60]){ const y = 62 - n*.9; fx.beginPath(); fx.moveTo(0, y); fx.lineTo(260, y); fx.stroke(); }
 		fx.setLineDash([4, 4]); fx.strokeStyle = "#d6213a"; const ys = 62 - GRIP_SPEC*.9; fx.beginPath(); fx.moveTo(0, ys); fx.lineTo(260, ys); fx.stroke(); fx.setLineDash([]);
-		fx.fillStyle = "#d6213a"; fx.font = "800 10px Nunito, sans-serif"; fx.fillText(`exigé ${GRIP_SPEC} N`, 4, ys - 3);
+		fx.fillStyle = "#d6213a"; fx.font = "700 10px Inter,system-ui,sans-serif"; fx.fillText(`exigé ${GRIP_SPEC} N`, 4, ys - 3);
 		fx.beginPath(); force.forEach((f, i) => i ? fx.lineTo(i*2, 62 - f*.9) : fx.moveTo(0, 62 - f*.9)); fx.strokeStyle = "#0b7a8e"; fx.lineWidth = 2; fx.stroke();
 		$("#rbF").textContent = `${Math.round(fNow)} N`;
 	}
@@ -600,7 +600,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 		x.clearRect(0, 0, W, W);
 		x.fillStyle = "#f5f7f9"; x.strokeStyle = "#1e305e"; x.lineWidth = 10; x.beginPath(); x.arc(160, 160, 148, 0, 7); x.fill(); x.stroke();
 		x.fillStyle = "rgba(59,209,111,.25)"; x.beginPath(); x.moveTo(160, 160); x.arc(160, 160, 132, -Math.PI/2 - .14, -Math.PI/2 + .14); x.fill();
-		x.strokeStyle = "#22303d"; x.fillStyle = "#22303d"; x.font = "800 20px Nunito, sans-serif"; x.textAlign = "center";
+		x.strokeStyle = "#22303d"; x.fillStyle = "#22303d"; x.font = "700 20px Inter,system-ui,sans-serif"; x.textAlign = "center";
 		for(let v = -10; v <= 10; v++){
 			const a = -Math.PI/2 + v*.14, big = v % 5 === 0;
 			x.lineWidth = big ? 4 : 2; x.beginPath(); x.moveTo(160 + Math.cos(a)*(big ? 108 : 120), 160 + Math.sin(a)*(big ? 108 : 120)); x.lineTo(160 + Math.cos(a)*134, 160 + Math.sin(a)*134); x.stroke();
@@ -609,8 +609,8 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 		const out = Math.abs(mm) > 10.5, a = -Math.PI/2 + clamp(mm, -10.8, 10.8)*.14;
 		x.strokeStyle = "#d6213a"; x.lineWidth = 6; x.lineCap = "round"; x.beginPath(); x.moveTo(160, 160); x.lineTo(160 + Math.cos(a)*125, 160 + Math.sin(a)*125); x.stroke(); x.lineCap = "butt";
 		x.fillStyle = "#1e305e"; x.beginPath(); x.arc(160, 160, 12, 0, 7); x.fill();
-		x.font = "800 22px ui-monospace, Consolas, monospace"; x.fillText(out ? "hors course" : `${mm >= 0 ? "+" : ""}${fr(mm, 1)} mm`, 160, 230);
-		x.font = "800 15px Nunito, sans-serif"; x.fillStyle = "#5b6b7a"; x.fillText("mm", 160, 120);
+		x.font = "700 22px Inter,system-ui,sans-serif"; x.fillText(out ? "hors course" : `${mm >= 0 ? "+" : ""}${fr(mm, 1)} mm`, 160, 230);
+		x.font = "700 15px Inter,system-ui,sans-serif"; x.fillStyle = "#5b6b7a"; x.fillText("mm", 160, 120);
 		$("#jeuC").textContent = fr(J[2], 2) + "°";
 		$("#jeuM").textContent = (mm >= 0 ? "+" : "") + fr(mm, 1) + " mm";
 		needle.rotation.z = -clamp(mm, -10.8, 10.8)*.14;
@@ -733,16 +733,16 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 		x.textAlign = "left";
 		LANES.forEach(([k, n], i) => {
 			const y = CH0.lane(i), col = ["#0b7a8e", "#1e305e", "#c9631f"][i];
-			x.fillStyle = col; x.font = "800 21px Nunito, sans-serif"; x.fillText(n, CH0.x0, y + 4);
+			x.fillStyle = col; x.font = "700 21px Inter,system-ui,sans-serif"; x.fillText(n, CH0.x0, y + 4);
 			x.strokeStyle = "#e3e8ed"; x.lineWidth = 1; x.beginPath(); x.moveTo(CH0.x0, y + 58); x.lineTo(CH0.x1, y + 58); x.stroke();
 			if(!s.rec || !s.rec.length) return;
 			x.strokeStyle = col; x.lineWidth = 4; x.beginPath();
 			s.rec.forEach((r, j) => { const px = tX(r.t), py = y + (r[k] ? 18 : 58); j ? x.lineTo(px, py) : x.moveTo(px, py); });
 			x.stroke();
 		});
-		x.fillStyle = "#8a95a1"; x.font = "700 18px Nunito, sans-serif"; x.textAlign = "center";
+		x.fillStyle = "#8a95a1"; x.font = "700 18px Inter,system-ui,sans-serif"; x.textAlign = "center";
 		for(let t = 0; t <= 1.21; t += .4) x.fillText(fr(t, 1) + " s", tX(t), 296);
-		x.font = "800 19px Nunito, sans-serif";
+		x.font = "700 19px Inter,system-ui,sans-serif";
 		s.cur.forEach((cu, i) => { x.strokeStyle = "#d6213a"; x.lineWidth = 2; x.setLineDash([5, 4]); x.beginPath(); x.moveTo(tX(cu.t), 30); x.lineTo(tX(cu.t), 278); x.stroke(); x.setLineDash([]); x.fillStyle = "#d6213a"; x.fillText(`t${i + 1}`, tX(cu.t) + 14, 282); });
 		if(s.cur.length === 2){ const a = tX(s.cur[0].t), b = tX(s.cur[1].t); const lbl = `Δt = ${fr(Math.abs(s.cur[1].t - s.cur[0].t), 2)} s`, w = x.measureText(lbl).width + 14; x.fillStyle = "rgba(255,255,255,.92)"; x.fillRect((a + b)/2 - w/2, 92, w, 26); x.fillStyle = "#d6213a"; x.fillText(lbl, (a + b)/2, 112); }
 		if(s.newT !== undefined){ x.fillStyle = "rgba(59,209,111,.85)"; x.fillRect(tX(s.newT) - 3, CH0.lane(2) + 12, 6, 50); }
@@ -843,7 +843,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 		x.fillStyle = "rgba(255,77,94,.10)"; x.fillRect(X(0), Y(top), X(SERVO.T) - X(0), Y(tgt + SERVO.over) - Y(top));
 		x.strokeStyle = "#c9d2db"; x.lineWidth = 1.5; x.setLineDash([6, 6]); x.beginPath(); x.moveTo(X(SERVO.settle), 10); x.lineTo(X(SERVO.settle), H - pad); x.stroke();
 		x.strokeStyle = "#1e305e"; x.lineWidth = 2; x.beginPath(); x.moveTo(X(0), Y(tgt)); x.lineTo(X(SERVO.T), Y(tgt)); x.stroke(); x.setLineDash([]);
-		x.fillStyle = "#5b6b7a"; x.font = "800 20px Nunito, sans-serif"; x.textAlign = "left";
+		x.fillStyle = "#5b6b7a"; x.font = "700 20px Inter,system-ui,sans-serif"; x.textAlign = "left";
 		x.fillText(`consigne ${tgt}°`, X(0) + 4, Y(tgt) + 24); x.fillText(`${fr(SERVO.settle, 2)} s`, X(SERVO.settle) + 5, H - pad - 8); x.fillStyle = "#d6213a"; x.fillText(`dépassement max ${SERVO.over}°`, X(0) + 4, Y(top) + 22);
 		x.fillStyle = "#8a95a1"; x.fillText("0 s", X(0) - 4, H - 8); x.textAlign = "right"; x.fillText(fr(SERVO.T, 0) + " s", X(SERVO.T), H - 8);
 		const curve = (tr, upTo, col, w) => { x.strokeStyle = col; x.lineWidth = w; x.beginPath(); tr.forEach((a, i) => { if(i > upTo) return; const px = X(i*servoSim(10, 0).step), py = Y(clamp(SERVO.from + a, bot, top)); i ? x.lineTo(px, py) : x.moveTo(px, py); }); x.stroke(); };
@@ -916,19 +916,19 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 		x.clearRect(0, 0, 520, 210);
 		const g = x.createLinearGradient(VX(50), 0, VX(100), 0); g.addColorStop(0, "#c9631f"); g.addColorStop(1, "#f6d7b6");
 		x.fillStyle = g; x.fillRect(VX(50), 92, VX(100) - VX(50), 14);
-		x.fillStyle = "#5b6b7a"; x.font = "700 18px Nunito, sans-serif"; x.textAlign = "center";
+		x.fillStyle = "#5b6b7a"; x.font = "700 18px Inter,system-ui,sans-serif"; x.textAlign = "center";
 		for(let l = 50; l <= 100; l += 10) x.fillText(l + " %", VX(l), 128);
 		
 		// ancien seuil
 		x.strokeStyle = "#8a95a1"; x.setLineDash([5, 5]); x.lineWidth = 2; x.beginPath(); x.moveTo(VX(OLD_TH), 18); x.lineTo(VX(OLD_TH), 172); x.stroke(); x.setLineDash([]);
 		x.fillStyle = "#8a95a1"; x.fillText(`seuil de septembre ${OLD_TH} %`, VX(OLD_TH), 17);
-		if(s.th !== null){ x.strokeStyle = "#1e305e"; x.lineWidth = 4; x.beginPath(); x.moveTo(VX(s.th), 26); x.lineTo(VX(s.th), 172); x.stroke(); x.fillStyle = "#1e305e"; x.font = "800 19px Nunito, sans-serif"; x.fillText(`nouveau seuil ${s.th} %`, VX(s.th), 190); }
+		if(s.th !== null){ x.strokeStyle = "#1e305e"; x.lineWidth = 4; x.beginPath(); x.moveTo(VX(s.th), 26); x.lineTo(VX(s.th), 172); x.stroke(); x.fillStyle = "#1e305e"; x.font = "700 19px Inter,system-ui,sans-serif"; x.fillText(`nouveau seuil ${s.th} %`, VX(s.th), 190); }
 		samples.forEach(p => {
 			if(!s.shot.has(p)) return;
 			const y = p.good ? 66 : 140, wrong = s.th !== null && ((p.lum > s.th) === !!p.good);
 			x.fillStyle = p.good ? "#2fa35a" : "#d6213a"; x.beginPath(); x.arc(VX(p.lum), y, 12, 0, 7); x.fill();
 			if(wrong){ x.strokeStyle = "#d6213a"; x.lineWidth = 3; x.beginPath(); x.arc(VX(p.lum), y, 18, 0, 7); x.stroke(); }
-			if(!p.good || p.lum === 74){ x.fillStyle = "#22303d"; x.font = "700 16px Nunito, sans-serif"; x.fillText(p.lum, VX(p.lum), p.good ? 50 : 162); }
+			if(!p.good || p.lum === 74){ x.fillStyle = "#22303d"; x.font = "700 16px Inter,system-ui,sans-serif"; x.fillText(p.lum, VX(p.lum), p.good ? 50 : 162); }
 		});
 		if(test) test.forEach(([l, ok], i) => { x.fillStyle = ok ? "#3bd16f" : "#d6213a"; x.fillRect(VX(l) - 3, 98 - 4, 6, 6); });
 	}
@@ -992,7 +992,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 		say("Si ça tient une heure, je signe pour samedi.");
 		ctl.innerHTML = `<h4>Taux de rebut · 300 dernières pièces</h4>${cvs("prPlot", 520, 230)}
 			<div class="rb-read"><div>Pièces produites<b id="prN">0</b></div><div>Rebut<b id="prR">20 %</b></div></div>
-			<button class="rb-hold" id="prTop" style="background:#21b6ce;box-shadow:0 4px 0 #0b7a8e">⏱ Top : la pince se ferme</button>
+			<button class="rb-hold" id="prTop" style="background:#cb971a;box-shadow:0 4px 0 #96711a">⏱ Top : la pince se ferme</button>
 			<p class="rb-small" id="prTxt">Chrono : en attente.</p>`;
 		$("#prTop").addEventListener("pointerdown", e => { e.preventDefault(); prodTop(); });
 		hint("Une heure de production en 60 s : regarde la courbe, et chronomètre un cycle");
@@ -1043,7 +1043,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 		const c = $("#prPlot"); if(!c) return;
 		const x = c.getContext("2d"), W = 520, H = 230, X = t => 62 + (W - 76)*t/60, Y = v => H - 30 - (H - 50)*v/25;
 		x.clearRect(0, 0, W, H);
-		x.strokeStyle = "#e3e8ed"; x.lineWidth = 1; x.fillStyle = "#8a95a1"; x.font = "700 18px Nunito, sans-serif"; x.textAlign = "right";
+		x.strokeStyle = "#e3e8ed"; x.lineWidth = 1; x.fillStyle = "#8a95a1"; x.font = "700 18px Inter,system-ui,sans-serif"; x.textAlign = "right";
 		for(const v of [0, 5, 10, 15, 20, 25]){ x.beginPath(); x.moveTo(62, Y(v)); x.lineTo(W - 8, Y(v)); x.stroke(); x.fillText(v + " %", 54, Y(v) + 6); }
 		x.textAlign = "center"; for(const t of [0, 15, 30, 45, 60]) x.fillText(`${t} min`, X(t), H - 6);
 		x.strokeStyle = "#d6213a"; x.setLineDash([6, 5]); x.lineWidth = 2; x.beginPath(); x.moveTo(62, Y(20)); x.lineTo(W - 8, Y(20)); x.stroke(); x.setLineDash([]);

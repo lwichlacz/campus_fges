@@ -11,9 +11,9 @@
    Entreprise, personnes, sociétés et documents sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { mountTable, MOBILE } from "./table.js?v=50ccfe85e2";
-import { jpoCard } from "./jpo.js?v=50ccfe85e2";
-import { palier } from "./palier.js?v=50ccfe85e2";
+import { mountTable, MOBILE } from "./table.js?v=0c6917bfb6";
+import { jpoCard } from "./jpo.js?v=0c6917bfb6";
+import { palier } from "./palier.js?v=0c6917bfb6";
 
 const COURSES = {
 	compta:   ["L1", "Comptabilité financière", "Classer chaque opération : une charge, un produit, ou un investissement qui s'amortit sur plusieurs années."],
@@ -35,59 +35,59 @@ const TIMELINE = [["Dossier", "Dossier", ["intro"]], ...TABS.map(([l, n, k]) => 
 const EXTRA_CSS = `
 /* l'enquête : la fiche devient une feuille de travail d'auditeur, pincée sur un porte-bloc ; ni frise ni bulle */
 .tb.aw .tb-tl,.tb.aw .tb-bubble{display:none!important}
-.tb.aw .tb-chip{background:#1e305e;color:#fff;box-shadow:0 4px 12px rgba(20,30,50,.25)}
-.tb.aw .tb-stage{background:#fffdf6;color:#1e305e}
-.tb.aw .tb-x{background:#1e305e;color:#fff;box-shadow:0 4px 12px rgba(20,30,50,.25)}
+.tb.aw .tb-chip{background:#0f3168;color:#fff;box-shadow:0 4px 12px rgba(20,30,50,.25)}
+.tb.aw .tb-stage{background:#fffdf6;color:#0f3168}
+.tb.aw .tb-x{background:#0f3168;color:#fff;box-shadow:0 4px 12px rgba(20,30,50,.25)}
 .tb.aw .tb-m{background:rgba(255,253,246,.95)}
 .tb.aw .tb-m.prv b{color:#2f6b45}.tb.aw .tb-m.err b{color:#b91c1c}
-.tb.aw .tb-hint{background:#1e305e;color:#fff;box-shadow:0 4px 12px rgba(20,30,50,.25)}
+.tb.aw .tb-hint{background:#0f3168;color:#fff;box-shadow:0 4px 12px rgba(20,30,50,.25)}
 .tb.aw .tb-wrap{background:#7b5a3c;padding:26px 9px 9px;box-sizing:border-box;border-radius:12px;box-shadow:0 22px 44px rgba(20,25,35,.45),inset 0 0 0 2px #6a4b30;scrollbar-width:thin;overscroll-behavior:contain}
 @media (min-width:${MOBILE}px){ .tb.aw .tb-wrap{top:56px;right:16px;bottom:14px;width:404px} }
 @media (max-width:${MOBILE - 1}px){ .tb.aw .tb-wrap{padding:20px 6px 0;border-radius:16px 16px 0 0} }
 .tb.aw .tb-card{border:0;border-radius:3px;padding:14px 14px 20px 32px;box-shadow:0 2px 6px rgba(0,0,0,.28);font-variant-numeric:tabular-nums;
-	background:linear-gradient(90deg,transparent 22px,#e7a9a9 22px 23.5px,transparent 23.5px),repeating-linear-gradient(#fbfaf3 0 25px,#d8e6dc 25px 26px)}
-@media (max-width:${MOBILE - 1}px){ .tb.aw .tb-card{border-radius:3px 3px 0 0;padding:12px 12px 24px 28px;background:linear-gradient(90deg,transparent 18px,#e7a9a9 18px 19.5px,transparent 19.5px),repeating-linear-gradient(#fbfaf3 0 25px,#d8e6dc 25px 26px)} }
+	background:linear-gradient(90deg,transparent 22px,#e7a9a9 22px 23.5px,transparent 23.5px),repeating-linear-gradient(#fbf5f8 0 25px,#d8e6dc 25px 26px)}
+@media (max-width:${MOBILE - 1}px){ .tb.aw .tb-card{border-radius:3px 3px 0 0;padding:12px 12px 24px 28px;background:linear-gradient(90deg,transparent 18px,#e7a9a9 18px 19.5px,transparent 19.5px),repeating-linear-gradient(#fbf5f8 0 25px,#d8e6dc 25px 26px)} }
 .aw-clip{position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:9px 9px 5px 5px;background:linear-gradient(#e4e7eb,#9aa2ab);box-shadow:0 3px 6px rgba(0,0,0,.35),inset 0 -3px 0 rgba(0,0,0,.15)}
 .aw-clip:after{content:"";position:absolute;left:50%;top:7px;width:30px;height:9px;border-radius:5px;transform:translateX(-50%);background:#7b5a3c;box-shadow:inset 0 2px 3px rgba(0,0,0,.4)}
 .aw-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-top:6px}
-.aw-hd b{display:block;font:700 16px/1.2 Fraunces,Georgia,serif;color:#1e305e}
+.aw-hd b{display:block;font:300 16px/1.2 Tiempos Headline,Georgia,serif;color:#0f3168}
 .aw-hd small{display:block;font-size:11.5px;font-weight:700;color:#6a6f78}
-.aw-ref{flex:none;border:2px solid #1e305e;border-radius:4px;padding:2px 8px;text-align:center;font-size:10px;font-weight:800;letter-spacing:.08em;color:#1e305e;background:#fffdf6}
-.aw-ref b{font:800 18px/1.1 Nunito,sans-serif}
+.aw-ref{flex:none;border:2px solid #0f3168;border-radius:4px;padding:2px 8px;text-align:center;font-size:10px;font-weight:800;letter-spacing:.08em;color:#0f3168;background:#fffdf6}
+.aw-ref b{font:300 18px/1.1 Inter,system-ui,sans-serif}
 .aw-meta{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11.5px;font-weight:700;color:#6a6f78;margin:6px 0 4px}
-.aw-meta i{font-family:Caveat,"Segoe Print","Bradley Hand",cursive;font-style:normal;font-size:16px;color:#1e3f8a}
+.aw-meta i{font-family:Inter,system-ui,sans-serif;font-weight:300;font-style:normal;font-size:16px;color:#872850}
 .aw-tabs{display:flex;gap:3px;margin:6px 0 10px}
 .aw-tabs span{flex:1;text-align:center;border-radius:4px 4px 0 0;padding:3px 0 2px;font-size:11px;font-weight:900;background:#e8e4d8;color:#9a958a;border-bottom:2px solid #d6d0c0}
 .aw-tabs span.past{background:#dfeee3;color:#2f6b45;border-color:#9cc7a8}
-.aw-tabs span.now{background:#1e305e;color:#fff;border-color:#1e305e}
-.aw-k{font-size:10.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#8a2b4e}
-.aw-h{font:700 21px/1.15 Fraunces,Georgia,serif;margin:2px 0 6px;color:#1b2140}
+.aw-tabs span.now{background:#0f3168;color:#fff;border-color:#0f3168}
+.aw-k{font-size:10.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#872850}
+.aw-h{font:300 21px/1.15 Tiempos Headline,Georgia,serif;margin:2px 0 6px;color:#1b2140}
 .aw-p{margin:0 0 9px;color:#3e434c;font-size:14px;line-height:1.5}
 .aw-tm{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11.5px;font-weight:800;color:#6a6f78;margin:0 0 8px}
 .aw-tm b{color:#2f6b45}.aw-tm b.r{color:#b91c1c}
 .aw-pc{background:#fff;border:1px solid #ddd6c6;border-radius:4px;padding:8px 10px;margin:6px 0 8px;font-size:13.5px;box-shadow:0 2px 5px rgba(40,25,10,.08);animation:awIn .3s both}
 .aw-pc .hd{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#7a6f63}
-.aw-pc .tt{font:700 15.5px Fraunces,Georgia,serif;margin:2px 0;color:#1b2140}
+.aw-pc .tt{font:300 15.5px Inter,system-ui,sans-serif;margin:2px 0;color:#1b2140}
 .aw-pc .ln{display:flex;justify-content:space-between;gap:8px;border-top:1px dashed #e3dccd;padding-top:3px;margin-top:3px}
 .aw-pc .ln b{white-space:nowrap}
 .aw-pc small{color:#6a6f78}
 @keyframes awIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .aw-notes:empty{display:none}
-.aw-note{position:relative;margin:8px 0 8px 4px;padding:2px 0 2px 10px;border-left:3px solid #c0362c;font:600 19px/1.15 Caveat,"Segoe Print","Bradley Hand",cursive;color:#b0281f;transform:rotate(-.6deg);animation:awIn .35s both}
-.aw-note small{display:block;font:800 9.5px Nunito,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#c0362c;opacity:.75}
+.aw-note{position:relative;margin:8px 0 8px 4px;padding:2px 0 2px 10px;border-left:3px solid #c0362c;font:300 19px/1.15 Inter,system-ui,sans-serif;color:#b0281f;transform:rotate(-.6deg);animation:awIn .35s both}
+.aw-note small{display:block;font:700 9.5px Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#c0362c;opacity:.75}
 .aw-opts{display:grid;gap:6px;margin:6px 0}
-.aw-opt{display:flex;gap:9px;align-items:flex-start;text-align:left;border:1.5px solid #d6d0c0;background:#fffdf6;border-radius:6px;padding:9px 10px;font:700 14px/1.3 Nunito,sans-serif;cursor:pointer;color:#22262e}
-.aw-opt:before{content:"";flex:none;width:15px;height:15px;border:2px solid #1e305e;border-radius:3px;margin-top:1px;background:#fff}
-.aw-opt:hover{border-color:#1e305e}
-.aw-opt.ok{border-color:#3d7a55;background:#eef8f0}.aw-opt.ok:before{content:"✓";color:#2f6b45;font:900 13px/15px Nunito;text-align:center;border-color:#2f6b45}
-.aw-opt.ko{border-color:#c4532f;background:#fdeceb;text-decoration:line-through;color:#7a4038}.aw-opt.ko:before{content:"✗";color:#b91c1c;font:900 13px/15px Nunito;text-align:center;border-color:#b91c1c}
+.aw-opt{display:flex;gap:9px;align-items:flex-start;text-align:left;border:1.5px solid #d6d0c0;background:#fffdf6;border-radius:6px;padding:9px 10px;font:700 14px/1.3 Inter,system-ui,sans-serif;cursor:pointer;color:#22262e}
+.aw-opt:before{content:"";flex:none;width:15px;height:15px;border:2px solid #0f3168;border-radius:3px;margin-top:1px;background:#fff}
+.aw-opt:hover{border-color:#0f3168}
+.aw-opt.ok{border-color:#3d7a55;background:#eef8f0}.aw-opt.ok:before{content:"✓";color:#2f6b45;font:700 13px/15px Inter,system-ui,sans-serif;text-align:center;border-color:#2f6b45}
+.aw-opt.ko{border-color:#872850;background:#fdeceb;text-decoration:line-through;color:#7a4038}.aw-opt.ko:before{content:"✗";color:#b91c1c;font:700 13px/15px Inter,system-ui,sans-serif;text-align:center;border-color:#b91c1c}
 .aw-ok{color:#2f6b45;font-weight:800;font-size:13.5px;margin:4px 0}
-.aw-course{background:#fff;border:2px solid #d9a441;border-radius:8px;padding:9px 11px;margin:9px 0 4px;animation:awIn .35s both}
-.aw-course .tag{display:inline-block;background:#fbefd0;color:#7a5a1a;font-weight:800;font-size:11.5px;border-radius:999px;padding:2px 8px;margin-bottom:4px}
-.aw-course b{display:block;font:700 15.5px Fraunces,Georgia,serif;margin-bottom:2px;color:#1b2140}
+.aw-course{background:#fff;border:2px solid #d9a3ba;border-radius:8px;padding:9px 11px;margin:9px 0 4px;animation:awIn .35s both}
+.aw-course .tag{display:inline-block;background:#fbf5f8;color:#872850;font-weight:800;font-size:11.5px;border-radius:999px;padding:2px 8px;margin-bottom:4px}
+.aw-course b{display:block;font:300 15.5px Inter,system-ui,sans-serif;margin-bottom:2px;color:#1b2140}
 .aw-course span{font-size:13px;color:#4f4a55}
-.tb.aw .tb-go{background:#1e305e;border-radius:8px;font-size:15px;padding:12px}
-.tb.aw .tb-alt{border-radius:8px;border:1.5px solid #c9c2b0;background:#fffdf6;color:#1e305e}
+.tb.aw .tb-go{background:#0f3168;border-radius:8px;font-size:15px;padding:12px}
+.tb.aw .tb-alt{border-radius:8px;border:1.5px solid #c9c2b0;background:#fffdf6;color:#0f3168}
 .aw-tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0}
 .aw-tbl td,.aw-tbl th{padding:5px 3px;border-top:1px solid #ddd6c6;text-align:right}
 .aw-tbl th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#7a6f63;border-top:0}
@@ -95,10 +95,10 @@ const EXTRA_CSS = `
 .aw-tbl tr.hot td{background:#fdeceb;font-weight:800}
 .aw-list{list-style:none;padding:0;margin:6px 0;display:grid;gap:4px}
 .aw-list li{font-size:13.5px;font-weight:700;border-bottom:1px dashed #d6d0c0;padding:3px 0}
-.aw-list li span{color:#8a2b4e;font-weight:900;margin-right:6px}
+.aw-list li span{color:#872850;font-weight:900;margin-right:6px}
 .aw-sig{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin:12px 0 4px;font-size:11.5px;font-weight:700;color:#6a6f78}
-.aw-sig i{font:600 24px Caveat,"Segoe Print",cursive;color:#1e3f8a;transform:rotate(-4deg);display:inline-block}
-.aw-done{display:inline-block;border:3px solid #2f6b45;color:#2f6b45;font:900 13px Nunito,sans-serif;letter-spacing:.14em;padding:3px 9px;border-radius:5px;transform:rotate(-6deg);margin:4px 0 8px}
+.aw-sig i{font:300 24px Inter,system-ui,sans-serif;color:#872850;transform:rotate(-4deg);display:inline-block}
+.aw-done{display:inline-block;border:3px solid #2f6b45;color:#2f6b45;font:700 13px Inter,system-ui,sans-serif;letter-spacing:.14em;padding:3px 9px;border-radius:5px;transform:rotate(-6deg);margin:4px 0 8px}
 `;
 
 /* ================= le bureau du cabinet, au bâtiment Michel Falise ================= */
@@ -148,7 +148,7 @@ function world(canvas){
 		for(let row = 0; row < 2; row++) for(let i = 0; i < 9; i++){
 			const k = (i + row*4) % spines.length, x0 = 13.8 + i*1.45, y0 = FY + 12.4 + row*6;
 			const sp = sbox(1.25, 5.2, 2.6, spines[k], x0, y0, -9.3);
-			const lab = still(new THREE.PlaneGeometry(.9, 2.2), new THREE.MeshBasicMaterial({ map:tex(48, 120, (x, w, h) => { x.fillStyle = "#fbf8ef"; x.fillRect(0, 0, w, h); x.fillStyle = "#22262e"; x.font = "800 18px Nunito, sans-serif"; x.save(); x.translate(w/2 + 6, h - 8); x.rotate(-Math.PI/2); x.fillText(tags[(i + row*3) % tags.length], 0, 0); x.restore(); }) }), x0, y0 + 2.9, -7.99);
+			const lab = still(new THREE.PlaneGeometry(.9, 2.2), new THREE.MeshBasicMaterial({ map:tex(48, 120, (x, w, h) => { x.fillStyle = "#fbf8ef"; x.fillRect(0, 0, w, h); x.fillStyle = "#22262e"; x.font = "700 18px Inter,system-ui,sans-serif"; x.save(); x.translate(w/2 + 6, h - 8); x.rotate(-Math.PI/2); x.fillText(tags[(i + row*3) % tags.length], 0, 0); x.restore(); }) }), x0, y0 + 2.9, -7.99);
 			sp.castShadow = false; lab.receiveShadow = false;
 		}
 		// le grand tableau de liège, au mur derrière le bureau
@@ -177,8 +177,8 @@ function world(canvas){
 		const scr = new THREE.Group(); scr.position.set(0, .22, -1.7); scr.rotation.x = -.28; lap.add(scr);
 		scr.add(mesh(new THREE.BoxGeometry(5, 3.3, .14), M("#2b2f36"), 0, 1.65, 0));
 		scr.add(mesh(new THREE.PlaneGeometry(4.6, 2.9), new THREE.MeshBasicMaterial({ map:tex(460, 290, (x, w, h) => {
-			x.fillStyle = "#f4f6f9"; x.fillRect(0, 0, w, h); x.fillStyle = "#1e305e"; x.fillRect(0, 0, w, 34); x.fillStyle = "#fff"; x.font = "800 17px Nunito, sans-serif"; x.fillText("ERP · Grand livre · 2026", 12, 23);
-			x.font = "700 13px Nunito, sans-serif"; const rows = [["401000", "Fournisseurs", "12 480,00"], ["411000", "Clients", "18 930,50"], ["512000", "Banque", "6 214,37"], ["601000", "Achats matières", "3 150,00"], ["622600", "Honoraires", "2 950,00"], ["706000", "Ventes", "41 260,00"]];
+			x.fillStyle = "#f4f6f9"; x.fillRect(0, 0, w, h); x.fillStyle = "#1e305e"; x.fillRect(0, 0, w, 34); x.fillStyle = "#fff"; x.font = "700 17px Inter,system-ui,sans-serif"; x.fillText("ERP · Grand livre · 2026", 12, 23);
+			x.font = "700 13px Inter,system-ui,sans-serif"; const rows = [["401000", "Fournisseurs", "12 480,00"], ["411000", "Clients", "18 930,50"], ["512000", "Banque", "6 214,37"], ["601000", "Achats matières", "3 150,00"], ["622600", "Honoraires", "2 950,00"], ["706000", "Ventes", "41 260,00"]];
 			rows.forEach((r, i) => { const y = 62 + i*36; x.fillStyle = i % 2 ? "#ffffff" : "#e9eef5"; x.fillRect(8, y - 22, w - 16, 32); x.fillStyle = r[0] === "622600" ? "#b91c1c" : "#22262e"; x.fillText(r[0], 18, y); x.fillText(r[1], 100, y); x.textAlign = "right"; x.fillText(r[2] + " €", w - 18, y); x.textAlign = "left"; });
 		}) }), 0, 1.65, .08));
 		const mug = new THREE.Group(); mug.position.set(-11.6, 0, 5.4); scene.add(mug);
@@ -193,7 +193,7 @@ function world(canvas){
 	let LS = 1;
 	function drawLabel(sp, text, o){
 		const c = sp.userData.c || (sp.userData.c = document.createElement("canvas")), x = c.getContext("2d");
-		const f = `800 ${o.big ? 56 : 42}px Nunito, system-ui, sans-serif`; x.font = f;
+		const f = `700 ${o.big ? 56 : 42}px Inter, system-ui, sans-serif`; x.font = f;
 		const w = Math.ceil(x.measureText(text).width) + 44, h = o.big ? 84 : 66;
 		c.width = w; c.height = h; x.font = f;
 		x.fillStyle = o.bg || "#1e305e"; x.beginPath(); x.roundRect(2, 2, w - 4, h - 4, 12); x.fill();
@@ -232,12 +232,12 @@ function world(canvas){
 		paper.userData.doc = D; D.redraw();
 		return D;
 	}
-	const T = (x, s, px, py, size, o = {}) => { x.font = `${o.w || 700} ${size}px ${o.f || "Nunito, system-ui, sans-serif"}`; x.fillStyle = o.c || "#22262e"; x.textAlign = o.a || "left"; x.fillText(s, px, py); };
+	const T = (x, s, px, py, size, o = {}) => { x.font = `${o.w || 300} ${size}px ${o.f || "Inter, system-ui, sans-serif"}`; x.fillStyle = o.c || "#22262e"; x.textAlign = o.a || "left"; x.fillText(s, px, py); };
 	// le coup de tampon : un cadre et un mot, l'encre qui bave un peu, des manques, quelques éclaboussures
 	function ink(D, text, color, lx, lz, rot){
 		const x = D.x, s = D.px/PX, cx = (lx + D.w/2)*D.px, cy = (lz + D.h/2)*D.px;
 		x.save(); x.translate(cx, cy); x.rotate(rot);
-		const fs = 46*s; x.font = `900 ${fs}px Nunito, system-ui, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle";
+		const fs = 46*s; x.font = `700 ${fs}px Inter,system-ui,sans-serif`; x.textAlign = "center"; x.textBaseline = "middle";
 		const bw = x.measureText(text).width + 44*s, bh = fs + 30*s;
 		x.globalAlpha = .88; x.strokeStyle = x.fillStyle = color; x.lineWidth = 6*s;
 		x.beginPath(); x.roundRect(-bw/2, -bh/2, bw, bh, 8*s); x.stroke(); x.fillText(text, 0, 3*s);
@@ -253,7 +253,7 @@ function world(canvas){
 		anim(520, k => {
 			if(k*5 < n) return; n++;
 			x.save(); x.translate(cx, cy); x.rotate(rot); x.globalAlpha = .07; x.strokeStyle = x.fillStyle = color; x.shadowColor = color; x.shadowBlur = (3 + n*2)*s;
-			x.font = `900 ${fs}px Nunito, system-ui, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.lineWidth = (6 + n)*s;
+			x.font = `700 ${fs}px Inter,system-ui,sans-serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.lineWidth = (6 + n)*s;
 			x.beginPath(); x.roundRect(-bw/2, -bh/2, bw, bh, 8*s); x.stroke(); x.fillText(text, 0, 3*s); x.restore(); D.t.needsUpdate = true;
 		});
 	}
@@ -277,7 +277,7 @@ function world(canvas){
 	const lcdC = document.createElement("canvas"); lcdC.width = 380; lcdC.height = 110;
 	const lcdT = new THREE.CanvasTexture(lcdC); lcdT.colorSpace = THREE.SRGBColorSpace;
 	const lcd = mesh(new THREE.PlaneGeometry(3.8, 1.1), new THREE.MeshBasicMaterial({ map:lcdT }), 0, .52, -2.4); lcd.rotation.x = -Math.PI/2; calc.add(lcd);
-	function lcdDraw(){ const x = lcdC.getContext("2d"); x.fillStyle = "#b9c7a5"; x.fillRect(0, 0, 380, 110); x.fillStyle = "#1d2a1a"; x.textAlign = "right"; x.font = `700 ${calcShow.length > 11 ? 44 : 64}px "Courier New", monospace`; x.fillText(calcShow, 362, 80); lcdT.needsUpdate = true; }
+	function lcdDraw(){ const x = lcdC.getContext("2d"); x.fillStyle = "#b9c7a5"; x.fillRect(0, 0, 380, 110); x.fillStyle = "#1d2a1a"; x.textAlign = "right"; x.font = `700 ${calcShow.length > 11 ? 44 : 64}px Inter,system-ui,sans-serif`; x.fillText(calcShow, 362, 80); lcdT.needsUpdate = true; }
 	lcdDraw();
 	const KEYS = [["C", "←", "÷", "×"], ["7", "8", "9", "−"], ["4", "5", "6", "+"], ["1", "2", "3", "="], ["0", "00", ",", "OK"]];
 	const keyHits = [];
@@ -285,7 +285,7 @@ function world(canvas){
 		const op = "÷×−+=←".includes(k), col = k === "OK" ? "#3d7a55" : k === "C" ? "#c4532f" : op ? "#5d6b7a" : "#e7e9ec";
 		const key = new THREE.Group(); key.position.set(-1.5 + c*1, .5, -1.1 + r*.98); calc.add(key);
 		key.add(mesh(new THREE.BoxGeometry(.8, .26, .78), M(col, { roughness:.5 }), 0, .13, 0));
-		const face = new THREE.Mesh(new THREE.PlaneGeometry(.74, .72), new THREE.MeshBasicMaterial({ map:tex(64, 64, (x, w, h) => { x.fillStyle = col; x.fillRect(0, 0, w, h); x.fillStyle = col === "#e7e9ec" ? "#22262e" : "#fff"; x.font = `900 ${k.length > 1 ? 24 : 34}px Nunito, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(k, w/2, h/2 + 2); }) }));
+		const face = new THREE.Mesh(new THREE.PlaneGeometry(.74, .72), new THREE.MeshBasicMaterial({ map:tex(64, 64, (x, w, h) => { x.fillStyle = col; x.fillRect(0, 0, w, h); x.fillStyle = col === "#e7e9ec" ? "#22262e" : "#fff"; x.font = `700 ${k.length > 1 ? 24 : 34}px Inter,system-ui,sans-serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(k, w/2, h/2 + 2); }) }));
 		face.rotation.x = -Math.PI/2; face.position.y = .265; key.add(face);
 		const hit = new THREE.Mesh(new THREE.BoxGeometry(.98, .6, .96), hidden); hit.position.y = .2; hit.userData.tap = "key:" + k; key.add(hit); keyHits.push(hit);
 		key.userData.k = k; hit.userData.key = key;
@@ -358,7 +358,7 @@ function world(canvas){
 			const D = doc(4.4, 5.2, (x, w, h) => {
 				x.fillStyle = "#fffdf8"; x.fillRect(0, 0, w, h); x.fillStyle = v.col; x.fillRect(0, 0, w, 16);
 				T(x, v.sale ? "FACTURE DE VENTE" : "FACTURE", 20, 58, 20, { w:900, c:"#6a6f78" });
-				x.font = "700 30px Fraunces, Georgia, serif"; x.fillStyle = "#1b2140"; wrap(x, v.l, 20, 104, w - 40, 34);
+				x.font = "300 30px Tiempos Headline,Georgia,serif"; x.fillStyle = "#1b2140"; wrap(x, v.l, 20, 104, w - 40, 34);
 				T(x, "Total HT", 20, h - 140, 22, { c:"#6a6f78" }); T(x, euro(v.ht), w - 20, h - 140, 24, { a:"right", w:800 });
 				T(x, "Total TTC", 20, h - 90, 24, { w:800 }); T(x, euro(v.ttc), w - 20, h - 90, 30, { a:"right", w:900 });
 				if(st.done.has(v.id)){ x.globalAlpha = .9; T(x, "✓ pointé", w - 20, h - 26, 28, { a:"right", w:900, c:"#2f6b45" }); x.globalAlpha = 1; }
@@ -404,14 +404,14 @@ function world(canvas){
 		x.fillStyle = "#fffef9"; x.fillRect(0, 0, w, h);
 		x.strokeStyle = "#1e305e"; x.lineWidth = 3*s; x.strokeRect(14*s, 14*s, w - 28*s, h - 28*s);
 		T(x, "GREFFE DU TRIBUNAL DE COMMERCE DE LILLE MÉTROPOLE", w/2, 72*s, 17*s, { a:"center", w:800, c:"#1e305e" });
-		T(x, "Extrait Kbis", w/2, 128*s, 46*s, { a:"center", w:700, f:"Fraunces, Georgia, serif", c:"#1b2140" });
+		T(x, "Extrait Kbis", w/2, 128*s, 46*s, { a:"center", w:300, f:"Tiempos Headline, Georgia, serif", c:"#1b2140" });
 		T(x, "Extrait d'immatriculation principale au registre", w/2, 160*s, 17*s, { a:"center", c:"#3e434c" });
 		T(x, "du commerce et des sociétés · à jour au 2 octobre 2026", w/2, 182*s, 17*s, { a:"center", c:"#3e434c" });
 		let y = 220*s;
 		const sec = t => { x.fillStyle = "#e6e9f1"; x.fillRect(28*s, y - 22*s, w - 56*s, 30*s); T(x, t, 36*s, y, 15*s, { w:900, c:"#1e305e" }); y += 40*s; };
 		const row = (k, v, hl) => {
 			if(hl && D.state.hl){ x.fillStyle = "rgba(255,226,74,.7)"; x.fillRect(250*s, y - 21*s, w - 280*s, 29*s); }
-			T(x, k, 36*s, y, 15*s, { c:"#6a6f78", w:700 }); x.font = `800 ${16*s}px Nunito, sans-serif`; x.fillStyle = "#1b2140"; y = wrap(x, v, 254*s, y, w - 290*s, 22*s) + 32*s;
+			T(x, k, 36*s, y, 15*s, { c:"#6a6f78", w:700 }); x.font = `700 ${16*s}px Inter,system-ui,sans-serif`; x.fillStyle = "#1b2140"; y = wrap(x, v, 254*s, y, w - 290*s, 22*s) + 32*s;
 		};
 		sec("IDENTIFICATION DE LA PERSONNE MORALE");
 		row("Immatriculation", "000 482 117 R.C.S. Lille Métropole");
@@ -434,21 +434,21 @@ function world(canvas){
 		head(x, w, "#16486b", "RELEVÉ D'IDENTITÉ BANCAIRE");
 		T(x, "Titulaire du compte", 22, 104, 18, { c:"#6a6f78" }); T(x, "DUPONT CONSEIL SERVICES", 22, 136, 26, { w:900 });
 		T(x, "Banque des Flandres (fictive)", 22, 176, 18, { c:"#6a6f78" });
-		T(x, "IBAN", 22, 226, 18, { c:"#6a6f78" }); T(x, "FR76 •••• •••• •••• •••• 4821", 22, 262, 23, { w:900, f:"'Courier New', monospace" });
+		T(x, "IBAN", 22, 226, 18, { c:"#6a6f78" }); T(x, "FR76 •••• •••• •••• •••• 4821", 22, 262, 23, { w:700, f:"Inter, system-ui, sans-serif" });
 	});
 	pinDoc("morel", 5, 3.8, 6.6, 11, (x, w, h) => {
 		head(x, w, "#5d6b7a", "FICHE SALARIÉ · confidentiel");
-		T(x, "MOREL Julien", 22, 106, 30, { w:700, f:"Fraunces, Georgia, serif", c:"#1b2140" });
+		T(x, "MOREL Julien", 22, 106, 30, { w:300, f:"Tiempos Headline, Georgia, serif", c:"#1b2140" });
 		T(x, "Comptable de l'entreprise, depuis 2019", 22, 144, 19, { c:"#3e434c" });
 		T(x, "Adresse", 22, 192, 17, { c:"#6a6f78" }); T(x, "14 rue des Lilas, 59000 Lille", 22, 222, 22, { w:800 });
-		T(x, "IBAN de paie", 22, 270, 17, { c:"#6a6f78" }); T(x, "FR76 •••• •••• •••• •••• 4821", 22, 304, 23, { w:900, f:"'Courier New', monospace" });
+		T(x, "IBAN de paie", 22, 270, 17, { c:"#6a6f78" }); T(x, "FR76 •••• •••• •••• •••• 4821", 22, 304, 23, { w:700, f:"Inter, system-ui, sans-serif" });
 	});
 	pinDoc("benali", 5, 3.8, 3.6, 5.6, (x, w, h) => {
 		head(x, w, "#5d6b7a", "FICHE SALARIÉ · confidentiel");
-		T(x, "BENALI Inès", 22, 106, 30, { w:700, f:"Fraunces, Georgia, serif", c:"#1b2140" });
+		T(x, "BENALI Inès", 22, 106, 30, { w:300, f:"Tiempos Headline, Georgia, serif", c:"#1b2140" });
 		T(x, "Commerciale, depuis 2022", 22, 144, 19, { c:"#3e434c" });
 		T(x, "Adresse", 22, 192, 17, { c:"#6a6f78" }); T(x, "3 place du Concert, 59800 Lille", 22, 222, 22, { w:800 });
-		T(x, "IBAN de paie", 22, 270, 17, { c:"#6a6f78" }); T(x, "FR76 •••• •••• •••• •••• 0937", 22, 304, 23, { w:900, f:"'Courier New', monospace" });
+		T(x, "IBAN de paie", 22, 270, 17, { c:"#6a6f78" }); T(x, "FR76 •••• •••• •••• •••• 0937", 22, 304, 23, { w:700, f:"Inter, system-ui, sans-serif" });
 	});
 
 	/* --- fils et traits de crayon --- */
@@ -625,10 +625,9 @@ const REASON = { ok:"Conforme", tva:"TVA erronée", just:"Sans justificatif", db
 /* ================= le jeu ================= */
 export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent, openLead }){
 	const play = n => audio && audio.play(n);
-	if(!document.getElementById("aw-font")){ const l = document.createElement("link"); l.id = "aw-font"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap"; document.head.appendChild(l); }
 	const T = mountTable({
 		id:"aw", label:"Enquête", hint:"",
-		theme:{ bg:"#dfe3e6", paper:"#fbfaf3", paper2:"#eef3ea", ink:"#22262e", dark:"#1e305e", accent:"#1e305e", accentInk:"#8a2b4e", gold:"#d9a441", line:"#d6d0c0" },
+		theme:{ bg:"#dfe3e6", paper:"#fbfaf3", paper2:"#eef3ea", ink:"#22262e", dark:"#0f3168", accent:"#0f3168", accentInk:"#872850", gold:"#872850", line:"#d6d0c0" },
 		mentor:{ name:"", svg:"" }, timeline:TIMELINE, extraCSS:EXTRA_CSS, noTimeline:true,
 		meters:[
 			{ k:"err", label:"Erreurs", icon:"🔎", cls:"err", fmt:v => Math.round(v) },
@@ -683,7 +682,7 @@ export function openAudit({ formation, audio, isFav, toggleFav, onClose, onEvent
 			if(p.no) W.T(x, "n° " + p.no, cw - 22, 118, 19, { a:"right", c:"#6a6f78" });
 			W.T(x, p.k === "produit" ? "Client : " + p.client : "Client : La Fabrique à Gaufres", 22, 154, 19, { c:"#3e434c" });
 			x.fillStyle = "#e3dccd"; x.fillRect(22, 176, cw - 44, 2);
-			x.font = "700 23px Nunito, sans-serif"; x.fillStyle = "#22262e"; W.wrap(x, p.d, 22, 216, cw - 44, 30);
+			x.font = "700 23px Inter,system-ui,sans-serif"; x.fillStyle = "#22262e"; W.wrap(x, p.d, 22, 216, cw - 44, 30);
 			const L = p.lines || [["Total HT", euro(p.m)]];
 			L.forEach(([a, b], i) => { const y = ch - 40 - (L.length - 1 - i)*46; W.T(x, a, 22, y, 22, { w:i === L.length - 1 ? 900 : 700, c:i === L.length - 1 ? "#1b2140" : "#3e434c" }); W.T(x, b, cw - 22, y, i === L.length - 1 ? 28 : 23, { a:"right", w:900 }); });
 		});

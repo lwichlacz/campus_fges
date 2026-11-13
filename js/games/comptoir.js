@@ -5,9 +5,9 @@
      seuil de rentabilité, décision d'investissement) qui révèle le cours de la licence.
    Les chiffres sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
-import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=50ccfe85e2";
-import { jpoCard } from "./jpo.js?v=50ccfe85e2";
-import { palier } from "./palier.js?v=50ccfe85e2";
+import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=0c6917bfb6";
+import { jpoCard } from "./jpo.js?v=0c6917bfb6";
+import { palier } from "./palier.js?v=0c6917bfb6";
 
 /* ---------- Économie du Comptoir (à valider par l'enseignant) ---------- */
 const ECO = { amortVelo:7, cafe:.25, lait:.20, gobelet:.10, tasse:.55, croissantAchat:.45, croissantPrix:1.2, salaire:25,
@@ -39,115 +39,115 @@ const euro0 = v => Math.round(v).toLocaleString("fr-FR") + " €";
 const priceFactor = p => Math.max(.25, Math.min(1.25, 1.55 - .3*p));
 
 const CSS = `
-.cz{position:fixed;inset:0;z-index:40;background:#2b1d16;font-family:Nunito,system-ui,sans-serif;color:#2b2233;overflow:hidden;animation:czIn .35s ease both}
+.cz{position:fixed;inset:0;z-index:40;background:#2b1d16;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#2b2233;overflow:hidden;animation:czIn .35s ease both}
 @keyframes czIn{from{opacity:0}to{opacity:1}}
 .cz canvas.cz-3d{position:absolute;inset:0;width:100%;height:100%;display:block}
 .cz-top{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;z-index:3;pointer-events:none}
 .cz-top>*{pointer-events:auto}
-.cz-chip{background:rgba(255,248,236,.95);border-radius:999px;padding:7px 12px;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(40,20,10,.25);display:flex;gap:6px;align-items:center}
+.cz-chip{background:rgba(233,247,250,.95);border-radius:999px;padding:7px 12px;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(40,20,10,.25);display:flex;gap:6px;align-items:center}
 .cz-chip b{font-size:15px}
-.cz-day{background:#21b6ce;color:#0b2f67} .cz-day:empty{display:none}
-.cz-x{margin-left:auto;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,248,236,.95);font-size:22px;cursor:pointer;box-shadow:0 6px 18px rgba(40,20,10,.25)}
-.cz-bar{width:70px;height:8px;border-radius:8px;background:#ead9bf;overflow:hidden}
-.cz-bar i{display:block;height:100%;background:linear-gradient(90deg,#c4532f,#d9a441,#3d7a55);transition:width .4s}
+.cz-day{background:#21b7cb;color:#0f3168} .cz-day:empty{display:none}
+.cz-x{margin-left:auto;width:40px;height:40px;border-radius:50%;border:0;background:rgba(233,247,250,.95);font-size:22px;cursor:pointer;box-shadow:0 6px 18px rgba(40,20,10,.25)}
+.cz-bar{width:70px;height:8px;border-radius:8px;background:#e9f7fa;overflow:hidden}
+.cz-bar i{display:block;height:100%;background:linear-gradient(90deg,#0f3168,#21b7cb,#3d7a55);transition:width .4s}
 .cz-bubbles{position:absolute;inset:0;z-index:2;pointer-events:none}
 .cz-bub{position:absolute;left:0;top:0;pointer-events:none;transform-origin:50% 100%}
 .cz-bub span{display:flex;align-items:center;gap:2px;background:#fff;border-radius:16px;padding:5px 8px;font-size:17px;box-shadow:0 4px 12px rgba(40,20,10,.3);border:3px solid var(--ring,#3d7a55);transition:transform .15s}
-.cz-bub.mine span{border-color:#d9a441;box-shadow:0 0 0 4px rgba(242,193,78,.55),0 4px 12px rgba(40,20,10,.3);transform:scale(1.1)}
-.cz-bub.angry span{border-color:#c4532f;background:#fde8e8}
-.cz-bub.busy span{border-color:#d9a441;opacity:.85}
+.cz-bub.mine span{border-color:#21b7cb;box-shadow:0 0 0 4px rgba(33,183,203,.55),0 4px 12px rgba(40,20,10,.3);transform:scale(1.1)}
+.cz-bub.angry span{border-color:#0f3168;background:#fde8e8}
+.cz-bub.busy span{border-color:#21b7cb;opacity:.85}
 .cz.tall .cz-bub span{font-size:13px;padding:3px 6px;border-width:2px;border-radius:12px}
-.cz-pop{position:absolute;z-index:3;font-weight:800;font-size:15px;color:#2f6b45;text-shadow:0 1px 0 #fff,0 0 8px #fff;pointer-events:none;animation:czPop 1.1s ease-out forwards}
+.cz-pop{position:absolute;z-index:3;font-weight:800;font-size:15px;color:#0f3168;text-shadow:0 1px 0 #fff,0 0 8px #fff;pointer-events:none;animation:czPop 1.1s ease-out forwards}
 .cz-pop.bad{color:#b91c1c}
 @keyframes czPop{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-46px)}}
-.cz-coach{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;background:#fff8ec;border-radius:16px;padding:11px 16px;font-weight:700;font-size:14px;box-shadow:0 10px 30px rgba(40,20,10,.35);max-width:min(520px,calc(100% - 24px));border-left:5px solid #d9a441}
+.cz-coach{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;background:#e9f7fa;border-radius:16px;padding:11px 16px;font-weight:700;font-size:14px;box-shadow:0 10px 30px rgba(40,20,10,.35);max-width:min(520px,calc(100% - 24px));border-left:5px solid #21b7cb}
 .cz-coach[hidden]{display:none}
 .cz.serving .cz-coach{bottom:150px}
-.cz-tray{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;width:min(440px,calc(100% - 20px));background:#fff8ec;border-radius:20px;padding:10px;box-shadow:0 12px 34px rgba(40,20,10,.4)}
+.cz-tray{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;width:min(440px,calc(100% - 20px));background:#e9f7fa;border-radius:20px;padding:10px;box-shadow:0 12px 34px rgba(40,20,10,.4)}
 .cz-tray[hidden]{display:none}
 .cz-order{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;margin:0 4px 8px;min-height:30px}
 .cz-order .it{font-size:24px;opacity:.4;filter:grayscale(1);transition:.15s}
 .cz-order .it.on{opacity:1;filter:none;transform:scale(1.15)}
-.cz-order .sp{margin-left:auto;color:#0b7a8e}
+.cz-order .sp{margin-left:auto;color:#0f3168}
 .cz-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.cz-keys button{border:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px #ead9bf,0 4px 0 #ead9bf;padding:10px 4px 8px;font:800 30px/1 Nunito,sans-serif;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;color:#2b2233}
+.cz-keys button{border:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px #e9f7fa,0 4px 0 #e9f7fa;padding:10px 4px 8px;font:700 30px/1 Inter,system-ui,sans-serif;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;color:#2b2233}
 .cz-keys button small{display:block;font-size:12px;margin-top:4px;color:#5b4f5f}
-.cz-keys button:active{transform:translateY(3px);box-shadow:inset 0 0 0 2px #ead9bf}
+.cz-keys button:active{transform:translateY(3px);box-shadow:inset 0 0 0 2px #e9f7fa}
 .cz-keys button.ko{animation:czShake .3s}
 @keyframes czShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-.cz-lev{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;width:min(460px,calc(100% - 20px));background:#fff8ec;border-radius:20px;padding:10px;box-shadow:0 12px 34px rgba(40,20,10,.4)}
+.cz-lev{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;width:min(460px,calc(100% - 20px));background:#e9f7fa;border-radius:20px;padding:10px;box-shadow:0 12px 34px rgba(40,20,10,.4)}
 .cz-lev[hidden]{display:none}
 .cz-lrow{display:flex;align-items:center;gap:8px;margin:0 2px 8px;font-weight:800;font-size:14px}
-.cz-lrow button{width:38px;height:38px;border-radius:12px;border:2px solid #ead9bf;background:#fff;font:800 20px Nunito,sans-serif;cursor:pointer;touch-action:manipulation;color:#2b2233}
+.cz-lrow button{width:38px;height:38px;border-radius:12px;border:2px solid #e9f7fa;background:#fff;font:700 20px Inter,system-ui,sans-serif;cursor:pointer;touch-action:manipulation;color:#2b2233}
 .cz-lrow b{min-width:62px;text-align:center;font-size:17px}
-.cz-lrow b.happy{color:#c2410c}
-.cz-lrow .q{margin-left:auto;font-size:13px;color:#5b4f5f;background:#fff;border:1px solid #ead9bf;border-radius:999px;padding:5px 10px}
+.cz-lrow b.happy{color:#0f3168}
+.cz-lrow .q{margin-left:auto;font-size:13px;color:#5b4f5f;background:#fff;border:1px solid #e9f7fa;border-radius:999px;padding:5px 10px}
 .cz-lrow .q.hot{color:#b91c1c;border-color:#f3b4a8;background:#fdeceb}
 .cz-lbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.cz-lbtns button{position:relative;overflow:hidden;border:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px #ead9bf,0 4px 0 #ead9bf;padding:8px 4px 7px;font:800 13px/1.15 Nunito,sans-serif;cursor:pointer;touch-action:manipulation;color:#2b2233}
+.cz-lbtns button{position:relative;overflow:hidden;border:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px #e9f7fa,0 4px 0 #e9f7fa;padding:8px 4px 7px;font:700 13px/1.15 Inter,system-ui,sans-serif;cursor:pointer;touch-action:manipulation;color:#2b2233}
 .cz-lbtns button i{display:block;font-style:normal;font-size:24px;margin-bottom:2px}
 .cz-lbtns button small{display:block;font-size:11px;color:#8a7d86;margin-top:2px;font-weight:700}
-.cz-lbtns button:active{transform:translateY(3px);box-shadow:inset 0 0 0 2px #ead9bf}
+.cz-lbtns button:active{transform:translateY(3px);box-shadow:inset 0 0 0 2px #e9f7fa}
 .cz-lbtns button:disabled{opacity:.42;cursor:default}
-.cz-lbtns button.glow{box-shadow:inset 0 0 0 3px #d9a441,0 4px 0 #d9a441;animation:czGlow 1s ease-in-out infinite alternate}
-@keyframes czGlow{to{background:#fff3d6}}
-.cz-lbtns button .bar{position:absolute;left:0;bottom:0;height:4px;background:#21b6ce;width:var(--p,0%)}
+.cz-lbtns button.glow{box-shadow:inset 0 0 0 3px #21b7cb,0 4px 0 #21b7cb;animation:czGlow 1s ease-in-out infinite alternate}
+@keyframes czGlow{to{background:#e9f7fa}}
+.cz-lbtns button .bar{position:absolute;left:0;bottom:0;height:4px;background:#21b7cb;width:var(--p,0%)}
 .cz.gerant .cz-bub{pointer-events:auto;cursor:pointer}
 .cz.gerant .cz-bub.warn span{animation:czWarn .6s ease-in-out infinite alternate}
 .cz.gerant .cz-bub.warn span::after{content:"🍪";font-size:15px;margin-left:3px}
 @keyframes czWarn{to{transform:scale(1.12)}}
-.cz-res.neg b{color:#b91c1c}.cz-res.pos b{color:#2f6b45}
-.cz-ff{background:#1e305e;color:#fff}
+.cz-res.neg b{color:#b91c1c}.cz-res.pos b{color:#0f3168}
+.cz-ff{background:#0f3168;color:#fff}
 .cz-ff[hidden]{display:none}
-.cz-banner{position:absolute;left:50%;top:20%;z-index:4;background:#3d7a55;color:#fff;font:800 17px/1.3 Nunito,sans-serif;padding:12px 20px;border-radius:18px;box-shadow:0 12px 30px rgba(20,60,30,.4);text-align:center;width:max-content;max-width:88%;pointer-events:none;animation:czBan 3s ease forwards}
+.cz-banner{position:absolute;left:50%;top:20%;z-index:4;background:#3d7a55;color:#fff;font:300 17px/1.3 Inter,system-ui,sans-serif;padding:12px 20px;border-radius:18px;box-shadow:0 12px 30px rgba(20,60,30,.4);text-align:center;width:max-content;max-width:88%;pointer-events:none;animation:czBan 3s ease forwards}
 @keyframes czBan{0%{opacity:0;transform:translate(-50%,10px) scale(.9)}10%{opacity:1;transform:translate(-50%,0) scale(1)}82%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-10px)}}
 .cz-panel{position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:12px;background:rgba(43,26,20,.35);overflow:auto}
 .cz-panel[hidden]{display:none}
-.cz-card{width:100%;max-width:470px;background:#fff8ec;border-radius:24px;box-shadow:0 30px 80px rgba(20,10,5,.45);padding:20px 18px 18px;animation:czUp .35s cubic-bezier(.2,.8,.2,1) both}
+.cz-card{width:100%;max-width:470px;background:#e9f7fa;border-radius:24px;box-shadow:0 30px 80px rgba(20,10,5,.45);padding:20px 18px 18px;animation:czUp .35s cubic-bezier(.2,.8,.2,1) both}
 @keyframes czUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-.cz-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#0b7a8e}
-.cz-h{font:700 23px/1.15 Fraunces,Georgia,serif;margin:4px 0 6px}
+.cz-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#0f3168}
+.cz-h{font:300 23px/1.15 Tiempos Headline,Georgia,serif;margin:4px 0 6px}
 .cz-p{margin:0 0 12px;color:#5b4f5f;font-size:14.5px}
-.cz-row{background:#fff;border:1px solid #ead9bf;border-radius:16px;padding:11px 13px;margin-bottom:8px}
+.cz-row{background:#fff;border:1px solid #e9f7fa;border-radius:16px;padding:11px 13px;margin-bottom:8px}
 .cz-row .t{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:14px}
 .cz-row small{display:block;color:#8a7d86;font-weight:700;font-size:12px;margin-top:3px}
-.cz-row input[type=range]{width:100%;accent-color:#0b7a8e;margin-top:8px}
+.cz-row input[type=range]{width:100%;accent-color:#0f3168;margin-top:8px}
 .cz-step{display:flex;align-items:center;gap:8px}
-.cz-step button{width:36px;height:36px;border-radius:12px;border:2px solid #ead9bf;background:#fff;font:800 18px Nunito,sans-serif;cursor:pointer}
+.cz-step button{width:36px;height:36px;border-radius:12px;border:2px solid #e9f7fa;background:#fff;font:700 18px Inter,system-ui,sans-serif;cursor:pointer}
 .cz-step b{min-width:42px;text-align:center;font-size:17px}
 .cz-seg{display:flex;gap:6px}
-.cz-seg button{flex:1;border:2px solid #ead9bf;background:#fff;border-radius:12px;padding:8px 4px;font:800 14px Nunito,sans-serif;cursor:pointer}
-.cz-seg button[aria-pressed=true]{border-color:#0b7a8e;background:#e4f6f9;color:#0b7a8e}
-.cz-go{display:block;width:100%;border:0;border-radius:16px;padding:14px;background:#21b6ce;color:#0b2f67;font:800 16px Nunito,sans-serif;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(20,140,160,.35);text-align:center;text-decoration:none}
+.cz-seg button{flex:1;border:2px solid #e9f7fa;background:#fff;border-radius:12px;padding:8px 4px;font:700 14px Inter,system-ui,sans-serif;cursor:pointer}
+.cz-seg button[aria-pressed=true]{border-color:#0f3168;background:#e9f7fa;color:#0f3168}
+.cz-go{display:block;width:100%;border:0;border-radius:16px;padding:14px;background:#21b7cb;color:#0f3168;font:700 16px Inter,system-ui,sans-serif;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(15,49,104,.35);text-align:center;text-decoration:none}
 .cz-go:disabled{opacity:.45;cursor:default}
-.cz-alt{display:block;width:100%;border:2px solid #ead9bf;border-radius:16px;padding:12px;background:#fff;color:#1e305e;font:800 14px Nunito,sans-serif;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none}
-.cz-hint{font-size:12.5px;font-weight:700;color:#7a6a3a;background:#fbefd0;border-radius:10px;padding:6px 10px;margin-top:8px}
+.cz-alt{display:block;width:100%;border:2px solid #e9f7fa;border-radius:16px;padding:12px;background:#fff;color:#0f3168;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none}
+.cz-hint{font-size:12.5px;font-weight:700;color:#7a6a3a;background:#e9f7fa;border-radius:10px;padding:6px 10px;margin-top:8px}
 .cz-tbl{width:100%;border-collapse:collapse;font-size:14px;margin:4px 0 10px}
-.cz-tbl td{padding:7px 4px;border-bottom:1px solid #ead9bf}
+.cz-tbl td{padding:7px 4px;border-bottom:1px solid #e9f7fa}
 .cz-tbl td:last-child{text-align:right;font-weight:800}
 .cz-tbl tr.tot td{border-bottom:0;font-size:15.5px}
-.cz-pos{color:#2f6b45}.cz-neg{color:#b91c1c}
+.cz-pos{color:#0f3168}.cz-neg{color:#b91c1c}
 .cz-chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
-.cz-tok{border:2px dashed #d9b98a;background:#fff;border-radius:12px;padding:9px 12px;font:800 15px Nunito,sans-serif;cursor:pointer}
-.cz-tok[aria-pressed=true]{border-style:solid;border-color:#0b7a8e;background:#e4f6f9}
+.cz-tok{border:2px dashed #21b7cb;background:#fff;border-radius:12px;padding:9px 12px;font:700 15px Inter,system-ui,sans-serif;cursor:pointer}
+.cz-tok[aria-pressed=true]{border-style:solid;border-color:#0f3168;background:#e9f7fa}
 .cz-tok.used{opacity:.3;pointer-events:none}
-.cz-slot{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;border:2px dashed #ead9bf;background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:7px;font:700 14px Nunito,sans-serif;cursor:pointer;text-align:left}
+.cz-slot{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;border:2px dashed #e9f7fa;background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:7px;font:300 14px Inter,system-ui,sans-serif;cursor:pointer;text-align:left}
 .cz-slot b{min-width:80px;text-align:right}
 .cz-slot.ok{border-style:solid;border-color:#3d7a55;background:#eef8f0}
-.cz-slot.ko{border-style:solid;border-color:#c4532f;background:#fdeceb}
+.cz-slot.ko{border-style:solid;border-color:#0f3168;background:#fdeceb}
 .cz-opts{display:grid;gap:7px}
-.cz-opt{border:2px solid #ead9bf;background:#fff;border-radius:14px;padding:11px 12px;font:800 15px Nunito,sans-serif;cursor:pointer;text-align:left}
+.cz-opt{border:2px solid #e9f7fa;background:#fff;border-radius:14px;padding:11px 12px;font:700 15px Inter,system-ui,sans-serif;cursor:pointer;text-align:left}
 .cz-opt.ok{border-color:#3d7a55;background:#eef8f0}
-.cz-opt.ko{border-color:#c4532f;background:#fdeceb}
-.cz-course{background:#fff;border:2px solid #d9a441;border-radius:16px;padding:12px 14px;margin:10px 0 4px}
-.cz-course .tag{display:inline-block;background:#fbefd0;color:#7a5a1a;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px;margin-bottom:6px}
-.cz-course b{display:block;font:700 17px Fraunces,Georgia,serif;margin-bottom:3px}
+.cz-opt.ko{border-color:#0f3168;background:#fdeceb}
+.cz-course{background:#fff;border:2px solid #21b7cb;border-radius:16px;padding:12px 14px;margin:10px 0 4px}
+.cz-course .tag{display:inline-block;background:#e9f7fa;color:#0f3168;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px;margin-bottom:6px}
+.cz-course b{display:block;font:300 17px Tiempos Headline,Georgia,serif;margin-bottom:3px}
 .cz-course span{font-size:14px;color:#5b4f5f}
-.cz-chart{width:100%;height:150px;display:block;background:#fff;border:1px solid #ead9bf;border-radius:14px;margin:6px 0 10px}
+.cz-chart{width:100%;height:150px;display:block;background:#fff;border:1px solid #e9f7fa;border-radius:14px;margin:6px 0 10px}
 .cz-big{font-size:50px;text-align:center}
 .cz-list{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
-.cz-list li{background:#fff;border:1px solid #ead9bf;border-radius:12px;padding:8px 12px;font-size:14px;font-weight:700}
-.cz-list li span{color:#0b7a8e;font-weight:800;margin-right:6px}
+.cz-list li{background:#fff;border:1px solid #e9f7fa;border-radius:12px;padding:8px 12px;font-size:14px;font-weight:700}
+.cz-list li span{color:#0f3168;font-weight:800;margin-right:6px}
 @media (max-width:560px){ .cz-chip{font-size:12px;padding:6px 9px} .cz-bar{width:46px} .cz-h{font-size:20px} }
 `;
 
@@ -224,8 +224,8 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	function paintMenu(){
 		const x = menuCv.getContext("2d");
 		x.fillStyle = "#2c2f2b"; x.fillRect(0,0,512,300); x.strokeStyle = "#a07a4e"; x.lineWidth = 14; x.strokeRect(7,7,498,286);
-		x.fillStyle = "#f4ead6"; x.textAlign = "center"; x.font = "bold 46px Georgia, serif"; x.fillText("Le Comptoir", 256, 70);
-		x.textAlign = "left"; x.font = "34px Georgia, serif"; x.fillStyle = "#f4ead6";
+		x.fillStyle = "#f4ead6"; x.textAlign = "center"; x.font = "300 46px Tiempos Headline,Georgia,serif"; x.fillText("Le Comptoir", 256, 70);
+		x.textAlign = "left"; x.font = "300 34px Tiempos Headline,Georgia,serif"; x.fillStyle = "#f4ead6";
 		x.fillText("Café / cappuccino", 50, 150); x.fillText("Croissant", 50, 220);
 		x.textAlign = "right"; x.fillStyle = "#e9c27a"; x.fillText(euro(curPrice()), 462, 150); x.fillText(euro(ECO.croissantPrix), 462, 220);
 		menuTex.needsUpdate = true;
@@ -706,7 +706,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 				${r.amort ? `<tr><td>Amortissement du vélo cargo <small style="color:#8a7d86">(3 000 € étalés sur 3 ans)</small></td><td class="cz-neg">− ${euro(r.amort)}</td></tr>` : ""}
 				<tr class="tot"><td><b>Résultat</b></td><td class="${cls(r.resultat)}">${r.resultat >= 0 ? "+" : "−"} ${euro(Math.abs(r.resultat))}</td></tr>
 			</table>
-			<div class="cz-hint" style="background:#fff;border:1px solid #ead9bf;color:#5b4f5f;line-height:1.5">${tips.join("<br>")}</div>
+			<div class="cz-hint" style="background:#fff;border:1px solid #e9f7fa;color:#5b4f5f;line-height:1.5">${tips.join("<br>")}</div>
 			<button class="cz-go" data-a="next">Continuer</button>`);
 		// fin de la scène d'ouverture : la première matinée et son compte de résultat
 		if(S.day === 0) setTimeout(() => !closed && palier({ id:"comptoir", onEvent, openLead, quit:close,
@@ -804,7 +804,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		const x = cv.getContext("2d"), W = cv.width, H = cv.height, P = 34, maxN = Math.max(60, Math.ceil(fixe/Math.max(marge, .2)*1.6));
 		const maxV = Math.max(fixe*1.6, marge*maxN);
 		const X = n => P + (W - P - 12)*n/maxN, Y = v => H - P + 6 - (H - P - 12)*v/maxV;
-		x.clearRect(0,0,W,H); x.font = "bold 15px Nunito, sans-serif";
+		x.clearRect(0,0,W,H); x.font = "700 15px Inter,system-ui,sans-serif";
 		x.strokeStyle = "#ead9bf"; x.lineWidth = 2; x.beginPath(); x.moveTo(P, Y(0)); x.lineTo(W-8, Y(0)); x.moveTo(P, Y(0)); x.lineTo(P, 8); x.stroke();
 		x.strokeStyle = "#c4532f"; x.setLineDash([8,6]); x.beginPath(); x.moveTo(P, Y(fixe)); x.lineTo(W-8, Y(fixe)); x.stroke(); x.setLineDash([]);
 		x.fillStyle = "#c4532f"; x.fillText(`Salaires : ${Math.round(fixe)} €`, P + 6, Y(fixe) - 8);

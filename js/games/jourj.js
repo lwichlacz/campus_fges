@@ -9,10 +9,10 @@
        qui s'éclairent ou se ferment ;
    6 · le tableau des résultats : admis en AST1 ou en AST2.
    Écoles réelles citées comme débouchés ; personnes et questions fictives. Contenu à relire par l'équipe de la prépa. */
-import { stage3d, THREE } from "./stage3d.js?v=50ccfe85e2";
-import { makePerson } from "../kit.js?v=50ccfe85e2";
-import { jpoCard } from "./jpo.js?v=50ccfe85e2";
-import { palier } from "./palier.js?v=50ccfe85e2";
+import { stage3d, THREE } from "./stage3d.js?v=0c6917bfb6";
+import { makePerson } from "../kit.js?v=0c6917bfb6";
+import { jpoCard } from "./jpo.js?v=0c6917bfb6";
+import { palier } from "./palier.js?v=0c6917bfb6";
 
 const COURSES = {
 	tage:  ["Prépa 1", "Tests TAGE · logique", "Suites, calcul, raisonnement : des tests chronométrés qu'on apprend à apprivoiser, semaine après semaine."],
@@ -56,51 +56,51 @@ const JURY = [
 ];
 
 const CSS = `
-.jj{position:fixed;inset:0;z-index:40;background:#efe8da;font-family:Nunito,system-ui,sans-serif;color:#f3e9d2;overflow:hidden;animation:jjIn .4s ease both}
+.jj{position:fixed;inset:0;z-index:40;background:#e9f7fa;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#e9f7fa;overflow:hidden;animation:jjIn .4s ease both}
 @keyframes jjIn{from{opacity:0}}
 .jj canvas.jj-3d{position:absolute;inset:0;display:block;touch-action:none}
-.jj-x{position:absolute;right:12px;top:10px;z-index:4;width:40px;height:40px;border-radius:50%;border:1px solid #c9a24a;background:#14161c;color:#c9a24a;font-size:22px;cursor:pointer}
+.jj-x{position:absolute;right:12px;top:10px;z-index:4;width:40px;height:40px;border-radius:50%;border:1px solid #21b7cb;background:#14161c;color:#21b7cb;font-size:22px;cursor:pointer}
 .jj-top{position:absolute;left:12px;top:10px;z-index:3;display:flex;gap:6px;align-items:center;flex-wrap:wrap;max-width:calc(100% - 470px)}
-.jj-top span{background:#14161c;border:1px solid rgba(201,162,74,.35);border-radius:4px;padding:5px 10px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#8e8676}
-.jj-top span.done{color:#c9a24a}.jj-top span.now{background:#c9a24a;color:#14161c}
-.jj-timer{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:3;background:#14161c;border:2px solid #c9a24a;border-radius:6px;padding:4px 14px;font:900 22px/1.1 Georgia,serif;color:#fff;font-variant-numeric:tabular-nums}
+.jj-top span{background:#14161c;border:1px solid rgba(33,183,203,.35);border-radius:4px;padding:5px 10px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#8e8676}
+.jj-top span.done{color:#21b7cb}.jj-top span.now{background:#21b7cb;color:#14161c}
+.jj-timer{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:3;background:#14161c;border:2px solid #21b7cb;border-radius:6px;padding:4px 14px;font:300 22px/1.1 Tiempos Headline,Georgia,serif;color:#fff;font-variant-numeric:tabular-nums}
 .jj-timer.hot{color:#ff7a6a;border-color:#ff7a6a}
 .jj-timer:empty{display:none}
-.jj-card{position:absolute;right:14px;top:58px;bottom:14px;width:394px;z-index:3;overflow:auto;background:#14161c;border:1px solid rgba(201,162,74,.5);border-radius:4px;padding:18px;box-sizing:border-box;box-shadow:0 20px 50px rgba(0,0,0,.45);scrollbar-width:thin}
-.jj-k{font:800 10.5px Nunito,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#c9a24a}
-.jj-h{font:400 26px/1.15 Georgia,"Times New Roman",serif;color:#fff;margin:4px 0 10px}
+.jj-card{position:absolute;right:14px;top:58px;bottom:14px;width:394px;z-index:3;overflow:auto;background:#14161c;border:1px solid rgba(33,183,203,.5);border-radius:4px;padding:18px;box-sizing:border-box;box-shadow:0 20px 50px rgba(0,0,0,.45);scrollbar-width:thin}
+.jj-k{font:700 10.5px Inter,system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#21b7cb}
+.jj-h{font:300 26px/1.15 Tiempos Headline,Georgia,serif;color:#fff;margin:4px 0 10px}
 .jj-p{margin:0 0 10px;font-size:14px;line-height:1.55;color:#d8cfbb}
 .jj-p b{color:#fff}
-.jj-whisper{border-left:2px solid #c9a24a;padding:6px 0 6px 12px;margin:10px 0;font:italic 14px/1.45 Georgia,serif;color:#e8d9b0}
-.jj-whisper small{display:block;font:800 10px Nunito,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#c9a24a;font-style:normal}
-.jj-q{font:400 19px/1.35 Georgia,serif;color:#fff;margin:6px 0 10px}
+.jj-whisper{border-left:2px solid #21b7cb;padding:6px 0 6px 12px;margin:10px 0;font:italic 300 14px/1.45 Inter,system-ui,sans-serif;color:#e9f7fa}
+.jj-whisper small{display:block;font:700 10px Inter,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#21b7cb;font-style:normal}
+.jj-q{font:300 19px/1.35 Tiempos Headline,Georgia,serif;color:#fff;margin:6px 0 10px}
 .jj-opts{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.jj-opts button,.jj-list button{border:1px solid rgba(201,162,74,.5);background:transparent;color:#f3e9d2;border-radius:3px;padding:11px 10px;font:700 14.5px Nunito,sans-serif;cursor:pointer;text-align:left}
-.jj-opts button:hover,.jj-list button:hover{background:rgba(201,162,74,.12)}
+.jj-opts button,.jj-list button{border:1px solid rgba(33,183,203,.5);background:transparent;color:#e9f7fa;border-radius:3px;padding:11px 10px;font:700 14.5px Inter,system-ui,sans-serif;cursor:pointer;text-align:left}
+.jj-opts button:hover,.jj-list button:hover{background:rgba(33,183,203,.12)}
 .jj-opts button.ok{border-color:#7fd19b;color:#7fd19b}.jj-opts button.ko{border-color:#ff7a6a;color:#ff7a6a;text-decoration:line-through}
 .jj-list{display:grid;gap:7px}
-.jj-sent{font:400 18px/1.7 Georgia,serif;color:#fff;margin:8px 0}
-.jj-sent span{cursor:pointer;border-bottom:1px dotted rgba(201,162,74,.6);padding:0 1px}
-.jj-sent span:hover{background:rgba(201,162,74,.18)}
+.jj-sent{font:300 18px/1.7 Tiempos Headline,Georgia,serif;color:#fff;margin:8px 0}
+.jj-sent span{cursor:pointer;border-bottom:1px dotted rgba(33,183,203,.6);padding:0 1px}
+.jj-sent span:hover{background:rgba(33,183,203,.18)}
 .jj-sent span.ko{color:#ff7a6a;text-decoration:line-through}.jj-sent span.ok{color:#7fd19b}
 .jj-ok{color:#7fd19b;font-weight:800;font-size:13.5px;margin:6px 0}.jj-ko{color:#ff7a6a;font-weight:800;font-size:13.5px;margin:6px 0}
-.jj-go{display:block;width:100%;border:0;border-radius:3px;padding:13px;margin-top:12px;background:#c9a24a;color:#14161c;font:900 15px Nunito,sans-serif;letter-spacing:.04em;cursor:pointer}
+.jj-go{display:block;width:100%;border:0;border-radius:3px;padding:13px;margin-top:12px;background:#21b7cb;color:#14161c;font:700 15px Inter,system-ui,sans-serif;letter-spacing:.04em;cursor:pointer}
 .jj-go:disabled{opacity:.35}
-.jj-alt{display:block;width:100%;border:1px solid rgba(201,162,74,.5);border-radius:3px;padding:11px;margin-top:8px;background:transparent;color:#f3e9d2;font:800 14px Nunito,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
-.jj-course{border:1px solid rgba(201,162,74,.4);border-radius:3px;padding:9px 11px;margin:10px 0}
-.jj-course small{display:block;font:800 10px Nunito,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#c9a24a}
-.jj-course b{display:block;font:400 17px Georgia,serif;color:#fff}.jj-course span{font-size:13px;color:#b9b09c}
-.jj-stars{font-size:20px;letter-spacing:3px;color:#c9a24a}
+.jj-alt{display:block;width:100%;border:1px solid rgba(33,183,203,.5);border-radius:3px;padding:11px;margin-top:8px;background:transparent;color:#e9f7fa;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
+.jj-course{border:1px solid rgba(33,183,203,.4);border-radius:3px;padding:9px 11px;margin:10px 0}
+.jj-course small{display:block;font:700 10px Inter,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#21b7cb}
+.jj-course b{display:block;font:300 17px Tiempos Headline,Georgia,serif;color:#fff}.jj-course span{font-size:13px;color:#b9b09c}
+.jj-stars{font-size:20px;letter-spacing:3px;color:#21b7cb}
 .jj-cards{display:grid;gap:7px;margin:8px 0}
-.jj-cards button{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid rgba(201,162,74,.5);background:linear-gradient(135deg,#1d2028,#14161c);color:#f3e9d2;border-radius:6px;padding:10px 12px;font:800 14px Nunito,sans-serif;cursor:pointer}
+.jj-cards button{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid rgba(33,183,203,.5);background:linear-gradient(135deg,#1d2028,#14161c);color:#e9f7fa;border-radius:6px;padding:10px 12px;font:700 14px Inter,system-ui,sans-serif;cursor:pointer}
 .jj-cards button i{font-style:normal;font-size:24px}
 .jj-cards button small{display:block;font-weight:600;font-size:12px;color:#b9b09c}
 .jj-cards button:disabled{opacity:.3}
 .jj-faces{display:flex;gap:8px;margin:8px 0}
-.jj-faces div{flex:1;text-align:center;border:1px solid rgba(201,162,74,.3);border-radius:4px;padding:6px 2px;font-size:11px;color:#b9b09c}
+.jj-faces div{flex:1;text-align:center;border:1px solid rgba(33,183,203,.3);border-radius:4px;padding:6px 2px;font-size:11px;color:#b9b09c}
 .jj-faces div b{display:block;font-size:26px}
 .jj-tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0}
-.jj-tbl td{padding:6px 3px;border-top:1px solid rgba(201,162,74,.2)}.jj-tbl td:last-child{text-align:right;color:#fff;font-weight:800}
+.jj-tbl td{padding:6px 3px;border-top:1px solid rgba(33,183,203,.2)}.jj-tbl td:last-child{text-align:right;color:#fff;font-weight:800}
 @media (max-width:759px){
 	.jj-card{left:0;right:0;top:auto;bottom:0;width:auto;max-height:55%;border-radius:10px 10px 0 0}
 	.jj-top{display:none}
@@ -137,7 +137,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 	// l'horloge du hall : ses aiguilles suivent le chronomètre de l'épreuve
 	const clock = new THREE.Group(); clock.position.set(0, 10, -19.5); scene.add(clock);
 	mesh(G(new THREE.CylinderGeometry(3.2, 3.2, .3, 48)), "#14161c", 0, 0, 0, clock).rotation.x = Math.PI/2;
-	const face = W.canvasTex(512, 512, (x, w, h) => { x.fillStyle = "#fbf6ea"; x.beginPath(); x.arc(256, 256, 250, 0, 7); x.fill(); x.fillStyle = "#14161c"; x.font = "700 52px Georgia, serif"; x.textAlign = "center"; x.textBaseline = "middle"; ["XII", "III", "VI", "IX"].forEach((t, i) => { const a = i*Math.PI/2 - Math.PI/2; x.fillText(t, 256 + Math.cos(a)*190, 256 + Math.sin(a)*190); }); for(let i = 0; i < 60; i++){ const a = i/60*Math.PI*2; x.fillRect(256 + Math.cos(a)*228 - 2, 256 + Math.sin(a)*228 - 2, i % 5 ? 3 : 7, i % 5 ? 3 : 7); } });
+	const face = W.canvasTex(512, 512, (x, w, h) => { x.fillStyle = "#fbf6ea"; x.beginPath(); x.arc(256, 256, 250, 0, 7); x.fill(); x.fillStyle = "#14161c"; x.font = "300 52px Tiempos Headline,Georgia,serif"; x.textAlign = "center"; x.textBaseline = "middle"; ["XII", "III", "VI", "IX"].forEach((t, i) => { const a = i*Math.PI/2 - Math.PI/2; x.fillText(t, 256 + Math.cos(a)*190, 256 + Math.sin(a)*190); }); for(let i = 0; i < 60; i++){ const a = i/60*Math.PI*2; x.fillRect(256 + Math.cos(a)*228 - 2, 256 + Math.sin(a)*228 - 2, i % 5 ? 3 : 7, i % 5 ? 3 : 7); } });
 	mesh(G(new THREE.CircleGeometry(3, 48)), new THREE.MeshBasicMaterial({ map:face }), 0, 0, .17, clock);
 	const handM = mesh(G(new THREE.BoxGeometry(.12, 2.4, .05)), "#14161c", 0, 1.1, .22, clock); const minHand = new THREE.Group(); minHand.position.z = .2; clock.add(minHand); minHand.add(handM);
 	const secHand = new THREE.Group(); secHand.position.z = .26; clock.add(secHand); mesh(G(new THREE.BoxGeometry(.05, 2.7, .03)), "#c0392b", 0, 1.2, 0, secHand);
@@ -160,7 +160,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 	function drawFrise(list){
 		frise.redraw((x, w, h) => {
 			x.fillStyle = "#14161c"; x.fillRect(0, 0, w, h); x.strokeStyle = "#c9a24a"; x.lineWidth = 6; x.beginPath(); x.moveTo(60, h/2); x.lineTo(w - 60, h/2); x.stroke();
-			x.textAlign = "center"; list.forEach((e, i) => { const X = 160 + i*(w - 320)/4; x.fillStyle = "#c9a24a"; x.beginPath(); x.arc(X, h/2, 16, 0, 7); x.fill(); x.fillStyle = "#fff"; x.font = "700 46px Georgia, serif"; x.fillText(e[2], X, h/2 - 50); x.font = "600 26px Nunito, sans-serif"; x.fillStyle = "#e8d9b0"; const words = e[1].split(" "); const half = Math.ceil(words.length/2); x.fillText(words.slice(0, half).join(" "), X, h/2 + 60); x.fillText(words.slice(half).join(" "), X, h/2 + 92); });
+			x.textAlign = "center"; list.forEach((e, i) => { const X = 160 + i*(w - 320)/4; x.fillStyle = "#c9a24a"; x.beginPath(); x.arc(X, h/2, 16, 0, 7); x.fill(); x.fillStyle = "#fff"; x.font = "300 46px Tiempos Headline,Georgia,serif"; x.fillText(e[2], X, h/2 - 50); x.font = "700 26px Inter,system-ui,sans-serif"; x.fillStyle = "#e8d9b0"; const words = e[1].split(" "); const half = Math.ceil(words.length/2); x.fillText(words.slice(0, half).join(" "), X, h/2 + 60); x.fillText(words.slice(half).join(" "), X, h/2 + 92); });
 		});
 	}
 	drawFrise([]);
@@ -289,7 +289,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 		const render = () => {
 			const m = MAIL[i];
 			show(`<div class="jj-h">English</div><p class="jj-p">Complete the email to the internship manager.</p>
-				<p class="jj-k">Blank ${i + 1} / 3</p><p class="jj-q">${m.t.replace("___", "<b style='color:#c9a24a'>_____</b>")}</p>
+				<p class="jj-k">Blank ${i + 1} / 3</p><p class="jj-q">${m.t.replace("___", "<b style='color:#21b7cb'>_____</b>")}</p>
 				<div class="jj-opts">${shuffle(m.a).map(a => `<button data-o="${a}">${a}</button>`).join("")}</div><div data-live></div>`);
 			let tried = false;
 			card.querySelector(".jj-opts").onclick = e => {
@@ -339,9 +339,9 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 		const ast2 = total >= max*.72;
 		const names = ["A. Benali", "C. Dubois", "M. Lefèvre", "TOI", "J. Martin", "S. Nguyen", "L. Petit", "R. Garcia", "E. Moreau", "K. Diallo"].sort();
 		results.redraw((x, w, h) => {
-			x.fillStyle = "#14161c"; x.fillRect(0, 0, w, h); x.fillStyle = "#c9a24a"; x.textAlign = "center"; x.font = "700 56px Georgia, serif"; x.fillText("Liste des admis", w/2, 110);
-			x.font = "600 30px Nunito, sans-serif"; x.fillStyle = "#e8d9b0"; x.fillText(ast2 ? "Admission sur titre · AST2" : "Admission sur titre · AST1", w/2, 160);
-			names.forEach((n, i) => { const y = 260 + i*95; x.fillStyle = n === "TOI" ? "#c9a24a" : "rgba(255,255,255,.06)"; x.fillRect(80, y - 60, w - 160, 80); x.fillStyle = n === "TOI" ? "#14161c" : "#fff"; x.font = `${n === "TOI" ? 900 : 600} 44px Nunito, sans-serif`; x.textAlign = "left"; x.fillText(n === "TOI" ? "★ TOI" : n, 120, y); });
+			x.fillStyle = "#14161c"; x.fillRect(0, 0, w, h); x.fillStyle = "#c9a24a"; x.textAlign = "center"; x.font = "300 56px Tiempos Headline,Georgia,serif"; x.fillText("Liste des admis", w/2, 110);
+			x.font = "700 30px Inter,system-ui,sans-serif"; x.fillStyle = "#e8d9b0"; x.fillText(ast2 ? "Admission sur titre · AST2" : "Admission sur titre · AST1", w/2, 160);
+			names.forEach((n, i) => { const y = 260 + i*95; x.fillStyle = n === "TOI" ? "#c9a24a" : "rgba(255,255,255,.06)"; x.fillRect(80, y - 60, w - 160, 80); x.fillStyle = n === "TOI" ? "#14161c" : "#fff"; x.font = `${n === "TOI" ? 900 : 600} 44px Inter,system-ui,sans-serif`; x.textAlign = "left"; x.fillText(n === "TOI" ? "★ TOI" : n, 120, y); });
 		});
 		play("win");
 		const s = S.stars, mention = s >= 13 ? "Très bien" : s >= 10 ? "Bien" : "Assez bien";
