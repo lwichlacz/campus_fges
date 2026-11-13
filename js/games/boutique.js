@@ -6,8 +6,8 @@
    ceux qui font demi-tour sont des ventes perdues. Chiffres simplifiés et illustratifs, à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=d3fe9a7862";
-import { palier } from "./palier.js?v=d3fe9a7862";
+import { jpoCard } from "./jpo.js?v=50ccfe85e2";
+import { palier } from "./palier.js?v=50ccfe85e2";
 
 const COURSES = {
 	ux:    ["UX design, UI et accessibilité", "Observer les utilisateurs, simplifier les parcours, rendre un site lisible par tous (contrastes, formulaires, WCAG)."],
@@ -361,8 +361,9 @@ function world(canvas){
 	box(1.2, .03, 2.2, "#c9bfe6", -11.5, .14, -.4);
 	// catalogue : étagères pleines de sweats pliés, table centrale
 	for(const x of [-4, -2.1, -.2]){
-		box(1.7, 2.6, .7, "#ffffff", x, 0, -6.8);
-		for(let s = 0; s < 3; s++){ box(1.6, .06, .66, "#e9e5f5", x, .4 + s*.8, -6.75); for(let n = 0; n < 3; n++) box(.42, .3, .5, SW[(s*3 + n + Math.round(x)) % SW.length], x - .5 + n*.5, .46 + s*.8, -6.7); }
+		// un meuble ouvert (fond, côtés, dessus) : les sweats se voient au lieu d'être noyés dans un bloc plein
+		box(1.7, 2.6, .06, "#ffffff", x, 0, -7.12); for(const dx of [-.82, .82]) box(.06, 2.6, .7, "#ffffff", x + dx, 0, -6.8); box(1.7, .06, .7, "#ffffff", x, 2.54, -6.8);
+		for(let s = 0; s < 3; s++){ box(1.58, .06, .64, "#e9e5f5", x, .4 + s*.8, -6.78); for(let n = 0; n < 3; n++) box(.42, .3, .5, SW[(s*3 + n + Math.round(x)) % SW.length], x - .5 + n*.5, .46 + s*.8, -6.8); }
 	}
 	box(2.6, .8, 1.5, "#ead8c0", -2.1, 0, -1.6);
 	for(let i = 0; i < 4; i++) box(.55, .3, .45, SW[i + 1], -3 + i*.6, .8, -1.6);
@@ -545,8 +546,10 @@ function world(canvas){
 		}
 		controls.update();
 		renderer.render(scene, camera);
-		for(const t of tags){ pj.copy(t.pos).project(camera); t.el.style.transform = `translate(${((pj.x + 1)/2*VW).toFixed(1)}px,${((1 - pj.y)/2*VH).toFixed(1)}px) translate(-50%,-100%)`; }
+		if(safeW !== VW){ const kp = canvas.parentNode.querySelector(".eb-kpis"); if(kp && kp.offsetHeight){ safe = kp.offsetTop + kp.offsetHeight + 46; safeW = VW; } }      // jamais sous la barre des chiffres (mesurée une fois par largeur)
+		for(const t of tags){ pj.copy(t.pos).project(camera); t.el.style.transform = `translate(${((pj.x + 1)/2*VW).toFixed(1)}px,${Math.max(safe, (1 - pj.y)/2*VH).toFixed(1)}px) translate(-50%,-100%)`; }
 	}
+	let safe = 0, safeW = -1;
 	function resize(w, h){
 		VW = w; VH = h;
 		renderer.setSize(w, h, false); canvas.style.width = w + "px"; canvas.style.height = h + "px";

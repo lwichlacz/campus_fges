@@ -9,10 +9,10 @@
      - au comité, la pièce du dossier qu'on prend sur la table, puis le chiffre qu'on montre du doigt.
    Le dossier, les chiffres et les cours sont dans ruee-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=d3fe9a7862";
-import { jpoCard } from "./jpo.js?v=d3fe9a7862";
-import { palier } from "./palier.js?v=d3fe9a7862";
-import { COURSES, FUND, CURVE, NEWS, BCE, REG, ORDERS, LYS, KRACH, PIECES, BOARD, QUESTIONS, fr, pct, hhmm, at } from "./ruee-data.js?v=d3fe9a7862";
+import { makePerson, std, box, cyl } from "../kit.js?v=50ccfe85e2";
+import { jpoCard } from "./jpo.js?v=50ccfe85e2";
+import { palier } from "./palier.js?v=50ccfe85e2";
+import { COURSES, FUND, CURVE, NEWS, BCE, REG, ORDERS, LYS, KRACH, PIECES, BOARD, QUESTIONS, fr, pct, hhmm, at } from "./ruee-data.js?v=50ccfe85e2";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -113,7 +113,7 @@ export function openRuee({ formation, audio, isFav, toggleFav, onClose, onEvent,
 	for(let x = -7.5; x <= 7.5; x += 1.5) box(scene, .08, 2.8, .12, MAT.frame, x, .85, -4.15, 0, false);
 	box(scene, 16, .06, .12, MAT.frame, 0, 2.2, -4.15, 0, false);
 	for(let i = 0; i < 14; i++){ const h = .5 + ((i*37) % 11)/10; box(scene, .7 + (i % 3)*.25, h, .3, i % 2 ? MAT.city : MAT.city2, -7 + i*1.1, .9, -5.4, 0, false); }
-	box(scene, .25, 1.9, .25, MAT.city2, 2.6, .9, -5.3, 0, false);      // un beffroi au loin
+	box(scene, .25, 1.9, .25, MAT.city2, 2.6, .9, -5.75, 0, false);      // un beffroi au loin
 	box(scene, .2, 6, 10, MAT.wall, -7, 0, -1); box(scene, .2, 6, 10, MAT.wall, 7, 0, -1);
 	function desk(x, z, w = 2.8){
 		box(scene, w, .06, 1.3, MAT.oak, x, .98, z);
@@ -423,7 +423,7 @@ export function openRuee({ formation, audio, isFav, toggleFav, onClose, onEvent,
 			if(camera.aspect >= 1){ c.add(new THREE.Vector3(v.n.z, 0, -v.n.x).normalize().multiplyScalar(v.w*.3)); w = v.w*1.6; }
 			else { c.y -= v.h*.62; h = v.h*2.25; }
 		}
-		const top = 70/innerHeight;       // place pour la barre du haut
+		const top = (camera.aspect >= 1 ? 135 : 70)/innerHeight;       // place pour la barre du haut (et, sur ordinateur, la bulle d'Inès)
 		const d = Math.max((w/2)/Math.tan(hf/2), (h/2)/(Math.tan(vf/2)*(1 - top*1.4)));
 		const scr = S.focus === "L" || S.focus === "R";
 		camGoalP.copy(c).addScaledVector(v.n, d); if(scr) camGoalP.y += .12;

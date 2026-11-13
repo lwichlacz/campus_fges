@@ -5,9 +5,9 @@
    grossissement, tracer la mauvaise courbe), puis l'atelier de méthode montre comment faire : c'est le cœur de l'APES,
    apprendre à apprendre. La valeur de g, trouvée au pendule, se retrouve à la fin sur la courbe.
    Personnes fictives ; valeurs simplifiées. Contenu à relire par l'équipe de l'APES. */
-import { stage3d, THREE } from "./stage3d.js?v=d3fe9a7862";
-import { jpoCard } from "./jpo.js?v=d3fe9a7862";
-import { palier } from "./palier.js?v=d3fe9a7862";
+import { stage3d, THREE } from "./stage3d.js?v=50ccfe85e2";
+import { jpoCard } from "./jpo.js?v=50ccfe85e2";
+import { palier } from "./palier.js?v=50ccfe85e2";
 
 const COURSES = {
 	chimie: ["Chimie", "Dosages, concentrations, équivalence : la chimie des solutions, en TP comme en cours."],

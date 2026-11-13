@@ -8,9 +8,9 @@
    4 · agronomie : une rotation sur trois ans, avec une jauge d'azote du sol ;
    5 · l'oral du concours, puis le choix entre école vétérinaire et école d'agronomie.
    Personnes et animaux fictifs ; contenus simplifiés, à relire par l'équipe de la prépa. */
-import { stage3d, THREE } from "./stage3d.js?v=d3fe9a7862";
-import { jpoCard } from "./jpo.js?v=d3fe9a7862";
-import { palier } from "./palier.js?v=d3fe9a7862";
+import { stage3d, THREE } from "./stage3d.js?v=50ccfe85e2";
+import { jpoCard } from "./jpo.js?v=50ccfe85e2";
+import { palier } from "./palier.js?v=50ccfe85e2";
 
 const COURSES = {
 	bio:   ["Biologie", "Physiologie, métabolisme, microbiologie : comprendre le vivant pour le soigner. Première matière du concours B."],
@@ -125,7 +125,7 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 	box(4, 3.6, .2, "#e8dccb", 0, 0, 4.55, barn);
 	const sign = label("Clinique des Prés · vétérinaire", { size:.026, bg:"#0f6b6b", fg:"#fff" }); sign.position.set(0, 9.6, 4.6); barn.add(sign);
 	for(let i = 0; i < 9; i++){ box(.2, 1.2, .2, "#8a6a4a", 10 + i*2.5, 0, 6); } box(20, .15, .1, "#8a6a4a", 20, 1, 6); box(20, .15, .1, "#8a6a4a", 20, .6, 6);
-	for(const [x, z] of [[-20, 4], [-16, -14], [22, -12], [18, 14], [-24, -4]]){ cyl(.3, .4, 2, "#6b4a2e", x, 0, z); mesh(G(new THREE.IcosahedronGeometry(2.2, 0)), "#5d8a3a", x, 3.4, z); }
+	for(const [x, z] of [[-20, 4], [-16, -14], [26, -5], [18, 14], [-24, -4]]){ cyl(.3, .4, 2, "#6b4a2e", x, 0, z); mesh(G(new THREE.IcosahedronGeometry(2.2, 0)), "#5d8a3a", x, 3.4, z); }
 	// la table d'examen et Pixel, le chien
 	const exam = new THREE.Group(); exam.position.set(4.5, 0, -2); scene.add(exam);
 	box(4, .2, 2.2, "#c9d2d6", 0, 2.6, 0, exam); for(const [x, z] of [[-1.8, -.9], [1.8, -.9], [-1.8, .9], [1.8, .9]]) box(.15, 2.6, .15, "#8a949a", x, 0, z, exam);

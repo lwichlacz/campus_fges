@@ -8,10 +8,10 @@
    4 · statistique et économétrie : une corrélation trompeuse, et la variable cachée qui l'explique ;
    puis les débouchés : ENS Paris-Saclay, magistères, écoles.
    Modèles simplifiés ; contenu à relire par l'équipe de la prépa. */
-import { stage3d, THREE } from "./stage3d.js?v=d3fe9a7862";
-import { makePerson } from "../kit.js?v=d3fe9a7862";
-import { jpoCard } from "./jpo.js?v=d3fe9a7862";
-import { palier } from "./palier.js?v=d3fe9a7862";
+import { stage3d, THREE } from "./stage3d.js?v=50ccfe85e2";
+import { makePerson } from "../kit.js?v=50ccfe85e2";
+import { jpoCard } from "./jpo.js?v=50ccfe85e2";
+import { palier } from "./palier.js?v=50ccfe85e2";
 
 const COURSES = {
 	macro: ["Macroéconomie", "Revenu, consommation, multiplicateur : comment une dépense se propage dans toute l'économie."],
@@ -114,7 +114,7 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 		const g = new THREE.Group(); g.position.set(x, y, .5); mach.add(g);
 		mesh(G(new THREE.BoxGeometry(w, h, 1.2)), glass, 0, h/2, 0, g);
 		const water = mesh(G(new THREE.BoxGeometry(w - .15, 1, 1.05)), waterM, 0, 0, 0, g);
-		const l = label(name, { size:.022, bg:"#0d2a4a", fg:"#eaf2ff", font:"'Courier New', monospace" }); l.position.set(0, h + .5, .6); g.add(l);
+		const l = label(name, { size:.022, bg:"#0d2a4a", fg:"#eaf2ff", font:"'Courier New', monospace" }); l.center.set(.5, 0); l.position.set(0, h + .3, .6); g.add(l);      // ancrée par le bas : l'étiquette se pose sur le réservoir sans le masquer
 		const T = { g, water, h, level:start, target:start, set(v){ T.target = v; } };
 		return T;
 	}

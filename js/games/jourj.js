@@ -9,10 +9,10 @@
        qui s'éclairent ou se ferment ;
    6 · le tableau des résultats : admis en AST1 ou en AST2.
    Écoles réelles citées comme débouchés ; personnes et questions fictives. Contenu à relire par l'équipe de la prépa. */
-import { stage3d, THREE } from "./stage3d.js?v=d3fe9a7862";
-import { makePerson } from "../kit.js?v=d3fe9a7862";
-import { jpoCard } from "./jpo.js?v=d3fe9a7862";
-import { palier } from "./palier.js?v=d3fe9a7862";
+import { stage3d, THREE } from "./stage3d.js?v=50ccfe85e2";
+import { makePerson } from "../kit.js?v=50ccfe85e2";
+import { jpoCard } from "./jpo.js?v=50ccfe85e2";
+import { palier } from "./palier.js?v=50ccfe85e2";
 
 const COURSES = {
 	tage:  ["Prépa 1", "Tests TAGE · logique", "Suites, calcul, raisonnement : des tests chronométrés qu'on apprend à apprivoiser, semaine après semaine."],
@@ -150,7 +150,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 		box(3.2, .12, 1.8, "#6b4a2e", 0, 2.4, 0, g); for(const [x, z] of [[-1.4, -.7], [1.4, -.7], [-1.4, .7], [1.4, .7]]) box(.1, 2.4, .1, "#3a2a1a", x, 0, z, g);
 		box(2.2, .02, 1.4, "#fbf8f0", 0, 2.52, 0, g);
 		if(r === 2 && c === 2) myDesk = g;
-		else if((r + c) % 3){ const p = makePerson(g, true, (r*5 + c) % 2 ? "student" : "pro"); p.g.position.set(0, .1, 1.2); p.g.rotation.y = Math.PI; }
+		else if((r + c) % 3){ const p = makePerson(g, true, (r*5 + c) % 2 ? "student" : "pro"); p.g.scale.setScalar(2.1); p.g.position.set(0, .1, 1.65); p.g.rotation.y = Math.PI; }      // le hall est bâti à l'échelle 2 (tables de 2,4 m) : les candidats aussi
 	}
 	const lamp = new THREE.PointLight("#ffd27a", 30, 8, 1.5); lamp.position.set(0, 5, 0); myDesk.add(lamp);
 	{ const l = label("Ta table · n° 47", { size:.024, bg:"#14161c", fg:"#c9a24a" }); l.position.set(0, 4.2, 0); myDesk.add(l); }
@@ -168,7 +168,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 	const juryG = new THREE.Group(); juryG.position.set(-18, 0, -12); juryG.rotation.y = .5; scene.add(juryG);
 	box(9, .2, 2.4, "#3a2a1a", 0, 2.6, 0, juryG); box(9, 1.4, .2, "#3a2a1a", 0, 1.2, 1.1, juryG); for(const x of [-4.3, 4.3]) box(.2, 2.6, 2.2, "#3a2a1a", x, 0, 0, juryG);
 	box(9, .05, 2.2, "#1f5a3a", 0, 2.8, 0, juryG);
-	const jurors = [-3, 0, 3].map((x, i) => { const p = makePerson(juryG, true, i === 1 ? "senior" : "pro"); p.g.position.set(x, .1, -1); const l = label(["Président", "DRH", "Ancien élève"][i], { size:.022, bg:"#14161c", fg:"#c9a24a" }); l.position.set(x, 4.4, -1); juryG.add(l); return p; });
+	const jurors = [-3, 0, 3].map((x, i) => { const p = makePerson(juryG, true, i === 1 ? "senior" : "pro"); p.g.scale.setScalar(2.1); p.g.position.set(x, .1, -2); const l = label(["Président", "DRH", "Ancien élève"][i], { size:.022, bg:"#14161c", fg:"#c9a24a" }); l.position.set(x, 5.4, -2); juryG.add(l); return p; });
 	const chair = new THREE.Group(); chair.position.set(0, 0, 3.4); juryG.add(chair); box(1.2, 1.4, 1.2, "#6b4a2e", 0, 0, 0, chair);
 	// le tableau des résultats
 	const results = W.canvasTex(1024, 1300, (x, w, h) => { x.fillStyle = "#14161c"; x.fillRect(0, 0, w, h); });
@@ -305,7 +305,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 	/* ---------- 5 · l'entretien de personnalité ---------- */
 	function oral(){
 		stage("oral", "5 · L'entretien");
-		W.fly(new THREE.Vector3(-18, 3.6, -12), 16, .98, .5);
+		W.fly(new THREE.Vector3(-18, 3.4, -12), 15, 1.2, .5);      // assez bas pour voir le visage des jurés au-dessus de la table
 		let i = 0, score = 0;
 		const mood = [0, 0, 0];
 		const faces = () => `<div class="jj-faces">${["Président", "DRH", "Ancien élève"].map((n, k) => `<div><b>${mood[k] > 0 ? "🙂" : mood[k] < 0 ? "😒" : "😐"}</b>${n}</div>`).join("")}</div>`;

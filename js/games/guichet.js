@@ -8,10 +8,10 @@
    comparer des pièces, compter des jours ouvrés, régler le simulateur, couper un budget, maintenir « Stop ».
    Les contenus (répliques, chiffres, indices, cours) sont dans guichet-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=d3fe9a7862";
-import { jpoCard } from "./jpo.js?v=d3fe9a7862";
-import { palier } from "./palier.js?v=d3fe9a7862";
-import { COURSES, CLIENTS, NOTE, PINS, ALERTS, SUSPECTS, CULPRIT, IMMO, immoCalc, immoBest, euro } from "./guichet-data.js?v=d3fe9a7862";
+import { makePerson, std, box, cyl } from "../kit.js?v=50ccfe85e2";
+import { jpoCard } from "./jpo.js?v=50ccfe85e2";
+import { palier } from "./palier.js?v=50ccfe85e2";
+import { COURSES, CLIENTS, NOTE, PINS, ALERTS, SUSPECTS, CULPRIT, IMMO, immoCalc, immoBest, euro } from "./guichet-data.js?v=50ccfe85e2";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -252,7 +252,9 @@ export function openGuichet({ formation, audio, isFav, toggleFav, onClose, onEve
 
 	function texLabel(text, { bg = "#0f3168", fg = "#fff", size = 54, w = 512, h = 128 } = {}){
 		const c = document.createElement("canvas"); c.width = w; c.height = h; const x = c.getContext("2d");
-		x.fillStyle = bg; x.fillRect(0, 0, w, h); x.fillStyle = fg; x.font = `900 ${size}px Nunito, system-ui, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(text, w/2, h/2 + 2);
+		x.fillStyle = bg; x.fillRect(0, 0, w, h); x.fillStyle = fg;
+		do x.font = `900 ${size}px Nunito, system-ui, sans-serif`; while(x.measureText(text).width > w*.9 && --size > 12);      // le texte tient toujours dans l'enseigne
+		x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(text, w/2, h/2 + 2);
 		const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 	}
 	const signM = new THREE.MeshBasicMaterial({ map:texLabel("Ton agence · Lambersart", { bg:"#0f3168", size:46 }) });
@@ -260,20 +262,20 @@ export function openGuichet({ formation, audio, isFav, toggleFav, onClose, onEve
 	const g2M = new THREE.MeshBasicMaterial({ map:texLabel("Guichet 2", { bg:"#2b3a52", size:60, w:256 }) });
 	const g2 = new THREE.Mesh(new THREE.PlaneGeometry(1.4, .7), g2M); g2.position.set(-6, 3.2, -6.88); scene.add(g2);
 	const tickM = new THREE.MeshBasicMaterial({ map:texLabel("N° 041", { bg:"#111a2b", fg:"#ff7a3d", size:80, w:256 }) });
-	const tick = new THREE.Mesh(new THREE.PlaneGeometry(1.6, .8), tickM); tick.position.set(-3.6, 4.4, -6.88); scene.add(tick);
+	const tick = new THREE.Mesh(new THREE.PlaneGeometry(1.6, .8), tickM); tick.position.set(-3.9, 4.4, -6.88); scene.add(tick);
 	function setTicket(n){ tickM.map.dispose(); tickM.map = texLabel("N° 0" + n, { bg:"#111a2b", fg:"#ff7a3d", size:80, w:256 }); $("#gqTicket").textContent = "Ticket n° 0" + n; }
 
 	/* ---------- les clients ---------- */
 	const AT = new THREE.Vector3(0, 0, -.35), EXIT = new THREE.Vector3(-8, 0, -1.2);
-	const qPos = i => new THREE.Vector3(3 + i*1.25, 0, -3.6);
+	const qPos = i => new THREE.Vector3(3 + i*1.35, 0, -3.6);
 	const people = CLIENTS.map((c, i) => c.kinds.map((k, j) => {
-		const p = makePerson(scene, false, k); const pos = qPos(i).add(new THREE.Vector3(j*.55, 0, j*.4));
+		const p = makePerson(scene, false, k); const pos = qPos(i).add(new THREE.Vector3(j*.15, 0, -j*.75));
 		p.g.position.copy(pos); p.g.rotation.y = -Math.PI/2; p.target = pos.clone(); p.walk = 0; return p;
 	}));
 	const stranger = makePerson(scene, false, "pro"); stranger.g.position.set(-6, 0, -4.2); stranger.g.visible = false; stranger.target = stranger.g.position.clone();
 	function goTo(p, v, face){ p.target = v.clone(); p.face = face; }
 	function advanceQueue(from){
-		people.forEach((grp, i) => { if(i < from) return; grp.forEach((p, j) => goTo(p, qPos(i - from).add(new THREE.Vector3(j*.55, 0, j*.4)), -Math.PI/2)); });
+		people.forEach((grp, i) => { if(i < from) return; grp.forEach((p, j) => goTo(p, qPos(i - from).add(new THREE.Vector3(j*.15, 0, -j*.75)), -Math.PI/2)); });
 	}
 	function headOf(ci){ const g = people[ci]; const v = new THREE.Vector3(); g.forEach(p => v.add(p.g.position)); v.divideScalar(g.length); v.y = 2.75; return v; }
 
@@ -282,8 +284,8 @@ export function openGuichet({ formation, audio, isFav, toggleFav, onClose, onEve
 	function resize(){
 		const w = innerWidth, h = innerHeight; if(!w || !h) return;      // le volet du navigateur peut annoncer 0 px à l'ouverture
 		vw = w; vh = h; const port = h > w;
-		renderer.setSize(w, h, false); camera.aspect = w/h; camera.fov = port ? 66 : 42; camera.updateProjectionMatrix();
-		camera.position.set(port ? 1 : .9, port ? 4.2 : 3.9, port ? 7.8 : 6.9); camera.lookAt(port ? .8 : .6, 1.5, -2.2);
+		renderer.setSize(w, h, false); camera.aspect = w/h; camera.fov = port ? 66 : 49; camera.updateProjectionMatrix();
+		camera.position.set(port ? 1 : .9, port ? 4.2 : 4.1, port ? 7.8 : 7.2); camera.lookAt(port ? .8 : .6, port ? 1.5 : 2.1, -2.2);      // en paysage, l'enseigne de l'agence reste entière au-dessus du simulateur
 	}
 	resize(); addEventListener("resize", resize);
 	const toScreen = v => { const p = v.clone().project(camera); return { x:(p.x + 1)/2*innerWidth, y:(1 - p.y)/2*innerHeight }; };

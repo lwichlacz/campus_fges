@@ -12,9 +12,9 @@
    Commune, personnes et chiffres sont fictifs. Programme de la licence et contenus à relire par l'équipe pédagogique. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { makePerson, std } from "../kit.js?v=d3fe9a7862";
-import { jpoCard } from "./jpo.js?v=d3fe9a7862";
-import { palier } from "./palier.js?v=d3fe9a7862";
+import { makePerson, std } from "../kit.js?v=50ccfe85e2";
+import { jpoCard } from "./jpo.js?v=50ccfe85e2";
+import { palier } from "./palier.js?v=50ccfe85e2";
 
 const COURSES = {
 	enq:   ["L2", "Méthodes d'enquête", "Un échantillon doit ressembler à la population : âges, activités, horaires. Sinon, l'enquête dit ce qu'on veut entendre."],
@@ -275,9 +275,9 @@ export function openMarquelle({ formation, audio, isFav, toggleFav, onClose, onE
 	const houseAt = [];
 	for(let x = -21; x <= 21; x += 4.2) for(const z of [-21, 21]) houseAt.push([x, z]);
 	for(let z = -16; z <= 16; z += 4.2) for(const x of [-21.5, 21.5]) houseAt.push([x, z]);
-	houseAt.push([-4.5, -15], [4.5, 15], [-3.5, 14.5], [3.5, -21]);
+	houseAt.push([-7.5, -15.5], [4.5, 15], [-3.5, 14.5]);      /* à l'écart de la mairie (9 m de large, centrée en x = 0) */
 	houseAt.forEach(([x, z], i) => { if(Math.abs(z) < 3 && Math.abs(x) > 20) return; const h = 2.2 + (i % 3)*.5; box(3, h, 3, houseCols[i % 5], x, 0, z, town); roof(3.2, 3.2, 1.3, roofCols[i % 4], x, h, z, town); });
-	const trees = [[-6, 10], [6, 11], [-17, -10], [17, 4], [-4, -12], [11, -14], [-11, 3], [19, -18], [-19, 7], [2, 19]];
+	const trees = [[-6, 10], [6, 11], [-17, -10], [17, 4], [-4, -12], [11, -14], [19, -18], [-19, 7], [1.5, 17.4]];
 	for(const [x, z] of trees){ mesh(G(new THREE.CylinderGeometry(.15, .2, 1.2, 6)), M("#6b4a2e"), x, .6, z); mesh(G(new THREE.IcosahedronGeometry(1.1, 0)), M("#4f7a45"), x, 1.9, z); }
 
 	/* --- les habitants --- */
@@ -285,16 +285,19 @@ export function openMarquelle({ formation, audio, isFav, toggleFav, onClose, onE
 		const p = makePerson(scene, false, kind); p.g.scale.multiplyScalar(1.45);
 		const hit = new THREE.Mesh(G(new THREE.CylinderGeometry(.7, .7, 2.6, 8)), new THREE.MeshBasicMaterial({ visible:false })); hit.position.y = 1.2; p.g.add(hit);
 		const mark = label("✓", { bg:"#2f6b45", fg:"#fff", size:.026 }); mark.position.y = 2.9; mark.visible = false; p.g.add(mark);
-		const jit = [Math.cos(i*2.4)*2.2, Math.sin(i*1.7)*1.5];
-		return { i, kind, cat:CAT[kind], name, wish, quote, spots, p, hit, mark, jit, from:new THREE.Vector3(), to:new THREE.Vector3(), t:1 };
+		return { i, kind, cat:CAT[kind], name, wish, quote, spots, p, hit, mark, from:new THREE.Vector3(), to:new THREE.Vector3(), t:1 };
 	});
-	function spotOf(h, slot){
+	// les habitants d'un même lieu se rangent en spirale autour du point de rendez-vous, sans jamais se rentrer dedans
+	function spotOf(h, slot, n){
 		const k = h.spots[slot]; if(k === "OUT") return null;
-		const [x, z] = SPOT[k]; return new THREE.Vector3(x + h.jit[0], 0, z + h.jit[1]);
+		const [x, z] = SPOT[k], r = n ? 1.35*Math.sqrt(n + .5) : 0, a = n*2.39996 ;
+		return new THREE.Vector3(x + Math.cos(a)*r, 0, z + Math.sin(a)*r);
 	}
 	function placeAll(slot, instant){
+		const count = {};
 		for(const h of people){
-			const to = spotOf(h, slot);
+			const k = h.spots[slot], n = count[k] = (count[k] ?? -1) + 1;
+			const to = spotOf(h, slot, n);
 			if(!to){ h.p.g.visible = false; h.t = 1; continue; }
 			if(!h.p.g.visible || instant){ h.p.g.visible = true; h.p.g.position.copy(to); h.t = 1; continue; }
 			h.from.copy(h.p.g.position); h.to.copy(to); h.t = 0;
@@ -476,7 +479,7 @@ export function openMarquelle({ formation, audio, isFav, toggleFav, onClose, onE
 		stage("enq", "1 · Écouter la ville", "La filature ferme : que faire de la friche ?");
 		usine.visible = true; plots.visible = false; plates.visible = false; jars.visible = false; stacks.visible = false; signs.visible = false; hall.visible = false; town.visible = true;
 		S.met = []; S.slot = 0; S.full = 0; for(const h of people) h.mark.visible = false; placeAll(0, false);
-		fly(new THREE.Vector3(0, 0, 1), 50, .88, .3);
+		fly(new THREE.Vector3(1.5, 0, 1), 55, .88, .3);
 		const first = !S.enqDone;
 		const render = () => {
 			const n = { jeune:0, actif:0, retraite:0 }; for(const i of S.met) n[people[i].cat]++;

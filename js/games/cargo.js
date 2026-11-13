@@ -12,8 +12,8 @@
    Entreprise, personnes et chiffres sont fictifs et simplifiés. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=d3fe9a7862";
-import { palier } from "./palier.js?v=d3fe9a7862";
+import { jpoCard } from "./jpo.js?v=50ccfe85e2";
+import { palier } from "./palier.js?v=50ccfe85e2";
 
 const COURSES = {
 	fx:    ["L1", "Maths & economics", "Exchange rates move every second. Knowing how to protect a price from them is basic international finance."],
@@ -219,13 +219,13 @@ export function openCargo({ formation, audio, isFav, toggleFav, onClose, onEvent
 	const mapC = document.createElement("canvas"); mapC.width = TW; mapC.height = TH;
 	{
 		const x = mapC.getContext("2d"), px = lon => (lon + 180)/360*TW, py = lat => (85 - lat)/145*TH;
-		const g = x.createLinearGradient(0, 0, 0, TH); g.addColorStop(0, "#081a2e"); g.addColorStop(.5, "#0a2240"); g.addColorStop(1, "#071628"); x.fillStyle = g; x.fillRect(0, 0, TW, TH);
+		const g = x.createLinearGradient(0, 0, 0, TH); g.addColorStop(0, "#06152a"); g.addColorStop(.5, "#081c36"); g.addColorStop(1, "#051226"); x.fillStyle = g; x.fillRect(0, 0, TW, TH);
 		x.strokeStyle = "rgba(127,184,230,.08)"; x.lineWidth = 2;
 		for(let lon = -180; lon <= 180; lon += 15){ x.beginPath(); x.moveTo(px(lon), 0); x.lineTo(px(lon), TH); x.stroke(); }
 		for(let lat = -60; lat <= 85; lat += 15){ x.beginPath(); x.moveTo(0, py(lat)); x.lineTo(TW, py(lat)); x.stroke(); }
 		for(const poly of LAND){
 			x.beginPath(); poly.forEach(([lo, la], i) => i ? x.lineTo(px(lo), py(la)) : x.moveTo(px(lo), py(la))); x.closePath();
-			x.fillStyle = "#16324a"; x.fill(); x.lineWidth = 6; x.strokeStyle = "rgba(255,179,71,.35)"; x.stroke();
+			x.fillStyle = "#2b5274"; x.fill(); x.lineWidth = 6; x.strokeStyle = "rgba(255,179,71,.35)"; x.stroke();
 		}
 		const rnd = (() => { let s = 7; return () => (s = (s*16807) % 2147483647)/2147483647; })();
 		x.fillStyle = "rgba(255,214,140,.55)";
@@ -241,11 +241,11 @@ export function openCargo({ formation, audio, isFav, toggleFav, onClose, onEvent
 	const euC = document.createElement("canvas"); euC.width = 2048; euC.height = Math.round(2048*(EU[3] - EU[2])/(EU[1] - EU[0]));
 	{
 		const x = euC.getContext("2d"), W2 = euC.width, H2 = euC.height, px = lon => (lon - EU[0])/(EU[1] - EU[0])*W2, py = lat => (EU[3] - lat)/(EU[3] - EU[2])*H2;
-		const g = x.createLinearGradient(0, 0, 0, H2); g.addColorStop(0, "#09203a"); g.addColorStop(1, "#0a2240"); x.fillStyle = g; x.fillRect(0, 0, W2, H2);
+		const g = x.createLinearGradient(0, 0, 0, H2); g.addColorStop(0, "#06172d"); g.addColorStop(1, "#081c36"); x.fillStyle = g; x.fillRect(0, 0, W2, H2);
 		x.strokeStyle = "rgba(127,184,230,.08)"; x.lineWidth = 2;
 		for(let lon = -15; lon <= 25; lon += 5){ x.beginPath(); x.moveTo(px(lon), 0); x.lineTo(px(lon), H2); x.stroke(); }
 		for(let lat = 40; lat <= 62; lat += 5){ x.beginPath(); x.moveTo(0, py(lat)); x.lineTo(W2, py(lat)); x.stroke(); }
-		for(const poly of LAND){ x.beginPath(); poly.forEach(([lo, la], i) => i ? x.lineTo(px(lo), py(la)) : x.moveTo(px(lo), py(la))); x.closePath(); x.fillStyle = "#16324a"; x.fill(); x.lineWidth = 4; x.strokeStyle = "rgba(255,179,71,.4)"; x.stroke(); }
+		for(const poly of LAND){ x.beginPath(); poly.forEach(([lo, la], i) => i ? x.lineTo(px(lo), py(la)) : x.moveTo(px(lo), py(la))); x.closePath(); x.fillStyle = "#2b5274"; x.fill(); x.lineWidth = 4; x.strokeStyle = "rgba(255,179,71,.4)"; x.stroke(); }
 		x.fillStyle = "rgba(255,214,140,.6)";
 		for(const [lo, la] of [[3.06,50.63],[-.13,51.5],[2.35,48.86],[4.4,51.2],[4.35,50.85],[10,53.55],[13.4,52.5],[6.96,50.94],[8.68,50.11],[11.58,48.14],[4.9,52.37],[-2.24,53.48],[-1.9,52.48],[-6.26,53.35],[-3.7,40.42],[-.38,39.47],[2.17,41.39]]){ for(let i = 0; i < 26; i++){ const a = Math.random()*7, r = Math.random()*16; x.beginPath(); x.arc(px(lo) + Math.cos(a)*r, py(la) + Math.sin(a)*r, 1.5 + Math.random()*2, 0, 7); x.fill(); } }
 	}
@@ -423,7 +423,7 @@ export function openCargo({ formation, audio, isFav, toggleFav, onClose, onEvent
 	/* ---------- 1 · L1 · le cours de la livre, en direct (scène d'ouverture) ---------- */
 	function fx(){
 		stage("fx", "1 · Lock the rate"); show("london"); routes.clear(); routeLine(ROUTES.uk, "#ffb347", .05);
-		fly(P(1.5, 51.2), 14, .75, -.2);
+		fly(P(.4, 52.4), 15, .75, -.2);      // Londres et Lille sous le carnet de bord, pas derrière
 		say("Morning! A London shop signed: <b>40 bikes at £1,900 each</b>, paid in pounds. We need at least <b>€2,150 a bike</b>. The pound moves every second: <b>lock the rate</b> with the bank when it's good. Don't wait too long…");
 		const first = S.rate === null;
 		dockHTML(`<div class="cg-k">${first ? `Mini-game · ${formation.name}` : "L1 · maths & economics"}</div>${first ? `<span class="cg-lang">🇬🇧 In English, like the Licence</span>` : ""}

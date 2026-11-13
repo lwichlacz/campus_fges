@@ -12,9 +12,9 @@
    La lumière des fenêtres suit les 48 heures (vendredi 18 h → dimanche 17 h) ; le style choisi habille toute la salle.
    Équipe, joueurs et scores sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
-import { makePerson } from "../kit.js?v=d3fe9a7862";
-import { jpoCard } from "./jpo.js?v=d3fe9a7862";
-import { palier } from "./palier.js?v=d3fe9a7862";
+import { makePerson } from "../kit.js?v=50ccfe85e2";
+import { jpoCard } from "./jpo.js?v=50ccfe85e2";
+import { palier } from "./palier.js?v=50ccfe85e2";
 
 const COURSES = {
 	gaming: ["L1", "Projet Gaming", "Toute la première année, chaque équipe conçoit et programme son propre jeu vidéo : idée, niveaux, code, tests, présentation devant un jury."],
@@ -401,7 +401,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		const g = new THREE.Group(); g.position.set(3.9 + i*.66, 0, RACK_Z); g.visible = i === 0; scene.add(g);
 		add(boxG(.56, 2, .8), M("#20232f", { metalness:.4, roughness:.5 }), g, 0, 1, 0);
 		for(let k = 0; k < 7; k++) add(boxG(.44, .03, .02), ledMat, g, 0, .3 + k*.24, .41, false);
-		const tag = label(`Serveur ${i + 1}`, "#20232f", .7); tag.position.set(0, 2.3, 0); g.add(tag);
+		const tag = label(`Serveur ${i + 1}`, "#20232f", .7); tag.position.set(0, 2.3, 0); g.add(tag); g.userData.tag = tag;
 		racks.push(g);
 	}
 	const alarm = add(new THREE.SphereGeometry(.09, 10, 8), new THREE.MeshBasicMaterial({ color:"#ff3b3b", toneMapped:false }), racks[0], 0, 2.08, 0, false); alarm.visible = false;
@@ -504,13 +504,14 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 		screen:() => [[-1.2, 5.8, 3.4], [-1.4, 1.9, -5]],
 		rack:  () => [[2, 3.3, 3.8], [5.6, 1.6, -2.6]],
 		jury:  () => [[-2.7, 3.1, -1], [0, 1.3, 4.4]],
-		table: () => { const d = Math.min(7, (N*B/2 + .25)/(Math.tan(camera.fov*Math.PI/360)*camera.aspect)); return [[0, Y0 + 1.05 + d*.12, d], [0, Y0 + .55, 0]]; },
+		table: () => { const d = Math.min(7, (N*B/2 + .25)/(Math.tan(camera.fov*Math.PI/360)*camera.aspect)); return [[0, Y0 + 1.05 + d*.12, d], [0, Y0 + .78, 0]]; },      // visée un peu haute : le titre de l'écran géant passe sous la barre du haut
 		top:   () => [[0, Y0 + 2.9, 2.3], [0, Y0 + .3, -.3]],
 		fps:   () => { const hx = toWorldX(hero.x), hy = Y0 + Math.max(0, hero.y)*B; return [[hx - 3.2*B, hy + 2.3*B, .6*B], [hx + 4.5*B, hy + .3*B, 0]]; },      // à hauteur du héros, juste derrière lui
 		follow:() => { const hx = Math.max(-1.25, Math.min(1.25, toWorldX(hero.x))), hy = Y0 + Math.max(0, hero.y)*B; const d = 2.5*Math.max(1, 1.45/camera.aspect); return [[hx, hy + .3 + d*.16, d], [hx, hy + .25, 0]]; }
 	};
 	function tickCamera(dt, t){
 		const [p, tg] = VIEWS[view]();
+		for(const r of racks) r.userData.tag.visible = view === "rack";      // ailleurs, ces étiquettes dépassent sous le panneau de droite
 		goalP.set(...p); goalT.set(...tg);
 		if(view === "room"){ goalP.x += Math.sin(t*.15)*1.2; }
 		const k = 1 - Math.exp(-dt*(view === "follow" || view === "fps" ? 5 : 2.6));
