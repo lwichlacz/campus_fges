@@ -12,8 +12,8 @@
    Entreprise, personnes et chiffres fictifs. Contenu à relire par l'équipe pédagogique (docs/validation-licence-mh.md). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=0c6917bfb6";
-import { palier } from "./palier.js?v=0c6917bfb6";
+import { jpoCard } from "./jpo.js?v=186e790aba";
+import { palier } from "./palier.js?v=186e790aba";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (tests automatiques)
 const MOBILE = 760;

@@ -20,11 +20,11 @@
 <link rel="icon" href="img/icone.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&family=Inter:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
 <style>
 /* charte de l'université : Tiempos Headline (titres) ; fichiers sous licence, hors du dépôt public (voir fonts/LISEZMOI.md) */
-@font-face{font-family:"Tiempos Headline";src:url(fonts/tiempos/tiempos-headline-regular.woff2) format("woff2");font-weight:300 400;font-style:normal;font-display:swap}
-@font-face{font-family:"Tiempos Headline";src:url(fonts/tiempos/tiempos-headline-regular-italic.woff2) format("woff2");font-weight:300 400;font-style:italic;font-display:swap}
+@font-face{font-family:Tiempos Headline,Georgia,serif;font-weight:300;src:url(fonts/tiempos/tiempos-headline-regular.woff2) format("woff2");font-weight:300 400;font-style:normal;font-display:swap}
+@font-face{font-family:Tiempos Headline,Georgia,serif;font-weight:300;src:url(fonts/tiempos/tiempos-headline-regular-italic.woff2) format("woff2");font-weight:300 400;font-style:italic;font-display:swap}
 b,strong{font-weight:700}
 /* couleurs de l'école du jeu ouvert (main.js pose data-ecole) : relevées sur les fiches de fges.fr, marine commun aux trois */
 :root,[data-ecole=FGES]{--ec:#21b7cb;--ec-fort:#0f3168;--ec-texte:#0f3168;--ec-pale:#e9f7fa}
@@ -32,11 +32,11 @@ b,strong{font-weight:700}
 [data-ecole=EDN]{--ec:#cb971a;--ec-fort:#96711a;--ec-texte:#96711a;--ec-pale:#fdf8ec}      /* Inter n'est chargée qu'en 300 et 700 : le gras doit viser 700 */
 :root{
 	--cream:#fff8ec; --cream2:#f6ead6; --ink:#2b2233; --ink2:#5b4f5f; --muted:#8a7d86;
-	--navy:#1e305e; --brand:#21b6ce; --brand-ink:#0b7a8e; --on-brand:#0b2f67; --brand-soft:#e4f6f9; --gold:#d9a441; --line:#ead9bf;
+	--navy:#0f3168; --brand:#21b7cb; --brand-ink:#0f3168; --on-brand:#0f3168; --brand-soft:#e9f7fa; --gold:#21b7cb; --line:#ead9bf;
 	--shadow:0 18px 50px rgba(60,35,20,.22), 0 2px 6px rgba(60,35,20,.12);
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;overflow:hidden;background:#f3dcb8;font:400 15px/1.45 Nunito,system-ui,sans-serif;color:var(--ink);-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+html,body{margin:0;height:100%;overflow:hidden;background:#f3dcb8;font:300 15px/1.45 Inter,system-ui,sans-serif;color:var(--ink);-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
 #scene{position:fixed;inset:0;touch-action:none}
 #scene canvas{display:block;width:100%;height:100%;outline:none}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -44,7 +44,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 /* ---------- Chargement & fondu ---------- */
 #loader{position:fixed;inset:0;display:grid;place-items:center;background:#f3dcb8;z-index:50;transition:opacity .8s ease}
 #loader.gone{opacity:0;pointer-events:none}
-#loader p{font:600 20px Fraunces,Georgia,serif;color:var(--brand-ink);margin:0}
+#loader p{font:300 20px Tiempos Headline,Georgia,serif;color:var(--brand-ink);margin:0}
 #loader i{display:block;width:44px;height:44px;margin:0 auto 14px;border-radius:50%;border:4px solid #e9c99a;border-top-color:var(--brand);animation:spin 1s linear infinite}
 #loader>div{text-align:center;padding:0 16px}
 #loader .ltip{max-width:360px;min-height:88px;margin:22px auto 0;font-size:14.5px;line-height:1.45;color:var(--ink2);transition:opacity .45s ease}
@@ -58,7 +58,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 #fade.on{opacity:1;pointer-events:auto}
 
 /* ---------- Intro ---------- */
-#introCap{position:fixed;left:24px;bottom:max(28px,env(safe-area-inset-bottom));font:700 clamp(26px,5vw,44px)/1.05 Fraunces,Georgia,serif;color:#fff;text-shadow:0 2px 18px rgba(60,30,15,.45);opacity:0;transform:translateY(12px);transition:.8s ease;z-index:8;pointer-events:none}
+#introCap{position:fixed;left:24px;bottom:max(28px,env(safe-area-inset-bottom));font:300 clamp(26px,5vw,44px)/1.05 Tiempos Headline,Georgia,serif;color:#fff;text-shadow:0 2px 18px rgba(60,30,15,.45);opacity:0;transform:translateY(12px);transition:.8s ease;z-index:8;pointer-events:none}
 #introCap.on{opacity:1;transform:none}
 #skip,#cineSkip{position:fixed;right:16px;bottom:max(18px,env(safe-area-inset-bottom));z-index:30;border:0;background:rgba(255,248,236,.92);border-radius:999px;padding:10px 16px;font-weight:800;box-shadow:var(--shadow)}
 
@@ -78,7 +78,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 /* ---------- Ambiance ---------- */
 #ambiance{position:fixed;top:72px;right:16px;z-index:15;background:var(--cream);border-radius:20px;box-shadow:var(--shadow);padding:14px;width:min(340px,calc(100% - 32px));animation:rise .25s ease both}
 #ambiance[hidden]{display:none}
-#ambiance h4{margin:2px 4px 8px;font:800 11.5px Nunito,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#ambiance h4{margin:2px 4px 8px;font:700 11.5px Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .seg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .seg:last-child{margin-bottom:0}
 .seg button{flex:1;border:2px solid var(--line);background:#fff;border-radius:12px;padding:8px 6px;font-weight:800;font-size:13px;white-space:nowrap}
@@ -96,7 +96,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 #pins{position:fixed;inset:0;pointer-events:none;z-index:4;opacity:0;transition:opacity .8s ease}
 #pins.on{opacity:1}
 .pin{position:absolute;left:0;top:0;pointer-events:auto;border:0;background:none;padding:0;will-change:transform;backface-visibility:hidden}
-.pin span{display:flex;align-items:center;gap:7px;background:var(--cream);padding:7px 13px 7px 8px;border-radius:999px;box-shadow:var(--shadow);font:700 13.5px Nunito,sans-serif;white-space:nowrap;transition:transform .2s ease, background .2s ease}
+.pin span{display:flex;align-items:center;gap:7px;background:var(--cream);padding:7px 13px 7px 8px;border-radius:999px;box-shadow:var(--shadow);font:300 13.5px Inter,system-ui,sans-serif;white-space:nowrap;transition:transform .2s ease, background .2s ease}
 .pin span em{font-style:normal;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;background:var(--cream2)}
 .pin span s{text-decoration:none;color:#3f8a4f;font-size:13px}
 .pin:after{content:"";position:absolute;left:50%;bottom:-7px;width:12px;height:12px;background:var(--cream);transform:translateX(-50%) rotate(45deg);border-radius:2px;box-shadow:3px 3px 6px rgba(60,35,20,.12)}
@@ -123,7 +123,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .card{background:var(--cream);border-radius:26px;box-shadow:var(--shadow);padding:26px 24px 22px;width:100%;max-width:470px;text-align:center;animation:rise .7s cubic-bezier(.2,.8,.2,1) both .3s}
 @keyframes rise{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
 .kick{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-ink)}
-.card h1{font:700 34px/1.08 Fraunces,Georgia,serif;margin:8px 0 10px;letter-spacing:-.01em}
+.card h1{font:300 34px/1.08 Tiempos Headline,Georgia,serif;margin:8px 0 10px;letter-spacing:-.01em}
 .card .wlogo{display:block;height:54px;width:auto;margin:0 auto 6px}
 .card p{margin:0 auto 16px;color:var(--ink2);max-width:380px}
 /* mot d'accueil : météo réelle de Lille et prochain rendez-vous sur le campus (remplis par main.js) */
@@ -157,14 +157,14 @@ button{font:inherit;color:inherit;cursor:pointer}
 #panel{position:fixed;top:84px;right:16px;bottom:16px;width:400px;background:var(--cream);border-radius:24px;box-shadow:var(--shadow);z-index:12;transform:translateX(calc(100% + 30px));transition:transform .5s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;overflow:hidden}
 #panel.on{transform:none}
 #panel .ph{padding:22px 22px 14px;border-bottom:1px solid var(--line);position:relative}
-#panel .ph h2{font:700 25px/1.12 Fraunces,Georgia,serif;margin:5px 40px 8px 0}
+#panel .ph h2{font:300 25px/1.12 Tiempos Headline,Georgia,serif;margin:5px 40px 8px 0}
 #panel .ph p{margin:0;color:var(--ink2);font-size:14px}
 .close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;border:0;background:var(--cream2);font-size:22px;line-height:1}
 .close:hover{background:#efdcc0}
 .facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .facts span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;color:var(--ink2)}
 #panel .pb{padding:16px 18px 22px;overflow-y:auto;flex:1;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-.pb h3{font:700 13px Nunito,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 4px 8px}
+.pb h3{font:700 13px Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 4px 8px}
 .pb h3:first-child{margin-top:2px}
 .fcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:13px 14px 12px;margin:0 0 10px;transition:.15s ease}
 .fcard:hover{border-color:#dcc29c;box-shadow:0 6px 16px rgba(60,35,20,.08)}
@@ -172,17 +172,17 @@ button{font:inherit;color:inherit;cursor:pointer}
 .fcard .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .school{font-size:10.5px;font-weight:800;letter-spacing:.08em;padding:3px 8px;border-radius:999px;color:#fff}
 /* couleurs officielles des entités ; texte foncé sur le turquoise et le jaune pour rester lisible */
-.s-FGES{background:#21b6ce;color:#0b2f67} .s-ISEA{background:#872852;color:#fff} .s-EDN{background:#ca971a;color:#1f1a10}
+.s-FGES{background:#21b7cb;color:#0f3168} .s-ISEA{background:#872852;color:#fff} .s-EDN{background:#ca971a;color:#1f1a10}
 .fav{border:0;background:var(--cream2);width:34px;height:34px;border-radius:50%;font-size:17px;line-height:1;color:var(--brand-ink);transition:transform .15s ease}
 .fav[aria-pressed=true]{background:var(--brand);color:var(--on-brand)}
 .fav:active{transform:scale(.85)}
-.fcard h4{margin:8px 0 2px;font:700 16px/1.25 Fraunces,Georgia,serif}
+.fcard h4{margin:8px 0 2px;font:300 16px/1.25 Tiempos Headline,Georgia,serif}
 .fcard .meta{margin:0 0 6px;font-size:12.5px;color:var(--muted);font-weight:700}
 .fcard .pitch{margin:0;font-size:14px;color:var(--ink2)}
 .fcard .row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px}
 .soon{font-size:12px;font-weight:800;color:#7a6a3a;background:#fbefd0;padding:4px 9px;border-radius:999px}
 .soon.ok{color:#2f6b45;background:#e2f2e3}
-.play{display:block;width:100%;margin-top:10px;border:0;border-radius:14px;padding:12px;background:linear-gradient(135deg,#d9a441,#c9852f);color:#fff;font-weight:800;font-size:15px;box-shadow:0 6px 16px rgba(201,133,47,.35)}
+.play{display:block;width:100%;margin-top:10px;border:0;border-radius:14px;padding:12px;background:#0f3168;color:#fff;font-weight:800;font-size:15px;box-shadow:0 6px 16px rgba(15,49,104,.3)}
 .play:hover{filter:brightness(1.05)}
 .link{font-size:13px;font-weight:800;color:var(--navy);text-decoration:none}
 .link:hover{text-decoration:underline}
@@ -193,8 +193,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .btn.link-out{display:flex;justify-content:space-between;align-items:center;margin:0;background:#fff;color:var(--navy);border:2px solid var(--line);text-align:left;padding:11px 14px}
 .btn.link-out:hover{border-color:#d9b98a;background:#fffdf8}
 .btn.link-out span{color:var(--brand-ink);font-size:16px}
-.btn.atrium.eura{background:linear-gradient(135deg,#0b7a8e,#1e305e)}
-.btn.atrium{margin:0 0 6px;background:linear-gradient(135deg,#127f93,#1e305e);color:#fff;font-size:15.5px;padding:15px;box-shadow:0 8px 20px rgba(20,140,160,.3)}
+.btn.atrium.eura{background:linear-gradient(135deg,#0f3168,#0f3168)}
+.btn.atrium{margin:0 0 6px;background:linear-gradient(135deg,#0f3168,#0f3168);color:#fff;font-size:15.5px;padding:15px;box-shadow:0 8px 20px rgba(20,140,160,.3)}
 .tipline{margin-top:14px;text-align:center;font-size:13px;font-weight:700;color:var(--muted)}
 .steps{list-style:none;padding:0;margin:0 0 6px;counter-reset:s}
 .steps li{position:relative;padding:10px 12px 10px 48px;background:#fff;border:1px solid var(--line);border-radius:16px;margin-bottom:8px;font-size:14px;color:var(--ink2)}
@@ -202,10 +202,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 .steps li:before{counter-increment:s;content:counter(s);position:absolute;left:12px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--gold);color:#fff;font-weight:800;display:grid;place-items:center}
 .empty{background:#fff;border:1px dashed #dcc29c;border-radius:16px;padding:16px;color:var(--ink2);font-size:14px;text-align:center}
 /* mini-jeux : bandeau en tête de fiche formation, cartes de la vue Jeux et médailles du carnet */
-.gteaser{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-radius:18px;padding:10px 12px;margin:2px 0 6px;background:linear-gradient(135deg,#fff3d6,#fbe3b0);box-shadow:inset 0 0 0 2px #e8c27a;cursor:pointer;font:inherit;color:var(--ink)}
+.gteaser{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-radius:18px;padding:10px 12px;margin:2px 0 6px;background:linear-gradient(135deg,#f4fbfd,#e9f7fa);box-shadow:inset 0 0 0 2px #21b7cb;cursor:pointer;font:inherit;color:var(--ink)}
 .gteaser>span:nth-child(2){flex:1;min-width:0}
 .gteaser .gic{background:#fff}
-.gteaser b{display:block;font:700 16px/1.15 Fraunces,serif}
+.gteaser b{display:block;font:300 16px/1.15 Tiempos Headline,Georgia,serif}
 .gteaser small{display:block;font-size:12px;color:var(--ink2);font-weight:700}
 .gteaser .gplay{flex:none;background:var(--brand);color:var(--on-brand);border-radius:999px;padding:7px 12px;font-weight:800;font-size:13px;white-space:nowrap}
 .gteaser:hover{filter:brightness(1.03)}
@@ -214,7 +214,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .gcard.got{border-color:var(--gold)}
 .gcard p{margin:8px 0;font-size:14px;color:var(--ink2)}
 .gtop{display:flex;align-items:center;gap:10px}
-.gtop b{display:block;font:700 17px/1.15 Fraunces,serif}
+.gtop b{display:block;font:300 17px/1.15 Tiempos Headline,Georgia,serif}
 .gtop small{display:block;font-size:12px;color:var(--muted);font-weight:700}
 .gic{width:44px;height:44px;border-radius:14px;background:var(--cream2);display:grid;place-items:center;font-size:24px;flex:none}
 .gmed{margin-left:auto;font-size:24px}
@@ -245,7 +245,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .lifechip.got{filter:none;opacity:1;border-style:solid;border-color:var(--gold)}
 .disco{background:#fff;border:2px solid var(--line);border-radius:18px;padding:12px 14px;margin:4px 0 6px}
 .disco-top{display:flex;justify-content:space-between;align-items:baseline;font-weight:800}
-.disco-top span{font:700 22px Fraunces,Georgia,serif;color:var(--brand-ink)}
+.disco-top span{font:300 22px Tiempos Headline,Georgia,serif;color:var(--brand-ink)}
 .disco-bar{height:10px;border-radius:999px;background:var(--cream2);overflow:hidden;margin:6px 0 10px}
 .disco-bar i{display:block;height:100%;min-width:6px;border-radius:inherit;background:linear-gradient(90deg,var(--brand),var(--gold));transition:width .6s ease}
 .disco ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:13px;font-weight:700;color:var(--ink2)}
@@ -276,7 +276,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* ---------- Recherche & listes ---------- */
 .search{position:relative;margin-top:12px}
-.search input{width:100%;border:2px solid var(--line);background:#fff;border-radius:14px;padding:12px 14px 12px 40px;font:600 15px Nunito,sans-serif;color:var(--ink);outline:none}
+.search input{width:100%;border:2px solid var(--line);background:#fff;border-radius:14px;padding:12px 14px 12px 40px;font:300 15px Inter,system-ui,sans-serif;color:var(--ink);outline:none}
 .search input:focus{border-color:var(--brand-ink)}
 .search:before{content:"🔎";position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:15px}
 .fchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
@@ -287,7 +287,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .grp button{border:0;background:var(--cream2);border-radius:999px;padding:5px 10px;font-weight:800;font-size:12px}
 .frow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:6px;transition:.15s ease}
 .frow:hover{border-color:#dcc29c;transform:translateX(2px)}
-.frow b{display:block;font:700 14.5px/1.25 Fraunces,Georgia,serif}
+.frow b{display:block;font:300 14.5px/1.25 Inter,system-ui,sans-serif}
 .frow small{display:block;color:var(--muted);font-weight:700;font-size:12px;margin-top:2px}
 .frow .tx{flex:1;min-width:0}
 .frow .chev{color:var(--muted);font-weight:800}
@@ -323,19 +323,19 @@ button{font:inherit;color:inherit;cursor:pointer}
 #badge{position:fixed;inset:0;z-index:43;display:grid;place-items:center;padding:12px;background:rgba(15,20,32,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);overflow:auto}
 #badge[hidden]{display:none}
 .badge-card{position:relative;width:100%;max-width:420px;max-height:100%;overflow:auto;background:var(--cream);border-radius:24px;box-shadow:var(--shadow);padding:22px 20px 18px;animation:rise .35s ease both;text-align:center}
-.badge-card h2{font:700 24px/1.15 Fraunces,Georgia,serif;margin:6px 30px 6px}
+.badge-card h2{font:300 24px/1.15 Tiempos Headline,Georgia,serif;margin:6px 30px 6px}
 .badge-card p{margin:0 0 12px;color:var(--ink2);font-size:14px}
 .badge-card img{display:block;width:100%;max-width:320px;margin:0 auto 12px;border-radius:18px;box-shadow:0 10px 30px rgba(15,20,32,.3);aspect-ratio:1}
 .badge-acts{display:grid;grid-template-columns:1.2fr 1fr;gap:8px}
 .badge-acts .btn{margin:0}
-.badgebtn{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:16px;padding:10px 12px;margin:4px 0 8px;background:linear-gradient(135deg,#1e305e,#0b7a8e);color:#fff;text-align:left;font:inherit;cursor:pointer}
-.badgebtn b{display:block;font:700 15px Fraunces,serif}
+.badgebtn{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:16px;padding:10px 12px;margin:4px 0 8px;background:linear-gradient(135deg,#0f3168,#0f3168);color:#fff;text-align:left;font:inherit;cursor:pointer}
+.badgebtn b{display:block;font:300 15px Inter,system-ui,sans-serif}
 .badgebtn small{display:block;opacity:.85;font-size:12px;font-weight:700}
 .badgebtn i{font-style:normal;font-size:26px}
 #lead{position:fixed;inset:0;z-index:42;display:grid;place-items:center;padding:12px;background:rgba(43,26,20,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);overflow:auto}
 #lead[hidden]{display:none}
 .lead-card{position:relative;width:100%;max-width:470px;max-height:100%;overflow:auto;background:var(--cream);border-radius:24px;box-shadow:var(--shadow);padding:22px 20px 18px;animation:rise .35s ease both}
-.lead-card h2{font:700 24px/1.15 Fraunces,Georgia,serif;margin:6px 40px 6px 0}
+.lead-card h2{font:300 24px/1.15 Tiempos Headline,Georgia,serif;margin:6px 40px 6px 0}
 .lead-p{color:var(--ink2);font-size:14.5px;margin:0 0 10px}
 .lead-f{border:0;margin:0 0 4px;padding:0}
 .lead-f legend{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
@@ -344,7 +344,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .lead-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .fld{display:block;margin-top:8px}
 .fld span{display:block;font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.fld input{width:100%;min-height:44px;border:2px solid var(--line);border-radius:12px;padding:10px 12px;font:600 16px Nunito,sans-serif;background:#fff;color:var(--ink);outline:none}
+.fld input{width:100%;min-height:44px;border:2px solid var(--line);border-radius:12px;padding:10px 12px;font:300 16px Inter,system-ui,sans-serif;background:#fff;color:var(--ink);outline:none}
 .fld input:focus{border-color:var(--brand-ink)}
 .fld input[aria-invalid=true]{border-color:#b91c1c}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
@@ -372,7 +372,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tour.day .tour-top,.tour.day h3{padding-left:72px}
 .tour-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-ink)}
 .tour-dots{font-size:12px;font-weight:800;color:var(--muted)}
-.tour h3{font:700 21px/1.15 Fraunces,Georgia,serif;margin:4px 0 4px}
+.tour h3{font:300 21px/1.15 Tiempos Headline,Georgia,serif;margin:4px 0 4px}
 .tour p{margin:0 0 10px;color:var(--ink2);font-size:14px}
 .tour-bar{height:4px;border-radius:4px;background:var(--line);overflow:hidden;margin-bottom:10px}
 .tour-bar i{display:block;height:100%;width:0;background:var(--gold)}
@@ -387,21 +387,21 @@ button{font:inherit;color:inherit;cursor:pointer}
 .coach[hidden]{display:none}
 .coach-ic{grid-row:span 2;width:54px;height:54px;border-radius:16px;background:var(--cream2);display:grid;place-items:center;font-size:28px}
 .coach-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-ink)}
-.coach-tx b{display:block;font:700 18px/1.2 Fraunces,Georgia,serif;margin:2px 0}
+.coach-tx b{display:block;font:300 18px/1.2 Tiempos Headline,Georgia,serif;margin:2px 0}
 .coach-tx p{margin:0;color:var(--ink2);font-size:14px}
 .coach-ctl{grid-column:2;display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
 .coach-ctl button{border:0;border-radius:12px;padding:9px 14px;font-weight:800;background:var(--cream2)}
 .coach-ctl .go-s{background:var(--brand);color:var(--on-brand)}
 
 #btnMore,.more-row,.carousel,.grab,.stickycta{display:none}
-.chip.metro b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:6px;background:#d6213a;color:#fff;font:900 15px Arial,sans-serif}
+.chip.metro b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:6px;background:#d6213a;color:#fff;font:700 15px Inter,system-ui,sans-serif}
 .chip.metro.pulse{animation:metroPulse 1.6s ease-in-out 4}
 @keyframes metroPulse{50%{box-shadow:0 0 0 7px rgba(214,33,58,.25),var(--shadow)}}
 @media (max-width:720px){ .chip.metro{width:46px;min-height:46px;justify-content:center;padding:0} }
 .mline{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px;margin:0 0 10px}
-.mline>i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#d6213a;color:#fff;font:900 20px Arial,sans-serif;font-style:normal}
+.mline>i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#d6213a;color:#fff;font:300 20px Tiempos Headline,Georgia,serif;font-style:normal}
 .mline>span{flex:1;min-width:0}
-.mline b{display:block;font:700 16px Fraunces,Georgia,serif}
+.mline b{display:block;font:300 16px Tiempos Headline,Georgia,serif}
 .mline small{display:block;font-size:12.5px;color:var(--ink2);font-weight:700}
 .mline .acts2{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .mline .acts2 .btn{margin:0;width:auto;padding:9px 12px;font-size:13.5px}
@@ -426,7 +426,7 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 @keyframes mtBob{to{transform:translateY(2px)}}
 .mt-next{position:relative;text-align:center;margin:6px 0 18px}
 .mt-next small{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.75;font-weight:800}
-.mt-next b{display:block;font:700 26px/1.15 Fraunces,Georgia,serif;margin-top:4px}
+.mt-next b{display:block;font:300 26px/1.15 Tiempos Headline,Georgia,serif;margin-top:4px}
 .mt-strip{position:relative;list-style:none;margin:0;padding:0 6px;display:flex;justify-content:space-between;width:min(560px,92vw)}
 .mt-strip:before{content:"";position:absolute;left:14px;right:14px;top:9px;height:5px;border-radius:3px;background:#d6213a}
 .mt-strip li{position:relative;flex:1;text-align:center;font-size:12px;font-weight:700;opacity:.55;transition:opacity .3s}
@@ -471,11 +471,11 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 	.ccard{flex:0 0 80%;max-width:330px;scroll-snap-align:center;display:flex;align-items:center;gap:10px;border:0;text-align:left;background:var(--cream);border-radius:18px;padding:10px 12px;box-shadow:0 8px 24px rgba(60,35,20,.18),0 1px 3px rgba(60,35,20,.12);font:inherit;color:var(--ink);min-height:74px;cursor:pointer;transition:transform .2s ease}
 	.ccard:not(.cur){transform:scale(.96)}
 	.ccard>span:nth-child(2){flex:1;min-width:0}
-	.ccard b{display:block;font:700 16px/1.15 Fraunces,Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+	.ccard b{display:block;font:300 16px/1.15 Tiempos Headline,Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 	.ccard small{display:block;margin-top:2px;font-size:12px;color:var(--ink2);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 	.ccard .ok{color:#3f8a4f;font-weight:900}
 	.ccard .go-c{flex:none;background:var(--brand);color:var(--on-brand);border-radius:999px;padding:8px 12px;font-weight:800;font-size:13px}
-	.ccard.hub{background:linear-gradient(135deg,#fff3d6,#fbe3b0);box-shadow:inset 0 0 0 2px #e8c27a,0 8px 24px rgba(60,35,20,.18)}
+	.ccard.hub{background:linear-gradient(135deg,#f4fbfd,#e9f7fa);box-shadow:inset 0 0 0 2px #21b7cb,0 8px 24px rgba(60,35,20,.18)}
 	.ccard.hub .go-c{background:var(--navy);color:#fff}
 	/* épingles compactes : le nom s'affiche pour le lieu de la carte du carrousel */
 	.pin span{padding:4px;gap:0}
@@ -501,21 +501,21 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 <script type="importmap">
 {"imports":{"three":"./vendor/three-0.165.0/build/three.module.min.js","three/addons/":"./vendor/three-0.165.0/examples/jsm/"}}
 </script>
-<link rel="modulepreload" href="js/main.js?v=0c6917bfb6">
-<link rel="modulepreload" href="js/kit.js?v=0c6917bfb6">
-<link rel="modulepreload" href="js/data.js?v=0c6917bfb6">
-<link rel="modulepreload" href="js/details.js?v=0c6917bfb6">
-<link rel="modulepreload" href="js/vauban.js?v=0c6917bfb6">
-<link rel="modulepreload" href="js/city.js?v=0c6917bfb6">
-<link rel="modulepreload" href="js/render.js?v=0c6917bfb6">
-<link rel="modulepreload" href="js/landmarks.js?v=0c6917bfb6">
-<link rel="modulepreload" href="js/monuments.js?v=0c6917bfb6">
-<link rel="modulepreload" href="js/audio.js?v=0c6917bfb6">
+<link rel="modulepreload" href="js/main.js?v=186e790aba">
+<link rel="modulepreload" href="js/kit.js?v=186e790aba">
+<link rel="modulepreload" href="js/data.js?v=186e790aba">
+<link rel="modulepreload" href="js/details.js?v=186e790aba">
+<link rel="modulepreload" href="js/vauban.js?v=186e790aba">
+<link rel="modulepreload" href="js/city.js?v=186e790aba">
+<link rel="modulepreload" href="js/render.js?v=186e790aba">
+<link rel="modulepreload" href="js/landmarks.js?v=186e790aba">
+<link rel="modulepreload" href="js/monuments.js?v=186e790aba">
+<link rel="modulepreload" href="js/audio.js?v=186e790aba">
 <link rel="modulepreload" href="vendor/three-0.165.0/build/three.module.min.js">
 <link rel="modulepreload" href="vendor/three-0.165.0/examples/jsm/controls/OrbitControls.js">
 </head>
 <body>
-<noscript><p style="padding:24px;font:16px sans-serif">Le campus en 3D nécessite JavaScript. <a href="liste.html">Voir toutes les formations en version liste</a>.</p></noscript>
+<noscript><p style="padding:24px;font:300 16px Inter,system-ui,sans-serif">Le campus en 3D nécessite JavaScript. <a href="liste.html">Voir toutes les formations en version liste</a>.</p></noscript>
 <div id="scene"></div>
 <div id="loader"><div><i></i><p>Le campus se réveille…</p><div class="ltip" id="ltip" aria-live="polite"></div><a class="lfast" id="lfast" href="liste.html" hidden>Pressé·e ? La version rapide, sans 3D →</a></div></div>
 <script>
@@ -703,7 +703,7 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 	<div class="pb" id="pbody"></div>
 </aside>
 
-<script type="module" src="js/main.js?v=0c6917bfb6"></script>
+<script type="module" src="js/main.js?v=186e790aba"></script>
 <!-- mesure d audience anonyme, sans cookie (GoatCounter) -->
 <script data-goatcounter="https://lucas-wichlacz.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <!-- cache hors ligne (sw.js) : la borne de la JPO survit à une coupure du Wi-Fi ; installé après le chargement, sans retarder le campus.

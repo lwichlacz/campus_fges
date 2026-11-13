@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=0c6917bfb6";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=0c6917bfb6";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=0c6917bfb6";
-import { MAP } from "./vauban.js?v=0c6917bfb6";
-import { buildLandmarks } from "./landmarks.js?v=0c6917bfb6";
-import { buildMonuments } from "./monuments.js?v=0c6917bfb6";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=0c6917bfb6";
-import { buildStation } from "./station.js?v=0c6917bfb6";
-import { createRame } from "./rame.js?v=0c6917bfb6";
-import { Audio } from "./audio.js?v=0c6917bfb6";
-import { DETAILS } from "./details.js?v=0c6917bfb6";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=186e790aba";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=186e790aba";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=186e790aba";
+import { MAP } from "./vauban.js?v=186e790aba";
+import { buildLandmarks } from "./landmarks.js?v=186e790aba";
+import { buildMonuments } from "./monuments.js?v=186e790aba";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=186e790aba";
+import { buildStation } from "./station.js?v=186e790aba";
+import { createRame } from "./rame.js?v=186e790aba";
+import { Audio } from "./audio.js?v=186e790aba";
+import { DETAILS } from "./details.js?v=186e790aba";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -1442,7 +1442,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=0c6917bfb6").then(({ FAR }) => {
+	import("./vauban_far.js?v=186e790aba").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1958,27 +1958,27 @@ setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=0c6917bfb6").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=0c6917bfb6").then(m => m.createChapelle), eura:() => import("./eura.js?v=0c6917bfb6").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=0c6917bfb6").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=0c6917bfb6").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=186e790aba").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=186e790aba").then(m => m.createChapelle), eura:() => import("./eura.js?v=186e790aba").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=186e790aba").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=186e790aba").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=0c6917bfb6").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=0c6917bfb6").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=0c6917bfb6").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=0c6917bfb6").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=0c6917bfb6").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=0c6917bfb6").then(m => m.openBiodata),
-	crise:() => import("./games/crise.js?v=0c6917bfb6").then(m => m.openCrise),
-	patrimoine:() => import("./games/patrimoine.js?v=0c6917bfb6").then(m => m.openPatrimoine),
-	affaires:() => import("./games/affaires.js?v=0c6917bfb6").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=0c6917bfb6").then(m => m.openBoutique),
-	ruee:() => import("./games/ruee.js?v=0c6917bfb6").then(m => m.openRuee),
-	tp:() => import("./games/tp.js?v=0c6917bfb6").then(m => m.openTP),
-	clinique:() => import("./games/clinique.js?v=0c6917bfb6").then(m => m.openClinique),
-	jourj:() => import("./games/jourj.js?v=0c6917bfb6").then(m => m.openJourJ),
-	moniac:() => import("./games/moniac.js?v=0c6917bfb6").then(m => m.openMoniac),
-	cargo:() => import("./games/cargo.js?v=0c6917bfb6").then(m => m.openCargo),
-	marquelle:() => import("./games/marquelle.js?v=0c6917bfb6").then(m => m.openMarquelle),
-	guichet:() => import("./games/guichet.js?v=0c6917bfb6").then(m => m.openGuichet),
-	telephone:() => import("./games/dossier.js?v=0c6917bfb6").then(m => m.openDossier)
+	comptoir:() => import("./games/comptoir.js?v=186e790aba").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=186e790aba").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=186e790aba").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=186e790aba").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=186e790aba").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=186e790aba").then(m => m.openBiodata),
+	crise:() => import("./games/crise.js?v=186e790aba").then(m => m.openCrise),
+	patrimoine:() => import("./games/patrimoine.js?v=186e790aba").then(m => m.openPatrimoine),
+	affaires:() => import("./games/affaires.js?v=186e790aba").then(m => m.openAffaires),
+	boutique:() => import("./games/boutique.js?v=186e790aba").then(m => m.openBoutique),
+	ruee:() => import("./games/ruee.js?v=186e790aba").then(m => m.openRuee),
+	tp:() => import("./games/tp.js?v=186e790aba").then(m => m.openTP),
+	clinique:() => import("./games/clinique.js?v=186e790aba").then(m => m.openClinique),
+	jourj:() => import("./games/jourj.js?v=186e790aba").then(m => m.openJourJ),
+	moniac:() => import("./games/moniac.js?v=186e790aba").then(m => m.openMoniac),
+	cargo:() => import("./games/cargo.js?v=186e790aba").then(m => m.openCargo),
+	marquelle:() => import("./games/marquelle.js?v=186e790aba").then(m => m.openMarquelle),
+	guichet:() => import("./games/guichet.js?v=186e790aba").then(m => m.openGuichet),
+	telephone:() => import("./games/dossier.js?v=186e790aba").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2364,17 +2364,17 @@ function drawBadge(){
 	// médaille
 	x.beginPath(); x.arc(S/2, 440, 250, 0, 7); x.fillStyle = "#21b6ce"; x.fill();
 	x.beginPath(); x.arc(S/2, 440, 226, 0, 7); x.fillStyle = "#fff8ec"; x.fill();
-	x.textAlign = "center"; x.fillStyle = "#0b7a8e"; x.font = "800 34px Nunito, Arial"; x.fillText("BADGE", S/2, 300);
-	x.fillStyle = "#1e305e"; x.font = "700 64px Fraunces, Georgia, serif"; x.fillText("Explorateur", S/2, 380);
-	x.font = "700 46px Fraunces, Georgia, serif"; x.fillText("Euratechnologies", S/2, 440);
+	x.textAlign = "center"; x.fillStyle = "#0b7a8e"; x.font = "700 34px Inter, Arial"; x.fillText("BADGE", S/2, 300);
+	x.fillStyle = "#1e305e"; x.font = "300 64px Tiempos Headline, Georgia, serif"; x.fillText("Explorateur", S/2, 380);
+	x.font = "300 46px Tiempos Headline, Georgia, serif"; x.fillText("Euratechnologies", S/2, 440);
 	const icons = EURA_STAMPS.map(id => (PLACES[id] || LIFE[id]).icon);
 	x.font = "64px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
 	icons.forEach((ic, i) => x.fillText(ic, S/2 - 165 + i*110, 545));
 	// ruban
 	x.fillStyle = "#f2c63c"; x.beginPath(); x.moveTo(S/2 - 300, 690); x.lineTo(S/2 + 300, 690); x.lineTo(S/2 + 270, 760); x.lineTo(S/2 + 300, 830); x.lineTo(S/2 - 300, 830); x.lineTo(S/2 - 270, 760); x.closePath(); x.fill();
-	x.fillStyle = "#1e305e"; x.font = "800 34px Nunito, Arial"; x.fillText("4 / 4 tampons · quartier Wenov", S/2, 772);
-	x.fillStyle = "#fff8ec"; x.font = "700 30px Nunito, Arial"; x.fillText("Wenov · Campus Cyber · Blan-Lafont · squares des pionnières", S/2, 900);
-	x.fillStyle = "rgba(255,248,236,.75)"; x.font = "700 26px Nunito, Arial";
+	x.fillStyle = "#1e305e"; x.font = "700 34px Inter, Arial"; x.fillText("4 / 4 tampons · quartier Wenov", S/2, 772);
+	x.fillStyle = "#fff8ec"; x.font = "700 30px Inter, Arial"; x.fillText("Wenov · Campus Cyber · Blan-Lafont · squares des pionnières", S/2, 900);
+	x.fillStyle = "rgba(255,248,236,.75)"; x.font = "700 26px Inter, Arial";
 	x.fillText(`Campus FGES en 3D · École du Numérique · ${new Date().toLocaleDateString("fr-FR", { month:"long", year:"numeric" })}`, S/2, 960);
 	return new Promise(res => { const logo = new Image(); logo.onload = () => { x.fillStyle = "#fff8ec"; const w = 300, h = w*logo.height/logo.width; x.beginPath(); x.roundRect(S/2 - w/2 - 18, 40, w + 36, h + 28, 18); x.fill(); x.drawImage(logo, S/2 - w/2, 54, w, h); res(c); }; logo.onerror = () => res(c); logo.src = "img/logo-fges.png"; });
 }

@@ -9,11 +9,11 @@
      6. jeudi : devant le comité, répondre à chaque objection en montrant la pièce et la ligne qui le prouvent.
    Le dossier s'épaissit sur le bureau à chaque pièce. Environ 9 minutes. Contenus dans affaires-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=0c6917bfb6";
-import { jpoCard } from "./jpo.js?v=0c6917bfb6";
-import { palier } from "./palier.js?v=0c6917bfb6";
+import { makePerson, std, box, cyl } from "../kit.js?v=186e790aba";
+import { jpoCard } from "./jpo.js?v=186e790aba";
+import { palier } from "./palier.js?v=186e790aba";
 import { PRET, TAUX, CAF_PREV, SERVICE, VIE, PATRI, PROPRES, NANT, BPI_MAX, PAL, annuite, LIASSE, RATIOS, PALLETS, ORDERS, LETTER, ORG, RBE, GRID,
-	PIECES, MEMBERS, objections, COURSES, NEXT } from "./affaires-data.js?v=0c6917bfb6";
+	PIECES, MEMBERS, objections, COURSES, NEXT } from "./affaires-data.js?v=186e790aba";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -522,7 +522,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 	function wnorm(o){ const q = new THREE.Quaternion(); o.getWorldQuaternion(q); return new THREE.Vector3(0, 0, 1).applyQuaternion(q); }
 	const tilt = (n, t = .42) => n.clone().add(new THREE.Vector3(0, 0, t)).normalize();
 	const VIEWS = {
-		liasse:() => ({ c:wpos(SH.liasse.mesh), n:tilt(UP), w:1, h:.84 }),      // un peu de marge : la feuille inclinée grossit vers le bas, et la bulle de Nadia couvre le coin haut
+		liasse:() => camera.aspect < .9 ? { c:wpos(SH.liasse.mesh), n:tilt(UP), w:.86, h:.68 } : { c:wpos(SH.liasse.mesh), n:tilt(UP), w:1, h:.84 },      // un peu de marge : la feuille inclinée grossit vers le bas, et la bulle de Nadia couvre le coin haut
 		desk:() => camera.aspect < .9 ? { c:new THREE.Vector3(.57, DY, .14), n:tilt(UP), w:1.46, h:.7 } : { c:new THREE.Vector3(.18, DY, .14), n:tilt(UP), w:2.32, h:.72 },
 		monitor:() => ({ c:wpos(SH.montage.mesh), n:tilt(UP, .3), w:.6, h:.9 }),
 		sheet:id => () => { const m = SH[id].mesh, n = wnorm(m); return { c:wpos(m), n:n.y > .9 ? tilt(n) : n, w:SH[id].ww*1.08, h:SH[id].wh*1.08 }; },
