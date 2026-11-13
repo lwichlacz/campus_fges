@@ -29,6 +29,10 @@ export const VUES = {
 	guichet:    { lieu:"ext",     cam:[10, 80, 45],     cible:[9, 4, -37],    fov:21 },
 	ruee:       { lieu:"ext",     cam:[-35, 90, -125],  cible:[9, 4, -37],    fov:21 },
 	cargo:      { lieu:"ext",     cam:[-110, 80, -60],  cible:[9, 4, -37],    fov:20 },
+	tp:         { lieu:"ext",     cam:[40, 95, -110],   cible:[9, 4, -37],    fov:20 },
+	clinique:   { lieu:"ext",     cam:[-100, 70, 20],   cible:[9, 4, -37],    fov:20 },
+	jourj:      { lieu:"ext",     cam:[-70, 110, -120], cible:[9, 4, -37],    fov:19 },
+	moniac:     { lieu:"ext",     cam:[110, 100, 10],   cible:[9, 4, -37],    fov:20 },
 	marquelle:  { lieu:"ext",     cam:[95, 70, -100],   cible:[9, 4, -37],    fov:21 }
 };
 

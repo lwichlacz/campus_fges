@@ -12,9 +12,9 @@
    Commune, personnes et chiffres sont fictifs. Programme de la licence et contenus à relire par l'équipe pédagogique. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { makePerson, std } from "../kit.js?v=cca5b950a5";
-import { jpoCard } from "./jpo.js?v=cca5b950a5";
-import { palier } from "./palier.js?v=cca5b950a5";
+import { makePerson, std } from "../kit.js?v=d3fe9a7862";
+import { jpoCard } from "./jpo.js?v=d3fe9a7862";
+import { palier } from "./palier.js?v=d3fe9a7862";
 
 const COURSES = {
 	enq:   ["L2", "Méthodes d'enquête", "Un échantillon doit ressembler à la population : âges, activités, horaires. Sinon, l'enquête dit ce qu'on veut entendre."],
