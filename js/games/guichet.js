@@ -8,10 +8,10 @@
    comparer des pièces, compter des jours ouvrés, régler le simulateur, couper un budget, maintenir « Stop ».
    Les contenus (répliques, chiffres, indices, cours) sont dans guichet-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=186e790aba";
-import { jpoCard } from "./jpo.js?v=186e790aba";
-import { palier } from "./palier.js?v=186e790aba";
-import { COURSES, CLIENTS, NOTE, PINS, ALERTS, SUSPECTS, CULPRIT, IMMO, immoCalc, immoBest, euro } from "./guichet-data.js?v=186e790aba";
+import { makePerson, std, box, cyl } from "../kit.js?v=c97a9c5f6a";
+import { jpoCard } from "./jpo.js?v=c97a9c5f6a";
+import { palier } from "./palier.js?v=c97a9c5f6a";
+import { COURSES, CLIENTS, NOTE, PINS, ALERTS, SUSPECTS, CULPRIT, IMMO, immoCalc, immoBest, euro } from "./guichet-data.js?v=c97a9c5f6a";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -285,6 +285,7 @@ export function openGuichet({ formation, audio, isFav, toggleFav, onClose, onEve
 		const w = innerWidth, h = innerHeight; if(!w || !h) return;      // le volet du navigateur peut annoncer 0 px à l'ouverture
 		vw = w; vh = h; const port = h > w;
 		renderer.setSize(w, h, false); camera.aspect = w/h; camera.fov = port ? 66 : 49; camera.updateProjectionMatrix();
+		tick.position.x = port ? 3.7 : -3.9;      // en portrait, le panneau du ticket passe à droite de l'enseigne, sinon il sort du cadre
 		camera.position.set(port ? 1 : .9, port ? 4.2 : 4.1, port ? 7.8 : 7.2); camera.lookAt(port ? .8 : .6, port ? 1.5 : 2.1, -2.2);      // en paysage, l'enseigne de l'agence reste entière au-dessus du simulateur
 	}
 	resize(); addEventListener("resize", resize);

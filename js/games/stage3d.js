@@ -52,6 +52,7 @@ export function stage3d(canvas, o = {}){
 		lastFly = [target.clone(), dist, polar, az];
 		const k = camera.aspect < 1 ? Math.min(3.6, 1.1/camera.aspect) : 1;
 		const d = Math.min(controls.maxDistance, Math.max(controls.minDistance, dist*k));
+		if(o.fog && scene.fog){ scene.fog.near = o.fog[0]*k; scene.fog.far = o.fog[1]*k; }      // la caméra recule sur téléphone : le brouillard aussi, sinon il noie la scène
 		const t1 = target.clone(), p1 = new THREE.Vector3(Math.sin(polar)*Math.sin(az), Math.cos(polar), Math.sin(polar)*Math.cos(az)).multiplyScalar(d).add(t1);
 		cam = { k:0, dur, p0:camera.position.clone(), t0:controls.target.clone(), p1, t1 };
 	}

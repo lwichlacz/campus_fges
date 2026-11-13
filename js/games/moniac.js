@@ -8,10 +8,10 @@
    4 · statistique et économétrie : une corrélation trompeuse, et la variable cachée qui l'explique ;
    puis les débouchés : ENS Paris-Saclay, magistères, écoles.
    Modèles simplifiés ; contenu à relire par l'équipe de la prépa. */
-import { stage3d, THREE } from "./stage3d.js?v=186e790aba";
-import { makePerson } from "../kit.js?v=186e790aba";
-import { jpoCard } from "./jpo.js?v=186e790aba";
-import { palier } from "./palier.js?v=186e790aba";
+import { stage3d, THREE } from "./stage3d.js?v=c97a9c5f6a";
+import { makePerson } from "../kit.js?v=c97a9c5f6a";
+import { jpoCard } from "./jpo.js?v=c97a9c5f6a";
+import { palier } from "./palier.js?v=c97a9c5f6a";
 
 const COURSES = {
 	macro: ["Macroéconomie", "Revenu, consommation, multiplicateur : comment une dépense se propage dans toute l'économie."],

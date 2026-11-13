@@ -5,9 +5,9 @@
    grossissement, tracer la mauvaise courbe), puis l'atelier de méthode montre comment faire : c'est le cœur de l'APES,
    apprendre à apprendre. La valeur de g, trouvée au pendule, se retrouve à la fin sur la courbe.
    Personnes fictives ; valeurs simplifiées. Contenu à relire par l'équipe de l'APES. */
-import { stage3d, THREE } from "./stage3d.js?v=186e790aba";
-import { jpoCard } from "./jpo.js?v=186e790aba";
-import { palier } from "./palier.js?v=186e790aba";
+import { stage3d, THREE } from "./stage3d.js?v=c97a9c5f6a";
+import { jpoCard } from "./jpo.js?v=c97a9c5f6a";
+import { palier } from "./palier.js?v=c97a9c5f6a";
 
 const COURSES = {
 	chimie: ["Chimie", "Dosages, concentrations, équivalence : la chimie des solutions, en TP comme en cours."],
@@ -181,7 +181,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	/* ---------- 1 · chimie : le dosage, goutte à goutte (scène d'ouverture) ---------- */
 	function chimie(){
 		stage("chimie", "1 · Chimie : le dosage");
-		W.fly(new THREE.Vector3(-8.2, 6.2, 2), 13, 1.12, .2);
+		W.fly(new THREE.Vector3(-8.2, innerWidth < 760 ? 5.3 : 6.2, 2), innerWidth < 760 ? 15 : 13, 1.12, .2);      // téléphone : visée plus basse, l'erlenmeyer reste au-dessus du tableau
 		const first = !S.chimDone;
 		let V = 0, flow = 0, tries = 0, dropMode = false;
 		const render = () => {

@@ -12,9 +12,9 @@
    Commune, personnes et chiffres sont fictifs. Programme de la licence et contenus à relire par l'équipe pédagogique. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { makePerson, std } from "../kit.js?v=186e790aba";
-import { jpoCard } from "./jpo.js?v=186e790aba";
-import { palier } from "./palier.js?v=186e790aba";
+import { makePerson, std } from "../kit.js?v=c97a9c5f6a";
+import { jpoCard } from "./jpo.js?v=c97a9c5f6a";
+import { palier } from "./palier.js?v=c97a9c5f6a";
 
 const COURSES = {
 	enq:   ["L2", "Méthodes d'enquête", "Un échantillon doit ressembler à la population : âges, activités, horaires. Sinon, l'enquête dit ce qu'on veut entendre."],
@@ -182,7 +182,7 @@ const CSS = `
 @media (max-width:759px){
 	.mq-panel{left:0;right:0;top:auto;bottom:0;width:auto;max-height:50%;border-radius:16px 16px 0 0}
 	.mq-steps{display:none}
-	.mq-hud{top:62px;right:auto;left:12px}
+	.mq-hud{top:92px;right:auto;left:12px}      /* sous la gazette, qui passe sur deux lignes */
 	.mq-mast b{font-size:15px}
 }`;
 
@@ -479,7 +479,7 @@ export function openMarquelle({ formation, audio, isFav, toggleFav, onClose, onE
 		stage("enq", "1 · Écouter la ville", "La filature ferme : que faire de la friche ?");
 		usine.visible = true; plots.visible = false; plates.visible = false; jars.visible = false; stacks.visible = false; signs.visible = false; hall.visible = false; town.visible = true;
 		S.met = []; S.slot = 0; S.full = 0; for(const h of people) h.mark.visible = false; placeAll(0, false);
-		fly(new THREE.Vector3(1.5, 0, 1), 55, .88, .3);
+		fly(new THREE.Vector3(camera.aspect < 1 ? -1 : 1.5, 0, camera.aspect < 1 ? -3 : 1), camera.aspect < 1 ? 64 : 55, .88, .3);      // sur téléphone, l'école (à gauche) reste dans le cadre
 		const first = !S.enqDone;
 		const render = () => {
 			const n = { jeune:0, actif:0, retraite:0 }; for(const i of S.met) n[people[i].cat]++;
