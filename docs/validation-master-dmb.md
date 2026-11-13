@@ -28,6 +28,7 @@ Alex, 27 ans, fatigue chronique et douleurs articulaires ; ferritine 1 140 µg/L
 
 ## 3. Points à vérifier
 
+- [ ] **Ouverture (13/11/2026)** : la minimisation se fait d'abord à la main, dans une biobanque à −80 °C (`js/games/coldchain.js`) : on décolle les bandes de l'étiquette du tube (supprimer), on les replie (généraliser : « 14/03/1998 » devient « 1998 · aged 27 », « 59000 Lille » devient « 59 · Nord »), on garde le reste ; la déléguée à la protection des données bloque le rangement tant qu'une bande est mal traitée. Les valeurs repliées sont-elles justes ?
 - [ ] **Mission 1** : la pseudonymisation est acceptée au prélèvement ou juste après le séquençage, toujours avant le stockage. Les champs à transformer sont-ils les bons ?
 - [ ] **Mission 2** : preuves de classement (fréquence ~6 % de l'allèle C282Y en Europe du Nord-Ouest, ClinVar, études fonctionnelles) exactes ? Séquence affichée illustrative : faut-il la vraie ?
 - [ ] **Mission 3** : la cohorte est simulée (ferritine log-normale, effet du sexe). Les ordres de grandeur sont-ils plausibles ?

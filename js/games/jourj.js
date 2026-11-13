@@ -9,10 +9,10 @@
        qui s'éclairent ou se ferment ;
    6 · le tableau des résultats : admis en AST1 ou en AST2.
    Écoles réelles citées comme débouchés ; personnes et questions fictives. Contenu à relire par l'équipe de la prépa. */
-import { stage3d, THREE } from "./stage3d.js?v=9db2c7b8a3";
-import { makePerson } from "../kit.js?v=9db2c7b8a3";
-import { jpoCard } from "./jpo.js?v=9db2c7b8a3";
-import { palier } from "./palier.js?v=9db2c7b8a3";
+import { stage3d, THREE } from "./stage3d.js?v=e7c881c81b";
+import { makePerson } from "../kit.js?v=e7c881c81b";
+import { jpoCard } from "./jpo.js?v=e7c881c81b";
+import { palier } from "./palier.js?v=e7c881c81b";
 
 const COURSES = {
 	tage:  ["Prépa 2", "Tests TAGE · logique", "Suites, calcul, raisonnement : des tests chronométrés qu'on apprend à apprivoiser, semaine après semaine."],

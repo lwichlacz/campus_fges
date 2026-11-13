@@ -5,9 +5,9 @@
      seuil de rentabilité, décision d'investissement) qui révèle le cours de la licence.
    Les chiffres sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
-import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=9db2c7b8a3";
-import { jpoCard } from "./jpo.js?v=9db2c7b8a3";
-import { palier } from "./palier.js?v=9db2c7b8a3";
+import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=e7c881c81b";
+import { jpoCard } from "./jpo.js?v=e7c881c81b";
+import { palier } from "./palier.js?v=e7c881c81b";
 
 /* ---------- Économie du Comptoir (à valider par l'enseignant) ---------- */
 const ECO = { amortVelo:7, cafe:.25, lait:.20, gobelet:.10, tasse:.55, croissantAchat:.45, croissantPrix:1.2, salaire:25,
@@ -230,6 +230,47 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		x.textAlign = "right"; x.fillStyle = "#e9c27a"; x.fillText(euro(curPrice()), 462, 150); x.fillText(euro(ECO.croissantPrix), 462, 220);
 		menuTex.needsUpdate = true;
 	}
+	// ouverture « 8 h 02, le rush » : les leviers sont DANS le café (ardoise du prix, four, porte de l'équipe, ticket de caisse)
+	box(scene, 1.7, 1.0, .55, wood, 2.7, 0, -2.08);                                   // plan de travail du fond
+	const oven = new THREE.Group(); oven.position.set(2.7, 1.0, -2.08); scene.add(oven);
+	box(oven, 1.1, .72, .52, std("#3a3d42", { metalness:.5, roughness:.4 }), 0, 0, 0);
+	const ovenGlow = new THREE.Mesh(new THREE.PlaneGeometry(.78, .38), std("#ff9a3c", { emissive:"#ff7a1a", emissiveIntensity:.35 })); ovenGlow.position.set(0, .36, .27); oven.add(ovenGlow);
+	box(oven, .82, .05, .05, std("#c4c8cc", { metalness:.7, roughness:.3 }), 0, .62, .29);
+	const staffDoor = new THREE.Group(); staffDoor.position.set(4.7, 0, -2.36); scene.add(staffDoor);
+	box(staffDoor, 1.25, 2.45, .08, std("#6b4a2e"), 0, 0, 0); box(staffDoor, .1, .1, .12, std("#d9c08a", { metalness:.6 }), .42, 1.15, .06);
+	const doorSignCv = document.createElement("canvas"); doorSignCv.width = 256; doorSignCv.height = 96;
+	{ const x = doorSignCv.getContext("2d"); x.fillStyle = "#f4ead6"; x.fillRect(0, 0, 256, 96); x.fillStyle = "#0f3168"; x.textAlign = "center"; x.font = "700 52px Inter, system-ui, sans-serif"; x.fillText("ÉQUIPE", 128, 68); }
+	const doorSignTex = new THREE.CanvasTexture(doorSignCv); doorSignTex.colorSpace = THREE.SRGBColorSpace;
+	const doorSign = new THREE.Mesh(new THREE.PlaneGeometry(.8, .3), new THREE.MeshBasicMaterial({ map:doorSignTex })); doorSign.position.set(0, 1.85, .06); staffDoor.add(doorSign);
+	// la caisse imprime le compte de résultat de la matinée, ligne après ligne, sur un long ticket qui pend du comptoir
+	box(scene, .7, .22, .4, std("#2e2c30"), -3.1, 1.1, .45);
+	const tkCv = document.createElement("canvas"); tkCv.width = 256; tkCv.height = 640;
+	const tkTex = new THREE.CanvasTexture(tkCv); tkTex.colorSpace = THREE.SRGBColorSpace;
+	const ticket = new THREE.Mesh(new THREE.PlaneGeometry(.72, 1.0).translate(0, -.525, 0), new THREE.MeshBasicMaterial({ map:tkTex, side:THREE.DoubleSide }));
+	ticket.position.set(-3.1, 1.13, .77); ticket.scale.y = .02; scene.add(ticket);
+	const tickLines = [];
+	function paintTicket(){
+		const x = tkCv.getContext("2d"), W = 256, H = 640;
+		x.fillStyle = "#fbf8f1"; x.fillRect(0, 0, W, H);
+		x.fillStyle = "#2b2233"; x.textAlign = "center"; x.font = "700 22px Inter, system-ui, sans-serif"; x.fillText("LE COMPTOIR", W/2, 34);
+		x.font = "300 16px Inter, system-ui, sans-serif"; x.fillText(`Atrium · ${$("#czClock").textContent}`, W/2, 56);
+		x.strokeStyle = "#8a7d86"; x.setLineDash([4, 4]); x.beginPath(); x.moveTo(12, 70); x.lineTo(W - 12, 70); x.stroke();
+		let y = 96; x.font = "300 17px Inter, system-ui, sans-serif";
+		for(const [t, v] of tickLines.slice(-14)){ x.textAlign = "left"; x.fillStyle = "#2b2233"; x.fillText(t, 14, y); x.textAlign = "right"; x.fillStyle = v < 0 ? "#b0352a" : "#2b2233"; x.fillText((v < 0 ? "−" : "+") + euro(Math.abs(v)), W - 14, y); y += 26; }
+		if(D){
+			const res = liveResult();
+			x.beginPath(); x.moveTo(12, H - 150); x.lineTo(W - 12, H - 150); x.stroke(); x.setLineDash([]);
+			x.textAlign = "left"; x.fillStyle = "#2b2233"; x.font = "300 17px Inter, system-ui, sans-serif";
+			x.fillText("Ventes", 14, H - 122); x.fillText("Achats", 14, H - 96); x.fillText("Salaires", 14, H - 70);
+			x.textAlign = "right";
+			x.fillText("+" + euro(D.ca), W - 14, H - 122); x.fillText("−" + euro(D.var + D.gaspi + D.extraAchats + D.bought*ECO.croissantAchat), W - 14, H - 96); x.fillText("−" + euro(fixedCosts()), W - 14, H - 70);
+			x.font = "700 21px Inter, system-ui, sans-serif"; x.textAlign = "left"; x.fillText("RÉSULTAT", 14, H - 30);
+			x.textAlign = "right"; x.fillStyle = res < 0 ? "#b0352a" : "#0f3168"; x.fillText((res < 0 ? "−" : "+") + euro(Math.abs(res)), W - 14, H - 30);
+		}
+		tkTex.needsUpdate = true;
+	}
+	function tick(t, v){ tickLines.push([t, v]); ticket.scale.y = Math.min(1, .3 + tickLines.length*.04); ticketDirty = true; }
+	let ticketDirty = true, ticketT = 0, tear = null;
 	// porte, tables, plantes
 	if(TALL){
 		// porte au premier plan : deux montants et un rai de lumière au sol, rien qui cache la file
@@ -309,6 +350,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 			else { D.ruptures++; D.satAcc -= .4; popAt(c, "Plus de croissants !", true); }
 		}
 		D.ca += amount; D.satAcc += c.patience/D.def.patience > .5 ? 1 : .6; D.served++;
+		tick(c.order.croissant && amount > pr ? (c.order.lait ? "Cappu + croiss." : "Café + croiss.") : (c.order.lait ? "Cappuccino" : "Café"), amount);
 		// au-delà de 2,60 €, les étudiants trouvent ça cher (et le font savoir)
 		if(pr > 2.6){ D.satAcc -= (pr - 2.6)*1.1; if(rnd() < .18) setTimeout(() => popAt(c, "C'est cher…", true), 250); }
 		play("pop");
@@ -377,11 +419,12 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		if(k === "renfort" && !D.renfortAt && D.active < baristas.length){
 			D.renfortAt = D.t; D.extraSal += LEV.renfort;
 			const b = baristas[D.active]; b.s.g.visible = true; b.cust = null; D.active++;
-			play("good"); banner(`📞 Un renfort arrive au comptoir (+${LEV.renfort} € de salaire)`);
+			play("good"); banner(`📞 Un renfort arrive au comptoir (+${LEV.renfort} € de salaire)`); tick("Renfort barista", -LEV.renfort);
+			b.s.g.position.set(4.7, 0, -1.9); b.walkIn = true;      // il sort de la porte de l'équipe
 		}
 		if(k === "reassort" && D.reassortT <= 0){
 			D.reassortT = LEV.reassortDelai; D.reassortN++; D.extraAchats += LEV.reassortN*LEV.reassortPrix; play("pop");
-			popAt({ g:{ position:{ x:DOOR[0], z:DOOR[2] } } }, `🚚 Livraison dans ${LEV.reassortDelai} s`);
+			popAt({ g:{ position:{ x:2.7, z:-2.1 } } }, `🔥 Fournée : ${LEV.reassortN} croissants dans ${LEV.reassortDelai} s`); tick(`Fournée × ${LEV.reassortN}`, -LEV.reassortN*LEV.reassortPrix);
 		}
 		renderLevers();
 	}
@@ -489,7 +532,8 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 			planPF:priceFactor(S.price), happyT:0, happyUsed:false, happyAt:0, happyGain:0, renfortAt:0, reassortT:0, reassortN:0, cookies:0, skipped:0, priceMoves:0, hints:{} };
 		baristas.forEach((b, i) => { b.s.g.visible = i < S.staff; b.cust = null; });
 		Object.assign(P, { cust:null, got:{}, t:0, streak:0 });
-		running = true; tray.hidden = false; root.classList.add("serving");
+		tickLines.length = 0; ticket.scale.y = .02; ticket.position.set(-3.1, 1.13, .77); ticket.rotation.set(0, 0, 0); tear = null; ticketDirty = true;
+		running = true; tray.hidden = !!S.rush; root.classList.add("serving");
 		if(MODE === "caisse") renderTray(); else { renderLevers(); paintMenu(); }
 		$("#czDay").textContent = `${def.year} · ${def.title.split(" · ")[0]}`;
 		if(def.tuto && MODE === "caisse"){
@@ -506,7 +550,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		if(!D.evDone && D.t >= D.evAt){ D.evDone = true; showEvent(); if(D.pause) return; }
 		if(MODE === "gerant"){
 			if(D.happyT > 0){ D.happyT -= dt; if(D.happyT <= 0){ paintMenu(); popAt({ g:{ position:{ x:1, z:0 } } }, "Fin de la happy hour"); } }
-			if(D.reassortT > 0){ D.reassortT -= dt; if(D.reassortT <= 0){ D.stock += LEV.reassortN; play("pop"); popAt({ g:{ position:{ x:1.7, z:0 } } }, `🥐 +${LEV.reassortN} croissants livrés`); } }
+			if(D.reassortT > 0){ D.reassortT -= dt; if(D.reassortT <= 0){ D.stock += LEV.reassortN; play("pop"); popAt({ g:{ position:{ x:2.7, z:-2.1 } } }, `🥐 +${LEV.reassortN} croissants sortis du four`); } }
 			botLevers();
 		}
 		while(D.next < D.arrivals.length && D.arrivals[D.next] <= D.t){
@@ -547,6 +591,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		star.position.y = 3.05 + Math.sin(D.t*4)*.1; star.rotation.y += dt*2;
 		for(let i=0;i<D.active;i++){
 			const b = baristas[i];
+			if(b.walkIn){ const p = b.s.g.position, dx = BX[i] - p.x, dz = -1.05 - p.z, dd = Math.hypot(dx, dz); if(dd > .05){ const sp = Math.min(dd, dt*2.6); p.x += dx/dd*sp; p.z += dz/dd*sp; b.s.g.rotation.y = Math.atan2(dx, dz); continue; } b.walkIn = false; b.s.g.rotation.y = 0; }
 			if(!b.cust && D.queue.length && D.bBusy <= 0){
 				const c = D.queue.shift(); b.cust = c; b.t = 0; c.state = "toBar"; c.target = [BX[i], 0, SERVE_Z]; c.el.classList.add("busy");
 			}
@@ -608,6 +653,8 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 			D.breakEven = true; play("good");
 			banner(S.learned.has("cout") ? `🎉 Seuil de rentabilité atteint au ${D.served}ᵉ client ! La suite, c'est du bénéfice.` : "🎉 Charges couvertes ! À partir de maintenant, chaque vente est du bénéfice.");
 		}
+		ticketT -= dt; if(ticketT <= 0 || ticketDirty){ ticketT = .25; ticketDirty = false; paintTicket(); }
+		ovenGlow.material.emissiveIntensity = D.reassortT > 0 ? .9 + Math.sin(D.t*9)*.25 : .35;
 		$("#czStock").textContent = D.stock;
 		const sat = satisfaction(); $("#czSat").style.width = Math.round(sat*100) + "%";
 		croissants.count = Math.min(12, D.stock);
@@ -633,7 +680,9 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		S.rep = Math.max(.1, Math.min(1, S.rep*.4 + res.sat*.6));
 		say(null);
 		play(res.resultat >= 0 ? "good" : "bad");
-		showResults(res);
+		paintTicket();
+		if(S.rush){ S.rush = false; S.rushTips = false; tear = { t:0, p0:ticket.position.clone() }; play("chime"); setTimeout(() => !closed && showResults(res), 1300); }
+		else showResults(res);
 	}
 
 	/* ---------- panneaux ---------- */
@@ -872,7 +921,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 			if(k === "next") return next();
 			if(k === "fav"){ toggleFav(); a.textContent = isFav() ? "♥ Dans mon carnet" : "♡ Ajouter à mon carnet"; return; }
 			if(k === "lead"){ close(); return openLead(); }
-			if(k === "replay"){ Object.assign(S, { day:0, price:2.0, stock:30, staff:2, rep:.6, bike:false, results:[], learned:new Set(), seuil:null, totalProfit:0 }); return prep(); }
+			if(k === "replay"){ Object.assign(S, { day:0, price:2.0, stock:30, staff:2, rep:.6, bike:false, results:[], learned:new Set(), seuil:null, totalProfit:0 }); return rush(); }
 		}
 		const st = e.target.closest("[data-st]"); if(st){ S.stock = Math.max(0, Math.min(80, S.stock + +st.dataset.st)); card.querySelector("[data-stock]").textContent = S.stock; return; }
 		const sf = e.target.closest("[data-staff]"); if(sf){ S.staff = +sf.dataset.staff; card.querySelectorAll("[data-staff]").forEach(b => b.setAttribute("aria-pressed", String(b === sf))); const ev = card.querySelector("input[type=range]"); ev && ev.dispatchEvent(new Event("input")); }
@@ -885,6 +934,8 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 			for(let i = 0; i < (ff ? 3 : 1) && running; i++) stepDay(dt);
 		}
 		for(const d of deco) d.hat.position.y = 1.82 + Math.max(0, Math.sin(t/600 + d.g.position.x))*.03;
+		if(tear && tear.t < 1){ tear.t = Math.min(1, tear.t + dt/1.2); const k = 1 - (1 - tear.t)**3, to = camera.position.clone().add(camera.getWorldDirection(new THREE.Vector3()).multiplyScalar(3.2)).add(new THREE.Vector3(0, -.35, 0));      // finit au centre de l'écran
+			ticket.position.lerpVectors(tear.p0, to, k); ticket.position.y += Math.sin(k*Math.PI)*.6 + .5*k; ticket.lookAt(camera.position); ticket.rotateZ((1 - k)*.4); ticket.scale.y = Math.max(ticket.scale.y, .3 + .7*k); }
 		renderer.render(scene, camera);
 		raf = requestAnimationFrame(loop);
 	}
@@ -912,10 +963,56 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	document.addEventListener("keydown", onKey);
 	$(".cz-x").addEventListener("click", close);
 	paintMenu();
-	prep();      // ouverture à chaud : les réglages du matin tout de suite, le service suit
+	/* ---------- ouverture « 8 h 02, le rush » : pas de panneau, le service tourne déjà ----------
+	   Le prix se règle à la craie sur l'ardoise (glisser vers le haut ou le bas), le four lance une fournée,
+	   la porte de l'équipe appelle un renfort ; la caisse imprime le compte de résultat en direct. */
+	function rush(){
+		const def = DAYS[0];
+		onEvent && onEvent("stage", `${def.year} · ${def.title.split(" · ")[0]}`);
+		Object.assign(S, { price:2.0, stock:14, staff:1, rush:true });
+		hide(); startDay(); D.evDone = true;
+		Object.assign(D.hints, { start:true, queue:true, stock:true, calm:true });      // les conseils parlent des boutons du bas : ici, tout se joue dans le décor
+		const steps = ["8 h 02, le rush a commencé. Tu es le gérant : sur l'ardoise, fais glisser le prix vers le haut ou le bas ☝️",
+			"Les croissants partent vite : touche le four 🔥 pour lancer une fournée.",
+			"La file s'allonge ? Touche la porte « ÉQUIPE » pour appeler un renfort 📞",
+			"Regarde la caisse : chaque vente et chaque dépense s'impriment sur ton ticket 🧾"];
+		let i = 0; const nextTip = () => { if(closed || !S.rushTips) return; say(steps[i]); i++; if(i < steps.length) setTimeout(nextTip, 7500); else setTimeout(() => { if(coach.textContent === steps[steps.length - 1]) say(null); }, 7000); };
+		S.rushTips = true; setTimeout(nextTip, 600);
+	}
+	// gestes dans le décor (toutes les journées) : ardoise, four, porte de l'équipe
+	{
+		const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(); let drag = null;
+		const hitOf = e => { const r = canvas.getBoundingClientRect(); ndc.set((e.clientX - r.left)/r.width*2 - 1, -(e.clientY - r.top)/r.height*2 + 1); ray.setFromCamera(ndc, camera);
+			const h = ray.intersectObjects([menu, oven, staffDoor], true)[0]; if(!h) return null;
+			for(let o = h.object; o; o = o.parent){ if(o === menu) return "menu"; if(o === oven) return "oven"; if(o === staffDoor) return "door"; } return null; };
+		// sur téléphone, le four et la porte sont petits : un appui à moins de 44 px compte aussi
+		const near = e => { const r = canvas.getBoundingClientRect(); let best = null, bd = 44;
+			for(const [k, o, y] of [["menu", menu, 0], ["oven", oven, .4], ["door", staffDoor, 1.2]]){ const v = o.getWorldPosition(new THREE.Vector3()); v.y += y; v.project(camera);
+				const d = Math.hypot((v.x*.5 + .5)*r.width + r.left - e.clientX, (-v.y*.5 + .5)*r.height + r.top - e.clientY); if(d < bd){ bd = d; best = k; } }
+			return best; };
+		const pick = e => hitOf(e) || near(e);
+		canvas.style.touchAction = "none";
+		canvas.addEventListener("pointerdown", e => {
+			if(!running || MODE !== "gerant") return;
+			const k = pick(e); if(!k) return;
+			e.preventDefault();
+			if(k === "menu"){ drag = { y:e.clientY, acc:0 }; canvas.setPointerCapture(e.pointerId); return; }
+			if(k === "oven"){ if(D.reassortT > 0) popAt({ g:{ position:{ x:2.7, z:-2.1 } } }, "Le four chauffe déjà…"); else lever("reassort"); }
+			if(k === "door"){ if(D.renfortAt || D.active >= baristas.length) popAt({ g:{ position:{ x:4.7, z:-2.3 } } }, "Toute l'équipe est déjà là", true); else lever("renfort"); }
+		});
+		canvas.addEventListener("pointermove", e => {
+			if(!drag) { if(running && MODE === "gerant") { const k = pick(e); canvas.style.cursor = k ? (k === "menu" ? "ns-resize" : "pointer") : ""; } return; }
+			drag.acc += drag.y - e.clientY; drag.y = e.clientY;
+			while(drag.acc > 22){ drag.acc -= 22; lever("pp"); }
+			while(drag.acc < -22){ drag.acc += 22; lever("pm"); }
+		});
+		const up = () => { drag = null; };
+		canvas.addEventListener("pointerup", up); canvas.addEventListener("pointercancel", up);
+	}
+	rush();
 	// mode relecture : étapes où l'enseignant peut sauter directement (le service en cours est arrêté)
 	const stopDay = () => { running = false; tray.hidden = true; root.classList.remove("serving"); $("#czFF").hidden = true; say(null); };
-	const day = n => () => { stopDay(); S.day = n; prep(); };
+	const day = n => () => { stopDay(); S.day = n; if(n === 0) rush(); else prep(); };
 	onEvent && onEvent("missions", [["Matinée 1 · L'ouverture", day(0)], ["Matinée 2 · Premier rush", day(1)],
 		["L1 · Compte de résultat", () => { stopDay(); if(S.results.length) exCompte(); else { S.day = 1; prep(); } }],
 		["L2 · Coût variable et seuil", () => { stopDay(); S.day = 2; exCout(); }], ["Matinée 3 · Rentrée de L2", day(2)],

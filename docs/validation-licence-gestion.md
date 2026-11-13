@@ -3,6 +3,7 @@
 **À relire par :** un enseignant de la Licence Gestion
 **Objectif du jeu :** faire comprendre ce qu'est « piloter une entreprise » en le faisant, à travers le café de l'atrium.
 **Durée d'une partie :** environ 6 minutes (4 matinées de service, 4 imprévus et 3 exercices).
+**Ouverture (13/11/2026) :** la première matinée commence sans panneau, en plein rush, avec 1 barista et 14 croissants. Le prix se règle à la craie sur l'ardoise, le four lance une fournée express, la porte « Équipe » appelle un renfort, et la caisse imprime le compte de résultat en direct sur un ticket qui devient le bilan de la matinée. Les trois matinées suivantes gardent leur panneau de préparation.
 **Fichier du jeu :** `js/games/comptoir.js` (les chiffres sont regroupés en haut du fichier : `ECO`, `COMPO`, `DAYS`, `COURSES`).
 
 Merci de cocher, corriger ou commenter chaque point.

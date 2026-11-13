@@ -10,8 +10,9 @@
    Cas : hémochromatose HFE C282Y homozygote. Séquences, cohorte et chiffres sont simulés ; contenu à relire par l'équipe du master. */
 
 import * as THREE from "three";
-import { jpoCard } from "./jpo.js?v=9db2c7b8a3";
-import { palier } from "./palier.js?v=9db2c7b8a3";
+import { jpoCard } from "./jpo.js?v=e7c881c81b";
+import { palier } from "./palier.js?v=e7c881c81b";
+import { coldChain } from "./coldchain.js?v=e7c881c81b";
 
 const COURSES = {
 	protect: ["M2", "Data protection & health data", "GDPR, data minimisation, pseudonymisation, certified hosting (HDS): health data are handled before they are analysed."],
@@ -422,6 +423,12 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 		m1 = { ans:Object.fromEntries(FIELDS.map(f => [f.id, "keep"])), slots:Array(PIPE.length).fill(null) };
 		renderFields();
 		log("Mission 1: record P-0412 enters the research database", "inf");
+		// ouverture à chaud : la première fois, la minimisation se fait à la main, sur le tube, dans la biobanque
+		if(!S.teased && !S.cold){
+			S.cold = coldChain({ host:root, fields:FIELDS, av, play,
+				onWrong:list => { err(`Storage blocked by the data protection officer: ${list.length} strip${list.length > 1 ? "s" : ""} to reconsider`); list.slice(0, 3).forEach(f => log(`${f.f}: ${f.why}`, "ko")); },
+				onDone:() => { S.cold = null; FIELDS.forEach(f => m1.ans[f.id] = f.a); renderFields(); $("#m1a").click(); } });
+		}
 	}
 	function renderFields(bad = []){
 		work.innerHTML = `<h4>Alex's record</h4><div class="bd-fields">${FIELDS.map(f => `<div class="bd-field ${bad.includes(f.id) ? "bad" : ""}"><b>${f.f}</b><span>${f.v}</span>
@@ -728,6 +735,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	});
 	function close(){
 		if(closed) return; closed = true;
+		if(S.cold){ S.cold.close(); S.cold = null; }
 		cancelAnimationFrame(raf); document.removeEventListener("keydown", onKey);
 		root.remove(); onClose && onClose();
 	}
@@ -739,5 +747,5 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	onEvent && onEvent("start");
 	// mode relecture : étapes où l'enseignant peut sauter directement
 	onEvent && onEvent("missions", [["Mission 1 · Data governance", mission1], ["Mission 2 · Variant interpretation & consent", mission3], ["Mission 3 · Cohort biostatistics", mission4], ["Mission 4 · Machine learning", mission5]]);
-	if(window.campus) window.campus.game = { S, GO, cohort, FIELDS, CAND, VARS, get m5(){ return m5; }, fitPredict, rocOf };
+	if(window.campus) window.campus.game = { S, get cold(){ return S.cold; }, GO, cohort, FIELDS, CAND, VARS, get m5(){ return m5; }, fitPredict, rocOf };
 }
