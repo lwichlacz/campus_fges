@@ -83,7 +83,7 @@ export const GAME_INFO = {
 	crise:{ fid:"mh", title:"La cellule de crise", icon:"🔥", where:"ha", whereLabel:"Salle du conseil · Hôtel Académique", dur:"8 min, essai en une minute",
 		pitch:"Un bad buzz frappe une chocolaterie roubaisienne, et tout se joue dans le groupe « Cellule de crise » de ton téléphone. Vérifie chaque message avant de l'épingler, chiffre le plan de rappel sous le regard de Kant, Mill, Aristote et Weber, corrige le message de la directrice à son équipe, puis dose ton communiqué en lisant les commentaires en direct." },
 	comptoir:{ fid:"gestion", title:"Le Comptoir", icon:"☕", where:"falise", whereLabel:"Atrium de Michel Falise", dur:"6 min, essai en une minute",
-		pitch:"Pilote le café de l'atrium : prix, équipe, imprévus… et ton résultat en direct." },
+		pitch:"8 h 02, le rush a commencé au café de l'atrium : règle ton prix à la craie sur l'ardoise, lance une fournée, appelle un renfort… et regarde la caisse imprimer ton résultat en direct. Puis tiens le Comptoir jusqu'en L3." },
 	jardin:{ fid:"sv", title:"Le jardin se tait", icon:"🔍", where:"jardin", whereLabel:"Jardin botanique Nicolas Boulay", dur:"8 min, essai en une minute",
 		pitch:"Les abeilles désertent le jardin botanique Nicolas Boulay. Identifie les suspects à la loupe, prédis l'effet de l'insecticide du voisin, lance des quadrats, compte les fleurs blanches d'un semis… puis remets ton diagnostic au jardinier, preuves agrafées." },
 	audit:{ fid:"cfa", title:"L'Enquête de l'auditeur", icon:"🕵️", where:"falise", whereLabel:"Bâtiment Michel Falise (ISEA)", dur:"8 min, essai en une minute",
@@ -101,7 +101,7 @@ export const GAME_INFO = {
 	gaming:{ fid:"info", title:"Game Jam 48 h", icon:"🎮", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"8-10 min, essai en une minute",
 		pitch:"Un week-end de game jam avec ton équipe de L1 : dessine un niveau faisable, programme le héros en Python et échappe au bug rouge, mets les scores en ligne en SQL, tiens le choc quand 5 000 joueurs débarquent et démasque le tricheur, puis passe devant le jury. Bonus : l’ambiance en réalité virtuelle, et ton propre niveau à partager." },
 	biodata:{ fid:"dmb", title:"From Blood to Decision", icon:"🧬", where:"wenov", whereLabel:"Wenov · École du Numérique", dur:"8-10 min, essai en une minute",
-		pitch:"En anglais, comme le master : du dossier d'un patient fatigué à l'étude d'une cohorte. RGPD, interprétation d'un variant et consentement, biostatistiques et machine learning, en quatre missions." }
+		pitch:"En anglais, comme le master : dans une biobanque à −80 °C, décolle de l'étiquette du tube d'Alex tout ce qui l'identifie avant de le congeler. Puis interprète son ADN, étudie une cohorte et garde un modèle de machine learning honnête." }
 };
 
 export const PROFILES = {

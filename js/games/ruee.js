@@ -9,10 +9,10 @@
      - au comité, la pièce du dossier qu'on prend sur la table, puis le chiffre qu'on montre du doigt.
    Le dossier, les chiffres et les cours sont dans ruee-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=e7c881c81b";
-import { jpoCard } from "./jpo.js?v=e7c881c81b";
-import { palier } from "./palier.js?v=e7c881c81b";
-import { COURSES, FUND, CURVE, NEWS, BCE, REG, ORDERS, LYS, KRACH, PIECES, BOARD, QUESTIONS, fr, pct, hhmm, at } from "./ruee-data.js?v=e7c881c81b";
+import { makePerson, std, box, cyl } from "../kit.js?v=c983301653";
+import { jpoCard } from "./jpo.js?v=c983301653";
+import { palier } from "./palier.js?v=c983301653";
+import { COURSES, FUND, CURVE, NEWS, BCE, REG, ORDERS, LYS, KRACH, PIECES, BOARD, QUESTIONS, fr, pct, hhmm, at } from "./ruee-data.js?v=c983301653";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
