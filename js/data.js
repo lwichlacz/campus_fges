@@ -66,8 +66,8 @@ export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "ro
 export const GAME_INFO = {
 	clinique:{ fid:"veto", title:"La clinique rurale", icon:"🩺", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min, essai en une minute",
 		pitch:"Une journée de vétérinaire rural : pose le stéthoscope sur Pixel et tape le rythme de son cœur affolé, trouve ce qu'il a mangé, trempe une bandelette dans le rumen d'une vache, date les roches de la carrière, fais tourner les cultures d'un champ… puis passe l'oral du concours B." },
-	jourj:{ fid:"cupge", title:"Le jour J", icon:"⏳", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min, essai en une minute",
-		pitch:"Le jour du concours, dans le grand hall d'une école : l'horloge tourne pendant l'épreuve de logique, traque les fautes, accroche l'histoire sur la frise, écris en anglais… puis affronte le jury de l'entretien avec tes cartes d'expérience, et cherche ton nom sur le tableau des admis." },
+	jourj:{ fid:"cupge", title:"La note de 8 h", icon:"📝", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min, essai en une minute",
+		pitch:"21 h 47 : Pavé, marque lilloise de baskets, perd ses clients, et sa PDG veut une recommandation pour 8 h. Surligne les avis, démasque le chiffre qui ment, écarte le sondage biaisé, lis le rapport anglais, bâtis ton plan… puis défends ta note devant la direction, preuve en main." },
 	moniac:{ fid:"d2", title:"La machine de l'économiste", icon:"⚙️", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"6 min, essai en une minute",
 		pitch:"Une économie hydraulique de bois et de verre, comme la MONIAC de 1949 : ouvre la vanne de la dépense publique sans noyer le pays, découvre le paradoxe de l'épargne, affronte trois adversaires au dilemme du prisonnier (en anglais), puis démasque une corrélation qui ment." },
 	tp:{ fid:"apes", title:"La salle de TP", icon:"⚗️", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"6 min, essai en une minute",
