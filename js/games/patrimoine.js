@@ -6,7 +6,7 @@
    On raisonne avec le droit d'aujourd'hui. Famille fictive. Contenu à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=c983301653";
+import { jpoCard } from "./jpo.js?v=7c02b5ee69";
 
 const COURSES = {
 	famille: ["Droit de la famille", "Régimes matrimoniaux, PACS, concubinage : qui possède quoi dans un couple, et que changer quand la vie change."],
@@ -20,7 +20,7 @@ const MOBILE = 760;
 const TIMELINE = [["1959", "1959", ["intro"]], ["1967", "1967", ["mariage"]], ["1972", "1972", ["maison"]], ["1985", "1985", ["immeuble"]], ["1991", "1991", ["deces", "placer"]], ["1997", "1997", ["contrats"]], ["Remariage", "Remar.", ["remariage"]], ["Aujourd'hui", "Auj.", ["concubin", "transmettre", "end"]]];
 
 const CSS = `
-.gp{position:fixed;inset:0;z-index:40;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#24302a;background:#0f3168;animation:gpIn .35s ease both;overflow:hidden}
+.gp{position:fixed;inset:0;z-index:40;font-family:Inter,Arial,sans-serif;font-weight:300;color:#24302a;background:#0f3168;animation:gpIn .35s ease both;overflow:hidden}
 @keyframes gpIn{from{opacity:0}to{opacity:1}}
 .gp canvas{position:absolute;left:0;top:0;display:block;touch-action:none}
 .gp-top{position:absolute;left:0;right:0;top:0;z-index:3;display:flex;gap:8px;align-items:center;padding:10px;pointer-events:none}
@@ -50,47 +50,47 @@ const CSS = `
 	.gp-hint,.gp-tl{bottom:auto}
 }
 .gp-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#872850}
-.gp-h{font:300 22px/1.15 Tiempos Headline,Georgia,serif;margin:4px 0 6px;color:#0f3168}
+.gp-h{font:300 22px/1.15 Tiempos Headline,Times New Roman,serif;margin:4px 0 6px;color:#0f3168}
 .gp-p{margin:0 0 10px;color:#4a5450;font-size:14.5px}
-.gp-year{display:inline-block;font:300 13px Inter,system-ui,sans-serif;background:#0f3168;color:#fbf5f8;border-radius:6px;padding:3px 9px;margin-bottom:6px}
+.gp-year{display:inline-block;font:300 13px Inter,Arial,sans-serif;background:#0f3168;color:#fbf5f8;border-radius:6px;padding:3px 9px;margin-bottom:6px}
 .gp-story{background:#fbf5f8;border-left:4px solid #872850;border-radius:4px;padding:10px 12px;margin:8px 0 12px;font-size:14px;color:#3d3528}
 .gp-ask{display:block;margin-top:8px;color:#b3261e;font-weight:800;font-size:13.5px}
 .gp-ask:before{content:"⚖ Gestion de patrimoine · "}
-.gp-go{display:block;width:100%;border:0;border-radius:12px;padding:14px;background:#0f3168;color:#fff;font:700 16px Inter,system-ui,sans-serif;cursor:pointer;margin-top:12px;text-align:center;text-decoration:none}
-.gp-alt{display:block;width:100%;border:2px solid #d9cfb4;border-radius:12px;padding:12px;background:#fff;color:#0f3168;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none}
+.gp-go{display:block;width:100%;border:0;border-radius:12px;padding:14px;background:#0f3168;color:#fff;font:700 16px Inter,Arial,sans-serif;cursor:pointer;margin-top:12px;text-align:center;text-decoration:none}
+.gp-alt{display:block;width:100%;border:2px solid #d9cfb4;border-radius:12px;padding:12px;background:#fff;color:#0f3168;font:700 14px Inter,Arial,sans-serif;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none}
 .gp-msg{min-height:20px;font-size:13.5px;font-weight:700;color:#4a5450;margin:6px 0}
 .gp-msg.ko{color:#b3261e}.gp-msg.ok{color:#2c6a46}
 .gp-opts{display:grid;gap:7px}
-.gp-opt{text-align:left;border:2px solid #d9cfb4;background:#fff;border-radius:10px;padding:10px 12px;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;color:#24302a}
+.gp-opt{text-align:left;border:2px solid #d9cfb4;background:#fff;border-radius:10px;padding:10px 12px;font:700 14px Inter,Arial,sans-serif;cursor:pointer;color:#24302a}
 .gp-opt:hover{border-color:#0f3168}
 .gp-opt.ok{border-color:#3d7a55;background:#eef8f0}.gp-opt.ko{border-color:#872850;background:#fdeceb}
 .gp-opt[aria-pressed=true]{border-color:#0f3168;box-shadow:0 0 0 3px rgba(31,61,49,.18)}
 .gp-n{font-size:12px;font-weight:800;color:#872850;margin-bottom:4px}
 .gp-item{background:#fff;border:2px solid #872850;border-radius:10px;padding:10px 12px;margin:6px 0;font-size:14px}
-.gp-item b{display:block;font:300 16px Tiempos Headline,Georgia,serif;color:#0f3168}
+.gp-item b{display:block;font:300 16px Tiempos Headline,Times New Roman,serif;color:#0f3168}
 .gp-item small{color:#6f6a5c}
 .gp-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.gp-acts button{border:2px solid #d9cfb4;background:#fff;border-radius:10px;padding:8px 10px;font:700 13px Inter,system-ui,sans-serif;cursor:pointer;color:#24302a;display:flex;align-items:center;gap:6px}
+.gp-acts button{border:2px solid #d9cfb4;background:#fff;border-radius:10px;padding:8px 10px;font:700 13px Inter,Arial,sans-serif;cursor:pointer;color:#24302a;display:flex;align-items:center;gap:6px}
 .gp-acts button i{width:12px;height:12px;border-radius:50%;display:inline-block}
 .gp-acts button:hover{border-color:#0f3168}
 .gp-acts button.ko{border-color:#872850;background:#fdeceb}
 .gp-why{display:block;margin-top:6px;color:#2c6a46;font-weight:700;font-size:13px}
 .gp-cols{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .gp-cols h4{margin:0 0 4px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#6f6a5c}
-.gp-pick{display:block;width:100%;text-align:left;border:2px solid #fbf5f8;background:#fff;border-radius:8px;padding:8px;margin-bottom:6px;font:700 12.5px/1.3 Inter,system-ui,sans-serif;cursor:pointer;color:#24302a}
+.gp-pick{display:block;width:100%;text-align:left;border:2px solid #fbf5f8;background:#fff;border-radius:8px;padding:8px;margin-bottom:6px;font:700 12.5px/1.3 Inter,Arial,sans-serif;cursor:pointer;color:#24302a}
 .gp-pick b{display:block;font-size:14px}
 .gp-pick[aria-pressed=true]{border-color:#0f3168;box-shadow:0 0 0 3px rgba(31,61,49,.18)}
 .gp-pick.done{border-color:#3d7a55;background:#eef8f0;cursor:default}
 .gp-tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0}
 .gp-tbl th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6f6a5c;text-align:left;padding:4px}
 .gp-tbl td{padding:7px 4px;border-top:1px solid #fbf5f8;vertical-align:middle}
-.gp-tbl td button{border:2px solid #d9cfb4;background:#fff;border-radius:8px;padding:5px 8px;font:700 12.5px Inter,system-ui,sans-serif;cursor:pointer;margin:2px 2px 2px 0}
+.gp-tbl td button{border:2px solid #d9cfb4;background:#fff;border-radius:8px;padding:5px 8px;font:700 12.5px Inter,Arial,sans-serif;cursor:pointer;margin:2px 2px 2px 0}
 .gp-tbl td button.on{border-color:#0f3168;background:#0f3168;color:#fff}
 .gp-tbl td button.ok{border-color:#3d7a55;background:#3d7a55;color:#fff}
 .gp-tbl td button.ko{border-color:#872850;background:#fdeceb}
 .gp-course{background:#fff;border:2px solid #872850;border-radius:10px;padding:12px 14px;margin:10px 0 4px}
 .gp-course .tag{display:inline-block;background:#fbf5f8;color:#872850;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px;margin-bottom:6px}
-.gp-course b{display:block;font:300 17px Tiempos Headline,Georgia,serif;margin-bottom:3px}
+.gp-course b{display:block;font:300 17px Tiempos Headline,Times New Roman,serif;margin-bottom:3px}
 .gp-course span{font-size:14px;color:#4a5450}
 .gp-list{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
 .gp-list li{background:#fff;border:1px solid #fbf5f8;border-radius:8px;padding:8px 12px;font-size:14px;font-weight:700}
@@ -105,22 +105,22 @@ const CSS = `
 .gp-goal{background:#fbf5f8;border-radius:8px;padding:8px 10px;font-weight:800;font-size:13.5px;color:#0f3168;margin:0 0 6px}
 .gp-pre{background:#fff;border:1px dashed #872850;border-radius:8px;padding:8px 10px;font-size:13.5px;color:#3d3528;margin:0 0 8px}
 .gp-hand{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px 0 4px;perspective:900px}
-.gp-c{position:relative;width:calc((100% - 16px)/3);max-width:124px;min-height:168px;border:0;border-radius:12px;padding:10px 7px 8px;cursor:pointer;text-align:center;color:#24302a;font-family:Inter,system-ui,sans-serif;font-weight:300;
+.gp-c{position:relative;width:calc((100% - 16px)/3);max-width:124px;min-height:168px;border:0;border-radius:12px;padding:10px 7px 8px;cursor:pointer;text-align:center;color:#24302a;font-family:Inter,Arial,sans-serif;font-weight:300;
 	background:linear-gradient(160deg,#fffdf6,#fbf5f8);box-shadow:0 0 0 2px #872850 inset,0 0 0 5px #fffdf6 inset,0 0 0 6px #d9a3ba inset,0 8px 16px rgba(40,25,10,.25);
 	transform:rotate(var(--r));animation:gpDeal .5s cubic-bezier(.2,.9,.3,1.2) both;animation-delay:var(--d);transition:transform .2s,box-shadow .2s,opacity .3s,filter .3s}
 @keyframes gpDeal{from{opacity:0;transform:translateY(60px) rotate(18deg) scale(.7)}}
 .gp-c .ic{display:block;font-size:34px;line-height:1.1;margin:4px 0 6px}
-.gp-c b{display:block;font:300 14px/1.15 Inter,system-ui,sans-serif;color:#0f3168;margin-bottom:5px}
+.gp-c b{display:block;font:300 14px/1.15 Inter,Arial,sans-serif;color:#0f3168;margin-bottom:5px}
 .gp-c small{display:block;font-size:11.5px;line-height:1.25;color:#5d584b}
 .gp-c:hover{transform:translateY(-6px) rotate(0)}
 .gp-c.sel{transform:translateY(-12px) rotate(0) scale(1.04);box-shadow:0 0 0 3px #0f3168 inset,0 0 0 6px #fffdf6 inset,0 0 0 7px #d9a3ba inset,0 14px 24px rgba(31,61,49,.35)}
 .gp-c.out{opacity:.3;filter:grayscale(1);transform:scale(.92);pointer-events:none}
 .gp-c.played{pointer-events:none;animation:gpPlay .7s ease both}
 @keyframes gpPlay{0%{transform:translateY(-12px)}45%{transform:translateY(-30px) rotateY(90deg) scale(1.1)}100%{transform:translateY(-8px) rotateY(0) scale(1.06)}}
-.gp-c .stamp{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) rotate(-12deg);font:300 18px Inter,system-ui,sans-serif;letter-spacing:1px;padding:3px 8px;border:3px solid;border-radius:8px;background:rgba(255,255,255,.85);animation:gpStamp .3s cubic-bezier(.2,1.6,.4,1) both;white-space:nowrap}
+.gp-c .stamp{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) rotate(-12deg);font:300 18px Inter,Arial,sans-serif;letter-spacing:1px;padding:3px 8px;border:3px solid;border-radius:8px;background:rgba(255,255,255,.85);animation:gpStamp .3s cubic-bezier(.2,1.6,.4,1) both;white-space:nowrap}
 .gp-c .stamp.s3{color:#2c6a46}.gp-c .stamp.s2{color:#872850}.gp-c .stamp.s1{color:#b3261e}
 @keyframes gpStamp{from{transform:translate(-50%,-50%) rotate(-12deg) scale(2.4);opacity:0}}
-.gp-playbtn{display:block;width:100%;border:0;border-radius:12px;padding:13px;background:#872850;color:#fff;font:700 15px Inter,system-ui,sans-serif;cursor:pointer;margin-top:10px;animation:gpUp .3s both}
+.gp-playbtn{display:block;width:100%;border:0;border-radius:12px;padding:13px;background:#872850;color:#fff;font:700 15px Inter,Arial,sans-serif;cursor:pointer;margin-top:10px;animation:gpUp .3s both}
 .gp-pickhint{text-align:center;font-size:12.5px;font-weight:700;color:#6f6a5c;margin-top:6px}
 .gp-verdict{border-radius:10px;padding:10px 12px;margin:12px 0 8px;font-weight:800;font-size:15px;display:flex;align-items:center;gap:10px;animation:gpUp .35s both}
 .gp-verdict .st{font-size:20px;letter-spacing:2px}
@@ -129,7 +129,7 @@ const CSS = `
 .gp-delta span{font-size:12.5px;font-weight:800;border-radius:999px;padding:3px 9px;background:#fbf5f8}
 .gp-tip{background:#fbf5f8;border-left:4px solid #872850;border-radius:4px;padding:8px 10px;font-size:13.5px;margin:8px 0}
 .gp-gate{background:#0f3168;color:#fbf5f8;border-radius:10px;padding:12px 14px;margin:12px 0 4px;font-size:14px;line-height:1.4;animation:gpUp .35s both}
-.gp-gate b{display:block;font:300 17px/1.25 Tiempos Headline,Georgia,serif;color:#fff;margin-bottom:4px}
+.gp-gate b{display:block;font:300 17px/1.25 Tiempos Headline,Times New Roman,serif;color:#fff;margin-bottom:4px}
 @media (max-width:${MOBILE - 1}px){ .gp-gate span{display:none} .gp-gate b{margin:0} }      /* téléphone : le bouton « Ouvrir tout le dossier » doit rester à l'écran */
 .gp-real{font-style:italic;color:#6f6a5c;font-size:13.5px;margin:6px 0}
 .gp-sim{font-variant-numeric:tabular-nums;font-size:13.5px;margin:6px 0;padding:0;list-style:none}
@@ -140,14 +140,14 @@ const CSS = `
 .gp-bubble svg{flex:none;width:64px;height:64px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
 .gp-bubble p{flex:1;position:relative;margin:0;background:#fffcf3;border:2px solid #0f3168;border-radius:14px;padding:8px 14px;font-size:14.5px;font-weight:700;line-height:1.35;color:#0f3168;box-shadow:0 8px 20px rgba(0,0,0,.3);min-height:20px}
 .gp-bubble p:before{content:"";position:absolute;left:-9px;top:50%;width:14px;height:14px;background:#fffcf3;border:2px solid #0f3168;border-top:0;border-right:0;transform:translateY(-50%) rotate(45deg)}
-.gp-bubble p b{display:block;font:700 10.5px Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#872850;margin-bottom:2px}
+.gp-bubble p b{display:block;font:700 10.5px Inter,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#872850;margin-bottom:2px}
 .gp-cs{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#3b2a5a,#7a3e8f);color:#fff;border-radius:12px;padding:10px 12px;margin-bottom:10px;animation:gpCs .7s cubic-bezier(.2,1.4,.4,1) both}
 .gp-cs i{font-style:normal;font-size:30px;animation:gpDie 1s ease both}
-.gp-cs b{font:300 18px Tiempos Headline,Georgia,serif;display:block}
+.gp-cs b{font:300 18px Tiempos Headline,Times New Roman,serif;display:block}
 .gp-cs small{opacity:.85;font-weight:700}
 @keyframes gpCs{from{opacity:0;transform:rotateX(90deg)}}
 @keyframes gpDie{0%{transform:rotate(0)}70%{transform:rotate(720deg) scale(1.3)}100%{transform:rotate(720deg)}}
-.gp-clock{font:300 26px Tiempos Headline,Georgia,serif;text-align:center;color:#0f3168;margin:8px 0}
+.gp-clock{font:300 26px Tiempos Headline,Times New Roman,serif;text-align:center;color:#0f3168;margin:8px 0}
 @media (max-width:520px){ .gp-bubble svg{width:46px;height:46px} .gp-bubble p{font-size:12.5px;padding:6px 10px} .gp-meters{gap:4px;left:8px;right:60px} .gp-m{min-width:0;padding:4px 7px;font-size:12px} .gp-m small{display:none}
 	.gp-m.fam b:before{content:"💰 "}.gp-m.fisc b:before{content:"🏛 "}.gp-m.conf b:before{content:"⚡ "} }
 @media (max-width:440px){ .gp-c{min-height:150px;padding:8px 5px} .gp-c .ic{font-size:28px} .gp-c b{font-size:12.5px} .gp-c small{font-size:10.5px} .gp-m{min-width:56px;font-size:11.5px;padding:4px 8px} }
@@ -216,7 +216,7 @@ function world(canvas){
 		books.forEach(([x, y, z, w, h], i) => { mtx.makeScale(w, h, 1.9); mtx.setPosition(x, y, z); bm.setMatrixAt(i, mtx); bm.setColorAt(i, col.set(PAL[(i*7 + (i >> 3)) % PAL.length])); });
 		deco.add(bm);
 		// plaque de l'étude, entre la bibliothèque et la fenêtre
-		const plaque = tex(512, 128, (x, w, h) => { x.fillStyle = "#c9a548"; x.fillRect(0, 0, w, h); x.strokeStyle = "#7a5a1a"; x.lineWidth = 8; x.strokeRect(8, 8, w - 16, h - 16); x.fillStyle = "#3b2a10"; x.textAlign = "center"; x.font = "300 44px Tiempos Headline,Georgia,serif"; x.fillText("Maître Bonchamp", w/2, 62); x.font = "700 26px Inter,system-ui,sans-serif"; x.fillText("NOTAIRE", w/2, 100); });
+		const plaque = tex(512, 128, (x, w, h) => { x.fillStyle = "#c9a548"; x.fillRect(0, 0, w, h); x.strokeStyle = "#7a5a1a"; x.lineWidth = 8; x.strokeRect(8, 8, w - 16, h - 16); x.fillStyle = "#3b2a10"; x.textAlign = "center"; x.font = "300 44px Tiempos Headline,Times New Roman,serif"; x.fillText("Maître Bonchamp", w/2, 62); x.font = "700 26px Inter,Arial,sans-serif"; x.fillText("NOTAIRE", w/2, 100); });
 		still(new THREE.PlaneGeometry(5, 1.25), new THREE.MeshStandardMaterial({ map:plaque, metalness:.4, roughness:.4 }), -8.75, FY + 13, -31.4);
 		// deux plantes dans les angles
 		for(const sx of [-1, 1]){
@@ -231,7 +231,7 @@ function world(canvas){
 		const bulb = new THREE.PointLight("#ffd9a0", 6, 9, 1.6); bulb.position.set(0, 1.7, .6); lamp.add(bulb);
 		const dossiers = new THREE.Group(); dossiers.position.set(-9.2, 0, -9); dossiers.rotation.y = .5; scene.add(dossiers);
 		["#d8c08a", "#c9b07a", "#e2cc98", "#bfa36b"].forEach((c, i) => { const d = mesh(new THREE.BoxGeometry(2.2, .16, 2.9), M(c), (i % 2)*.12, .08 + i*.17, -(i % 2)*.1); d.rotation.y = (i - 1.5)*.05; dossiers.add(d); });
-		const cover = mesh(new THREE.PlaneGeometry(1.9, 1.1), new THREE.MeshStandardMaterial({ map:tex(256, 148, (x, w, h) => { x.fillStyle = "#fff8e8"; x.fillRect(0, 0, w, h); x.fillStyle = "#3b2a10"; x.textAlign = "center"; x.font = "300 30px Tiempos Headline,Georgia,serif"; x.fillText("Dossier", w/2, 62); x.fillText("Deslaurier", w/2, 104); }) }), .12, .78, -.3); cover.rotation.x = -Math.PI/2; dossiers.add(cover);
+		const cover = mesh(new THREE.PlaneGeometry(1.9, 1.1), new THREE.MeshStandardMaterial({ map:tex(256, 148, (x, w, h) => { x.fillStyle = "#fff8e8"; x.fillRect(0, 0, w, h); x.fillStyle = "#3b2a10"; x.textAlign = "center"; x.font = "300 30px Tiempos Headline,Times New Roman,serif"; x.fillText("Dossier", w/2, 62); x.fillText("Deslaurier", w/2, 104); }) }), .12, .78, -.3); cover.rotation.x = -Math.PI/2; dossiers.add(cover);
 		const tampon = new THREE.Group(); tampon.position.set(-4.4, 0, -12.2); scene.add(tampon);
 		tampon.add(mesh(new THREE.BoxGeometry(1.4, .14, 1), M("#2a2a2a"), 1.1, .07, 0), mesh(new THREE.CylinderGeometry(.35, .35, .18, 20), M("#8f1d21"), 0, .09, 0), mesh(new THREE.CylinderGeometry(.12, .16, .7, 12), M("#6b3a1f"), 0, .53, 0), mesh(new THREE.SphereGeometry(.24, 14, 10), M("#6b3a1f"), 0, .95, 0));
 		const stylo = mesh(new THREE.CylinderGeometry(.07, .07, 2, 10), M("#111", { metalness:.5, roughness:.3 }), 4, .1, -12.2); stylo.rotation.set(0, 0, Math.PI/2); stylo.rotation.y = .4; scene.add(stylo);
@@ -241,7 +241,7 @@ function world(canvas){
 	let LS = 1;
 	function drawLabel(sp, text, o){
 		const c = sp.userData.c || (sp.userData.c = document.createElement("canvas")), x = c.getContext("2d");
-		const f = `700 ${o.big ? 60 : 44}px Inter, system-ui, sans-serif`; x.font = f;
+		const f = `700 ${o.big ? 60 : 44}px Inter,Arial,sans-serif`; x.font = f;
 		const w = Math.ceil(x.measureText(text).width) + (o.bg ? 44 : 12), h = o.big ? 88 : 68;
 		c.width = w; c.height = h; x.font = f;
 		if(o.bg){ x.fillStyle = o.bg; x.beginPath(); x.roundRect(2, 2, w - 4, h - 4, h/2 - 2); x.fill(); if(o.line){ x.strokeStyle = o.line; x.lineWidth = 4; x.stroke(); } }

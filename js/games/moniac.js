@@ -8,10 +8,10 @@
    4 · statistique et économétrie : une corrélation trompeuse, et la variable cachée qui l'explique ;
    puis les débouchés : ENS Paris-Saclay, magistères, écoles.
    Modèles simplifiés ; contenu à relire par l'équipe de la prépa. */
-import { stage3d, THREE } from "./stage3d.js?v=c983301653";
-import { makePerson } from "../kit.js?v=c983301653";
-import { jpoCard } from "./jpo.js?v=c983301653";
-import { palier } from "./palier.js?v=c983301653";
+import { stage3d, THREE } from "./stage3d.js?v=7c02b5ee69";
+import { makePerson } from "../kit.js?v=7c02b5ee69";
+import { jpoCard } from "./jpo.js?v=7c02b5ee69";
+import { palier } from "./palier.js?v=7c02b5ee69";
 
 const COURSES = {
 	macro: ["Macroéconomie", "Revenu, consommation, multiplicateur : comment une dépense se propage dans toute l'économie."],
@@ -34,42 +34,42 @@ const BOTS = [
 const TOWNS = [[12, 2, 14], [18, 3, 17], [25, 4, 20], [30, 6, 23], [38, 7, 26], [44, 8, 28], [15, 3, 15], [34, 6, 24], [22, 4, 19], [41, 8, 27]];
 
 const CSS = `
-.mn{position:fixed;inset:0;z-index:40;background:#1a1410;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#e9f7fa;overflow:hidden;animation:mnIn .4s ease both}
+.mn{position:fixed;inset:0;z-index:40;background:#1a1410;font-family:Inter,Arial,sans-serif;font-weight:300;color:#e9f7fa;overflow:hidden;animation:mnIn .4s ease both}
 @keyframes mnIn{from{opacity:0}}
 .mn canvas.mn-3d{position:absolute;inset:0;display:block;touch-action:none}
 .mn-x{position:absolute;right:12px;top:10px;z-index:4;width:40px;height:40px;border-radius:50%;border:1px solid #e9f7fa;background:#0f3168;color:#fff;font-size:22px;cursor:pointer}
 .mn-steps{position:absolute;left:12px;top:10px;z-index:3;display:flex;gap:5px;flex-wrap:wrap;max-width:calc(100% - 470px)}
-.mn-steps span{font:700 12px Inter,system-ui,sans-serif;border:1px solid rgba(233,247,250,.35);border-radius:3px;padding:5px 9px;color:#7f98bd;background:rgba(15,49,104,.75)}
+.mn-steps span{font:700 12px Inter,Arial,sans-serif;border:1px solid rgba(233,247,250,.35);border-radius:3px;padding:5px 9px;color:#7f98bd;background:rgba(15,49,104,.75)}
 .mn-steps span.done{color:#9cf0c4}.mn-steps span.now{background:#e9f7fa;color:#0f3168}
 .mn-bp{position:absolute;right:14px;top:58px;bottom:14px;width:396px;z-index:3;overflow:auto;box-sizing:border-box;padding:16px;border-radius:4px;scrollbar-width:thin;
 	background-color:#0f3168;background-image:linear-gradient(rgba(233,247,250,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(233,247,250,.08) 1px,transparent 1px);background-size:22px 22px;border:2px solid #e9f7fa;box-shadow:0 20px 50px rgba(0,0,0,.5)}
-.mn-k{font:300 11px Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#e9f7fa}
-.mn-h{font:300 21px/1.2 Tiempos Headline,Georgia,serif;margin:3px 0 8px;color:#fff}
+.mn-k{font:300 11px Inter,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#e9f7fa}
+.mn-h{font:300 21px/1.2 Tiempos Headline,Times New Roman,serif;margin:3px 0 8px;color:#fff}
 .mn-p{margin:0 0 9px;font-size:14px;line-height:1.5;color:#e9f7fa}
 .mn-p b{color:#fff}
 .mn-prof{border:1px dashed #e9f7fa;padding:7px 10px;margin:8px 0;font-size:13.5px;line-height:1.45}
-.mn-prof small{display:block;font:300 10.5px Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#21b7cb}
+.mn-prof small{display:block;font:300 10.5px Inter,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#21b7cb}
 .mn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:6px 0}
-.mn-num{font:300 26px Tiempos Headline,Georgia,serif;font-variant-numeric:tabular-nums}
-.mn-num small{display:block;font:700 10px Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#e9f7fa}
+.mn-num{font:300 26px Tiempos Headline,Times New Roman,serif;font-variant-numeric:tabular-nums}
+.mn-num small{display:block;font:700 10px Inter,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#e9f7fa}
 .mn-range{width:100%;accent-color:#21b7cb;height:34px}
-.mn-go{display:block;width:100%;border:0;border-radius:4px;padding:13px;margin-top:10px;background:#21b7cb;color:#0f3168;font:700 15px Inter,system-ui,sans-serif;cursor:pointer}
+.mn-go{display:block;width:100%;border:0;border-radius:4px;padding:13px;margin-top:10px;background:#21b7cb;color:#0f3168;font:700 15px Inter,Arial,sans-serif;cursor:pointer}
 .mn-go:disabled{opacity:.35}
-.mn-alt{display:block;width:100%;border:1px solid #e9f7fa;border-radius:4px;padding:11px;margin-top:8px;background:transparent;color:#e9f7fa;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
-.mn-log{font:300 12.5px/1.5 Inter,system-ui,sans-serif;color:#9cf0c4;background:rgba(0,0,0,.25);padding:7px 9px;margin:8px 0;min-height:20px;max-height:140px;overflow:auto}
+.mn-alt{display:block;width:100%;border:1px solid #e9f7fa;border-radius:4px;padding:11px;margin-top:8px;background:transparent;color:#e9f7fa;font:700 14px Inter,Arial,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
+.mn-log{font:300 12.5px/1.5 Inter,Arial,sans-serif;color:#9cf0c4;background:rgba(0,0,0,.25);padding:7px 9px;margin:8px 0;min-height:20px;max-height:140px;overflow:auto}
 .mn-ok{color:#9cf0c4;font-weight:800;font-size:13.5px;margin:6px 0}.mn-ko{color:#ff9a8a;font-weight:800;font-size:13.5px;margin:6px 0}
 .mn-course{border:1px solid #21b7cb;border-radius:3px;padding:8px 10px;margin:8px 0;background:rgba(33,183,203,.06)}
-.mn-course small{display:block;font:300 10px Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#21b7cb}
+.mn-course small{display:block;font:300 10px Inter,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#21b7cb}
 .mn-course b{display:block;color:#fff}.mn-course span{font-size:13px;color:#e9f7fa}
 .mn-stars{font-size:20px;letter-spacing:3px;color:#21b7cb}
 .mn-cd{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
-.mn-cd button{border:2px solid #e9f7fa;background:transparent;color:#fff;border-radius:6px;padding:12px;font:700 15px Inter,system-ui,sans-serif;cursor:pointer}
+.mn-cd button{border:2px solid #e9f7fa;background:transparent;color:#fff;border-radius:6px;padding:12px;font:700 15px Inter,Arial,sans-serif;cursor:pointer}
 .mn-cd button:hover{background:rgba(233,247,250,.15)}
-.mn-mat{width:100%;border-collapse:collapse;font:300 13px Inter,system-ui,sans-serif;margin:6px 0;text-align:center}
+.mn-mat{width:100%;border-collapse:collapse;font:300 13px Inter,Arial,sans-serif;margin:6px 0;text-align:center}
 .mn-mat td,.mn-mat th{border:1px solid rgba(233,247,250,.4);padding:5px}
 .mn-mat th{color:#e9f7fa;font-weight:700}
 .mn-opts{display:grid;gap:6px;margin:6px 0}
-.mn-opts button{text-align:left;border:1px solid #e9f7fa;background:transparent;color:#e9f7fa;border-radius:4px;padding:9px 11px;font:700 14px Inter,system-ui,sans-serif;cursor:pointer}
+.mn-opts button{text-align:left;border:1px solid #e9f7fa;background:transparent;color:#e9f7fa;border-radius:4px;padding:9px 11px;font:700 14px Inter,Arial,sans-serif;cursor:pointer}
 .mn-opts button:hover{background:rgba(233,247,250,.12)}
 .mn-tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0}
 .mn-tbl td{padding:5px 3px;border-top:1px solid rgba(233,247,250,.25)}.mn-tbl td:last-child{text-align:right;font-weight:800;color:#fff}
@@ -104,7 +104,7 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 	mesh(G(new THREE.PlaneGeometry(60, 40)), M("#ffffff", { map:wood, roughness:.7 }), 0, 0, 0).rotation.x = -Math.PI/2;
 	box(60, 18, .5, M("#ffffff", { map:wood }), 0, 0, -12);
 	for(let r = 0; r < 4; r++) for(let i = -3; i <= 3; i++){ const a = i*.18, R = 14 + r*3; box(2.4, .9 + r*.6, 1.2, "#4a2e1a", Math.sin(a)*R, 0, Math.cos(a)*R - 2); }
-	const title = label("MONIAC · Phillips, 1949", { size:.026, bg:"#0d2a4a", fg:"#ffd27a", font:"Inter, system-ui, sans-serif" }); title.position.set(0, 15.4, -10); scene.add(title);
+	const title = label("MONIAC · Phillips, 1949", { size:.026, bg:"#0d2a4a", fg:"#ffd27a", font:"Inter,Arial,sans-serif" }); title.position.set(0, 15.4, -10); scene.add(title);
 	// la machine : un panneau de bois, des réservoirs de verre, des tuyaux, de l'eau
 	const mach = new THREE.Group(); mach.position.set(0, 0, -9); scene.add(mach);
 	box(16, 14, .5, "#7a4e2a", 0, .5, -.4, mach); box(16.6, .5, 2.2, "#4a2e1a", 0, 0, .4, mach);
@@ -114,7 +114,7 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 		const g = new THREE.Group(); g.position.set(x, y, .5); mach.add(g);
 		mesh(G(new THREE.BoxGeometry(w, h, 1.2)), glass, 0, h/2, 0, g);
 		const water = mesh(G(new THREE.BoxGeometry(w - .15, 1, 1.05)), waterM, 0, 0, 0, g);
-		const l = label(name, { size:.022, bg:"#0d2a4a", fg:"#eaf2ff", font:"Inter, system-ui, sans-serif" }); l.center.set(.5, 0); l.position.set(0, h + .3, .6); g.add(l);      // ancrée par le bas : l'étiquette se pose sur le réservoir sans le masquer
+		const l = label(name, { size:.022, bg:"#0d2a4a", fg:"#eaf2ff", font:"Inter,Arial,sans-serif" }); l.center.set(.5, 0); l.position.set(0, h + .3, .6); g.add(l);      // ancrée par le bas : l'étiquette se pose sur le réservoir sans le masquer
 		const T = { g, water, h, level:start, target:start, set(v){ T.target = v; } };
 		return T;
 	}
@@ -159,9 +159,9 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 			x.fillStyle = "#0d2a4a"; x.fillRect(0, 0, w, h);
 			const P = (gl, nd) => [110 + (gl - 10)/36*(w - 180), h - 90 - nd/9*(h - 170)];
 			x.strokeStyle = "#9cc4ff"; x.lineWidth = 4; x.beginPath(); x.moveTo(110, 60); x.lineTo(110, h - 90); x.lineTo(w - 50, h - 90); x.stroke();
-			x.fillStyle = "#eaf2ff"; x.font = "700 30px Inter,system-ui,sans-serif"; x.fillText("Noyades", 20, 50); x.fillText("Glaces vendues (milliers)", w - 520, h - 30);
+			x.fillStyle = "#eaf2ff"; x.font = "700 30px Inter,Arial,sans-serif"; x.fillText("Noyades", 20, 50); x.fillText("Glaces vendues (milliers)", w - 520, h - 30);
 			for(const [gl, nd, t] of TOWNS){ const [X, Y] = P(gl, nd); x.fillStyle = colorByTemp ? `hsl(${220 - (t - 14)/14*220},90%,60%)` : "#ffd27a"; x.beginPath(); x.arc(X, Y, 16, 0, 7); x.fill(); }
-			if(colorByTemp){ x.font = "700 26px Inter,system-ui,sans-serif"; x.fillStyle = "hsl(220,90%,65%)"; x.fillText("14 °C", w - 250, 50); x.fillStyle = "hsl(0,90%,60%)"; x.fillText("28 °C", w - 130, 50); }
+			if(colorByTemp){ x.font = "700 26px Inter,Arial,sans-serif"; x.fillStyle = "hsl(220,90%,65%)"; x.fillText("14 °C", w - 250, 50); x.fillStyle = "hsl(0,90%,60%)"; x.fillText("28 °C", w - 130, 50); }
 		});
 	}
 	drawPlot(false);

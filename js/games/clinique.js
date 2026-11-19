@@ -8,9 +8,9 @@
    4 · agronomie : une rotation sur trois ans, avec une jauge d'azote du sol ;
    5 · l'oral du concours, puis le choix entre école vétérinaire et école d'agronomie.
    Personnes et animaux fictifs ; contenus simplifiés, à relire par l'équipe de la prépa. */
-import { stage3d, THREE } from "./stage3d.js?v=c983301653";
-import { jpoCard } from "./jpo.js?v=c983301653";
-import { palier } from "./palier.js?v=c983301653";
+import { stage3d, THREE } from "./stage3d.js?v=7c02b5ee69";
+import { jpoCard } from "./jpo.js?v=7c02b5ee69";
+import { palier } from "./palier.js?v=7c02b5ee69";
 
 const COURSES = {
 	bio:   ["Biologie", "Physiologie, métabolisme, microbiologie : comprendre le vivant pour le soigner. Première matière du concours B."],
@@ -35,7 +35,7 @@ const CROPS = {
 };
 
 const CSS = `
-.cv{position:fixed;inset:0;z-index:40;background:#e9f7fa;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#0f3168;overflow:hidden;animation:cvIn .4s ease both}
+.cv{position:fixed;inset:0;z-index:40;background:#e9f7fa;font-family:Inter,Arial,sans-serif;font-weight:300;color:#0f3168;overflow:hidden;animation:cvIn .4s ease both}
 @keyframes cvIn{from{opacity:0}}
 .cv canvas.cv-3d{position:absolute;inset:0;display:block;touch-action:none}
 .cv-x{position:absolute;right:12px;top:10px;z-index:4;width:40px;height:40px;border-radius:50%;border:0;background:#0f3168;color:#fff;font-size:22px;cursor:pointer}
@@ -51,26 +51,26 @@ const CSS = `
 .cv-doc p{margin:0;font-size:14px;line-height:1.45;background:#e9f7fa;border-radius:4px 14px 14px 14px;padding:8px 11px}
 .cv-doc p small{display:block;font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#0f3168}
 .cv-k{font-size:10.5px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#0f3168}
-.cv-h{font:300 21px/1.2 Tiempos Headline,Georgia,serif;margin:2px 0 8px}
+.cv-h{font:300 21px/1.2 Tiempos Headline,Times New Roman,serif;margin:2px 0 8px}
 .cv-p{margin:0 0 8px;font-size:14px;line-height:1.5;color:#2f4a52}
 .cv-vitals{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
 .cv-vitals div{background:#e9f7fa;border-radius:12px;padding:7px 8px;text-align:center}
 .cv-vitals small{display:block;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#5f7f84}
-.cv-vitals b{font:300 18px Inter,system-ui,sans-serif}
+.cv-vitals b{font:300 18px Inter,Arial,sans-serif}
 .cv-vitals b.hi{color:#0f3168}
 .cv-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
-.cv-chips button{border:2px solid #cfe3e1;background:#fff;border-radius:999px;padding:7px 12px;font:700 13px Inter,system-ui,sans-serif;cursor:pointer;color:#0f3168}
+.cv-chips button{border:2px solid #cfe3e1;background:#fff;border-radius:999px;padding:7px 12px;font:700 13px Inter,Arial,sans-serif;cursor:pointer;color:#0f3168}
 .cv-chips button.on{border-color:#0f3168;background:#e9f7fa}
 .cv-say{background:#e9f7fa;border-left:4px solid #21b7cb;border-radius:4px;padding:7px 10px;margin:6px 0;font-size:13.5px}
 .cv-cards{display:grid;gap:7px;margin:8px 0}
-.cv-card{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid #cfe3e1;background:#fff;border-radius:14px;padding:10px 12px;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;color:#0f3168}
+.cv-card{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid #cfe3e1;background:#fff;border-radius:14px;padding:10px 12px;font:700 14px Inter,Arial,sans-serif;cursor:pointer;color:#0f3168}
 .cv-card i{font-style:normal;font-size:24px}
 .cv-card small{display:block;font-weight:600;font-size:12px;color:#5f7f84}
 .cv-card:hover{border-color:#0f3168}
-.cv-go{display:block;width:100%;border:0;border-radius:14px;padding:13px;margin-top:10px;background:#0f3168;color:#fff;font:700 15.5px Inter,system-ui,sans-serif;cursor:pointer}
+.cv-go{display:block;width:100%;border:0;border-radius:14px;padding:13px;margin-top:10px;background:#0f3168;color:#fff;font:700 15.5px Inter,Arial,sans-serif;cursor:pointer}
 .cv-go:disabled{opacity:.35}
-.cv-alt{display:block;width:100%;border:2px solid #cfe3e1;border-radius:14px;padding:11px;margin-top:8px;background:#fff;color:#0f3168;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
-.cv-tap{display:block;width:100%;height:84px;border:0;border-radius:16px;background:radial-gradient(circle,#ff8a7a,#0f3168);color:#fff;font:300 18px Inter,system-ui,sans-serif;cursor:pointer;touch-action:manipulation;user-select:none}
+.cv-alt{display:block;width:100%;border:2px solid #cfe3e1;border-radius:14px;padding:11px;margin-top:8px;background:#fff;color:#0f3168;font:700 14px Inter,Arial,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
+.cv-tap{display:block;width:100%;height:84px;border:0;border-radius:16px;background:radial-gradient(circle,#ff8a7a,#0f3168);color:#fff;font:300 18px Inter,Arial,sans-serif;cursor:pointer;touch-action:manipulation;user-select:none}
 .cv-tap:active{transform:scale(.97)}
 .cv-ok{color:#1f7a4a;font-weight:800;font-size:13.5px;margin:6px 0}.cv-ko{color:#b3402a;font-weight:800;font-size:13.5px;margin:6px 0}
 .cv-course{background:#e9f7fa;border-radius:12px;padding:8px 11px;margin:8px 0;border:2px solid #e9f7fa}
@@ -78,7 +78,7 @@ const CSS = `
 .cv-course b{display:block;font-size:15px}.cv-course span{font-size:13px;color:#4a5f63}
 .cv-stars{font-size:20px;letter-spacing:3px;color:#21b7cb}
 .cv-swatch{display:flex;gap:6px;margin:8px 0}
-.cv-swatch button{flex:1;height:52px;border:3px solid #fff;border-radius:10px;cursor:pointer;font:700 13px Inter,system-ui,sans-serif;color:#0f3168;box-shadow:0 0 0 2px #cfe3e1}
+.cv-swatch button{flex:1;height:52px;border:3px solid #fff;border-radius:10px;cursor:pointer;font:700 13px Inter,Arial,sans-serif;color:#0f3168;box-shadow:0 0 0 2px #cfe3e1}
 .cv-strip{height:22px;border-radius:6px;background:#e9f7fa;margin:6px 0;transition:background 1.2s}
 .cv-years{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
 .cv-years div{border:2px dashed #cfe3e1;border-radius:12px;min-height:64px;padding:6px;text-align:center;font-size:12px;font-weight:800;color:#5f7f84}

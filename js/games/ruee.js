@@ -9,10 +9,10 @@
      - au comité, la pièce du dossier qu'on prend sur la table, puis le chiffre qu'on montre du doigt.
    Le dossier, les chiffres et les cours sont dans ruee-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=c983301653";
-import { jpoCard } from "./jpo.js?v=c983301653";
-import { palier } from "./palier.js?v=c983301653";
-import { COURSES, FUND, CURVE, NEWS, BCE, REG, ORDERS, LYS, KRACH, PIECES, BOARD, QUESTIONS, fr, pct, hhmm, at } from "./ruee-data.js?v=c983301653";
+import { makePerson, std, box, cyl } from "../kit.js?v=7c02b5ee69";
+import { jpoCard } from "./jpo.js?v=7c02b5ee69";
+import { palier } from "./palier.js?v=7c02b5ee69";
+import { COURSES, FUND, CURVE, NEWS, BCE, REG, ORDERS, LYS, KRACH, PIECES, BOARD, QUESTIONS, fr, pct, hhmm, at } from "./ruee-data.js?v=7c02b5ee69";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
@@ -24,7 +24,7 @@ const lerp = (a, b, t) => a + (b - a)*t;
 const MAXP = 4 + 3 + 2 + 3 + 4 + QUESTIONS.length*3 + 1;
 
 const CSS = `
-.ru{position:fixed;inset:0;z-index:40;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#23201b;background:#e9f7fa;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;animation:ruIn .3s ease both}
+.ru{position:fixed;inset:0;z-index:40;font-family:Inter,Arial,sans-serif;font-weight:300;color:#23201b;background:#e9f7fa;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;animation:ruIn .3s ease both}
 @keyframes ruIn{from{opacity:0}to{opacity:1}}
 .ru canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .ru-top{position:absolute;left:0;right:0;top:0;display:flex;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 12px) 6px calc(env(safe-area-inset-left) + 12px);z-index:5;pointer-events:none}
@@ -49,13 +49,13 @@ const CSS = `
 .ru-ov{position:absolute;inset:0;z-index:9;display:grid;place-items:center;padding:14px;background:rgba(35,32,27,.4)}
 .ru-ov[hidden]{display:none}
 .ru-card{max-width:560px;width:100%;max-height:100%;overflow:auto;background:#fffaf2;border-radius:16px;padding:20px 18px;box-shadow:0 20px 60px rgba(0,0,0,.35);user-select:text;-webkit-user-select:text}
-.ru-card h2{font:300 26px/1.15 Tiempos Headline,Georgia,serif;margin:4px 0 8px;color:#0f3168}
+.ru-card h2{font:300 26px/1.15 Tiempos Headline,Times New Roman,serif;margin:4px 0 8px;color:#0f3168}
 .ru-card .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#0f3168;font-weight:900;margin:0 0 4px}
 .ru-card p{font-size:14.5px;line-height:1.5;margin:0 0 10px}
 .ru-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0 12px}
 .ru-legend div{background:#e9f7fa;border-radius:10px;padding:7px 9px;font-size:13px;line-height:1.3}
 .ru-legend b{font-size:18px;display:block}
-.ru-go{display:block;width:100%;border:0;border-radius:12px;padding:12px;font:700 16px Inter,system-ui,sans-serif;background:#0f3168;color:#fff;cursor:pointer;min-height:48px;box-shadow:0 4px 0 #0f221d}
+.ru-go{display:block;width:100%;border:0;border-radius:12px;padding:12px;font:700 16px Inter,Arial,sans-serif;background:#0f3168;color:#fff;cursor:pointer;min-height:48px;box-shadow:0 4px 0 #0f221d}
 .ru-go:focus-visible{outline:3px solid #21b7cb}
 .ru-alt{display:block;text-align:center;margin-top:8px;font-weight:800;color:#0f3168;background:none;border:0;cursor:pointer;width:100%;font-size:14px;text-decoration:underline;min-height:44px}
 .ru-stats{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
@@ -183,9 +183,9 @@ export function openRuee({ formation, audio, isFav, toggleFav, onClose, onEvent,
 	/* ---------- dessin des écrans ---------- */
 	const C = { bg:"#121820", panel:"#1b2430", hi:"#25354a", txt:"#e9eef2", dim:"#8d9bab", up:"#3ccf8e", down:"#ff6b52", gold:"#f4c430", line:"#2c3a4c", teal:"#5fd0c0", warn:"#ff9f43" };
 	function rr(x, c, X, Y, W, H, r){ x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + W, Y, X + W, Y + H, r); x.arcTo(X + W, Y + H, X, Y + H, r); x.arcTo(X, Y + H, X, Y, r); x.arcTo(X, Y, X + W, Y, r); x.closePath(); x.fillStyle = c; x.fill(); }
-	function txt(x, s, X, Y, size, col = C.txt, w = 700, al = "left"){ x.font = `${w} ${size}px Inter,system-ui,sans-serif`; x.fillStyle = col; x.textAlign = al; x.textBaseline = "alphabetic"; x.fillText(s, X, Y); }
+	function txt(x, s, X, Y, size, col = C.txt, w = 700, al = "left"){ x.font = `${w} ${size}px Inter,Arial,sans-serif`; x.fillStyle = col; x.textAlign = al; x.textBaseline = "alphabetic"; x.fillText(s, X, Y); }
 	function wrap(x, s, X, Y, maxW, size, col, w = 800, lh = 1.2){
-		x.font = `${w} ${size}px Inter,system-ui,sans-serif`; const words = s.split(" "); let line = "", yy = Y;
+		x.font = `${w} ${size}px Inter,Arial,sans-serif`; const words = s.split(" "); let line = "", yy = Y;
 		for(const wd of words){ const t = line ? line + " " + wd : wd; if(x.measureText(t).width > maxW && line){ txt(x, line, X, yy, size, col, w); line = wd; yy += size*lh; } else line = t; }
 		if(line) txt(x, line, X, yy, size, col, w); return yy;
 	}

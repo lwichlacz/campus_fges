@@ -10,9 +10,9 @@
    Cas : hémochromatose HFE C282Y homozygote. Séquences, cohorte et chiffres sont simulés ; contenu à relire par l'équipe du master. */
 
 import * as THREE from "three";
-import { jpoCard } from "./jpo.js?v=c983301653";
-import { palier } from "./palier.js?v=c983301653";
-import { coldChain } from "./coldchain.js?v=c983301653";
+import { jpoCard } from "./jpo.js?v=7c02b5ee69";
+import { palier } from "./palier.js?v=7c02b5ee69";
+import { coldChain } from "./coldchain.js?v=7c02b5ee69";
 
 const COURSES = {
 	protect: ["M2", "Data protection & health data", "GDPR, data minimisation, pseudonymisation, certified hosting (HDS): health data are handled before they are analysed."],
@@ -163,7 +163,7 @@ function portraits(){
 }
 
 const CSS = `
-.bd{position:fixed;inset:0;z-index:40;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#1f2a37;background:linear-gradient(160deg,#fdf8ec,#fdf8ec);overflow:auto;animation:bdIn .35s ease both}
+.bd{position:fixed;inset:0;z-index:40;font-family:Inter,Arial,sans-serif;font-weight:300;color:#1f2a37;background:linear-gradient(160deg,#fdf8ec,#fdf8ec);overflow:auto;animation:bdIn .35s ease both}
 @keyframes bdIn{from{opacity:0}to{opacity:1}}
 .bd *{box-sizing:border-box}
 .bd-top{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;background:rgba(253,248,236,.94);backdrop-filter:blur(6px)}
@@ -185,18 +185,18 @@ const CSS = `
 .bd-skills span{background:#fdf8ec;color:#6b3fa0;border-radius:999px;padding:3px 9px;font-size:11.5px;font-weight:800}
 .bd-skills em{font-style:normal;color:#8a95a1;font-size:12.5px}
 .bd-mis .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#96711a;font-weight:800}
-.bd-mis h3{font:300 22px/1.2 Tiempos Headline,Georgia,serif;margin:2px 0 6px}
+.bd-mis h3{font:300 22px/1.2 Tiempos Headline,Times New Roman,serif;margin:2px 0 6px}
 .bd-mis p{margin:0 0 8px;font-size:14px;line-height:1.55}
 .bd-step{display:inline-block;background:#fdf8ec;color:#96711a;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:800;margin-bottom:6px}
 .bd-live{font-weight:800;color:#0f3168;font-size:13.5px;margin:6px 0}
-.bd-btn{border:0;border-radius:12px;padding:11px 14px;font:700 14.5px Inter,system-ui,sans-serif;cursor:pointer;background:#cb971a;color:#0f3168}
+.bd-btn{border:0;border-radius:12px;padding:11px 14px;font:700 14.5px Inter,Arial,sans-serif;cursor:pointer;background:#cb971a;color:#0f3168}
 .bd-btn.dark{background:#0f3168;color:#fff}
 .bd-btn.alt{background:#fff;border:2px solid #d3dae1;color:#0f3168}
 .bd-btn:disabled{opacity:.45;cursor:default}
 .bd-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
-.bd-term{font:300 12.5px/1.45 Inter,system-ui,sans-serif;background:#16202b;color:#b9f3d0;border-radius:10px;padding:8px 10px;min-height:120px;max-height:300px;overflow:auto}
+.bd-term{font:300 12.5px/1.45 Inter,Arial,sans-serif;background:#16202b;color:#b9f3d0;border-radius:10px;padding:8px 10px;min-height:120px;max-height:300px;overflow:auto}
 .bd-term .ko{color:#ff8b95}.bd-term .inf{color:#fdf8ec}
-.bd-code{font:300 12px/1.5 Inter,system-ui,sans-serif;background:#16202b;color:#d6dde6;border-radius:10px;padding:8px 10px;white-space:pre;overflow-x:auto;margin:8px 0 0}
+.bd-code{font:300 12px/1.5 Inter,Arial,sans-serif;background:#16202b;color:#d6dde6;border-radius:10px;padding:8px 10px;white-space:pre;overflow-x:auto;margin:8px 0 0}
 .bd-code .c{color:#7d8896}.bd-code .s{color:#cb971a}.bd-code .k{color:#cb971a}
 .bd-course{background:#fdf8ec;border-left:4px solid #96711a;border-radius:10px;padding:8px 10px;margin:6px 0;font-size:13px}
 .bd-course .tag{display:block;font-size:11px;font-weight:800;color:#6b3fa0;text-transform:uppercase;letter-spacing:.08em}
@@ -207,10 +207,10 @@ const CSS = `
 .bd-field span{display:block;font-weight:800;margin:2px 0 6px;font-size:14px}
 .bd-field.bad{border-color:#ff4d5e;background:#fff3f4}
 .bd-seg{display:flex;gap:4px}
-.bd-seg button{flex:1;border:0;border-radius:8px;padding:6px 4px;font:700 12px Inter,system-ui,sans-serif;cursor:pointer;background:#eef1f4;color:#4b5866}
+.bd-seg button{flex:1;border:0;border-radius:8px;padding:6px 4px;font:700 12px Inter,Arial,sans-serif;cursor:pointer;background:#eef1f4;color:#4b5866}
 .bd-seg button.on.keep{background:#dff6e8;color:#1c7a43}.bd-seg button.on.tr{background:#fdf8ec;color:#96711a}.bd-seg button.on.rm{background:#ffe3e6;color:#b3132a}
 .bd-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin:8px 0}
-.bd-card{border:2px solid #dbe3ea;background:#fbfdff;border-radius:12px;padding:10px;text-align:left;font:300 13.5px/1.35 Inter,system-ui,sans-serif;cursor:pointer;display:flex;gap:8px;align-items:flex-start;color:#1f2a37}
+.bd-card{border:2px solid #dbe3ea;background:#fbfdff;border-radius:12px;padding:10px;text-align:left;font:300 13.5px/1.35 Inter,Arial,sans-serif;cursor:pointer;display:flex;gap:8px;align-items:flex-start;color:#1f2a37}
 .bd-card i{font-style:normal;font-size:20px;line-height:1}
 .bd-card:hover{border-color:#cb971a}
 .bd-card.used{opacity:.3;pointer-events:none}
@@ -230,7 +230,7 @@ const CSS = `
 .bd-tbl td{padding:7px 5px;border-bottom:1px solid #eef1f4;font-weight:700}
 .bd-tbl tr.alex td:first-child{color:#6b3fa0}
 .bd-tbl tr.wrong td{background:#fff3f4}
-.bd-tog{border:0;border-radius:999px;padding:6px 10px;font:700 12px Inter,system-ui,sans-serif;cursor:pointer;min-width:84px}
+.bd-tog{border:0;border-radius:999px;padding:6px 10px;font:700 12px Inter,Arial,sans-serif;cursor:pointer;min-width:84px}
 .bd-tog.keep{background:#dff6e8;color:#1c7a43}.bd-tog.drop{background:#ffe3e6;color:#b3132a}
 .bd-chart{width:100%;display:block;margin:4px 0;background:#fbfdff;border-radius:10px}
 .bd-slider{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;font-weight:800;font-size:13.5px;margin:8px 0}
@@ -240,7 +240,7 @@ const CSS = `
 .bd-kpi b{display:block;font-size:20px;color:#0f3168}
 .bd-kpi span{font-size:11.5px;font-weight:800;color:#5b6b7a;text-transform:uppercase;letter-spacing:.05em}
 .bd-kpi .good b{color:#1c7a43}.bd-kpi .bad b{color:#b3132a}
-.bd-pile{font:300 15px/1.25 Inter,system-ui,sans-serif;background:#16202b;color:#d6dde6;border-radius:12px;padding:10px;overflow-x:auto;white-space:pre;user-select:none}
+.bd-pile{font:300 15px/1.25 Inter,Arial,sans-serif;background:#16202b;color:#d6dde6;border-radius:12px;padding:10px;overflow-x:auto;white-space:pre;user-select:none}
 .bd-pile .ref{color:#cb971a}.bd-pile .mm{color:#ff8b95;background:rgba(255,139,149,.12)}.bd-pile .lq{color:#6b7480}
 .bd-var{border:2px solid #dbe3ea;border-radius:14px;padding:10px 12px;margin:8px 0;background:#fbfdff}
 .bd-var.bad{border-color:#ff4d5e}
@@ -249,10 +249,10 @@ const CSS = `
 .bd-ev div{background:#fff;border:1px solid #e3e8ed;border-radius:10px;padding:6px 8px;font-size:12.5px;line-height:1.4}
 .bd-ev div b{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#5b6b7a}
 .bd-opts{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
-.bd-opts button{border:2px solid #dbe3ea;background:#fff;border-radius:999px;padding:6px 11px;font:700 12.5px Inter,system-ui,sans-serif;cursor:pointer;color:#1f2a37}
+.bd-opts button{border:2px solid #dbe3ea;background:#fff;border-radius:999px;padding:6px 11px;font:700 12.5px Inter,Arial,sans-serif;cursor:pointer;color:#1f2a37}
 .bd-opts button.on{border-color:#cb971a;background:#fdf8ec}
 .bd-choice{display:flex;flex-direction:column;gap:8px;margin:8px 0}
-.bd-choice button{border:2px solid #dbe3ea;background:#fff;border-radius:12px;padding:10px 12px;text-align:left;font:700 14px/1.45 Inter,system-ui,sans-serif;cursor:pointer;color:#1f2a37}
+.bd-choice button{border:2px solid #dbe3ea;background:#fff;border-radius:12px;padding:10px 12px;text-align:left;font:700 14px/1.45 Inter,Arial,sans-serif;cursor:pointer;color:#1f2a37}
 .bd-choice button:hover{border-color:#cb971a}
 .bd-choice button.on{border-color:#cb971a;background:#fdf8ec}
 .bd-choice button.bad{border-color:#ff4d5e;background:#fff3f4}
@@ -265,7 +265,7 @@ const CSS = `
 .bd-ov[hidden]{display:none}
 .bd-crd{max-width:560px;width:100%;max-height:100%;overflow:auto;background:#fff;border-radius:18px;padding:20px 18px;box-shadow:0 20px 50px rgba(20,30,45,.35);animation:bdUp .3s ease both}
 @keyframes bdUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.bd-crd h2{font:300 25px/1.15 Tiempos Headline,Georgia,serif;margin:4px 0 8px}
+.bd-crd h2{font:300 25px/1.15 Tiempos Headline,Times New Roman,serif;margin:4px 0 8px}
 .bd-crd .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#96711a;font-weight:800}
 .bd-crd p{font-size:14.5px;line-height:1.55;margin:0 0 10px}
 .bd-crd ul{list-style:none;margin:0 0 12px;padding:0}
@@ -371,10 +371,10 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 	})();
 
 	/* ---------- graphiques (canvas) ---------- */
-	function chart(id, w = 760, h = 300){ const c = work.querySelector("#" + id); c.width = w; c.height = h; const x = c.getContext("2d"); x.clearRect(0, 0, w, h); x.font = "700 16px Inter,system-ui,sans-serif"; return [x, w, h]; }
+	function chart(id, w = 760, h = 300){ const c = work.querySelector("#" + id); c.width = w; c.height = h; const x = c.getContext("2d"); x.clearRect(0, 0, w, h); x.font = "700 16px Inter,Arial,sans-serif"; return [x, w, h]; }
 	function axes(x, w, h, pad, ylab, xlab){
 		x.strokeStyle = "#c9d2db"; x.lineWidth = 1.5; x.beginPath(); x.moveTo(pad, 10); x.lineTo(pad, h - pad); x.lineTo(w - 10, h - pad); x.stroke();
-		x.fillStyle = "#5b6b7a"; x.font = "700 15px Inter,system-ui,sans-serif";
+		x.fillStyle = "#5b6b7a"; x.font = "700 15px Inter,Arial,sans-serif";
 		if(xlab) x.fillText(xlab, w - 10 - x.measureText(xlab).width, h - 6);
 		if(ylab){ x.save(); x.translate(14, 14 + x.measureText(ylab).width); x.rotate(-Math.PI/2); x.fillText(ylab, 0, 0); x.restore(); }
 	}
@@ -608,7 +608,7 @@ export function openBiodata({ formation, audio, isFav, toggleFav, onClose, onEve
 			const m = median(g.map(p => p.fer)), bh = (h - pad - 30)*m/max;
 			x.fillStyle = i < 2 ? "#8a5cc7" : "#21b6ce"; x.globalAlpha = i % 2 ? .6 : 1; x.fillRect(pad + i*bw + bw*.2, h - pad - bh, bw*.6, bh); x.globalAlpha = 1;
 			x.fillStyle = "#1e305e"; x.fillText(fmt(m), pad + i*bw + bw*.38, h - pad - bh - 6);
-			x.fillStyle = "#5b6b7a"; x.font = "700 14px Inter,system-ui,sans-serif"; x.fillText(`${l} (n=${g.length})`, pad + i*bw + 6, h - pad + 18); x.font = "700 16px Inter,system-ui,sans-serif";
+			x.fillStyle = "#5b6b7a"; x.font = "700 14px Inter,Arial,sans-serif"; x.fillText(`${l} (n=${g.length})`, pad + i*bw + 6, h - pad + 18); x.font = "700 16px Inter,Arial,sans-serif";
 		});
 		q1(shuffle([
 			["ok", "Penetrance is higher in men (women lose iron through menstruation and pregnancy): report results stratified by sex, not only pooled."],

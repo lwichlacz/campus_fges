@@ -10,13 +10,13 @@ import * as THREE from "three";
 const FOLD = { name:"A. M.", ssn:"1 98 •• •• ••• …", mail:"a•••@…", dob:"1998 · aged 27", zip:"59 · Nord", sex:"M", sym:"Fatigue …", fer:"> 1,000 µg/L", ts:"> 45 %", code:"P-04••" };
 
 const CSS = `
-.cc{position:fixed;inset:0;z-index:45;background:#071426;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#e9f7fa;overflow:hidden;animation:ccIn .45s ease both}
+.cc{position:fixed;inset:0;z-index:45;background:#071426;font-family:Inter,Arial,sans-serif;font-weight:300;color:#e9f7fa;overflow:hidden;animation:ccIn .45s ease both}
 @keyframes ccIn{from{opacity:0}to{opacity:1}}
 .cc.out{transition:opacity .6s ease;opacity:0}
 .cc canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .cc-hud{position:absolute;right:14px;top:14px;bottom:14px;width:360px;display:flex;flex-direction:column;gap:10px;background:rgba(9,26,48,.88);border:1px solid rgba(203,151,26,.35);border-radius:16px;padding:16px;overflow:auto;box-shadow:0 18px 50px rgba(0,0,0,.45)}
-.cc-k{font:700 11px Inter,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#cb971a}
-.cc-h{font:300 25px/1.15 Tiempos Headline,Georgia,serif;margin:0;color:#fff}
+.cc-k{font:700 11px Inter,Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#cb971a}
+.cc-h{font:300 25px/1.15 Tiempos Headline,Times New Roman,serif;margin:0;color:#fff}
 .cc-p{margin:0;font-size:14.5px;line-height:1.5;color:#cfe1ee}
 .cc-p b{color:#fff}
 .cc-say{display:flex;gap:8px;align-items:flex-start}
@@ -24,12 +24,12 @@ const CSS = `
 .cc-say .av img{width:100%;height:100%}
 .cc-say .bub{background:#13304f;border-radius:4px 12px 12px 12px;padding:7px 10px;font-size:13.5px;line-height:1.4;color:#e9f7fa}
 .cc-legend{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;font-size:13.5px;background:rgba(255,255,255,.05);border-radius:12px;padding:10px 12px}
-.cc-legend i{font-style:normal;font:700 11px Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#071426;background:#cb971a;border-radius:6px;padding:4px 7px;text-align:center}
-.cc-count{font:700 12px Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#9fb6c9}
+.cc-legend i{font-style:normal;font:700 11px Inter,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#071426;background:#cb971a;border-radius:6px;padding:4px 7px;text-align:center}
+.cc-count{font:700 12px Inter,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#9fb6c9}
 .cc-dpo{font-size:13.5px;line-height:1.45;border-left:3px solid #e05a4f;background:rgba(224,90,79,.12);border-radius:0 10px 10px 0;padding:8px 10px;color:#ffd9d4}
 .cc-dpo[hidden]{display:none}
 .cc-dpo.ok{border-color:#3fbf7f;background:rgba(63,191,127,.12);color:#d6f5e4}
-.cc-go{margin-top:auto;border:0;border-radius:12px;padding:14px;background:#cb971a;color:#071426;font:700 16px Inter,system-ui,sans-serif;cursor:pointer}
+.cc-go{margin-top:auto;border:0;border-radius:12px;padding:14px;background:#cb971a;color:#071426;font:700 16px Inter,Arial,sans-serif;cursor:pointer}
 .cc-go:disabled{opacity:.5;cursor:default}
 .cc-go:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .cc-tip{position:absolute;left:16px;top:16px;max-width:min(360px,calc(100% - 420px));background:rgba(9,26,48,.85);border-radius:12px;padding:8px 12px;font-size:13px;color:#cfe1ee;pointer-events:none}
@@ -88,7 +88,7 @@ export function coldChain({ host, fields, av, play, onWrong, onDone }){
 		const door = box(1.24, 2.5, .08, M("#eef4fa", { roughness:.3, emissive:"#9fd3ff", emissiveIntensity:.08 }), .62, .1, 0, hinge);
 		box(.06, .9, .08, M("#9aa6b2", { metalness:.7 }), 1.1, .9, .07, hinge);
 		const cv = document.createElement("canvas"); cv.width = 128; cv.height = 48; const x2 = cv.getContext("2d");
-		x2.fillStyle = "#06121f"; x2.fillRect(0, 0, 128, 48); x2.fillStyle = "#7fe3f0"; x2.font = "700 28px Inter, system-ui, sans-serif"; x2.textAlign = "center"; x2.fillText("−80 °C", 64, 34);
+		x2.fillStyle = "#06121f"; x2.fillRect(0, 0, 128, 48); x2.fillStyle = "#7fe3f0"; x2.font = "700 28px Inter,Arial,sans-serif"; x2.textAlign = "center"; x2.fillText("−80 °C", 64, 34);
 		const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
 		const disp = new THREE.Mesh(new THREE.PlaneGeometry(.5, .19), new THREE.MeshBasicMaterial({ map:tex })); disp.position.set(.62, 2.35, .05); hinge.add(disp);
 		const led = new THREE.Mesh(new THREE.SphereGeometry(.035, 8, 6), new THREE.MeshBasicMaterial({ color:"#3fbf7f" })); led.position.set(.18, 2.35, .06); hinge.add(led);
@@ -124,14 +124,14 @@ export function coldChain({ host, fields, av, play, onWrong, onDone }){
 		x.strokeStyle = "rgba(15,49,104,.18)"; x.lineWidth = 2; x.strokeRect(1, 1, W - 2, HH - 2);
 		if(fold){ x.fillStyle = "rgba(150,113,26,.22)"; for(let k = 0; k < W; k += 22) x.fillRect(k, 0, 2, HH); }      // pli
 		x.textBaseline = "middle";
-		x.fillStyle = "#5b6b7a"; x.font = "700 27px Inter, system-ui, sans-serif"; x.textAlign = "left";
+		x.fillStyle = "#5b6b7a"; x.font = "700 27px Inter,Arial,sans-serif"; x.textAlign = "left";
 		const lab = s.f.f.toUpperCase(); x.fillText(lab, 34, HH/2);
 		const room = W - 70 - (34 + x.measureText(lab).width + 26), val = fold ? FOLD[s.f.id] || s.f.v : s.f.v;
-		let fs = 44; x.font = `700 ${fs}px Inter, system-ui, sans-serif`; while(fs > 24 && x.measureText(val).width > room){ fs -= 2; x.font = `700 ${fs}px Inter, system-ui, sans-serif`; }      // la valeur ne mord jamais sur l'intitulé
+		let fs = 44; x.font = `700 ${fs}px Inter,Arial,sans-serif`; while(fs > 24 && x.measureText(val).width > room){ fs -= 2; x.font = `700 ${fs}px Inter,Arial,sans-serif`; }      // la valeur ne mord jamais sur l'intitulé
 		x.fillStyle = "#14233d"; x.textAlign = "right";
 		if(barcode){
 			let bx = W - 300; for(let k = 0; k < 46; k++){ const w = (k*7 % 5) < 2 ? 3 : 6; x.fillRect(bx, 18, w, HH - 50); bx += w + 3; }
-			x.font = "700 22px Inter, system-ui, sans-serif"; x.textAlign = "center"; x.fillText("P-0412", W - 160, HH - 16);
+			x.font = "700 22px Inter,Arial,sans-serif"; x.textAlign = "center"; x.fillText("P-0412", W - 160, HH - 16);
 		} else x.fillText(val, W - 70, HH/2);
 		s.tex.needsUpdate = true;
 	}

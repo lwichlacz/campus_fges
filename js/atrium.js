@@ -2,7 +2,7 @@
    escaliers croisés et grande verrière. Vue « maison de poupée » : le mur côté
    caméra s'efface tout seul. */
 import * as THREE from "three";
-import { std, box, cyl, mesh, beam, gable, cached, windowBatch, makeStudent, R, rng, pick, BOXC } from "./kit.js?v=c983301653";
+import { std, box, cyl, mesh, beam, gable, cached, windowBatch, makeStudent, R, rng, pick, BOXC } from "./kit.js?v=7c02b5ee69";
 
 const W = 34, D = 22, FL = 4.2, TOP = 16.4, RIDGE = 20;
 const HX = W/2, HZ = D/2, GAL = 2.4;
@@ -37,8 +37,8 @@ function menuTexture(){
 	x.fillStyle = "#2c2f2b"; x.fillRect(0,0,256,160);
 	x.strokeStyle = "#a07a4e"; x.lineWidth = 10; x.strokeRect(5,5,246,150);
 	x.fillStyle = "#f4ead6"; x.textAlign = "center";
-	x.font = "bold 30px Georgia, serif"; x.fillText("Le Comptoir", 128, 50);
-	x.font = "18px Georgia, serif"; x.fillStyle = "#e9c27a";
+	x.font = "bold 30px Times New Roman,serif"; x.fillText("Le Comptoir", 128, 50);
+	x.font = "18px Times New Roman,serif"; x.fillStyle = "#e9c27a";
 	x.fillText("Café · Thé · Cookies", 128, 88);
 	x.fillText("~ ouvert ~", 128, 122);
 	const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;

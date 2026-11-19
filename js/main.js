@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=c983301653";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=c983301653";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=c983301653";
-import { MAP } from "./vauban.js?v=c983301653";
-import { buildLandmarks } from "./landmarks.js?v=c983301653";
-import { buildMonuments } from "./monuments.js?v=c983301653";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=c983301653";
-import { buildStation } from "./station.js?v=c983301653";
-import { createRame } from "./rame.js?v=c983301653";
-import { Audio } from "./audio.js?v=c983301653";
-import { DETAILS } from "./details.js?v=c983301653";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=7c02b5ee69";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=7c02b5ee69";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=7c02b5ee69";
+import { MAP } from "./vauban.js?v=7c02b5ee69";
+import { buildLandmarks } from "./landmarks.js?v=7c02b5ee69";
+import { buildMonuments } from "./monuments.js?v=7c02b5ee69";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=7c02b5ee69";
+import { buildStation } from "./station.js?v=7c02b5ee69";
+import { createRame } from "./rame.js?v=7c02b5ee69";
+import { Audio } from "./audio.js?v=7c02b5ee69";
+import { DETAILS } from "./details.js?v=7c02b5ee69";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -229,8 +229,8 @@ function signTexture(lines){
 	x.fillStyle = "#6b4a35"; x.fillRect(0,0,512,220);
 	x.fillStyle = "#f6ead6"; x.fillRect(12,12,488,196);
 	x.fillStyle = "#0b7a8e"; x.textAlign = "center";
-	x.font = "bold 54px Georgia, serif"; x.fillText(lines[0], 256, 96);
-	x.fillStyle = "#5b4f5f"; x.font = "28px Georgia, serif"; x.fillText(lines[1], 256, 150);
+	x.font = "bold 54px Times New Roman,serif"; x.fillText(lines[0], 256, 96);
+	x.fillStyle = "#4f5c69"; x.font = "28px Times New Roman,serif"; x.fillText(lines[1], 256, 150);
 	const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
 function buildHA(){
@@ -1442,7 +1442,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=c983301653").then(({ FAR }) => {
+	import("./vauban_far.js?v=7c02b5ee69").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1958,27 +1958,27 @@ setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=c983301653").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=c983301653").then(m => m.createChapelle), eura:() => import("./eura.js?v=c983301653").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=c983301653").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=c983301653").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=7c02b5ee69").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=7c02b5ee69").then(m => m.createChapelle), eura:() => import("./eura.js?v=7c02b5ee69").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=7c02b5ee69").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=7c02b5ee69").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=c983301653").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=c983301653").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=c983301653").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=c983301653").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=c983301653").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=c983301653").then(m => m.openBiodata),
-	crise:() => import("./games/crise.js?v=c983301653").then(m => m.openCrise),
-	patrimoine:() => import("./games/patrimoine.js?v=c983301653").then(m => m.openPatrimoine),
-	affaires:() => import("./games/affaires.js?v=c983301653").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=c983301653").then(m => m.openBoutique),
-	ruee:() => import("./games/ruee.js?v=c983301653").then(m => m.openRuee),
-	tp:() => import("./games/tp.js?v=c983301653").then(m => m.openTP),
-	clinique:() => import("./games/clinique.js?v=c983301653").then(m => m.openClinique),
-	jourj:() => import("./games/jourj.js?v=c983301653").then(m => m.openJourJ),
-	moniac:() => import("./games/moniac.js?v=c983301653").then(m => m.openMoniac),
-	cargo:() => import("./games/cargo.js?v=c983301653").then(m => m.openCargo),
-	marquelle:() => import("./games/marquelle.js?v=c983301653").then(m => m.openMarquelle),
-	guichet:() => import("./games/guichet.js?v=c983301653").then(m => m.openGuichet),
-	telephone:() => import("./games/dossier.js?v=c983301653").then(m => m.openDossier)
+	comptoir:() => import("./games/comptoir.js?v=7c02b5ee69").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=7c02b5ee69").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=7c02b5ee69").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=7c02b5ee69").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=7c02b5ee69").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=7c02b5ee69").then(m => m.openBiodata),
+	crise:() => import("./games/crise.js?v=7c02b5ee69").then(m => m.openCrise),
+	patrimoine:() => import("./games/patrimoine.js?v=7c02b5ee69").then(m => m.openPatrimoine),
+	affaires:() => import("./games/affaires.js?v=7c02b5ee69").then(m => m.openAffaires),
+	boutique:() => import("./games/boutique.js?v=7c02b5ee69").then(m => m.openBoutique),
+	ruee:() => import("./games/ruee.js?v=7c02b5ee69").then(m => m.openRuee),
+	tp:() => import("./games/tp.js?v=7c02b5ee69").then(m => m.openTP),
+	clinique:() => import("./games/clinique.js?v=7c02b5ee69").then(m => m.openClinique),
+	jourj:() => import("./games/jourj.js?v=7c02b5ee69").then(m => m.openJourJ),
+	moniac:() => import("./games/moniac.js?v=7c02b5ee69").then(m => m.openMoniac),
+	cargo:() => import("./games/cargo.js?v=7c02b5ee69").then(m => m.openCargo),
+	marquelle:() => import("./games/marquelle.js?v=7c02b5ee69").then(m => m.openMarquelle),
+	guichet:() => import("./games/guichet.js?v=7c02b5ee69").then(m => m.openGuichet),
+	telephone:() => import("./games/dossier.js?v=7c02b5ee69").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2365,8 +2365,8 @@ function drawBadge(){
 	x.beginPath(); x.arc(S/2, 440, 250, 0, 7); x.fillStyle = "#21b6ce"; x.fill();
 	x.beginPath(); x.arc(S/2, 440, 226, 0, 7); x.fillStyle = "#fff8ec"; x.fill();
 	x.textAlign = "center"; x.fillStyle = "#0b7a8e"; x.font = "700 34px Inter, Arial"; x.fillText("BADGE", S/2, 300);
-	x.fillStyle = "#1e305e"; x.font = "300 64px Tiempos Headline, Georgia, serif"; x.fillText("Explorateur", S/2, 380);
-	x.font = "300 46px Tiempos Headline, Georgia, serif"; x.fillText("Euratechnologies", S/2, 440);
+	x.fillStyle = "#1e305e"; x.font = "300 64px Tiempos Headline, Times New Roman,serif"; x.fillText("Explorateur", S/2, 380);
+	x.font = "300 46px Tiempos Headline, Times New Roman,serif"; x.fillText("Euratechnologies", S/2, 440);
 	const icons = EURA_STAMPS.map(id => (PLACES[id] || LIFE[id]).icon);
 	x.font = "64px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
 	icons.forEach((ic, i) => x.fillText(ic, S/2 - 165 + i*110, 545));
@@ -3333,13 +3333,13 @@ function portrait(L){
 	const hair = L.style === "long"
 		? `<path d="M15 33c0-12 7-20 17-20s17 8 17 20v17h-6V33c-3-5-9-8-11-12-2 4-8 8-11 9v20h-6z" fill="${L.hair}"/>`
 		: `<path d="M18 29c-1-9 5-16 14-16s15 6 14 16c-2-4-5-6-8-6-3 2-9 2-12 0-4 0-6 2-8 6z" fill="${L.hair}"/><circle cx="21" cy="21" r="5" fill="${L.hair}"/><circle cx="29" cy="16" r="5" fill="${L.hair}"/><circle cx="38" cy="16" r="5" fill="${L.hair}"/><circle cx="44" cy="22" r="4.5" fill="${L.hair}"/>`;
-	const glasses = L.glasses ? `<g fill="none" stroke="#2b2233" stroke-width="1.6"><circle cx="26.5" cy="33" r="4.2"/><circle cx="37.5" cy="33" r="4.2"/><path d="M30.7 33h2.6"/></g>` : "";
+	const glasses = L.glasses ? `<g fill="none" stroke="#0c2340" stroke-width="1.6"><circle cx="26.5" cy="33" r="4.2"/><circle cx="37.5" cy="33" r="4.2"/><path d="M30.7 33h2.6"/></g>` : "";
 	return `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="${L.bg}"/>
 		<path d="M10 64c2-12 10-17 22-17s20 5 22 17z" fill="${L.top}"/><rect x="28" y="40" width="8" height="9" rx="3" fill="${L.skin}"/>
 		${L.style === "long" ? hair : ""}<ellipse cx="32" cy="32" rx="12" ry="13" fill="${L.skin}"/>${L.style === "long" ? `<path d="M20 30c2-8 7-12 12-12s10 4 12 12c-5-2-9-5-12-9-3 4-7 7-12 9z" fill="${L.hair}"/>` : hair}
-		<circle cx="26.5" cy="33" r="1.6" fill="#2b2233"/><circle cx="37.5" cy="33" r="1.6" fill="#2b2233"/>
+		<circle cx="26.5" cy="33" r="1.6" fill="#0c2340"/><circle cx="37.5" cy="33" r="1.6" fill="#0c2340"/>
 		<circle cx="23.5" cy="38" r="2.3" fill="#f08a7a" opacity=".45"/><circle cx="40.5" cy="38" r="2.3" fill="#f08a7a" opacity=".45"/>
-		<path d="M28.5 39.5q3.5 3 7 0" fill="none" stroke="#2b2233" stroke-width="1.6" stroke-linecap="round"/>${glasses}</svg>`;
+		<path d="M28.5 39.5q3.5 3 7 0" fill="none" stroke="#0c2340" stroke-width="1.6" stroke-linecap="round"/>${glasses}</svg>`;
 }
 // fin de journée : la fiche de la formation du personnage prend le relais
 function endDay(){

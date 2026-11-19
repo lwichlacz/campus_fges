@@ -5,9 +5,9 @@
      seuil de rentabilité, décision d'investissement) qui révèle le cours de la licence.
    Les chiffres sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
-import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=c983301653";
-import { jpoCard } from "./jpo.js?v=c983301653";
-import { palier } from "./palier.js?v=c983301653";
+import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=7c02b5ee69";
+import { jpoCard } from "./jpo.js?v=7c02b5ee69";
+import { palier } from "./palier.js?v=7c02b5ee69";
 
 /* ---------- Économie du Comptoir (à valider par l'enseignant) ---------- */
 const ECO = { amortVelo:7, cafe:.25, lait:.20, gobelet:.10, tasse:.55, croissantAchat:.45, croissantPrix:1.2, salaire:25,
@@ -39,7 +39,7 @@ const euro0 = v => Math.round(v).toLocaleString("fr-FR") + " €";
 const priceFactor = p => Math.max(.25, Math.min(1.25, 1.55 - .3*p));
 
 const CSS = `
-.cz{position:fixed;inset:0;z-index:40;background:#2b1d16;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#2b2233;overflow:hidden;animation:czIn .35s ease both}
+.cz{position:fixed;inset:0;z-index:40;background:#2b1d16;font-family:Inter,Arial,sans-serif;font-weight:300;color:#0c2340;overflow:hidden;animation:czIn .35s ease both}
 @keyframes czIn{from{opacity:0}to{opacity:1}}
 .cz canvas.cz-3d{position:absolute;inset:0;width:100%;height:100%;display:block}
 .cz-top{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;z-index:3;pointer-events:none}
@@ -70,23 +70,23 @@ const CSS = `
 .cz-order .it.on{opacity:1;filter:none;transform:scale(1.15)}
 .cz-order .sp{margin-left:auto;color:#0f3168}
 .cz-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.cz-keys button{border:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px #e9f7fa,0 4px 0 #e9f7fa;padding:10px 4px 8px;font:700 30px/1 Inter,system-ui,sans-serif;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;color:#2b2233}
-.cz-keys button small{display:block;font-size:12px;margin-top:4px;color:#5b4f5f}
+.cz-keys button{border:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px #e9f7fa,0 4px 0 #e9f7fa;padding:10px 4px 8px;font:700 30px/1 Inter,Arial,sans-serif;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;color:#0c2340}
+.cz-keys button small{display:block;font-size:12px;margin-top:4px;color:#4f5c69}
 .cz-keys button:active{transform:translateY(3px);box-shadow:inset 0 0 0 2px #e9f7fa}
 .cz-keys button.ko{animation:czShake .3s}
 @keyframes czShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .cz-lev{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;width:min(460px,calc(100% - 20px));background:#e9f7fa;border-radius:20px;padding:10px;box-shadow:0 12px 34px rgba(40,20,10,.4)}
 .cz-lev[hidden]{display:none}
 .cz-lrow{display:flex;align-items:center;gap:8px;margin:0 2px 8px;font-weight:800;font-size:14px}
-.cz-lrow button{width:38px;height:38px;border-radius:12px;border:2px solid #e9f7fa;background:#fff;font:700 20px Inter,system-ui,sans-serif;cursor:pointer;touch-action:manipulation;color:#2b2233}
+.cz-lrow button{width:38px;height:38px;border-radius:12px;border:2px solid #e9f7fa;background:#fff;font:700 20px Inter,Arial,sans-serif;cursor:pointer;touch-action:manipulation;color:#0c2340}
 .cz-lrow b{min-width:62px;text-align:center;font-size:17px}
 .cz-lrow b.happy{color:#0f3168}
-.cz-lrow .q{margin-left:auto;font-size:13px;color:#5b4f5f;background:#fff;border:1px solid #e9f7fa;border-radius:999px;padding:5px 10px}
+.cz-lrow .q{margin-left:auto;font-size:13px;color:#4f5c69;background:#fff;border:1px solid #e9f7fa;border-radius:999px;padding:5px 10px}
 .cz-lrow .q.hot{color:#b91c1c;border-color:#f3b4a8;background:#fdeceb}
 .cz-lbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.cz-lbtns button{position:relative;overflow:hidden;border:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px #e9f7fa,0 4px 0 #e9f7fa;padding:8px 4px 7px;font:700 13px/1.15 Inter,system-ui,sans-serif;cursor:pointer;touch-action:manipulation;color:#2b2233}
+.cz-lbtns button{position:relative;overflow:hidden;border:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px #e9f7fa,0 4px 0 #e9f7fa;padding:8px 4px 7px;font:700 13px/1.15 Inter,Arial,sans-serif;cursor:pointer;touch-action:manipulation;color:#0c2340}
 .cz-lbtns button i{display:block;font-style:normal;font-size:24px;margin-bottom:2px}
-.cz-lbtns button small{display:block;font-size:11px;color:#8a7d86;margin-top:2px;font-weight:700}
+.cz-lbtns button small{display:block;font-size:11px;color:#848487;margin-top:2px;font-weight:700}
 .cz-lbtns button:active{transform:translateY(3px);box-shadow:inset 0 0 0 2px #e9f7fa}
 .cz-lbtns button:disabled{opacity:.42;cursor:default}
 .cz-lbtns button.glow{box-shadow:inset 0 0 0 3px #21b7cb,0 4px 0 #21b7cb;animation:czGlow 1s ease-in-out infinite alternate}
@@ -99,28 +99,28 @@ const CSS = `
 .cz-res.neg b{color:#b91c1c}.cz-res.pos b{color:#0f3168}
 .cz-ff{background:#0f3168;color:#fff}
 .cz-ff[hidden]{display:none}
-.cz-banner{position:absolute;left:50%;top:20%;z-index:4;background:#3d7a55;color:#fff;font:300 17px/1.3 Inter,system-ui,sans-serif;padding:12px 20px;border-radius:18px;box-shadow:0 12px 30px rgba(20,60,30,.4);text-align:center;width:max-content;max-width:88%;pointer-events:none;animation:czBan 3s ease forwards}
+.cz-banner{position:absolute;left:50%;top:20%;z-index:4;background:#3d7a55;color:#fff;font:300 17px/1.3 Inter,Arial,sans-serif;padding:12px 20px;border-radius:18px;box-shadow:0 12px 30px rgba(20,60,30,.4);text-align:center;width:max-content;max-width:88%;pointer-events:none;animation:czBan 3s ease forwards}
 @keyframes czBan{0%{opacity:0;transform:translate(-50%,10px) scale(.9)}10%{opacity:1;transform:translate(-50%,0) scale(1)}82%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-10px)}}
 .cz-panel{position:absolute;inset:0;z-index:5;display:grid;place-items:center;padding:12px;background:rgba(43,26,20,.35);overflow:auto}
 .cz-panel[hidden]{display:none}
 .cz-card{width:100%;max-width:470px;background:#e9f7fa;border-radius:24px;box-shadow:0 30px 80px rgba(20,10,5,.45);padding:20px 18px 18px;animation:czUp .35s cubic-bezier(.2,.8,.2,1) both}
 @keyframes czUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 .cz-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#0f3168}
-.cz-h{font:300 23px/1.15 Tiempos Headline,Georgia,serif;margin:4px 0 6px}
-.cz-p{margin:0 0 12px;color:#5b4f5f;font-size:14.5px}
+.cz-h{font:300 23px/1.15 Tiempos Headline,Times New Roman,serif;margin:4px 0 6px}
+.cz-p{margin:0 0 12px;color:#4f5c69;font-size:14.5px}
 .cz-row{background:#fff;border:1px solid #e9f7fa;border-radius:16px;padding:11px 13px;margin-bottom:8px}
 .cz-row .t{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:14px}
-.cz-row small{display:block;color:#8a7d86;font-weight:700;font-size:12px;margin-top:3px}
+.cz-row small{display:block;color:#848487;font-weight:700;font-size:12px;margin-top:3px}
 .cz-row input[type=range]{width:100%;accent-color:#0f3168;margin-top:8px}
 .cz-step{display:flex;align-items:center;gap:8px}
-.cz-step button{width:36px;height:36px;border-radius:12px;border:2px solid #e9f7fa;background:#fff;font:700 18px Inter,system-ui,sans-serif;cursor:pointer}
+.cz-step button{width:36px;height:36px;border-radius:12px;border:2px solid #e9f7fa;background:#fff;font:700 18px Inter,Arial,sans-serif;cursor:pointer}
 .cz-step b{min-width:42px;text-align:center;font-size:17px}
 .cz-seg{display:flex;gap:6px}
-.cz-seg button{flex:1;border:2px solid #e9f7fa;background:#fff;border-radius:12px;padding:8px 4px;font:700 14px Inter,system-ui,sans-serif;cursor:pointer}
+.cz-seg button{flex:1;border:2px solid #e9f7fa;background:#fff;border-radius:12px;padding:8px 4px;font:700 14px Inter,Arial,sans-serif;cursor:pointer}
 .cz-seg button[aria-pressed=true]{border-color:#0f3168;background:#e9f7fa;color:#0f3168}
-.cz-go{display:block;width:100%;border:0;border-radius:16px;padding:14px;background:#21b7cb;color:#0f3168;font:700 16px Inter,system-ui,sans-serif;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(15,49,104,.35);text-align:center;text-decoration:none}
+.cz-go{display:block;width:100%;border:0;border-radius:16px;padding:14px;background:#21b7cb;color:#0f3168;font:700 16px Inter,Arial,sans-serif;cursor:pointer;margin-top:10px;box-shadow:0 8px 20px rgba(15,49,104,.35);text-align:center;text-decoration:none}
 .cz-go:disabled{opacity:.45;cursor:default}
-.cz-alt{display:block;width:100%;border:2px solid #e9f7fa;border-radius:16px;padding:12px;background:#fff;color:#0f3168;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none}
+.cz-alt{display:block;width:100%;border:2px solid #e9f7fa;border-radius:16px;padding:12px;background:#fff;color:#0f3168;font:700 14px Inter,Arial,sans-serif;cursor:pointer;margin-top:8px;text-align:center;text-decoration:none}
 .cz-hint{font-size:12.5px;font-weight:700;color:#7a6a3a;background:#e9f7fa;border-radius:10px;padding:6px 10px;margin-top:8px}
 .cz-tbl{width:100%;border-collapse:collapse;font-size:14px;margin:4px 0 10px}
 .cz-tbl td{padding:7px 4px;border-bottom:1px solid #e9f7fa}
@@ -128,21 +128,21 @@ const CSS = `
 .cz-tbl tr.tot td{border-bottom:0;font-size:15.5px}
 .cz-pos{color:#0f3168}.cz-neg{color:#b91c1c}
 .cz-chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
-.cz-tok{border:2px dashed #21b7cb;background:#fff;border-radius:12px;padding:9px 12px;font:700 15px Inter,system-ui,sans-serif;cursor:pointer}
+.cz-tok{border:2px dashed #21b7cb;background:#fff;border-radius:12px;padding:9px 12px;font:700 15px Inter,Arial,sans-serif;cursor:pointer}
 .cz-tok[aria-pressed=true]{border-style:solid;border-color:#0f3168;background:#e9f7fa}
 .cz-tok.used{opacity:.3;pointer-events:none}
-.cz-slot{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;border:2px dashed #e9f7fa;background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:7px;font:300 14px Inter,system-ui,sans-serif;cursor:pointer;text-align:left}
+.cz-slot{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;border:2px dashed #e9f7fa;background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:7px;font:300 14px Inter,Arial,sans-serif;cursor:pointer;text-align:left}
 .cz-slot b{min-width:80px;text-align:right}
 .cz-slot.ok{border-style:solid;border-color:#3d7a55;background:#eef8f0}
 .cz-slot.ko{border-style:solid;border-color:#0f3168;background:#fdeceb}
 .cz-opts{display:grid;gap:7px}
-.cz-opt{border:2px solid #e9f7fa;background:#fff;border-radius:14px;padding:11px 12px;font:700 15px Inter,system-ui,sans-serif;cursor:pointer;text-align:left}
+.cz-opt{border:2px solid #e9f7fa;background:#fff;border-radius:14px;padding:11px 12px;font:700 15px Inter,Arial,sans-serif;cursor:pointer;text-align:left}
 .cz-opt.ok{border-color:#3d7a55;background:#eef8f0}
 .cz-opt.ko{border-color:#0f3168;background:#fdeceb}
 .cz-course{background:#fff;border:2px solid #21b7cb;border-radius:16px;padding:12px 14px;margin:10px 0 4px}
 .cz-course .tag{display:inline-block;background:#e9f7fa;color:#0f3168;font-weight:800;font-size:12px;border-radius:999px;padding:3px 9px;margin-bottom:6px}
-.cz-course b{display:block;font:300 17px Tiempos Headline,Georgia,serif;margin-bottom:3px}
-.cz-course span{font-size:14px;color:#5b4f5f}
+.cz-course b{display:block;font:300 17px Tiempos Headline,Times New Roman,serif;margin-bottom:3px}
+.cz-course span{font-size:14px;color:#4f5c69}
 .cz-chart{width:100%;height:150px;display:block;background:#fff;border:1px solid #e9f7fa;border-radius:14px;margin:6px 0 10px}
 .cz-big{font-size:50px;text-align:center}
 .cz-list{list-style:none;padding:0;margin:8px 0;display:grid;gap:6px}
@@ -224,8 +224,8 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	function paintMenu(){
 		const x = menuCv.getContext("2d");
 		x.fillStyle = "#2c2f2b"; x.fillRect(0,0,512,300); x.strokeStyle = "#a07a4e"; x.lineWidth = 14; x.strokeRect(7,7,498,286);
-		x.fillStyle = "#f4ead6"; x.textAlign = "center"; x.font = "300 46px Tiempos Headline,Georgia,serif"; x.fillText("Le Comptoir", 256, 70);
-		x.textAlign = "left"; x.font = "300 34px Tiempos Headline,Georgia,serif"; x.fillStyle = "#f4ead6";
+		x.fillStyle = "#f4ead6"; x.textAlign = "center"; x.font = "300 46px Tiempos Headline,Times New Roman,serif"; x.fillText("Le Comptoir", 256, 70);
+		x.textAlign = "left"; x.font = "300 34px Tiempos Headline,Times New Roman,serif"; x.fillStyle = "#f4ead6";
 		x.fillText("Café / cappuccino", 50, 150); x.fillText("Croissant", 50, 220);
 		x.textAlign = "right"; x.fillStyle = "#e9c27a"; x.fillText(euro(curPrice()), 462, 150); x.fillText(euro(ECO.croissantPrix), 462, 220);
 		menuTex.needsUpdate = true;
@@ -239,7 +239,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	const staffDoor = new THREE.Group(); staffDoor.position.set(4.7, 0, -2.36); scene.add(staffDoor);
 	box(staffDoor, 1.25, 2.45, .08, std("#6b4a2e"), 0, 0, 0); box(staffDoor, .1, .1, .12, std("#d9c08a", { metalness:.6 }), .42, 1.15, .06);
 	const doorSignCv = document.createElement("canvas"); doorSignCv.width = 256; doorSignCv.height = 96;
-	{ const x = doorSignCv.getContext("2d"); x.fillStyle = "#f4ead6"; x.fillRect(0, 0, 256, 96); x.fillStyle = "#0f3168"; x.textAlign = "center"; x.font = "700 52px Inter, system-ui, sans-serif"; x.fillText("ÉQUIPE", 128, 68); }
+	{ const x = doorSignCv.getContext("2d"); x.fillStyle = "#f4ead6"; x.fillRect(0, 0, 256, 96); x.fillStyle = "#0f3168"; x.textAlign = "center"; x.font = "700 52px Inter,Arial,sans-serif"; x.fillText("ÉQUIPE", 128, 68); }
 	const doorSignTex = new THREE.CanvasTexture(doorSignCv); doorSignTex.colorSpace = THREE.SRGBColorSpace;
 	const doorSign = new THREE.Mesh(new THREE.PlaneGeometry(.8, .3), new THREE.MeshBasicMaterial({ map:doorSignTex })); doorSign.position.set(0, 1.85, .06); staffDoor.add(doorSign);
 	// la caisse imprime le compte de résultat de la matinée, ligne après ligne, sur un long ticket qui pend du comptoir
@@ -252,19 +252,19 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	function paintTicket(){
 		const x = tkCv.getContext("2d"), W = 256, H = 640;
 		x.fillStyle = "#fbf8f1"; x.fillRect(0, 0, W, H);
-		x.fillStyle = "#2b2233"; x.textAlign = "center"; x.font = "700 22px Inter, system-ui, sans-serif"; x.fillText("LE COMPTOIR", W/2, 34);
-		x.font = "300 16px Inter, system-ui, sans-serif"; x.fillText(`Atrium · ${$("#czClock").textContent}`, W/2, 56);
-		x.strokeStyle = "#8a7d86"; x.setLineDash([4, 4]); x.beginPath(); x.moveTo(12, 70); x.lineTo(W - 12, 70); x.stroke();
-		let y = 96; x.font = "300 17px Inter, system-ui, sans-serif";
-		for(const [t, v] of tickLines.slice(-14)){ x.textAlign = "left"; x.fillStyle = "#2b2233"; x.fillText(t, 14, y); x.textAlign = "right"; x.fillStyle = v < 0 ? "#b0352a" : "#2b2233"; x.fillText((v < 0 ? "−" : "+") + euro(Math.abs(v)), W - 14, y); y += 26; }
+		x.fillStyle = "#0c2340"; x.textAlign = "center"; x.font = "700 22px Inter,Arial,sans-serif"; x.fillText("LE COMPTOIR", W/2, 34);
+		x.font = "300 16px Inter,Arial,sans-serif"; x.fillText(`Atrium · ${$("#czClock").textContent}`, W/2, 56);
+		x.strokeStyle = "#848487"; x.setLineDash([4, 4]); x.beginPath(); x.moveTo(12, 70); x.lineTo(W - 12, 70); x.stroke();
+		let y = 96; x.font = "300 17px Inter,Arial,sans-serif";
+		for(const [t, v] of tickLines.slice(-14)){ x.textAlign = "left"; x.fillStyle = "#0c2340"; x.fillText(t, 14, y); x.textAlign = "right"; x.fillStyle = v < 0 ? "#b0352a" : "#0c2340"; x.fillText((v < 0 ? "−" : "+") + euro(Math.abs(v)), W - 14, y); y += 26; }
 		if(D){
 			const res = liveResult();
 			x.beginPath(); x.moveTo(12, H - 150); x.lineTo(W - 12, H - 150); x.stroke(); x.setLineDash([]);
-			x.textAlign = "left"; x.fillStyle = "#2b2233"; x.font = "300 17px Inter, system-ui, sans-serif";
+			x.textAlign = "left"; x.fillStyle = "#0c2340"; x.font = "300 17px Inter,Arial,sans-serif";
 			x.fillText("Ventes", 14, H - 122); x.fillText("Achats", 14, H - 96); x.fillText("Salaires", 14, H - 70);
 			x.textAlign = "right";
 			x.fillText("+" + euro(D.ca), W - 14, H - 122); x.fillText("−" + euro(D.var + D.gaspi + D.extraAchats + D.bought*ECO.croissantAchat), W - 14, H - 96); x.fillText("−" + euro(fixedCosts()), W - 14, H - 70);
-			x.font = "700 21px Inter, system-ui, sans-serif"; x.textAlign = "left"; x.fillText("RÉSULTAT", 14, H - 30);
+			x.font = "700 21px Inter,Arial,sans-serif"; x.textAlign = "left"; x.fillText("RÉSULTAT", 14, H - 30);
 			x.textAlign = "right"; x.fillStyle = res < 0 ? "#b0352a" : "#0f3168"; x.fillText((res < 0 ? "−" : "+") + euro(Math.abs(res)), W - 14, H - 30);
 		}
 		tkTex.needsUpdate = true;
@@ -369,7 +369,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	}
 	function renderTray(){
 		const c = P.cust, o = $(".cz-order"), streak = P.streak ? `<span class="sp">⚡ ×${P.streak}</span>` : "";
-		if(!c){ o.innerHTML = `<span style="color:#8a7d86">Ta caisse est libre…</span>${streak}`; return; }
+		if(!c){ o.innerHTML = `<span style="color:#848487">Ta caisse est libre…</span>${streak}`; return; }
 		o.innerHTML = `<span>Ta caisse :</span>` + KEYS.filter(k => c.order[k]).map(k => `<span class="it${P.got[k] ? " on" : ""}">${ICON[k]}</span>`).join("") + streak;
 	}
 	function tap(k){
@@ -752,10 +752,10 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 				<tr><td>Ventes (${r.served} clients servis)</td><td class="cz-pos">+ ${euro(r.ca)}</td></tr>
 				<tr><td>Achats (café, lait, gobelets, croissants)</td><td class="cz-neg">− ${euro(r.achats)}</td></tr>
 				<tr><td>Salaires (${S.staff} barista${S.staff > 1 ? "s" : ""}${r.lev && r.lev.renfortAt ? " + 1 renfort" : ""}${r.salaires !== S.staff*ECO.salaire + (r.lev && r.lev.renfortAt ? LEV.renfort : 0) ? ", imprévu compris" : ""})</td><td class="cz-neg">− ${euro(r.salaires)}</td></tr>
-				${r.amort ? `<tr><td>Amortissement du vélo cargo <small style="color:#8a7d86">(3 000 € étalés sur 3 ans)</small></td><td class="cz-neg">− ${euro(r.amort)}</td></tr>` : ""}
+				${r.amort ? `<tr><td>Amortissement du vélo cargo <small style="color:#848487">(3 000 € étalés sur 3 ans)</small></td><td class="cz-neg">− ${euro(r.amort)}</td></tr>` : ""}
 				<tr class="tot"><td><b>Résultat</b></td><td class="${cls(r.resultat)}">${r.resultat >= 0 ? "+" : "−"} ${euro(Math.abs(r.resultat))}</td></tr>
 			</table>
-			<div class="cz-hint" style="background:#fff;border:1px solid #e9f7fa;color:#5b4f5f;line-height:1.5">${tips.join("<br>")}</div>
+			<div class="cz-hint" style="background:#fff;border:1px solid #e9f7fa;color:#4f5c69;line-height:1.5">${tips.join("<br>")}</div>
 			<button class="cz-go" data-a="next">Continuer</button>`);
 		// fin de la scène d'ouverture : la première matinée et son compte de résultat
 		if(S.day === 0) setTimeout(() => !closed && palier({ id:"comptoir", onEvent, openLead, quit:close,
@@ -786,9 +786,9 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		show(`<div class="cz-k">L1 · exercice</div><h2 class="cz-h">Ton compte de résultat</h2>
 			<p class="cz-p">Ton expert-comptable veut le compte de résultat de la matinée. Touche un montant, puis la ligne où il va.</p>
 			<div class="cz-chips">${toks.map(([k,v]) => `<button class="cz-tok" data-tok="${k}">${v} €</button>`).join("")}</div>
-			<button class="cz-slot" data-slot="ca">Chiffre d'affaires <small style="color:#8a7d86">(produits)</small><b>…</b></button>
-			<button class="cz-slot" data-slot="achats">Achats consommés <small style="color:#8a7d86">(charges)</small><b>…</b></button>
-			<button class="cz-slot" data-slot="sal">Salaires <small style="color:#8a7d86">(charges)</small><b>…</b></button>
+			<button class="cz-slot" data-slot="ca">Chiffre d'affaires <small style="color:#848487">(produits)</small><b>…</b></button>
+			<button class="cz-slot" data-slot="achats">Achats consommés <small style="color:#848487">(charges)</small><b>…</b></button>
+			<button class="cz-slot" data-slot="sal">Salaires <small style="color:#848487">(charges)</small><b>…</b></button>
 			<div data-q hidden><p class="cz-p" style="margin-top:8px"><b>Et le résultat de la matinée ?</b></p><div class="cz-opts">
 				${[res, vals.ca - vals.achats, vals.ca + vals.achats - vals.sal].sort(() => rnd() - .5).map(v => `<button class="cz-opt" data-res="${v}">${v} €</button>`).join("")}</div></div>
 			<div data-done></div>`);
@@ -853,13 +853,13 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 		const x = cv.getContext("2d"), W = cv.width, H = cv.height, P = 34, maxN = Math.max(60, Math.ceil(fixe/Math.max(marge, .2)*1.6));
 		const maxV = Math.max(fixe*1.6, marge*maxN);
 		const X = n => P + (W - P - 12)*n/maxN, Y = v => H - P + 6 - (H - P - 12)*v/maxV;
-		x.clearRect(0,0,W,H); x.font = "700 15px Inter,system-ui,sans-serif";
+		x.clearRect(0,0,W,H); x.font = "700 15px Inter,Arial,sans-serif";
 		x.strokeStyle = "#ead9bf"; x.lineWidth = 2; x.beginPath(); x.moveTo(P, Y(0)); x.lineTo(W-8, Y(0)); x.moveTo(P, Y(0)); x.lineTo(P, 8); x.stroke();
 		x.strokeStyle = "#c4532f"; x.setLineDash([8,6]); x.beginPath(); x.moveTo(P, Y(fixe)); x.lineTo(W-8, Y(fixe)); x.stroke(); x.setLineDash([]);
 		x.fillStyle = "#c4532f"; x.fillText(`Salaires : ${Math.round(fixe)} €`, P + 6, Y(fixe) - 8);
 		x.strokeStyle = "#3d7a55"; x.lineWidth = 4; x.beginPath(); x.moveTo(X(0), Y(0)); x.lineTo(X(maxN), Y(marge*maxN)); x.stroke();
 		x.fillStyle = "#3d7a55"; x.fillText("Marge cumulée", X(maxN*.62), Y(marge*maxN*.62) - 12);
-		x.fillStyle = "#8a7d86"; x.fillText("cafés vendus →", W - 128, H - 8);
+		x.fillStyle = "#848487"; x.fillText("cafés vendus →", W - 128, H - 8);
 	}
 
 	/* ---------- exercice L3 : investir dans un vélo cargo ---------- */

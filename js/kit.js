@@ -124,10 +124,10 @@ const SWEAT_MAT = (() => {
 	img.onload = () => {
 		crest(img, 256, 98, 74);                                                              // dos
 		x.fillStyle = "#eef0f4"; x.textAlign = "center";
-		x.font = "600 11px Georgia, serif"; x.fillText("Université Catholique", 256, 148);
-		x.textAlign = "left"; x.font = "italic 9px Georgia, serif"; const yw = x.measureText("1875").width + 3;
-		x.font = "600 11px Georgia, serif"; const lw = x.measureText("de Lille").width, x0 = 256 - (lw + yw)/2;
-		x.fillText("de Lille", x0, 161); x.font = "italic 9px Georgia, serif"; x.fillText("1875", x0 + lw + 3, 161);
+		x.font = "600 11px Times New Roman,serif"; x.fillText("Université Catholique", 256, 148);
+		x.textAlign = "left"; x.font = "italic 9px Times New Roman,serif"; const yw = x.measureText("1875").width + 3;
+		x.font = "600 11px Times New Roman,serif"; const lw = x.measureText("de Lille").width, x0 = 256 - (lw + yw)/2;
+		x.fillText("de Lille", x0, 161); x.font = "italic 9px Times New Roman,serif"; x.fillText("1875", x0 + lw + 3, 161);
 		x.textAlign = "center";
 		crest(img, 48, 76, 26);                                                               // cœur
 		x.font = "800 6px Nunito, sans-serif"; x.fillText("GESTION, ÉCONOMIE,", 48, 98); x.fillText("SCIENCES", 48, 105);
