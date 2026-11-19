@@ -36,7 +36,7 @@ ACCROCHE = {
     "cupge": "Le jour du concours : l'horloge du hall tourne, le jury attend tes cartes d'expérience, et ton nom t'attend peut-être sur le tableau des admis.",
     "d2": "Une économie hydraulique comme la MONIAC de 1949 : le multiplicateur, le paradoxe de l'épargne, un tournoi de théorie des jeux en anglais.",
     "lieg": "En anglais, comme la licence : bloque le cours de la livre, règle ton prix, envoie un cargo à travers l'Atlantique et négocie avec Austin.",
-    "aese": "Une ville miniature, une usine qui ferme : interroge les vrais habitants, aménage la friche, remplis les bocaux du budget et gagne le vote du conseil.",
+    "aese": "Chargé·e de mission à la mairie : interroge les habitants, démasque le devis gonflé, boucle budget et financeurs, puis défends le dossier de la friche devant le conseil.",
     "ebmd": "Un téléphone oublié sur un banc de Wenov : fouille les données de Camille, démasque le graphique trompeur et contredis le comité Black Friday, preuves à l'appui.",
 }
 
