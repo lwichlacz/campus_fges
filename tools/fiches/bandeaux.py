@@ -31,7 +31,7 @@ ACCROCHE = {
     "mh": "Un bad buzz frappe une chocolaterie : trie faits et rumeurs, décide avec Kant et Weber, tiens ton équipe, puis écris le communiqué.",
     "ecofi": "Le comité de 18 h : le fonds a perdu 3,2 % et on te demande pourquoi. Mesure, calcule, ajuste la régression, retrouve le ticket d'ordre, puis défends ton dossier.",
     "lpabf": "Samedi, 9 h : des fonds suspects transitent par ton agence. Sers tes cinq clients, vérifie leurs pièces, épingle les indices… et trouve qui blanchit.",
-    "apes": "19 h, la salle de TP est fermée à clé : quatre cadenas, quatre manipulations. Chaque premier essai bute, la méthode te fait réussir.",
+    "apes": "Douze élèves malades : l'eau de la cantine est-elle en cause ? Prélève, dose, étalonne, compte les bactéries… puis signe le bulletin d'analyse.",
     "veto": "Une journée de vétérinaire rural : le cœur affolé d'un chien, le rumen d'une vache, une carrière à dater, un champ à faire tourner… puis l'oral.",
     "cupge": "Le jour du concours : l'horloge du hall tourne, le jury attend tes cartes d'expérience, et ton nom t'attend peut-être sur le tableau des admis.",
     "d2": "Une économie hydraulique comme la MONIAC de 1949 : le multiplicateur, le paradoxe de l'épargne, un tournoi de théorie des jeux en anglais.",
