@@ -21,13 +21,16 @@ import * as P from "/tools/film/pilote.js";
 import { createRame } from "/js/rame.js";
 
 const W = 1920, H = 1080, FPS = 30, RENDU = 2;                  // image finale · rendu 3D en 2560×1440 (1280×720 ×2)
-const NAVY = "#0c1a38", INK = "#13254a", CYAN = "#21b6ce", CYAN_L = "#7fdcec", CREAM = "#f6f1e7", WHITE = "#ffffff", MUTED = "rgba(232,238,248,.74)";
+/* Charte de l'Université (docs/charte-graphique.md) : bleu institutionnel #0c2340 pour les fonds sombres et le texte,
+   cyan et marine de la FGES, bleu clair #80b5e3 en accent sur fond sombre, gris ardoise #4f5c69, Cool Gray 1 #e6e6e6.
+   Titres en Tiempos Headline 300 (Times New Roman à défaut), texte en Inter 300/700 (Arial à défaut). */
+const NAVY = "#0c2340", INK = "#0c2340", CYAN = "#21b7cb", CYAN_L = "#80b5e3", WHITE = "#ffffff", MUTED = "rgba(230,236,244,.78)", SLATE = "#4f5c69", COOL = "#e6e6e6";
 const ENT = {
-	FGES: { name:"FGES", long:"Faculté de Gestion, Économie, Sciences", color:"#21b6ce", ink:"#0b2f67" },
-	ISEA: { name:"ISEA", long:"Institut Supérieur d'Expertise et d'Audit", color:"#a0335f", ink:"#ffffff" },
-	EDN:  { name:"EDN", long:"École du Numérique", color:"#d6a227", ink:"#1f1a10" }
+	FGES: { name:"FGES", long:"Faculté de Gestion, Économie, Sciences", color:"#21b7cb", ink:"#0f3168" },
+	ISEA: { name:"ISEA", long:"Institut Supérieur d'Expertise et d'Audit", color:"#872850", ink:"#ffffff" },
+	EDN:  { name:"EDN", long:"École du Numérique", color:"#ca961c", ink:"#0c2340" }
 };
-const DISP = "Fraunces, Georgia, serif", BODY = "Nunito, system-ui, sans-serif";
+const DISP = '"Tiempos Headline", "Times New Roman", serif', BODY = "Inter, Arial, sans-serif";
 // formations nouvelles : nom court et niveau affichés dans le film, mention « nouvelle formation »
 const NOUVELLES = {
 	veto: { name:"Prépa Véto", level:"prepa" },
@@ -106,10 +109,10 @@ const SHOTS = [
 	{ d:5, scene:"ext", blur:.9, cam:orbit([9, 6, -37], 58, 32, 1.1, 1.3), ent:"FGES", grid:{ t:"Prépas", list:ids("apes cupge veto d2") } },
 	{ d:7, scene:"ext", blur:.9, cam:orbit([9, 6, -37], 58, 32, 1.3, 1.65), ent:"FGES", grid:{ t:"Licences", list:ids("sv mh gestion ecofi lieg lpabf aese") } },
 	{ d:8, scene:"ext", blur:.9, cam:orbit([0, 8, -3], 60, 30, 1.2, 1.75), ent:"FGES", grid:{ t:"Masters et parcours", list:ids("ecoop mdd im mrc me frd mbif mre duhm") } },
-	{ d:3, scene:"atrium", blur:.65, cam:orbit([0, 4.5, 0], 34, 16, .6, .8), ent:"ISEA", ov:"entite", info:"6 formations · Campus Vauban" },
+	{ d:3, scene:"atrium", blur:.65, cam:orbit([0, 4.5, 0], 34, 16, .6, .8), ent:"ISEA", ov:"entite", info:`${TOUTES.filter(f => f.school === "ISEA").length} formations · Campus Vauban` },
 	{ d:9, scene:"atrium", blur:.9, cam:orbit([0, 4.5, 0], 34, 16, .8, 1.4), ent:"ISEA", grid:{ t:"Licence, masters et diplômes universitaires", list:ids("cfa cca dgp cgao duiacg dusp") } },
-	{ d:3, scene:"eura", blur:.65, cam:orbit([1, 8, 7], 64, 30, 1.2, 1.35), ent:"EDN", ov:"entite", info:"14 formations · Euratechnologies" },
-	{ d:6.5, scene:"wenovin", blur:.9, cam:orbit([0, 1, -3], 42, 32, 1.2, 1.6), ent:"EDN", grid:{ t:"Licences et masters", list:ids("info spi mn iasi dia cyber jn") } },
+	{ d:3, scene:"eura", blur:.65, cam:orbit([1, 8, 7], 64, 30, 1.2, 1.35), ent:"EDN", ov:"entite", info:`${TOUTES.filter(f => f.school === "EDN").length} formations · Euratechnologies` },
+	{ d:6.5, scene:"wenovin", blur:.9, cam:orbit([0, 1, -3], 42, 32, 1.2, 1.6), ent:"EDN", grid:{ t:"Licences et masters", list:ids("info spi iasi dia cyber jn") } },
 	{ d:6.5, scene:"wenovin", blur:.9, cam:orbit([0, 1, -3], 42, 32, 1.6, 2.0), ent:"EDN", grid:{ t:"Masters et diplômes universitaires", list:ids("dmb ebmd mtn duia duric ducse ducc") } },
 	// 03 · les essayer
 	{ d:15, scene:"wenovin", blur:.92, chap:"03 · Les essayer", cam:orbit([0, 1, -3], 44, 30, 2.0, 2.7), ov:"jeux" },
@@ -128,7 +131,8 @@ export function controle(){
 
 /* ---------- outils de dessin ---------- */
 function rr(c, x, y, w, h, r){ c.beginPath(); c.roundRect(x, y, w, h, r); }
-function font(c, w, s, f = BODY){ c.font = `${w} ${s}px ${f}`; }
+// la charte n'a que deux graisses : Tiempos 300 pour les titres, Inter 300 ou 700 pour le texte
+function font(c, w, s, f = BODY){ if(f === DISP) w = 300; else if(f === BODY) w = +w >= 600 ? 700 : 300; c.font = `${w} ${s}px ${f}`; }
 function text(c, s, x, y, { size = 32, weight = 700, fam = BODY, color = WHITE, align = "left", a = 1, track = 0, base = "alphabetic" } = {}){
 	if(a <= 0 || !s) return;
 	c.save(); c.globalAlpha *= a; font(c, weight, size, fam); c.fillStyle = color; c.textAlign = align; c.textBaseline = base;
@@ -190,7 +194,7 @@ function wipes(c, T){
 	for(const S of SHOTS){
 		if(!S.chap) continue;
 		const u = (T - (S.t0 - .45))/.9; if(u <= 0 || u >= 1) continue;
-		[NAVY, CYAN, "#f6f1e7"].forEach((col, i) => {
+		[NAVY, CYAN, WHITE].forEach((col, i) => {
 			const p = clamp((u - i*.07)/.79), x0 = -W*.45 + (W*2.7)*inout(p);          // à mi-course la bande couvre tout l'écran : la coupe ne se voit pas
 			c.save(); c.fillStyle = col; c.beginPath(); c.moveTo(x0 - 2000, 0); c.lineTo(x0 + 700, 0); c.lineTo(x0 + 500, H); c.lineTo(x0 - 2200, H); c.closePath(); c.fill(); c.restore();
 		});
@@ -200,7 +204,7 @@ function wipes(c, T){
 function dips(c, T){
 	for(let i = 1; i < SHOTS.length; i++){
 		const S = SHOTS[i], P = SHOTS[i - 1]; if(S.scene === P.scene || S.chap) continue;
-		const k = 1 - Math.abs(T - S.t0)/.45; if(k > 0){ c.fillStyle = `rgba(12,26,56,${sine(k)})`; c.fillRect(0, 0, W, H); }
+		const k = 1 - Math.abs(T - S.t0)/.45; if(k > 0){ c.fillStyle = `rgba(12,35,64,${sine(k)})`; c.fillRect(0, 0, W, H); }
 	}
 }
 
@@ -239,7 +243,7 @@ function promesse(c, t, d){
 		const t0 = 6 + i*.55, p = seg(t, t0, t0 + .9); if(p <= 0) return;
 		const x = x0 + i*(cw + gap), y = 360;
 		icon(c, k, x, y, 120, seg(t, t0, t0 + 1.4), CYAN_L);
-		text(c, n, x + cw - 4, y + 40, { size:28, weight:800, color:"rgba(127,220,236,.55)", align:"right", a:a2*p, track:2 });
+		text(c, n, x + cw - 4, y + 40, { size:28, weight:800, color:"rgba(128,181,227,.6)", align:"right", a:a2*p, track:2 });
 		line(c, x, y + 170, cw, p*a2, "rgba(255,255,255,.35)", 2);
 		rise(c, title, x, y + 240, seg(t, t0 + .2, t0 + 1), { size:fitSize(c, title, cw, 44, 700, DISP), fam:DISP, a:a2 });
 		wrap(c, sub, cw, 26, 600).forEach((l, j) => rise(c, l, x, y + 296 + j*38, seg(t, t0 + .35, t0 + 1.15), { size:26, weight:600, color:MUTED, a:a2 }));
@@ -285,14 +289,14 @@ function grid(c, S, t, d){
 		c.save(); c.globalAlpha = p;
 		rr(c, x, y, cw, ch, 16); c.fillStyle = "rgba(255,255,255,.96)"; c.fill();
 		c.fillStyle = e.color; c.fillRect(x, y + 16, 6, ch - 32);
-		text(c, (f.id === "cupge" ? "Prépa et licence" : LEVEL[f.level]).toUpperCase(), x + 34, y + 38, { size:16, weight:800, color:"#6b7590", track:2 });
+		text(c, (f.id === "cupge" ? "Prépa et licence" : LEVEL[f.level]).toUpperCase(), x + 34, y + 38, { size:16, weight:800, color:SLATE, track:2 });
 		const name = f.name.replace(/^(Licence Pro|Licence|Master|DU|Prépa) /, m => m);
 		text(c, name, x + 34, y + 76, { size:fitSize(c, name, cw - 68, 30, 800), weight:800, color:INK });
 		// badge du mini-jeu
 		const s = g ? `🎮  Mini-jeu « ${g.title} »` : NEUVE.has(id) ? "Nouvelle formation · mini-jeu en préparation" : "Mini-jeu en préparation";
 		font(c, 800, 17); const bw = c.measureText(s).width + 28;
-		rr(c, x + 34, y + 88, bw, 28, 14); c.fillStyle = g ? "#dff5e6" : "#eef0f5"; c.fill();
-		text(c, s, x + 48, y + 108, { size:17, weight:800, color:g ? "#1d7a43" : "#6b7590" });
+		rr(c, x + 34, y + 88, bw, 28, 14); c.fillStyle = g ? "#dff5e6" : COOL; c.fill();
+		text(c, s, x + 48, y + 108, { size:17, weight:800, color:g ? "#1d7a43" : SLATE });
 		c.restore();
 	});
 }
@@ -313,10 +317,10 @@ function jeux(c, t, d){
 		const ic = nc > 3 ? 44 : 54, tx = nc > 3 ? 88 : 110, nom = nc > 3 && COURT[f.id] || f.name;
 		font(c, 400, ic, "system-ui, 'Apple Color Emoji', sans-serif"); c.textBaseline = "alphabetic"; c.fillText(g.icon, x + 26, y + 82);
 		text(c, g.title, x + tx, y + 64, { size:fitSize(c, g.title, cw - tx - 24, 32, 700, DISP), fam:DISP, color:INK });
-		text(c, nom, x + tx, y + 96, { size:fitSize(c, nom, cw - tx - 24, 19, 700), weight:700, color:"#5b6580" });
+		text(c, nom, x + tx, y + 96, { size:fitSize(c, nom, cw - tx - 24, 19, 700), weight:700, color:SLATE });
 		(STEPS[f.id] || []).forEach((s, j) => {
 			const q = seg(t, t0 + .5 + j*.18, t0 + .9 + j*.18);
-			c.save(); c.globalAlpha = p*q; rr(c, x + 30, y + 128 + j*44, cw - 60, 36, 10); c.fillStyle = "#f1f3f8"; c.fill(); c.restore();
+			c.save(); c.globalAlpha = p*q; rr(c, x + 30, y + 128 + j*44, cw - 60, 36, 10); c.fillStyle = COOL; c.fill(); c.restore();
 			text(c, s, x + 46, y + 153 + j*44, { size:fitSize(c, s, cw - 92, 19, 700), weight:700, color:INK, a:p*q });
 		});
 		c.restore();
@@ -341,13 +345,14 @@ function signature(c, t, d, logo){
 	const p = inout(seg(t, 0, 1));
 	c.save(); c.globalAlpha = .9*p; c.fillStyle = NAVY; c.fillRect(0, 0, W, H); c.restore();
 	const k = out5(seg(t, .4, 1.4));
-	c.save(); c.globalAlpha = k; rr(c, W/2 - 520, 250 + (1 - k)*30, 1040, 230, 26); c.fillStyle = CREAM; c.fill();
-	if(logo.complete && logo.naturalWidth){ const lw = 560, lh = lw*logo.naturalHeight/logo.naturalWidth; c.drawImage(logo, W/2 - lw/2, 250 + (230 - lh)/2 + (1 - k)*30, lw, lh); }
+	c.save(); c.globalAlpha = k; rr(c, W/2 - 520, 250 + (1 - k)*30, 1040, 230, 26); c.fillStyle = WHITE; c.fill();
+	if(logo.complete && logo.naturalWidth){ const lw = 640, lh = lw*351/1148;      // logo officiel vectoriel, sans ombre, au large dans son cartouche blanc
+		 c.drawImage(logo, W/2 - lw/2, 250 + (230 - lh)/2 + (1 - k)*30, lw, lh); }
 	c.restore();
 	rise(c, "Le campus FGES en 3D", W/2, 620, seg(t, 1, 1.8), { size:84, fam:DISP, align:"center" });
 	rise(c, "Découvrir le campus  ·  Découvrir les formations  ·  Les essayer", W/2, 690, seg(t, 1.4, 2.2), { size:32, weight:700, color:CYAN_L, align:"center" });
 	rise(c, "lwichlacz.github.io/campus_fges", W/2, 790, seg(t, 2, 2.8), { size:26, weight:700, color:MUTED, align:"center", track:1 });
-	text(c, "Bâtiments et photos aériennes : © IGN · Carte : © contributeurs OpenStreetMap", W/2, 1010, { size:18, weight:600, color:"rgba(232,238,248,.45)", align:"center", a:seg(t, 2.4, 3.2) });
+	text(c, "Bâtiments et photos aériennes : © IGN · Carte : © contributeurs OpenStreetMap", W/2, 1010, { size:18, weight:600, color:"rgba(230,236,244,.5)", align:"center", a:seg(t, 2.4, 3.2) });
 }
 
 /* ---------- une image du film ---------- */
@@ -363,7 +368,7 @@ function compose(c, img, T, logo){
 		small ||= Object.assign(document.createElement("canvas"), { width:320, height:180 });
 		const sc = small.getContext("2d"); sc.filter = "blur(5px)"; sc.drawImage(img, -12, -7, 344, 194);
 		c.save(); c.globalAlpha = clamp(b*1.1); c.imageSmoothingQuality = "high"; c.drawImage(small, 0, 0, W, H); c.restore();
-		c.fillStyle = `rgba(12,26,56,${.62*b})`; c.fillRect(0, 0, W, H);
+		c.fillStyle = `rgba(12,35,64,${.62*b})`; c.fillRect(0, 0, W, H);
 	}
 	if(S.lt) lowerThird(c, S.lt, t, S.d, S.lb);
 	if(S.ov === "ouverture") ouverture(c, t, S.d);
@@ -389,7 +394,7 @@ async function installer(){
 	await P.preparer({ qualite:"haute", heure:"jour" });
 	for(const id of ["atrium", "wenovin", "eura", "chapelle", "bibli"]){ const ld = C.loadInterior(id); for(let i = 0; i < 400 && !C.interiors?.[id]; i++){ P.pas(); await new Promise(r => setTimeout(r, 5)); } await ld; }
 	const ctl = controle(); if(ctl.manquantes.length || ctl.inconnues.length || ctl.doublons.length) throw new Error("Formations : " + JSON.stringify(ctl));
-	await document.fonts.load(`600 40px ${DISP}`); await document.fonts.load(`800 20px ${BODY}`); await document.fonts.load(`700 20px ${BODY}`);
+	await document.fonts.load(`300 40px ${DISP}`); await document.fonts.load(`700 20px ${BODY}`); await document.fonts.load(`300 20px ${BODY}`);
 	cadre(C);
 	// pas de bulles de noms dans le film, ni à Vauban ni à Euratechnologies (le shader des étiquettes se reconnaît à son
 	// uniforme uSplit) ; pas de feuilles qui tombent non plus : une feuille qui passe devant l'objectif remplit le cadre
@@ -400,7 +405,7 @@ async function installer(){
 	// la rame de la ligne 2, filmée de l'intérieur
 	rame = createRame(); rame.camera.fov = 52;
 	// pas de logo.decode() : il attend une image affichée, et le pilote suspend l'affichage
-	logo = new Image(); await Promise.race([new Promise(r => { logo.onload = logo.onerror = r; logo.src = "/img/logo-fges.png"; }), new Promise(r => setTimeout(r, 4000))]);
+	logo = new Image(); await Promise.race([new Promise(r => { logo.onload = logo.onerror = r; logo.src = "/img/logo-fges.svg"; }), new Promise(r => setTimeout(r, 4000))]);
 	const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
 	ctx = cv.getContext("2d"); ctx.imageSmoothingQuality = "high";
 	cur = null;

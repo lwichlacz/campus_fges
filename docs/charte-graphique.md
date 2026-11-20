@@ -15,6 +15,10 @@ Source : *CharteGraphique-CathoLille-300524.pdf* (Université Catholique de Lill
 | Fonds et filets | blanc, Cool Gray 1 `#e6e6e6` ; bleu clair `#80b5e3` (284 C) au survol | à la place des crèmes et beiges d'avant |
 | Logo | version officielle, sans ombre portée, zone de protection | `img/logo-fges.svg` (gestion-horizontal-RVB, vectoriel), sur fond blanc |
 
+Le **film et les vidéos** (`tools/film/film.js`) suivent la même charte depuis le 20/11/2026 : fonds en bleu
+institutionnel, accents cyan et bleu clair, titres en Tiempos Headline 300, texte en Inter 300/700, signature avec le
+logo vectoriel sur cartouche blanc. Tiempos n'est utilisée qu'en local pour le tournage, jamais publiée.
+
 Le décor 3D (briques, arbres, ciel, intérieurs) garde ses propres teintes : c'est l'équivalent des photographies
 dans la charte. Les verts « juste » et rouges « faux » des jeux sont conservés, pour la lisibilité.
 
