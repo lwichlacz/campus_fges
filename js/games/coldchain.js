@@ -32,6 +32,11 @@ const CSS = `
 .cc-go{margin-top:auto;border:0;border-radius:12px;padding:14px;background:#cb971a;color:#071426;font:700 16px Inter,Arial,sans-serif;cursor:pointer}
 .cc-go:disabled{opacity:.5;cursor:default}
 .cc-go:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.cc-help{display:flex;gap:8px;margin-top:auto}
+.cc-help button{flex:1;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:9px 10px;background:transparent;color:#e9f7fa;font:700 13.5px Inter,Arial,sans-serif;cursor:pointer}
+.cc-help button:disabled{opacity:.4;cursor:default}
+.cc-help + .cc-go{margin-top:0}
+.cc-dpo.hint{border-color:#cb971a;background:rgba(203,151,26,.14);color:#fdf3d8}
 .cc-tip{position:absolute;left:16px;top:16px;max-width:min(360px,calc(100% - 420px));background:rgba(9,26,48,.85);border-radius:12px;padding:8px 12px;font-size:13px;color:#cfe1ee;pointer-events:none}
 @media (max-width:759px){
 	.cc-hud{left:0;right:0;top:auto;bottom:0;width:auto;max-height:44%;border-radius:16px 16px 0 0;padding:12px 14px;gap:8px}
@@ -41,7 +46,7 @@ const CSS = `
 	.cc-tip{top:auto;bottom:calc(44% + 10px);left:10px;right:10px;max-width:none;text-align:center}
 }`;
 
-export function coldChain({ host, fields, av, play, onWrong, onDone }){
+export function coldChain({ host, fields, av, play, onWrong, onDone, onHelp }){
 	if(!document.getElementById("cc-css")){ const st = document.createElement("style"); st.id = "cc-css"; st.textContent = CSS; document.head.appendChild(st); }
 	const ov = document.createElement("div"); ov.className = "cc"; ov.lang = "en";
 	ov.innerHTML = `<canvas aria-hidden="true"></canvas>
@@ -55,6 +60,7 @@ export function coldChain({ host, fields, av, play, onWrong, onDone }){
 			<div class="cc-legend"><i>Peel</i><span>swipe a strip off: the data is removed</span><i>Fold</i><span>tap a strip: the value becomes coarser</span><i>Keep</i><span>leave it as it is</span></div>
 			<div class="cc-count" id="ccCount"></div>
 			<div class="cc-dpo" id="ccDpo" hidden></div>
+			<div class="cc-help"><button id="ccHint">💡 Hint</button><button id="ccSkip">Skip →</button></div>
 			<button class="cc-go" id="ccGo">🧊 Store in the biobank</button>
 		</div>`;
 	host.appendChild(ov);
@@ -190,6 +196,19 @@ export function coldChain({ host, fields, av, play, onWrong, onDone }){
 	/* ---------- la déléguée à la protection des données ---------- */
 	const dpo = $("#ccDpo");
 	function hideDpo(){ if(!dpo.classList.contains("ok")) dpo.hidden = true; }
+	// indice et « passer » (demandés par le master DMB le 13/11/2026) : personne ne reste bloqué devant le tube
+	$("#ccHint").addEventListener("click", () => {
+		if(busy) return;
+		dpo.classList.remove("ok"); dpo.classList.add("hint"); dpo.hidden = false;
+		dpo.innerHTML = "<b>Hint:</b> three strips name Alex directly and are useless for research: peel them off. Two are useful but too precise: fold them. Everything medical, and the sample code, stays readable.";
+		onHelp && onHelp("hint");
+	});
+	$("#ccSkip").addEventListener("click", () => {
+		if(busy) return;
+		onHelp && onHelp("skip");
+		strips.forEach(s => { s.state = s.f.a; if(s.state === "rm") s.peel = 1; paint(s); }); counts();
+		$("#ccGo").click();
+	});
 	$("#ccGo").addEventListener("click", () => {
 		if(busy) return;
 		const wrong = strips.filter(s => s.state !== s.f.a);
@@ -197,13 +216,13 @@ export function coldChain({ host, fields, av, play, onWrong, onDone }){
 			play("bad");
 			wrong.forEach(s => s.flash = 1.8);
 			const verb = { rm:"peel it off", tr:"fold it", keep:"keep it readable" };
-			dpo.classList.remove("ok"); dpo.hidden = false;
+			dpo.classList.remove("ok", "hint"); dpo.hidden = false;
 			dpo.innerHTML = `<b>Storage blocked by the data protection officer:</b> ${wrong.length} strip${wrong.length > 1 ? "s" : ""} to reconsider (they flash).<br>${wrong.slice(0, 2).map(s => `• ${s.f.f}: ${s.f.why} → <b>${verb[s.f.a]}</b>`).join("<br>")}`;
 			onWrong && onWrong(wrong.map(s => s.f));
 			return;
 		}
-		busy = true; $("#ccGo").disabled = true; play("good");
-		dpo.classList.add("ok"); dpo.hidden = false; dpo.innerHTML = "<b>Approved.</b> Pseudonymised as P-0412: the lab can work without knowing who Alex is.";
+		busy = true; $("#ccGo").disabled = $("#ccSkip").disabled = $("#ccHint").disabled = true; play("good");
+		dpo.classList.remove("hint"); dpo.classList.add("ok"); dpo.hidden = false; dpo.innerHTML = "<b>Approved.</b> Pseudonymised as P-0412: the lab can work without knowing who Alex is.";
 		const code = strips.find(s => s.f.id === "code"); if(code){ code.flash = 1.2; paint(code, true); }
 		store();
 	});
