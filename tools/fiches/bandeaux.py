@@ -33,7 +33,7 @@ ACCROCHE = {
     "lpabf": "Samedi, 9 h : des fonds suspects transitent par ton agence. Sers tes cinq clients, vérifie leurs pièces, épingle les indices… et trouve qui blanchit.",
     "apes": "Douze élèves malades : l'eau de la cantine est-elle en cause ? Prélève, dose, étalonne, compte les bactéries… puis signe le bulletin d'analyse.",
     "veto": "Une journée de vétérinaire rural : le cœur affolé d'un chien, le rumen d'une vache, une carrière à dater, un champ à faire tourner… puis l'oral.",
-    "cupge": "Le jour du concours : l'horloge du hall tourne, le jury attend tes cartes d'expérience, et ton nom t'attend peut-être sur le tableau des admis.",
+    "cupge": "Une nuit de consultant·e junior : une marque lilloise perd ses clients. Démasque le chiffre qui ment, bâtis ta note, puis défends-la à 8 h devant la direction.",
     "d2": "Une économie hydraulique comme la MONIAC de 1949 : le multiplicateur, le paradoxe de l'épargne, un tournoi de théorie des jeux en anglais.",
     "lieg": "En anglais, comme la licence : bloque le cours de la livre, règle ton prix, envoie un cargo à travers l'Atlantique et négocie avec Austin.",
     "aese": "Une ville miniature, une usine qui ferme : interroge les vrais habitants, aménage la friche, remplis les bocaux du budget et gagne le vote du conseil.",
