@@ -15,8 +15,8 @@
    (docs/validation-licence-lieg.md). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=7bd4e1b800";
-import { palier } from "./palier.js?v=7bd4e1b800";
+import { jpoCard } from "./jpo.js?v=47250b128e";
+import { palier } from "./palier.js?v=47250b128e";
 
 /* ---------- les cours (intitulés et années à faire valider) ---------- */
 const COURSES = {

@@ -6,8 +6,8 @@
    ceux qui font demi-tour sont des ventes perdues. Chiffres simplifiés et illustratifs, à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=e65e6a43a4";
-import { palier } from "./palier.js?v=e65e6a43a4";
+import { jpoCard } from "./jpo.js?v=47250b128e";
+import { palier } from "./palier.js?v=47250b128e";
 
 const COURSES = {
 	ux:    ["UX design, UI et accessibilité", "Observer les utilisateurs, simplifier les parcours, rendre un site lisible par tous (contrastes, formulaires, WCAG)."],

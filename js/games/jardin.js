@@ -10,9 +10,9 @@
    Personnage, rucher et chiffres sont fictifs. Contenus à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { std, mesh, box, cyl, mulberry32 } from "../kit.js?v=e65e6a43a4";
-import { jpoCard } from "./jpo.js?v=e65e6a43a4";
-import { palier } from "./palier.js?v=e65e6a43a4";
+import { std, mesh, box, cyl, mulberry32 } from "../kit.js?v=47250b128e";
+import { jpoCard } from "./jpo.js?v=47250b128e";
+import { palier } from "./palier.js?v=47250b128e";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : animations 6 fois plus rapides (tests)
 

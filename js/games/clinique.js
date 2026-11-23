@@ -19,9 +19,9 @@
    L'interface est le dossier de visite de la clinique ; la Dre Vasseur, vétérinaire associée, y colle ses mots.
    Ferme, personnes, animaux, produit et valeurs sont fictifs ou simplifiés ; écoles réelles citées comme débouchés.
    Contenu à relire par l'équipe de la prépa (docs/validation-veto.md). */
-import { stage3d, THREE } from "./stage3d.js?v=e65e6a43a4";
-import { jpoCard } from "./jpo.js?v=e65e6a43a4";
-import { palier } from "./palier.js?v=e65e6a43a4";
+import { stage3d, THREE } from "./stage3d.js?v=47250b128e";
+import { jpoCard } from "./jpo.js?v=47250b128e";
+import { palier } from "./palier.js?v=47250b128e";
 
 const SPEED = /[?&]vite/.test(location.search) ? 5 : 1;      // ?vite : attentes et animations 5 fois plus rapides (tests)
 
