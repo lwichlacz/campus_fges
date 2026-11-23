@@ -12,8 +12,8 @@
    Entreprise, personnes et chiffres sont fictifs et simplifiés. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=db3a7f096f";
-import { palier } from "./palier.js?v=db3a7f096f";
+import { jpoCard } from "./jpo.js?v=e65e6a43a4";
+import { palier } from "./palier.js?v=e65e6a43a4";
 
 const COURSES = {
 	fx:    ["L1", "Maths & economics", "Exchange rates move every second. Knowing how to protect a price from them is basic international finance."],

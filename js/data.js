@@ -64,8 +64,8 @@ export const RENDEZ_VOUS = [
 export const GAMES = { gestion: "comptoir", sv: "jardin", cfa: "audit", spi: "robot", dmb: "biodata", info: "gaming", dgp: "patrimoine", mbif: "affaires", ebmd: "telephone", mh: "crise", lpabf: "guichet", ecofi: "ruee", lieg: "cargo", aese: "marquelle", apes: "tp", veto: "clinique", cupge: "jourj", d2: "moniac" };
 /* Catalogue des mini-jeux : où ils se trouvent sur le campus, et comment les présenter. */
 export const GAME_INFO = {
-	clinique:{ fid:"veto", title:"La clinique rurale", icon:"🩺", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min, essai en une minute",
-		pitch:"Une journée de vétérinaire rural : pose le stéthoscope sur Pixel et tape le rythme de son cœur affolé, trouve ce qu'il a mangé, trempe une bandelette dans le rumen d'une vache, date les roches de la carrière, fais tourner les cultures d'un champ… puis passe l'oral du concours B." },
+	clinique:{ fid:"veto", title:"Le troupeau du Riez", icon:"🐄", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min, essai en une minute",
+		pitch:"Les génisses d'une ferme flamande maigrissent, et l'éleveur accuse l'aliment. Vétérinaire rural·e, passe le ruban et le thermomètre, compare les deux prés, centrifuge le sang, traque les œufs du parasite au microscope, carotte le sol du marais… puis règle le doseur et signe l'ordonnance." },
 	jourj:{ fid:"cupge", title:"La note de 8 h", icon:"📝", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"7 min, essai en une minute",
 		pitch:"21 h 47 : Pavé, marque lilloise de baskets, perd ses clients, et sa PDG veut une recommandation pour 8 h. Surligne les avis, démasque le chiffre qui ment, écarte le sondage biaisé, lis le rapport anglais, bâtis ton plan… puis défends ta note devant la direction, preuve en main." },
 	moniac:{ fid:"d2", title:"La machine de l'économiste", icon:"⚙️", where:"falise", whereLabel:"Bâtiment Michel Falise", dur:"6 min, essai en une minute",
