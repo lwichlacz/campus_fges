@@ -9,11 +9,11 @@
      6. jeudi : devant le comité, répondre à chaque objection en montrant la pièce et la ligne qui le prouvent.
    Le dossier s'épaissit sur le bureau à chaque pièce. Environ 9 minutes. Contenus dans affaires-data.js. */
 import * as THREE from "three";
-import { makePerson, std, box, cyl } from "../kit.js?v=db3a7f096f";
-import { jpoCard } from "./jpo.js?v=db3a7f096f";
-import { palier } from "./palier.js?v=db3a7f096f";
+import { makePerson, std, box, cyl } from "../kit.js?v=f94719518b";
+import { jpoCard } from "./jpo.js?v=f94719518b";
+import { palier } from "./palier.js?v=f94719518b";
 import { PRET, TAUX, CAF_PREV, SERVICE, VIE, PATRI, PROPRES, NANT, BPI_MAX, PAL, annuite, LIASSE, RATIOS, PALLETS, ORDERS, LETTER, ORG, RBE, GRID,
-	PIECES, MEMBERS, objections, COURSES, NEXT } from "./affaires-data.js?v=db3a7f096f";
+	PIECES, MEMBERS, objections, COURSES, NEXT } from "./affaires-data.js?v=f94719518b";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];

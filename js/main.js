@@ -1,17 +1,17 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=db3a7f096f";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=db3a7f096f";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=db3a7f096f";
-import { MAP } from "./vauban.js?v=db3a7f096f";
-import { buildLandmarks } from "./landmarks.js?v=db3a7f096f";
-import { buildMonuments } from "./monuments.js?v=db3a7f096f";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=db3a7f096f";
-import { buildStation } from "./station.js?v=db3a7f096f";
-import { createRame } from "./rame.js?v=db3a7f096f";
-import { Audio } from "./audio.js?v=db3a7f096f";
-import { DETAILS } from "./details.js?v=db3a7f096f";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=f94719518b";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=f94719518b";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=f94719518b";
+import { MAP } from "./vauban.js?v=f94719518b";
+import { buildLandmarks } from "./landmarks.js?v=f94719518b";
+import { buildMonuments } from "./monuments.js?v=f94719518b";
+import { buildCity, pointInPoly, polyDist } from "./city.js?v=f94719518b";
+import { buildStation } from "./station.js?v=f94719518b";
+import { createRame } from "./rame.js?v=f94719518b";
+import { Audio } from "./audio.js?v=f94719518b";
+import { DETAILS } from "./details.js?v=f94719518b";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -1442,7 +1442,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=db3a7f096f").then(({ FAR }) => {
+	import("./vauban_far.js?v=f94719518b").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1958,27 +1958,27 @@ setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=db3a7f096f").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=db3a7f096f").then(m => m.createChapelle), eura:() => import("./eura.js?v=db3a7f096f").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=db3a7f096f").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=db3a7f096f").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=f94719518b").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=f94719518b").then(m => m.createChapelle), eura:() => import("./eura.js?v=f94719518b").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=f94719518b").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=f94719518b").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=db3a7f096f").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=db3a7f096f").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=db3a7f096f").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=db3a7f096f").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=db3a7f096f").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=db3a7f096f").then(m => m.openBiodata),
-	crise:() => import("./games/crise.js?v=db3a7f096f").then(m => m.openCrise),
-	patrimoine:() => import("./games/patrimoine.js?v=db3a7f096f").then(m => m.openPatrimoine),
-	affaires:() => import("./games/affaires.js?v=db3a7f096f").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=db3a7f096f").then(m => m.openBoutique),
-	ruee:() => import("./games/ruee.js?v=db3a7f096f").then(m => m.openRuee),
-	tp:() => import("./games/tp.js?v=db3a7f096f").then(m => m.openTP),
-	clinique:() => import("./games/clinique.js?v=db3a7f096f").then(m => m.openClinique),
-	jourj:() => import("./games/jourj.js?v=db3a7f096f").then(m => m.openJourJ),
-	moniac:() => import("./games/moniac.js?v=db3a7f096f").then(m => m.openMoniac),
-	cargo:() => import("./games/cargo.js?v=db3a7f096f").then(m => m.openCargo),
-	marquelle:() => import("./games/marquelle.js?v=db3a7f096f").then(m => m.openMarquelle),
-	guichet:() => import("./games/guichet.js?v=db3a7f096f").then(m => m.openGuichet),
-	telephone:() => import("./games/dossier.js?v=db3a7f096f").then(m => m.openDossier)
+	comptoir:() => import("./games/comptoir.js?v=f94719518b").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=f94719518b").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=f94719518b").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=f94719518b").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=f94719518b").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=f94719518b").then(m => m.openBiodata),
+	crise:() => import("./games/crise.js?v=f94719518b").then(m => m.openCrise),
+	patrimoine:() => import("./games/patrimoine.js?v=f94719518b").then(m => m.openPatrimoine),
+	affaires:() => import("./games/affaires.js?v=f94719518b").then(m => m.openAffaires),
+	boutique:() => import("./games/boutique.js?v=f94719518b").then(m => m.openBoutique),
+	ruee:() => import("./games/ruee.js?v=f94719518b").then(m => m.openRuee),
+	tp:() => import("./games/tp.js?v=f94719518b").then(m => m.openTP),
+	clinique:() => import("./games/clinique.js?v=f94719518b").then(m => m.openClinique),
+	jourj:() => import("./games/jourj.js?v=f94719518b").then(m => m.openJourJ),
+	moniac:() => import("./games/moniac.js?v=f94719518b").then(m => m.openMoniac),
+	cargo:() => import("./games/cargo.js?v=f94719518b").then(m => m.openCargo),
+	marquelle:() => import("./games/marquelle.js?v=f94719518b").then(m => m.openMarquelle),
+	guichet:() => import("./games/guichet.js?v=f94719518b").then(m => m.openGuichet),
+	telephone:() => import("./games/dossier.js?v=f94719518b").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){

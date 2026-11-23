@@ -3,9 +3,9 @@
    maillages pour rester léger, sauf les bâtiments « à visiter » (POI) qui
    restent séparés pour être cliquables. */
 import * as THREE from "three";
-import { std, mulberry32 } from "./kit.js?v=db3a7f096f";
-import { TIME } from "./render.js?v=db3a7f096f";
-import { HAUTEURS } from "./hauteurs.js?v=db3a7f096f";
+import { std, mulberry32 } from "./kit.js?v=f94719518b";
+import { TIME } from "./render.js?v=f94719518b";
+import { HAUTEURS } from "./hauteurs.js?v=f94719518b";
 
 const FH = 2.3, BAY = 1.4;
 let FHc = FH;          // hauteur d'un étage pour la carte en cours (MAP.fh : à l'échelle de l'Hôtel Académique)

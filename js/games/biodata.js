@@ -13,9 +13,9 @@
    plus de compteur d'erreurs ni de mention : une découverte, pas un test. */
 
 import * as THREE from "three";
-import { jpoCard } from "./jpo.js?v=db3a7f096f";
-import { palier } from "./palier.js?v=db3a7f096f";
-import { coldChain } from "./coldchain.js?v=db3a7f096f";
+import { jpoCard } from "./jpo.js?v=f94719518b";
+import { palier } from "./palier.js?v=f94719518b";
+import { coldChain } from "./coldchain.js?v=f94719518b";
 
 const COURSES = {
 	protect: ["M2", "Data protection & health data", "GDPR, data minimisation, pseudonymisation, certified hosting (HDS): health data are handled before they are analysed."],

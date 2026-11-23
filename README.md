@@ -54,7 +54,7 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/games/tp.js` | Mini-jeu « La salle de TP » (APES) : quatre cadenas, un dosage, un pendule, un microscope, une courbe |
 | `js/games/clinique.js` | Mini-jeu « La clinique rurale » (Prépa Véto & Agro) : stéthoscope, rumen, carrière, rotation, oral du concours B |
 | `js/games/jourj.js` | Mini-jeu « Le jour J » (Prépa grandes écoles de commerce) : épreuves chronométrées, jury, tableau des admis |
-| `js/games/moniac.js` | Mini-jeu « La machine de l'économiste » (Prépa D2) : économie hydraulique, paradoxe de l'épargne, théorie des jeux |
+| `js/games/moniac.js` | Mini-jeu « Faut-il monter les taux ? » (Prépa D2) : économiste en banque centrale, l'indice décomposé, la médiane d'une enquête en anglais, le calque des prix, la machine de Phillips, le Conseil |
 | `js/games/palier.js` | Le « teasing » commun aux mini-jeux : chaque jeu s'ouvre à chaud sur une scène d'une minute, puis ce palier propose de continuer, de recevoir la plaquette ou de revenir au campus (compté dans l'entonnoir : `jeu-palier`, `jeu-suite`) |
 | `docs/validation-*.md` | Fiches de validation des mini-jeux (contenus validés par les enseignants) |
 | `docs/mise-en-ligne.md` | **Mise en ligne** : GitHub Pages, branchement du formulaire sur le CRM |
