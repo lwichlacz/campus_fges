@@ -15,9 +15,9 @@
    indénombrable) ; on ne gomme jamais, on barre dans le cahier de labo, on explique, puis on refait avec la méthode.
    L'interface est le cahier de laboratoire, à petits carreaux ; la responsable, Nadia Keller, y laisse ses visas.
    École, laboratoire, personnes et valeurs sont fictifs ou simplifiés. Contenu à relire par l'équipe de l'APES. */
-import { stage3d, THREE } from "./stage3d.js?v=0a3a2730da";
-import { jpoCard } from "./jpo.js?v=0a3a2730da";
-import { palier } from "./palier.js?v=0a3a2730da";
+import { stage3d, THREE } from "./stage3d.js?v=b66fe07771";
+import { jpoCard } from "./jpo.js?v=b66fe07771";
+import { palier } from "./palier.js?v=b66fe07771";
 
 const SPEED = /[?&]vite/.test(location.search) ? 5 : 1;      // ?vite : attentes et animations 5 fois plus rapides (tests)
 
@@ -338,7 +338,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	const oilL = label("Huile à immersion", { size:.018, bg:"#0f3168", fg:"#fff" }); oilL.position.set(0, 1.4, 0); oil.add(oilL);
 	// le bulletin d'analyse, posé au bout de la paillasse
 	const BW = 1400, BH = 1000;
-	const bulTex = W.canvasTex(BW, BH);
+	const bulTex = W.canvasTex(BW, BH); bulTex.generateMipmaps = false; bulTex.minFilter = THREE.LinearFilter;      // lu de près : pas de mipmaps (sinon la feuille peut sortir uniforme)
 	const bul = mesh(G(new THREE.PlaneGeometry(5.6, 4)), new THREE.MeshBasicMaterial({ map:bulTex }), 14.6, Y + .07, -3.6); bul.rotation.x = -Math.PI/2; bul.visible = false;
 	const bulPaper = box(5.7, .04, 4.1, "#f1eee6", 14.6, Y, -3.6); bulPaper.visible = false;
 	const pen = new THREE.Group(); pen.position.set(17.6, Y + .1, -2.4); pen.rotation.y = .5; scene.add(pen);
@@ -904,7 +904,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 				x.fillStyle = "#5b6b85"; x.font = "700 18px Inter,system-ui,sans-serif"; x.fillText("SIGNATURE DU TECHNICIEN · DE LA TECHNICIENNE", SIG[0] + 14, SIG[1] + 30);
 				x.strokeStyle = "#0f3168"; x.lineWidth = 5; x.lineCap = "round"; x.lineJoin = "round";
 				for(const s of strokes){ x.beginPath(); s.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.stroke(); }
-				if(signed){ x.save(); x.translate(1110, 600); x.rotate(-.12); x.strokeStyle = x.fillStyle = "#2f6b45"; x.lineWidth = 6; x.globalAlpha = .85; x.strokeRect(-150, -42, 300, 84); x.font = "700 40px Inter,system-ui,sans-serif"; x.textAlign = "center"; x.fillText("VALIDÉ", 0, 14); x.restore(); }
+				if(signed){ x.save(); x.translate(1130, 712); x.rotate(-.08); x.scale(.75, .75); x.strokeStyle = x.fillStyle = "#2f6b45"; x.lineWidth = 6; x.globalAlpha = .85; x.strokeRect(-150, -42, 300, 84); x.font = "700 40px Inter,system-ui,sans-serif"; x.textAlign = "center"; x.fillText("VALIDÉ", 0, 14); x.restore(); }
 			});
 		}
 		draw();

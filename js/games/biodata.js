@@ -10,9 +10,9 @@
    Cas : hémochromatose HFE C282Y homozygote. Séquences, cohorte et chiffres sont simulés ; contenu à relire par l'équipe du master. */
 
 import * as THREE from "three";
-import { jpoCard } from "./jpo.js?v=0a3a2730da";
-import { palier } from "./palier.js?v=0a3a2730da";
-import { coldChain } from "./coldchain.js?v=0a3a2730da";
+import { jpoCard } from "./jpo.js?v=b66fe07771";
+import { palier } from "./palier.js?v=b66fe07771";
+import { coldChain } from "./coldchain.js?v=b66fe07771";
 
 const COURSES = {
 	protect: ["M2", "Data protection & health data", "GDPR, data minimisation, pseudonymisation, certified hosting (HDS): health data are handled before they are analysed."],
