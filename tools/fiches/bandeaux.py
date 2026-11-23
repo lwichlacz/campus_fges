@@ -35,7 +35,7 @@ ACCROCHE = {
     "veto": "Une journée de vétérinaire rural : le cœur affolé d'un chien, le rumen d'une vache, une carrière à dater, un champ à faire tourner… puis l'oral.",
     "cupge": "Une nuit de consultant·e junior : une marque lilloise perd ses clients. Démasque le chiffre qui ment, bâtis ta note, puis défends-la à 8 h devant la direction.",
     "d2": "Une économie hydraulique comme la MONIAC de 1949 : le multiplicateur, le paradoxe de l'épargne, un tournoi de théorie des jeux en anglais.",
-    "lieg": "En anglais, comme la licence : bloque le cours de la livre, règle ton prix, envoie un cargo à travers l'Atlantique et négocie avec Austin.",
+    "lieg": "En anglais, comme la licence : analyste export, fais payer ta première commande américaine. Lettre de crédit, Incoterm, dollar, prix… et le document qui bloque 282 000 $.",
     "aese": "Chargé·e de mission à la mairie : interroge les habitants, démasque le devis gonflé, boucle budget et financeurs, puis défends le dossier de la friche devant le conseil.",
     "ebmd": "Un téléphone oublié sur un banc de Wenov : fouille les données de Camille, démasque le graphique trompeur et contredis le comité Black Friday, preuves à l'appui.",
 }
