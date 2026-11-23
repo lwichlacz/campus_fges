@@ -32,7 +32,7 @@ ACCROCHE = {
     "ecofi": "Le comité de 18 h : le fonds a perdu 3,2 % et on te demande pourquoi. Mesure, calcule, ajuste la régression, retrouve le ticket d'ordre, puis défends ton dossier.",
     "lpabf": "Samedi, 9 h : des fonds suspects transitent par ton agence. Sers tes cinq clients, vérifie leurs pièces, épingle les indices… et trouve qui blanchit.",
     "apes": "Douze élèves malades : l'eau de la cantine est-elle en cause ? Prélève, dose, étalonne, compte les bactéries… puis signe le bulletin d'analyse.",
-    "veto": "Une journée de vétérinaire rural : le cœur affolé d'un chien, le rumen d'une vache, une carrière à dater, un champ à faire tourner… puis l'oral.",
+    "veto": "Les génisses d'une ferme flamande maigrissent : l'aliment est-il en cause ? Pèse, compare les prés, traque le parasite au microscope… puis signe l'ordonnance.",
     "cupge": "Une nuit de consultant·e junior : une marque lilloise perd ses clients. Démasque le chiffre qui ment, bâtis ta note, puis défends-la à 8 h devant la direction.",
     "d2": "Une économie hydraulique comme la MONIAC de 1949 : le multiplicateur, le paradoxe de l'épargne, un tournoi de théorie des jeux en anglais.",
     "lieg": "En anglais, comme la licence : bloque le cours de la livre, règle ton prix, envoie un cargo à travers l'Atlantique et négocie avec Austin.",

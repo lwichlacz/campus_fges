@@ -14,9 +14,9 @@
    (docs/validation-licence-aese.md). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { makePerson } from "../kit.js?v=db3a7f096f";
-import { jpoCard } from "./jpo.js?v=db3a7f096f";
-import { palier } from "./palier.js?v=db3a7f096f";
+import { makePerson } from "../kit.js?v=e65e6a43a4";
+import { jpoCard } from "./jpo.js?v=e65e6a43a4";
+import { palier } from "./palier.js?v=e65e6a43a4";
 
 /* ---------- les cours (disciplines de la licence, fiche fges.fr ; la maquette par année n'est pas encore publiée) ---------- */
 const COURSES = {

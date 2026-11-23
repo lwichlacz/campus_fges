@@ -11,9 +11,9 @@
    Entreprise, personnes, sociétés et documents sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { mountTable, MOBILE } from "./table.js?v=db3a7f096f";
-import { jpoCard } from "./jpo.js?v=db3a7f096f";
-import { palier } from "./palier.js?v=db3a7f096f";
+import { mountTable, MOBILE } from "./table.js?v=e65e6a43a4";
+import { jpoCard } from "./jpo.js?v=e65e6a43a4";
+import { palier } from "./palier.js?v=e65e6a43a4";
 
 const COURSES = {
 	compta:   ["L1", "Comptabilité financière", "Classer chaque opération : une charge, un produit, ou un investissement qui s'amortit sur plusieurs années."],

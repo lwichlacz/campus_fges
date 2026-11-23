@@ -52,7 +52,7 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/games/marquelle.js` | Mini-jeu « Le dossier de la friche » (Licence AES-E) : chargé·e de mission en mairie, un dossier de subvention à monter (enquête par quotas à l'horloge, métré du devis, maquette budgétaire au stylo rouge, plan de financement sous plafonds, délibération) puis à défendre au conseil municipal |
 | `js/games/stage3d.js` | Ossature 3D invisible des jeux des prépas : rendu, caméra qui évite le panneau et s'adapte au téléphone, étiquettes, toucher |
 | `js/games/tp.js` | Mini-jeu « La salle de TP » (APES) : quatre cadenas, un dosage, un pendule, un microscope, une courbe |
-| `js/games/clinique.js` | Mini-jeu « La clinique rurale » (Prépa Véto & Agro) : stéthoscope, rumen, carrière, rotation, oral du concours B |
+| `js/games/clinique.js` | Mini-jeu « Le troupeau du Riez » (Prépa Véto & Agro) : un dossier de vétérinaire rural·e, ruban, centrifugeuse, coproscopie, tarière, doseur, ordonnance |
 | `js/games/jourj.js` | Mini-jeu « Le jour J » (Prépa grandes écoles de commerce) : épreuves chronométrées, jury, tableau des admis |
 | `js/games/moniac.js` | Mini-jeu « La machine de l'économiste » (Prépa D2) : économie hydraulique, paradoxe de l'épargne, théorie des jeux |
 | `js/games/palier.js` | Le « teasing » commun aux mini-jeux : chaque jeu s'ouvre à chaud sur une scène d'une minute, puis ce palier propose de continuer, de recevoir la plaquette ou de revenir au campus (compté dans l'entonnoir : `jeu-palier`, `jeu-suite`) |
