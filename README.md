@@ -48,7 +48,7 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/games/audit.js` | Mini-jeu « L'Enquête de l'auditeur » (Licence Comptabilité-Finance-Audit) |
 | `js/games/robot.js` | Mini-jeu « Cellule robotique Wenov » (Licence Sciences pour l'Ingénieur) : bras 3D, programmation, vision |
 | `js/games/boutique.js` | Mini-jeu « Courée, la boutique en 3D » (Master E-Business & Marketing Digital) : le site vu de l'intérieur, tunnel de commande, SEO, cookies, acquisition, CRM, Black Friday en direct |
-| `js/games/cargo.js` | Mini-jeu « Cargo » (Licence Internationale Économie & Gestion), en anglais : une carte du monde de nuit, le cours de la livre en direct, les cartes Incoterms, un cargo dans l'Atlantique, une négociation en visio |
+| `js/games/cargo.js` | Mini-jeu « The Lone Star order » (Licence Internationale Économie & Gestion), en anglais : analyste export chez un fabricant lillois de vélos, une commande pour Austin payée par lettre de crédit ; entourer les écarts du crédit, planter les drapeaux CIF, vendre ses dollars à terme, placer le prix sur le rayon, pointer les documents et démasquer le « freight collect » |
 | `js/games/marquelle.js` | Mini-jeu « Le dossier de la friche » (Licence AES-E) : chargé·e de mission en mairie, un dossier de subvention à monter (enquête par quotas à l'horloge, métré du devis, maquette budgétaire au stylo rouge, plan de financement sous plafonds, délibération) puis à défendre au conseil municipal |
 | `js/games/stage3d.js` | Ossature 3D invisible des jeux des prépas : rendu, caméra qui évite le panneau et s'adapte au téléphone, étiquettes, toucher |
 | `js/games/tp.js` | Mini-jeu « La salle de TP » (APES) : quatre cadenas, un dosage, un pendule, un microscope, une courbe |
