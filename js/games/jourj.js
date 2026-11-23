@@ -15,10 +15,10 @@
    anglais écrit et oral, écrire pour convaincre, communication interpersonnelle et simulations d'entretien.
    Marque, cabinet, personnes, chiffres et documents sont fictifs ; écoles réelles citées comme débouchés.
    Contenu à relire par l'équipe de la prépa (docs/validation-prepa-cupge.md). */
-import { stage3d, THREE } from "./stage3d.js?v=893d8a4a62";
-import { makePerson } from "../kit.js?v=893d8a4a62";
-import { jpoCard } from "./jpo.js?v=893d8a4a62";
-import { palier } from "./palier.js?v=893d8a4a62";
+import { stage3d, THREE } from "./stage3d.js?v=db3a7f096f";
+import { makePerson } from "../kit.js?v=db3a7f096f";
+import { jpoCard } from "./jpo.js?v=db3a7f096f";
+import { palier } from "./palier.js?v=db3a7f096f";
 
 const COURSES = {
 	doc:    ["Prépa 1", "Technique du document", "Dépouiller une liasse, juger une source, ne garder que ce qui prouve : la base de toute synthèse."],
@@ -41,7 +41,7 @@ const PEOPLE = {
 };
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];
 const INK = "#1b2a44", RED = "#c62828", NAVY = "#0f3168", CYAN = "#21b7cb", GREEN = "#2f7d4a";
-const SANS = "Inter, system-ui, sans-serif", SERIF = "'Tiempos Headline', Georgia, serif";
+const SANS = "Inter,Arial,sans-serif", SERIF = "'Tiempos Headline', Times New Roman,serif";
 const PXU = 240;      // pixels de texture par unité : des pièces lisibles, même sur téléphone
 
 /* ---------- le plan (étape 5) : les fiches à lancer ---------- */
@@ -83,13 +83,13 @@ const QUESTIONS = [
 const SAND = 20;     // secondes pour répondre à une objection, preuve en main
 
 const CSS = `
-.ny{position:fixed;inset:0;z-index:40;background:#0b1426;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#e9f1f8;overflow:hidden;user-select:none;-webkit-user-select:none;animation:nyIn .4s ease both}
+.ny{position:fixed;inset:0;z-index:40;background:#0b1426;font-family:Inter,Arial,sans-serif;font-weight:300;color:#e9f1f8;overflow:hidden;user-select:none;-webkit-user-select:none;animation:nyIn .4s ease both}
 @keyframes nyIn{from{opacity:0}}
 .ny canvas.ny-3d{position:absolute;inset:0;display:block;touch-action:none}
 .ny-x{position:absolute;right:12px;top:10px;z-index:6;width:44px;height:44px;border-radius:50%;border:1px solid rgba(233,241,248,.4);background:rgba(11,20,38,.75);color:#fff;font-size:24px;line-height:1;cursor:pointer}
 .ny-top{position:absolute;left:16px;top:10px;z-index:4;display:flex;align-items:center;gap:16px;pointer-events:none}
 .ny-clock{display:flex;align-items:baseline;gap:10px;text-shadow:0 2px 10px rgba(0,0,0,.5)}
-.ny-clock b{font:300 38px/1 'Tiempos Headline',Georgia,serif;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.ny-clock b{font:300 38px/1 'Tiempos Headline',Times New Roman,serif;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.02em}
 .ny-clock span{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${CYAN}}
 .ny-steps{display:flex;gap:4px;list-style:none;margin:0;padding:0}
 .ny-steps li{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:999px;color:rgba(233,241,248,.45);border:1px solid rgba(233,241,248,.18)}
@@ -110,7 +110,7 @@ const CSS = `
 .ny-mt p b{color:#fff;font-weight:700}
 .ny-task{margin-top:8px!important;padding:6px 10px;border-radius:8px;background:rgba(33,183,203,.16);color:#bff3fa!important;font-weight:700;font-size:13.5px!important}
 .ny-task:before{content:"✎ ";color:${CYAN}}
-.ny-btn{margin-top:9px;border:0;border-radius:999px;padding:10px 18px;min-height:44px;background:${CYAN};color:#0b1426;font:700 14px Inter,system-ui,sans-serif;cursor:pointer}
+.ny-btn{margin-top:9px;border:0;border-radius:999px;padding:10px 18px;min-height:44px;background:${CYAN};color:#0b1426;font:700 14px Inter,Arial,sans-serif;cursor:pointer}
 .ny-btn:focus-visible{outline:3px solid #fff}
 .ny-sand{height:5px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:8px;overflow:hidden}
 .ny-sand i{display:block;height:100%;background:linear-gradient(90deg,#ff8a80,${CYAN});transform-origin:left;animation:nySand linear both}
@@ -118,15 +118,15 @@ const CSS = `
 .ny-note{position:absolute;right:14px;top:64px;z-index:3;width:330px;max-height:calc(100% - 80px);overflow:auto;background:#fbfaf6;color:${INK};border-radius:4px;border-top:6px solid ${CYAN};box-shadow:0 22px 50px rgba(0,0,0,.5);scrollbar-width:thin;user-select:text;-webkit-user-select:text}
 .ny-note-hd{display:block;width:100%;text-align:left;border:0;background:none;padding:14px 16px 8px;cursor:default;color:inherit;font:inherit}
 .ny-note-hd .k{display:block;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:${NAVY}}
-.ny-note-hd b{display:block;font:300 20px/1.2 'Tiempos Headline',Georgia,serif;color:${NAVY};margin-top:3px}
+.ny-note-hd b{display:block;font:300 20px/1.2 'Tiempos Headline',Times New Roman,serif;color:${NAVY};margin-top:3px}
 .ny-note-hd em{display:none}
 .ny-note.flash .ny-note-hd{animation:nyFlash .9s ease}
 @keyframes nyFlash{30%{background:#d6f4f8}}
 .ny-note-bd{padding:0 16px 14px}
 .ny-meta{font-size:12px;color:#5a6577;border-bottom:1px solid #e3e0d6;padding-bottom:8px;margin-bottom:8px;line-height:1.5}
 .ny-meta b{color:${INK};font-weight:700}
-.ny-note h4{margin:10px 0 4px;font:700 11px Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:${NAVY}}
-.ny-note h5{margin:10px 0 4px;font:300 15px/1.3 'Tiempos Headline',Georgia,serif;color:${NAVY}}
+.ny-note h4{margin:10px 0 4px;font:700 11px Inter,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:${NAVY}}
+.ny-note h5{margin:10px 0 4px;font:300 15px/1.3 'Tiempos Headline',Times New Roman,serif;color:${NAVY}}
 .ny-note ul{list-style:none;margin:0;padding:0}
 .ny-note li{position:relative;font-size:13px;line-height:1.4;padding:4px 0 4px 16px;border-bottom:1px dashed #e3e0d6;animation:nyIn .5s ease both}
 .ny-note li:before{content:"";position:absolute;left:2px;top:10px;width:7px;height:7px;border-radius:2px;background:${CYAN}}
@@ -137,17 +137,17 @@ const CSS = `
 .ny-ov[hidden]{display:none}
 .ny-card{width:100%;max-width:580px;max-height:100%;overflow:auto;box-sizing:border-box;background:#fbfaf6;color:${INK};border-radius:6px;border-top:8px solid ${CYAN};padding:20px 20px 16px;box-shadow:0 26px 70px rgba(0,0,0,.5);user-select:text;-webkit-user-select:text}
 .ny-card .k{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:${NAVY};margin:0 0 4px}
-.ny-card h2{font:300 30px/1.12 'Tiempos Headline',Georgia,serif;color:${NAVY};margin:2px 0 8px}
+.ny-card h2{font:300 30px/1.12 'Tiempos Headline',Times New Roman,serif;color:${NAVY};margin:2px 0 8px}
 .ny-card p{font-size:14.5px;line-height:1.5;margin:0 0 10px}
-.ny-stamp{display:inline-block;border:3px solid currentColor;border-radius:6px;padding:3px 10px;font:700 13px Inter,system-ui,sans-serif;letter-spacing:.16em;transform:rotate(-4deg);margin:2px 0 10px}
+.ny-stamp{display:inline-block;border:3px solid currentColor;border-radius:6px;padding:3px 10px;font:700 13px Inter,Arial,sans-serif;letter-spacing:.16em;transform:rotate(-4deg);margin:2px 0 10px}
 .ny-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:6px 0 12px}
 .ny-stats div{background:#eef6f8;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:700;color:#5a6577}
-.ny-stats b{display:block;font:300 20px 'Tiempos Headline',Georgia,serif;color:${NAVY}}
+.ny-stats b{display:block;font:300 20px 'Tiempos Headline',Times New Roman,serif;color:${NAVY}}
 .ny-list{list-style:none;margin:0 0 10px;padding:0}
 .ny-list li{font-size:13px;line-height:1.4;padding:6px 0;border-bottom:1px solid #e3e0d6}
 .ny-list li span{display:inline-block;background:${NAVY};color:#fff;border-radius:4px;padding:1px 6px;font-size:10.5px;font-weight:700;margin-right:6px}
-.ny-go{display:block;width:100%;border:0;border-radius:8px;padding:13px;margin-top:8px;min-height:48px;background:${NAVY};color:#fff;font:700 15px Inter,system-ui,sans-serif;cursor:pointer}
-.ny-alt{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none;border:1.5px solid #cdd6e0;border-radius:8px;padding:11px;margin-top:8px;min-height:46px;background:#fff;color:${NAVY};font:700 14px Inter,system-ui,sans-serif;cursor:pointer}
+.ny-go{display:block;width:100%;border:0;border-radius:8px;padding:13px;margin-top:8px;min-height:48px;background:${NAVY};color:#fff;font:700 15px Inter,Arial,sans-serif;cursor:pointer}
+.ny-alt{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none;border:1.5px solid #cdd6e0;border-radius:8px;padding:11px;margin-top:8px;min-height:46px;background:#fff;color:${NAVY};font:700 14px Inter,Arial,sans-serif;cursor:pointer}
 @media (max-width:759px){
 	.ny-top{left:10px;top:8px}
 	.ny-clock b{font-size:28px}

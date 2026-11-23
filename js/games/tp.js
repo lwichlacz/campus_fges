@@ -15,9 +15,9 @@
    indénombrable) ; on ne gomme jamais, on barre dans le cahier de labo, on explique, puis on refait avec la méthode.
    L'interface est le cahier de laboratoire, à petits carreaux ; la responsable, Nadia Keller, y laisse ses visas.
    École, laboratoire, personnes et valeurs sont fictifs ou simplifiés. Contenu à relire par l'équipe de l'APES. */
-import { stage3d, THREE } from "./stage3d.js?v=b66fe07771";
-import { jpoCard } from "./jpo.js?v=b66fe07771";
-import { palier } from "./palier.js?v=b66fe07771";
+import { stage3d, THREE } from "./stage3d.js?v=db3a7f096f";
+import { jpoCard } from "./jpo.js?v=db3a7f096f";
+import { palier } from "./palier.js?v=db3a7f096f";
 
 const SPEED = /[?&]vite/.test(location.search) ? 5 : 1;      // ?vite : attentes et animations 5 fois plus rapides (tests)
 
@@ -49,13 +49,13 @@ const COLS = (() => {
 const RODS = (() => { const r = rng(99), a = []; for(let i = 0; i < 24; i++) a.push({ x:20 + r()*220, y:20 + r()*220, a:r()*Math.PI, l:24 + r()*8 }); return a; })();
 
 const CSS = `
-.lb{position:fixed;inset:0;z-index:40;background:#e7edf1;font-family:Inter,system-ui,sans-serif;font-weight:300;color:#0f3168;overflow:hidden;animation:lbIn .4s ease both}
+.lb{position:fixed;inset:0;z-index:40;background:#e7edf1;font-family:Inter,Arial,sans-serif;font-weight:300;color:#0f3168;overflow:hidden;animation:lbIn .4s ease both}
 @keyframes lbIn{from{opacity:0}}
 .lb canvas.lb-3d{position:absolute;inset:0;display:block;touch-action:none}
 .lb-x{position:absolute;right:12px;top:10px;z-index:6;width:40px;height:40px;border-radius:50%;border:0;background:#0f3168;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 4px 12px rgba(15,49,104,.3)}
 .lb-hud{position:absolute;left:12px;top:10px;z-index:5;display:flex;gap:8px;align-items:center;flex-wrap:wrap;right:476px;pointer-events:none}
 .lb-tag{background:#fff;border-left:6px solid #21b7cb;border-radius:3px;padding:4px 9px;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:#0f3168;box-shadow:0 3px 10px rgba(15,49,104,.18);line-height:1.25}
-.lb-tag b{display:block;font:300 15px Inter,system-ui,sans-serif;letter-spacing:0}
+.lb-tag b{display:block;font:300 15px Inter,Arial,sans-serif;letter-spacing:0}
 .lb-steps{display:flex;gap:4px;flex-wrap:wrap}
 .lb-steps span{background:rgba(255,255,255,.85);border:1.5px solid #c6d3df;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:700;color:#7d8ca3}
 .lb-steps span.done{background:#0f3168;border-color:#0f3168;color:#fff}
@@ -71,9 +71,9 @@ const CSS = `
 		linear-gradient(90deg,rgba(33,183,203,.15) 1px,transparent 1px) 0 0/13px 13px local,#fdfefe;
 	box-shadow:0 18px 40px rgba(15,49,104,.28),inset 0 0 0 1px #d5dee7}
 .lb-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline;border-bottom:2px solid #0f3168;padding-bottom:4px;margin-bottom:8px;font-size:11px;font-weight:700;color:#5b6b85}
-.lb-top b{font:300 16px "Tiempos Headline",Georgia,serif;color:#0f3168}
+.lb-top b{font:300 16px "Tiempos Headline",Times New Roman,serif;color:#0f3168}
 .lb-k{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#13808f}
-.lb-h{font:300 24px/1.15 "Tiempos Headline",Georgia,serif;margin:2px 0 8px;color:#0f3168}
+.lb-h{font:300 24px/1.15 "Tiempos Headline",Times New Roman,serif;margin:2px 0 8px;color:#0f3168}
 .lb-p{margin:0 0 8px;font-size:14px;line-height:1.5;color:#22335a}
 .lb-p b{font-weight:700;color:#0f3168}
 .lb-log{display:grid;gap:3px;margin:8px 0}
@@ -89,26 +89,26 @@ const CSS = `
 .lb-visa small{display:block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#13808f}
 .lb-visa:empty{display:none}
 .lb-num{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0}
-.lb-num div{font:300 26px "Tiempos Headline",Georgia,serif;font-variant-numeric:tabular-nums;color:#0f3168}
-.lb-num small{display:block;font:700 10px Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#5b6b85}
+.lb-num div{font:300 26px "Tiempos Headline",Times New Roman,serif;font-variant-numeric:tabular-nums;color:#0f3168}
+.lb-num small{display:block;font:700 10px Inter,Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#5b6b85}
 .lb-graph{display:block;width:100%;background:#fff;border:1px solid #c9d6e3;border-radius:4px;margin:6px 0;touch-action:none;cursor:crosshair}
 .lb-eye{display:block;margin:8px auto;width:210px;height:210px;border-radius:50%;box-shadow:0 0 0 8px #0f1a2c,0 0 0 10px #5b6b85;background:#000;touch-action:none;cursor:crosshair}
-.lb-go{display:block;width:100%;border:0;border-radius:10px;padding:13px;margin-top:10px;background:#0f3168;color:#fff;font:700 15px Inter,system-ui,sans-serif;cursor:pointer}
+.lb-go{display:block;width:100%;border:0;border-radius:10px;padding:13px;margin-top:10px;background:#0f3168;color:#fff;font:700 15px Inter,Arial,sans-serif;cursor:pointer}
 .lb-go:disabled{opacity:.35;cursor:default}
-.lb-alt{display:block;width:100%;border:1.5px solid #9fb0c4;border-radius:10px;padding:11px;margin-top:8px;background:#fff;color:#0f3168;font:700 14px Inter,system-ui,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
+.lb-alt{display:block;width:100%;border:1.5px solid #9fb0c4;border-radius:10px;padding:11px;margin-top:8px;background:#fff;color:#0f3168;font:700 14px Inter,Arial,sans-serif;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box}
 .lb-go:focus-visible,.lb-alt:focus-visible{outline:3px solid #21b7cb;outline-offset:2px}
 .lb-ok{color:#2f6b45;font-weight:700;font-size:13.5px;margin:6px 0}
 .lb-ko{color:#b91c1c;font-weight:700;font-size:13.5px;margin:6px 0}
 .lb-course{background:#fff;border:1.5px dashed #21b7cb;border-radius:8px;padding:8px 10px;margin:8px 0;animation:lbW .35s both}
 .lb-course small{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#13808f}
-.lb-course b{display:block;font:300 17px "Tiempos Headline",Georgia,serif;color:#0f3168}
+.lb-course b{display:block;font:300 17px "Tiempos Headline",Times New Roman,serif;color:#0f3168}
 .lb-course span{font-size:13px;color:#22335a}
 .lb-tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0;background:#fff}
 .lb-tbl td{padding:5px 4px;border-top:1px solid #d5dee7}.lb-tbl td:last-child{text-align:right;font-weight:700}
 .lb-list{margin:6px 0;padding:0;list-style:none;display:grid;gap:3px}
 .lb-list li{font-size:13.5px}
 .lb-list li:before{content:"◆ ";color:#21b7cb}
-.lb-done{display:inline-block;border:3px solid #2f6b45;color:#2f6b45;font:700 13px Inter,system-ui,sans-serif;letter-spacing:.14em;padding:3px 9px;border-radius:5px;transform:rotate(-5deg);margin:4px 0 8px}
+.lb-done{display:inline-block;border:3px solid #2f6b45;color:#2f6b45;font:700 13px Inter,Arial,sans-serif;letter-spacing:.14em;padding:3px 9px;border-radius:5px;transform:rotate(-5deg);margin:4px 0 8px}
 @media (max-width:759px){
 	.lb-hud{right:110px;gap:5px}
 	.lb-steps span{padding:3px 7px;font-size:0;min-width:8px;min-height:8px}
@@ -160,8 +160,8 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	const tiles = (a, b, n = 8) => W.canvasTex(256, 256, x => { for(let i = 0; i < n; i++) for(let j = 0; j < n; j++){ x.fillStyle = (i + j) % 2 ? a : b; x.fillRect(i*256/n, j*256/n, 256/n, 256/n); } });
 	const lcd = (scr, big, small, col = "#9ff2ff") => scr.draw((x, w, h) => {
 		x.fillStyle = "#0b1a2e"; x.fillRect(0, 0, w, h); x.fillStyle = col; x.textAlign = "center"; x.textBaseline = "middle";
-		x.font = `700 ${Math.round(h*.46)}px Inter,system-ui,sans-serif`; x.fillText(big, w/2, h*.44);
-		if(small){ x.fillStyle = "#7fa6c4"; x.font = `700 ${Math.round(h*.16)}px Inter,system-ui,sans-serif`; x.fillText(small, w/2, h*.84); }
+		x.font = `700 ${Math.round(h*.46)}px Inter,Arial,sans-serif`; x.fillText(big, w/2, h*.44);
+		if(small){ x.fillStyle = "#7fa6c4"; x.font = `700 ${Math.round(h*.16)}px Inter,Arial,sans-serif`; x.fillText(small, w/2, h*.84); }
 	});
 
 	/* --- la cantine de l'école des Tilleuls (fictive), à l'écart --- */
@@ -176,8 +176,8 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 		box(16, Y, 3.6, "#dfe3e6", CX, 0, -3.6); box(16.2, .14, 3.8, "#c9cfd5", CX, Y - .14, -3.6);
 		// dessins d'enfants et affiche de la cantine
 		const art = W.canvasTex(512, 160, x => {
-			x.fillStyle = "#fff"; x.fillRect(0, 0, 512, 160); x.fillStyle = "#0f3168"; x.font = "300 44px 'Tiempos Headline',Georgia,serif"; x.textAlign = "center";
-			x.fillText("Cantine des Tilleuls", 256, 70); x.font = "700 22px Inter,system-ui,sans-serif"; x.fillStyle = "#13808f"; x.fillText("Bon appétit ! · école élémentaire (fictive)", 256, 118);
+			x.fillStyle = "#fff"; x.fillRect(0, 0, 512, 160); x.fillStyle = "#0f3168"; x.font = "300 44px 'Tiempos Headline',Times New Roman,serif"; x.textAlign = "center";
+			x.fillText("Cantine des Tilleuls", 256, 70); x.font = "700 22px Inter,Arial,sans-serif"; x.fillStyle = "#13808f"; x.fillText("Bon appétit ! · école élémentaire (fictive)", 256, 118);
 		});
 		mesh(G(new THREE.PlaneGeometry(7, 2.2)), new THREE.MeshBasicMaterial({ map:art }), CX - 4, 8.6, -5.35);
 		["#f3b23b", "#4fa3d9", "#e2617f", "#7cc06e"].forEach((c, i) => {
@@ -265,10 +265,10 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 		["#1f5fbf", "#c4362f", "#f3b23b", "#2f6b45", "#7a5aa8", "#1f5fbf", "#e8ecef", "#c4362f"].forEach((c, i) => { cyl(.32, .32, .9, M(c, { roughness:.4 }), 5.8 + i*1.15, 7.6, -5.6); cyl(.14, .14, .25, "#e8ecef", 5.8 + i*1.15, 8.5, -5.6); });
 		// l'affiche des limites de qualité (simplifiée)
 		const pos = W.canvasTex(300, 400, x => {
-			x.fillStyle = "#fff"; x.fillRect(0, 0, 300, 400); x.fillStyle = "#0f3168"; x.fillRect(0, 0, 300, 60); x.fillStyle = "#fff"; x.font = "700 22px Inter,system-ui,sans-serif"; x.fillText("Eau potable", 18, 38);
-			x.fillStyle = "#0f3168"; x.font = "700 19px Inter,system-ui,sans-serif";
+			x.fillStyle = "#fff"; x.fillRect(0, 0, 300, 400); x.fillStyle = "#0f3168"; x.fillRect(0, 0, 300, 60); x.fillStyle = "#fff"; x.font = "700 22px Inter,Arial,sans-serif"; x.fillText("Eau potable", 18, 38);
+			x.fillStyle = "#0f3168"; x.font = "700 19px Inter,Arial,sans-serif";
 			[["E. coli", "0 / 100 mL"], ["Coliformes", "0 / 100 mL"], ["Nitrates", "≤ 50 mg/L"], ["Chlore libre", "≥ 0,1 mg/L*"]].forEach(([a, b], i) => { x.fillText(a, 18, 110 + i*64); x.fillStyle = "#13808f"; x.fillText(b, 18, 136 + i*64); x.fillStyle = "#0f3168"; });
-			x.font = "300 14px Inter,system-ui,sans-serif"; x.fillText("* repère du réseau", 18, 384);
+			x.font = "300 14px Inter,Arial,sans-serif"; x.fillText("* repère du réseau", 18, 384);
 		});
 		mesh(G(new THREE.PlaneGeometry(3, 4)), new THREE.MeshBasicMaterial({ map:pos }), 15.5, 7.6, -6.15);
 	}
@@ -447,7 +447,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 			const c = book.querySelector("[data-g]"); if(!c) return; const x = c.getContext("2d"), w = c.width, h = c.height;
 			x.clearRect(0, 0, w, h); const P = (v, t) => [50 + v/14*(w - 70), h - 30 - (t - 10)/11*(h - 50)];
 			x.strokeStyle = "#0f3168"; x.lineWidth = 2; x.beginPath(); x.moveTo(...P(0, 21)); x.lineTo(...P(0, 10)); x.lineTo(...P(14, 10)); x.stroke();
-			x.fillStyle = "#5b6b85"; x.font = "700 18px Inter,system-ui,sans-serif"; x.fillText("°C", 8, 26); x.fillText("litres écoulés", w - 150, h - 6);
+			x.fillStyle = "#5b6b85"; x.font = "700 18px Inter,Arial,sans-serif"; x.fillText("°C", 8, 26); x.fillText("litres écoulés", w - 150, h - 6);
 			for(const t of [12, 16, 20]){ const [, yy] = P(0, t); x.fillText(t, 14, yy + 6); }
 			x.setLineDash([6, 6]); x.strokeStyle = "#21b7cb"; x.beginPath(); x.moveTo(...P(0, T_NET)); x.lineTo(...P(14, T_NET)); x.stroke(); x.setLineDash([]);
 			x.strokeStyle = "#b91c1c"; x.lineWidth = 3; x.beginPath(); curve.forEach(([v, t], i) => i ? x.lineTo(...P(Math.min(v, 14), t)) : x.moveTo(...P(v, t))); x.stroke();
@@ -583,13 +583,13 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 			for(let c = 0; c <= 60; c += 10){ const [X] = GP(c, 0); x.beginPath(); x.moveTo(X, 30); x.lineTo(X, h - 50); x.stroke(); }
 			for(let a = 0; a <= .8; a += .1){ const [, Yy] = GP(0, a); x.beginPath(); x.moveTo(64, Yy); x.lineTo(w - 26, Yy); x.stroke(); }
 			x.strokeStyle = "#0f3168"; x.lineWidth = 2.5; x.beginPath(); x.moveTo(...GP(0, .8)); x.lineTo(...GP(0, 0)); x.lineTo(...GP(60, 0)); x.stroke();
-			x.fillStyle = "#5b6b85"; x.font = "700 18px Inter,system-ui,sans-serif"; x.fillText("A", 30, 34); x.fillText("nitrates (mg/L)", w - 170, h - 12);
+			x.fillStyle = "#5b6b85"; x.font = "700 18px Inter,Arial,sans-serif"; x.fillText("A", 30, 34); x.fillText("nitrates (mg/L)", w - 170, h - 12);
 			for(const c of [0, 25, 50]){ const [X] = GP(c, 0); x.fillText(c, X - 8, h - 30); }
 			for(const a of [.2, .4, .6]){ const [, Yy] = GP(0, a); x.fillText(fr(a), 18, Yy + 6); }
 			if(mode){ x.strokeStyle = lineOk ? "#21b7cb" : "#13808f"; x.lineWidth = 4; x.beginPath(); x.moveTo(...GP(0, 0)); x.lineTo(...GP(60, slope*60)); x.stroke();
 				if(!lineOk){ const [X, Yy] = GP(55, slope*55); x.fillStyle = "#21b7cb"; x.beginPath(); x.arc(X, Yy, 14, 0, 7); x.fill(); x.strokeStyle = "#0f3168"; x.lineWidth = 2; x.stroke(); } }
 			if(sampleA !== null){ x.setLineDash([8, 6]); x.strokeStyle = "#b91c1c"; x.lineWidth = 2; const [, Yy] = GP(0, sampleA); x.beginPath(); x.moveTo(64, Yy); x.lineTo(w - 26, Yy); x.stroke();
-				if(cRead !== null){ const [X, Y2] = GP(cRead, slope*cRead); x.beginPath(); x.moveTo(X, h - 50); x.lineTo(X, Y2); x.stroke(); x.setLineDash([]); x.fillStyle = "#b91c1c"; x.beginPath(); x.arc(X, Y2, 9, 0, 7); x.fill(); x.font = "700 20px Inter,system-ui,sans-serif"; x.fillText(fr(cRead, 0) + " mg/L", X + 10, h - 58); }
+				if(cRead !== null){ const [X, Y2] = GP(cRead, slope*cRead); x.beginPath(); x.moveTo(X, h - 50); x.lineTo(X, Y2); x.stroke(); x.setLineDash([]); x.fillStyle = "#b91c1c"; x.beginPath(); x.arc(X, Y2, 9, 0, 7); x.fill(); x.font = "700 20px Inter,Arial,sans-serif"; x.fillText(fr(cRead, 0) + " mg/L", X + 10, h - 58); }
 				x.setLineDash([]); }
 			for(const [c, a] of Object.entries(pts)){ const [X, Yy] = GP(+c, a); x.fillStyle = "#0f3168"; x.beginPath(); x.arc(X, Yy, 8, 0, 7); x.fill(); }
 		}
@@ -819,7 +819,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 			if(obj === 100 && !oiled){ x.fillStyle = "rgba(10,14,24,.55)"; x.fillRect(0, 0, 260, 260); }
 			if(measured){ const b = measured, dx = Math.cos(b.a)*b.l/2, dy = Math.sin(b.a)*b.l/2;
 				x.strokeStyle = "#21b7cb"; x.lineWidth = 3; x.beginPath(); x.moveTo(b.x - dx, b.y - dy + 16); x.lineTo(b.x + dx, b.y + dy + 16); x.stroke();
-				x.fillStyle = "#0f3168"; x.font = "700 18px Inter,system-ui,sans-serif"; x.fillText("2 µm", b.x + 14, b.y + 40); }
+				x.fillStyle = "#0f3168"; x.font = "700 18px Inter,Arial,sans-serif"; x.fillText("2 µm", b.x + 14, b.y + 40); }
 			x.restore();
 			const o = book.querySelector("[data-o]"), f = book.querySelector("[data-f]");
 			if(o) o.textContent = "×" + obj + (obj === 100 ? (oiled ? " · huile" : " · sans huile") : "");
@@ -876,35 +876,35 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 			bulTex.redraw((x, w, h) => {
 				x.fillStyle = "#fffdf8"; x.fillRect(0, 0, w, h);
 				x.fillStyle = "#0f3168"; x.fillRect(0, 0, w, 110);
-				x.fillStyle = "#fff"; x.font = "300 44px 'Tiempos Headline',Georgia,serif"; x.fillText("Bulletin d'analyse", 50, 70);
-				x.font = "700 22px Inter,system-ui,sans-serif"; x.textAlign = "right"; x.fillText(`Laboratoire des eaux (fictif) · n° ${SAMPLE}`, w - 50, 68); x.textAlign = "left";
-				x.fillStyle = "#22335a"; x.font = "300 24px Inter,system-ui,sans-serif";
+				x.fillStyle = "#fff"; x.font = "300 44px 'Tiempos Headline',Times New Roman,serif"; x.fillText("Bulletin d'analyse", 50, 70);
+				x.font = "700 22px Inter,Arial,sans-serif"; x.textAlign = "right"; x.fillText(`Laboratoire des eaux (fictif) · n° ${SAMPLE}`, w - 50, 68); x.textAlign = "left";
+				x.fillStyle = "#22335a"; x.font = "300 24px Inter,Arial,sans-serif";
 				x.fillText("Prélèvement : école élémentaire des Tilleuls (fictive), robinet de la cantine, lundi 8 h 52", 50, 160);
 				x.fillText(`Température au prélèvement : ${fr(T_NET)} °C (${fr(T_HOT)} °C au premier jet)`, 50, 200);
-				x.font = "700 20px Inter,system-ui,sans-serif"; x.fillStyle = "#5b6b85";
+				x.font = "700 20px Inter,Arial,sans-serif"; x.fillStyle = "#5b6b85";
 				[["PARAMÈTRE", 50], ["RÉSULTAT", 470], ["LIMITE / RÉFÉRENCE", 760], ["CONFORMITÉ", 1080]].forEach(([t, X]) => x.fillText(t, X, 280));
 				ROWS.forEach((r, i) => {
 					const y = RY(i);
 					x.fillStyle = i % 2 ? "#fffdf8" : "#f1f5f9"; x.fillRect(40, y - 40, w - 80, 86);
-					x.fillStyle = "#0f3168"; x.font = "700 28px Inter,system-ui,sans-serif"; x.fillText(r[0], 50, y + 10);
-					x.font = "700 30px Inter,system-ui,sans-serif"; x.fillText(r[1], 470, y + 10);
-					x.font = "300 26px Inter,system-ui,sans-serif"; x.fillText(r[2], 760, y + 10);
+					x.fillStyle = "#0f3168"; x.font = "700 28px Inter,Arial,sans-serif"; x.fillText(r[0], 50, y + 10);
+					x.font = "700 30px Inter,Arial,sans-serif"; x.fillText(r[1], 470, y + 10);
+					x.font = "300 26px Inter,Arial,sans-serif"; x.fillText(r[2], 760, y + 10);
 					const m = mark[i];
 					x.strokeStyle = m ? (m === "C" ? "#2f6b45" : "#b91c1c") : "#21b7cb"; x.lineWidth = 4; x.setLineDash(m ? [] : [10, 8]);
 					x.beginPath(); x.roundRect(1070, y - 30, 270, 66, 10); x.stroke(); x.setLineDash([]);
-					x.fillStyle = m === "C" ? "#2f6b45" : m === "NC" ? "#b91c1c" : "#13808f"; x.font = `700 ${m ? 26 : 22}px Inter,system-ui,sans-serif`; x.textAlign = "center";
+					x.fillStyle = m === "C" ? "#2f6b45" : m === "NC" ? "#b91c1c" : "#13808f"; x.font = `700 ${m ? 26 : 22}px Inter,Arial,sans-serif`; x.textAlign = "center";
 					x.fillText(m === "C" ? "Conforme" : m === "NC" ? "Non conforme" : "touche ici", 1205, y + 12); x.textAlign = "left";
 				});
 				const v = verdict();
-				x.fillStyle = "#0f3168"; x.font = "700 22px Inter,system-ui,sans-serif"; x.fillText("CONCLUSION", 50, 740);
-				x.fillStyle = v.startsWith("EAU NON") ? "#b91c1c" : "#2f6b45"; x.font = "700 30px Inter,system-ui,sans-serif"; x.fillText(v || "…", 50, 785);
-				x.fillStyle = "#22335a"; x.font = "300 21px Inter,system-ui,sans-serif";
+				x.fillStyle = "#0f3168"; x.font = "700 22px Inter,Arial,sans-serif"; x.fillText("CONCLUSION", 50, 740);
+				x.fillStyle = v.startsWith("EAU NON") ? "#b91c1c" : "#2f6b45"; x.font = "700 30px Inter,Arial,sans-serif"; x.fillText(v || "…", 50, 785);
+				x.fillStyle = "#22335a"; x.font = "300 21px Inter,Arial,sans-serif";
 				if(v.startsWith("EAU NON")){ ["Eau restée stagnante dans la canalisation de la cantine,", "chlore épuisé : contamination d'origine fécale.", "Nitrates conformes (piste des champs écartée)."].forEach((t, i) => x.fillText(t, 50, 830 + i*32)); }
 				x.strokeStyle = "#0f3168"; x.lineWidth = 2; x.strokeRect(SIG[0], SIG[1], SIG[2] - SIG[0], SIG[3] - SIG[1]);
-				x.fillStyle = "#5b6b85"; x.font = "700 18px Inter,system-ui,sans-serif"; x.fillText("SIGNATURE DU TECHNICIEN · DE LA TECHNICIENNE", SIG[0] + 14, SIG[1] + 30);
+				x.fillStyle = "#5b6b85"; x.font = "700 18px Inter,Arial,sans-serif"; x.fillText("SIGNATURE DU TECHNICIEN · DE LA TECHNICIENNE", SIG[0] + 14, SIG[1] + 30);
 				x.strokeStyle = "#0f3168"; x.lineWidth = 5; x.lineCap = "round"; x.lineJoin = "round";
 				for(const s of strokes){ x.beginPath(); s.forEach((p, i) => i ? x.lineTo(p[0], p[1]) : x.moveTo(p[0], p[1])); x.stroke(); }
-				if(signed){ x.save(); x.translate(1130, 712); x.rotate(-.08); x.scale(.75, .75); x.strokeStyle = x.fillStyle = "#2f6b45"; x.lineWidth = 6; x.globalAlpha = .85; x.strokeRect(-150, -42, 300, 84); x.font = "700 40px Inter,system-ui,sans-serif"; x.textAlign = "center"; x.fillText("VALIDÉ", 0, 14); x.restore(); }
+				if(signed){ x.save(); x.translate(1130, 712); x.rotate(-.08); x.scale(.75, .75); x.strokeStyle = x.fillStyle = "#2f6b45"; x.lineWidth = 6; x.globalAlpha = .85; x.strokeRect(-150, -42, 300, 84); x.font = "700 40px Inter,Arial,sans-serif"; x.textAlign = "center"; x.fillText("VALIDÉ", 0, 14); x.restore(); }
 			});
 		}
 		draw();
