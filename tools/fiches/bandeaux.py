@@ -34,7 +34,7 @@ ACCROCHE = {
     "apes": "Douze élèves malades : l'eau de la cantine est-elle en cause ? Prélève, dose, étalonne, compte les bactéries… puis signe le bulletin d'analyse.",
     "veto": "Les génisses d'une ferme flamande maigrissent : l'aliment est-il en cause ? Pèse, compare les prés, traque le parasite au microscope… puis signe l'ordonnance.",
     "cupge": "Une nuit de consultant·e junior : une marque lilloise perd ses clients. Démasque le chiffre qui ment, bâtis ta note, puis défends-la à 8 h devant la direction.",
-    "d2": "Une économie hydraulique comme la MONIAC de 1949 : le multiplicateur, le paradoxe de l'épargne, un tournoi de théorie des jeux en anglais.",
+    "d2": "Économiste en banque centrale : l'inflation bondit à 4,2 %. Décompose l'indice, fais tourner la machine de Phillips, puis défends ta recommandation au Conseil.",
     "lieg": "En anglais, comme la licence : bloque le cours de la livre, règle ton prix, envoie un cargo à travers l'Atlantique et négocie avec Austin.",
     "aese": "Chargé·e de mission à la mairie : interroge les habitants, démasque le devis gonflé, boucle budget et financeurs, puis défends le dossier de la friche devant le conseil.",
     "ebmd": "Un téléphone oublié sur un banc de Wenov : fouille les données de Camille, démasque le graphique trompeur et contredis le comité Black Friday, preuves à l'appui.",
