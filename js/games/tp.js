@@ -15,10 +15,10 @@
    indénombrable) ; on ne gomme jamais, on barre dans le cahier de labo, on explique, puis on refait avec la méthode.
    L'interface est le cahier de laboratoire, à petits carreaux ; la responsable, Nadia Keller, y laisse ses visas.
    École, laboratoire, personnes et valeurs sont fictifs ou simplifiés. Contenu à relire par l'équipe de l'APES. */
-import { soleil, guideGeste, modele, meuble, grain } from "./rendu.js?v=59fb9159af";
-import { stage3d, THREE } from "./stage3d.js?v=59fb9159af";
-import { jpoCard } from "./jpo.js?v=59fb9159af";
-import { palier } from "./palier.js?v=59fb9159af";
+import { soleil, guideGeste, modele, meuble, grain } from "./rendu.js?v=ff1070917c";
+import { stage3d, THREE } from "./stage3d.js?v=ff1070917c";
+import { jpoCard } from "./jpo.js?v=ff1070917c";
+import { palier } from "./palier.js?v=ff1070917c";
 
 const SPEED = /[?&]vite/.test(location.search) ? 5 : 1;      // ?vite : attentes et animations 5 fois plus rapides (tests)
 
@@ -157,6 +157,8 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 		const m = mesh(G(new THREE.PlaneGeometry(w, h)), mat, x, y, z, parent); m.castShadow = m.receiveShadow = false;
 		return { m, t, draw:f => t.redraw(f) };
 	}
+	// tour(profil, matériau, x, y, z, parent) : une pièce de révolution (verrerie, bec, objectif) à partir de son profil [rayon, hauteur]
+	const tour = (pts, mat, x, y, z, parent, seg = 32) => mesh(G(new THREE.LatheGeometry(pts.map(([r, h]) => new THREE.Vector2(r, h)), seg)), mat, x, y, z, parent);
 	function stick(m, a, b){ const d = new THREE.Vector3().subVectors(b, a), L = Math.max(.001, d.length()); m.position.copy(a).addScaledVector(d, .5); m.scale.set(1, L, 1); m.quaternion.setFromUnitVectors(V3(0, 1, 0), d.normalize()); }
 	const tiles = (a, b, n = 8) => W.canvasTex(256, 256, x => { for(let i = 0; i < n; i++) for(let j = 0; j < n; j++){ x.fillStyle = (i + j) % 2 ? a : b; x.fillRect(i*256/n, j*256/n, 256/n, 256/n); } });
 	const lcd = (scr, big, small, col = "#9ff2ff") => scr.draw((x, w, h) => {
@@ -299,7 +301,8 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	// la rampe de filtration, le flacon prélevé, le bec Bunsen, la boîte de Petri, l'étuve
 	const filt = new THREE.Group(); filt.position.set(-1, Y, -4.1); scene.add(filt);
 	box(2.6, .7, 1.6, "#9aa3ad", 0, 0, 0, filt); cyl(.35, .35, .15, steel, 0, .7, 0, filt);
-	cyl(.62, .62, 2.4, glass, 0, .85, 0, filt);
+	tour([[.5, 0], [.56, .04], [.6, .3], [.62, 2.3], [.68, 2.36], [.68, 2.4]], glass, 0, .85, 0, filt);
+	tour([[.36, 0], [.54, .06], [.56, .16], [.4, .2]], steel, 0, .72, 0, filt);
 	const flg = G(new THREE.CylinderGeometry(.57, .57, 1, 20)); flg.translate(0, .5, 0);
 	const funLiq = mesh(flg, M("#cfe8f8", { transparent:true, opacity:.75 }), 0, .87, 0, filt); funLiq.visible = false;
 	const FUN_H = 2.2;                                     // hauteur de 100 mL dans l'entonnoir
@@ -308,7 +311,10 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	const flask2L = label("Ton flacon", { size:.02, bg:"#0f3168", fg:"#fff" }); flask2L.position.set(0, 2.9, 0); flask2.g.add(flask2L);
 	const pourJet = mesh(G(new THREE.CylinderGeometry(.06, .06, 1, 8)), M("#cfe8f8", { transparent:true, opacity:.75 }), 0, 0, 0); pourJet.visible = false;
 	const bunsen = new THREE.Group(); bunsen.position.set(2.1, Y, -4.7); scene.add(bunsen);
-	cyl(.4, .45, .15, "#33404f", 0, 0, 0, bunsen); cyl(.1, .1, 1.1, steel, 0, .15, 0, bunsen);
+	tour([[0, 0], [.46, 0], [.46, .05], [.38, .1], [.2, .18], [.12, .22], [0, .22]], M("#33404f", { roughness:.5 }), 0, 0, 0, bunsen);
+	tour([[.1, .2], [.1, 1.25], [.12, 1.27], [.12, 1.3]], steel, 0, 0, 0, bunsen);
+	tour([[.14, .38], [.14, .58]], M("#c9a24a", { metalness:.8, roughness:.3 }), 0, 0, 0, bunsen);
+	mesh(G(new THREE.CylinderGeometry(.05, .05, .5, 8)), M("#e8742a", { roughness:.6 }), .32, .26, 0, bunsen).rotation.z = Math.PI/2;
 	const bflame = mesh(G(new THREE.ConeGeometry(.13, .6, 10)), new THREE.MeshBasicMaterial({ color:"#5ab4ff", transparent:true, opacity:.7 }), 0, 1.55, 0, bunsen);
 	const dish = new THREE.Group(); const DISH_HOME = V3(-1.3, Y, -2.2); dish.position.copy(DISH_HOME); scene.add(dish);
 	cyl(1.3, 1.3, .16, glass, 0, 0, 0, dish);
@@ -327,7 +333,9 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	box(1.7, .12, 1.4, "#22324f", 0, 1.5, .1, mic); box(1.3, .03, .45, "#e8f2fb", 0, 1.62, .1, mic); box(.5, .01, .3, "#d97ab0", 0, 1.655, .1, mic);
 	const turret = new THREE.Group(); turret.position.set(0, 2.75, .05); mic.add(turret);
 	cyl(.42, .42, .25, "#c9d2da", 0, 0, 0, turret);
-	const objA = cyl(.12, .1, .45, "#e8ecef", .22, -.45, 0, turret), objB = cyl(.14, .1, .75, "#f3b23b", -.22, -.75, 0, turret);
+	const objectif = (x, L, bague) => { tour([[0, 0], [.05, 0], [.08, .04], [.1, .12], [.1, L - .14], [.13, L - .12], [.13, L], [0, L]], M("#e8ecef", { metalness:.6, roughness:.3 }), x, -L, 0, turret);
+		tour([[.105, 0], [.105, .07]], M(bague), x, -L + .2, 0, turret); tour([[0, -.005], [.045, -.005]], M("#7fb8ff", { metalness:.3, roughness:.05 }), x, -L + .006, 0, turret); };
+	objectif(.22, .45, "#e8ecef"); objectif(-.22, .75, "#f3b23b");
 	const tube = mesh(G(new THREE.CylinderGeometry(.2, .2, 1.6, 14)), M("#e8ecef"), 0, 3.6, -.25, mic); tube.rotation.x = -.35;
 	const turretHit = hitBox(1.6, 1.2, 1.4, mic, 0, 2.7, .05);
 	const knob = new THREE.Group(); knob.position.set(.45, 1.15, -.8); mic.add(knob);
@@ -348,6 +356,21 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	const pen = new THREE.Group(); pen.position.set(17.6, Y + .1, -2.4); pen.rotation.y = .5; scene.add(pen);
 	mesh(G(new THREE.CylinderGeometry(.07, .07, 1.6, 8)), M("#0f3168"), 0, 0, 0, pen).rotation.z = Math.PI/2;
 
+	/* --- la hotte (sorbonne) : caisson blanc, vitre relevable, gaine d'extraction ; on manipule les réactifs sous elle --- */
+	{ const g = new THREE.Group(); g.position.set(-14.6, Y, -4); scene.add(g);
+		const wh = M("#eef1f3", { roughness:.5 });
+		box(.3, 5.6, 4, wh, -2.55, 0, 0, g); box(.3, 5.6, 4, wh, 2.55, 0, 0, g); box(5.4, .9, 4, wh, 0, 5.6, 0, g); box(5.4, 5.6, .2, "#d6dde3", 0, 0, -1.9, g);
+		box(4.8, .05, .1, "#21b7cb", 0, 6.42, 2.02, g);
+		const sash = mesh(G(new THREE.PlaneGeometry(4.8, 3)), glass, 0, 3.9, 1.9, g); sash.castShadow = false;
+		box(4.8, .14, .14, steel, 0, 2.4, 1.92, g);
+		cyl(.7, .7, 4.8, "#d9dee3", 0, 6.5, -.6, g);
+		const lit = new THREE.PointLight("#eaf6ff", 6, 6, 2); lit.position.set(0, 5, 0); g.add(lit);
+		const tag = W.canvasTex(256, 64, x => { x.fillStyle = "#0f3168"; x.fillRect(0, 0, 256, 64); x.fillStyle = "#fff"; x.font = "700 26px Inter,Arial,sans-serif"; x.textAlign = "center"; x.fillText("Sorbonne · aspiration", 128, 42); });
+		mesh(G(new THREE.PlaneGeometry(2.6, .65)), new THREE.MeshBasicMaterial({ map:tag }), 0, 6.05, 2.02, g);
+		// quelques flacons de réactifs à l'abri
+		["#c4362f", "#f3b23b", "#e8ecef"].forEach((c, i) => tour([[0, 0], [.28, 0], [.3, .05], [.3, .8], [.16, 1], [.13, 1.2], [0, 1.2]], M(c, { roughness:.35 }), -1.4 + i*.9, 0, -.8, g));
+	}
+
 	/* --- le mobilier (modeles/mobilier.glb, Kenney CC0) : il arrive après la scène, le jeu n'en dépend pas --- */
 	modele("modeles/mobilier.glb").then(gl => {
 		if(closed) return;
@@ -359,7 +382,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 		for(let i = 0; i < n; i++) put(i % 3 === 1 ? "kitchenCabinet" : "kitchenCabinetDrawer", { h:Y - .3, x:-n*cw/2 + cw*(i + .5), z:-1.6 - cd/2, ry:0, tint:tone("#eef1f3") });
 		LAB.base.material = M("#dfe4e8"); LAB.doors.forEach(d => d.visible = false);
 		// les placards hauts, à gauche de la fenêtre
-		for(const x of [-16, -12.9]) put("kitchenCabinetUpper", { h:2.6, x, y:7.6, z:-5.4, tint:tone("#eef1f3") });
+		put("kitchenFridgeLarge", { h:7.4, x:18.1, z:3.2, ry:-Math.PI/2, tint:tone("#eef1f3") });
 		// les tabourets de labo, le portemanteau des blouses, la poubelle, une plante sur l'appui de fenêtre
 		for(const x of [-8.5, 3.4, 12]) put("stoolBar", { h:2.7, x, z:.7, tint:tone("#0f3168") });
 		put("coatRackStanding", { h:7, x:18.4, z:-.2 });
@@ -593,7 +616,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	/* ---------- 3 · les nitrates : zéro, étalons, droite d'étalonnage ---------- */
 	function nitrates(){
 		stage("nit", "3 · Les nitrates");
-		view(V3(-8.4, Y + 1, -3.2), 11, 7.6, 1.0, .1);
+		view(V3(innerWidth < 760 ? -7.4 : -8.4, Y + 1, -3.2), 11, 9.8, 1.0, .1);          // sur téléphone : recentré, pour voir les six cuves
 		let zeroed = false, inSlot = null, busy = false, slope = .006, lineOk = false, sampleA = null, cRead = null, done = false, mode = null;
 		const pts = {};
 		CUVES.forEach(q => q.g.position.copy(q.home));

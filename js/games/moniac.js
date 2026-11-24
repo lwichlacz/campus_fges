@@ -12,11 +12,11 @@
      5 · le Conseil (le verdict) : à chaque objection, poser la bonne pièce sur le rétroprojecteur, avant la fin du sablier.
    Chaque pièce remplit la note au Conseil, dans le panneau. Banque, personnes et chiffres sont fictifs et simplifiés ;
    contenu à relire par l'équipe de la prépa (docs/validation-prepa-d2.md). */
-import { guideGeste, modele, meuble, grain } from "./rendu.js?v=59fb9159af";
-import { stage3d, THREE } from "./stage3d.js?v=59fb9159af";
-import { makePerson } from "../kit.js?v=59fb9159af";
-import { jpoCard } from "./jpo.js?v=59fb9159af";
-import { palier } from "./palier.js?v=59fb9159af";
+import { guideGeste, modele, meuble, grain } from "./rendu.js?v=ff1070917c";
+import { stage3d, THREE } from "./stage3d.js?v=ff1070917c";
+import { makePerson } from "../kit.js?v=ff1070917c";
+import { jpoCard } from "./jpo.js?v=ff1070917c";
+import { palier } from "./palier.js?v=ff1070917c";
 
 const COURSES = {
 	stats: ["Statistique", "Indices et pondérations", "Un indice des prix est une moyenne pondérée : avant de réagir, on regarde d'où vient la hausse."],
@@ -256,13 +256,16 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 	/* --- la machine de Phillips (MONIAC), contre le mur de gauche --- */
 	const MX = -52, MZ = -9, MS = 1.45;
 	const mach = new THREE.Group(); mach.position.set(MX, FY, MZ); mach.scale.setScalar(MS); scene.add(mach);
-	box(16, 14, .5, "#7a4e2a", 0, .5, -.4, mach); box(16.6, .5, 2.2, "#4a2e1a", 0, 0, .4, mach);
+	box(16, 14, .5, M("#ffffff", { map:grain(W.renderer, "#6e4425", { w:90, h:1.4, tilt:.015, n:1800, flecks:["rgba(0,0,0,.12)", "rgba(255,230,200,.06)"] }), roughness:.4 }), 0, .5, -.4, mach); box(16.6, .5, 2.2, "#4a2e1a", 0, 0, .4, mach);
 	const plate = label("MONIAC · Phillips, 1949", { size:.02, bg:"#0d2a4a", fg:"#ffd27a" }); plate.position.set(0, 15.2, 0); mach.add(plate);
-	const glass = new THREE.MeshStandardMaterial({ color:"#d9ecff", transparent:true, opacity:.22, roughness:.05, side:THREE.DoubleSide });
+	const glass = new THREE.MeshStandardMaterial({ color:"#e6f3ff", transparent:true, opacity:.2, roughness:.02, metalness:.15, envMapIntensity:2.2, depthWrite:false, side:THREE.DoubleSide });
 	const waterM = new THREE.MeshStandardMaterial({ color:"#2f8cff", emissive:"#0d4a9a", emissiveIntensity:.35, transparent:true, opacity:.88 });
+	const BRASS = M("#d6a94e", { metalness:1, roughness:.25, envMapIntensity:1.6 });
 	function tank(name, x, y, w, h, start){
 		const g = new THREE.Group(); g.position.set(x, y, .5); mach.add(g);
 		mesh(G(new THREE.BoxGeometry(w, h, 1.2)), glass, 0, h/2, 0, g);
+		for(const sx of [-1, 1]) for(const sz of [-1, 1]) mesh(G(new THREE.CylinderGeometry(.07, .07, h + .2, 8)), BRASS, sx*w/2, h/2, sz*.6, g);
+		for(const y of [0, h]) mesh(G(new THREE.BoxGeometry(w + .24, .14, 1.36)), BRASS, 0, y, 0, g);
 		const water = mesh(G(new THREE.BoxGeometry(w - .15, 1, 1.05)), waterM, 0, 0, 0, g);
 		const l = label(name, { size:.016, bg:"#0d2a4a", fg:"#eaf2ff" }); l.center.set(.5, 0); l.position.set(0, h + .3, .6); g.add(l);
 		const T = { g, water, h, level:start, target:start, set(v){ T.target = v; } };
@@ -275,7 +278,7 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 		I:tank("INVESTMENT", 5.5, 1.6, 2.4, 3.2, .5),
 		S:tank("SAVINGS", 5.5, 8.6, 2.4, 2.6, .55)
 	};
-	const pipeM = M("#c9a24a", { metalness:.7, roughness:.3 });
+	const pipeM = M("#d6a94e", { metalness:1, roughness:.22, envMapIntensity:1.6 });
 	const pipes = [
 		[[-5.5, 10, 1.1], [-2.6, 10, 1.1], [-.8, 9.6, 1.1], [-.6, 10.4, 1.1]],
 		[[0, 5, 1.1], [-2, 4.2, 1.1], [-4.3, 4.5, 1.1]],
@@ -382,9 +385,8 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 		put("lampSquareFloor", { h:23, x:-21, y:FY, z:-13 });
 		put("loungeChair", { h:9, x:-30, y:FY, z:-10, ry:.5, tint:tone("#0f3168") });
 		put("books", { w:3.2, x:-14.5, y:0, z:-6.8, ry:-.25 });
-		// autour de la machine : une plante, un tabouret
+		// à côté de la machine : une plante
 		put("pottedPlant", { h:15, x:MX - 16, y:FY, z:-12 });
-		put("stoolBar", { h:7.5, x:MX + 13, y:FY, z:MZ + 6, ry:-.4, tint:tone("#0f3168") });
 		// la salle du conseil : de vrais fauteuils derrière les membres, des plantes dans les angles
 		BACKS.forEach(b => { b.visible = false; put("chairDesk", { h:15.5, x:b.position.x, y:CF, z:-17, tint:tone("#1d2433") }); });
 		put("pottedPlant", { h:16, x:CX - 26, y:CF, z:-16 }); put("pottedPlant", { h:13, x:CX + 27, y:CF, z:-15 });

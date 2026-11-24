@@ -11,9 +11,10 @@
    Entreprise, personnes, sociétés et documents sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { mountTable, MOBILE } from "./table.js?v=59fb9159af";
-import { jpoCard } from "./jpo.js?v=59fb9159af";
-import { palier } from "./palier.js?v=59fb9159af";
+import { soigner, modele, meuble, grain } from "./rendu.js?v=ff1070917c";
+import { mountTable, MOBILE } from "./table.js?v=ff1070917c";
+import { jpoCard } from "./jpo.js?v=ff1070917c";
+import { palier } from "./palier.js?v=ff1070917c";
 
 const COURSES = {
 	compta:   ["L1", "Comptabilité financière", "Classer chaque opération : une charge, un produit, ou un investissement qui s'amortit sur plusieurs années."],
@@ -113,9 +114,10 @@ function world(canvas){
 	controls.enableDamping = true; controls.enablePan = false; controls.minDistance = 6; controls.maxDistance = 36; controls.maxPolarAngle = 1.3;
 	// pas de rotation libre : sur un bureau, un geste qui rate une pièce ne doit pas faire tourner la pièce entière
 	controls.enableRotate = false;
-	scene.add(new THREE.HemisphereLight("#ffffff", "#b7b2a8", 1.3));
+	soigner(renderer, scene, { env:.45 });                     // le rendu soigné (rendu.js) : ton neutre, lumière d'ambiance
+	scene.add(new THREE.HemisphereLight("#ffffff", "#b7b2a8", .9));
 	const sun = new THREE.DirectionalLight("#fff6e8", 1.9); sun.position.set(-12, 22, 10); sun.castShadow = true;
-	sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left:-20, right:20, top:20, bottom:-20, near:1, far:70 }); sun.shadow.bias = -.0005;
+	sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left:-20, right:20, top:20, bottom:-20, near:1, far:70 }); sun.shadow.bias = -.0005; sun.shadow.normalBias = .03; sun.shadow.radius = 4;
 	scene.add(sun);
 	const maxAniso = renderer.capabilities.getMaxAnisotropy();
 
@@ -155,15 +157,13 @@ function world(canvas){
 		const cork = tex(256, 128, (x, w, h) => { x.fillStyle = "#b98d5d"; x.fillRect(0, 0, w, h); for(let i = 0; i < 2600; i++){ x.fillStyle = ["#a77c4f", "#c79c6b", "#b08453", "#8e6a43"][i % 4]; x.fillRect(Math.random()*w, Math.random()*h, 1.5, 1.5); } });
 		sbox(22, 12, .6, "#6b4a2e", 0, 2.6, -10.5);
 		still(new THREE.PlaneGeometry(21, 11), new THREE.MeshStandardMaterial({ map:cork, roughness:1 }), 0, 8.6, -10.18);
-		// une plante, un radiateur sous la fenêtre
-		still(new THREE.CylinderGeometry(1.4, 1.1, 3, 18), M("#ece7dc"), 27, FY + 1.5, -6);
-		for(let i = 0; i < 7; i++) still(new THREE.SphereGeometry(1.4 + (i % 3)*.3, 10, 8), M(["#4f7a45", "#5d8a4f", "#44683c"][i % 3]), 27 + Math.cos(i)*1, FY + 4.5 + (i % 4)*1.1, -6 + Math.sin(i)*1);
+		// un radiateur sous la fenêtre (la plante vient du mobilier, plus bas)
 		sbox(12, 4, .8, "#f2f3f4", -21, FY + 6, -10.1);
 	}
 	// le bureau : plateau stratifié clair, chant chêne, pieds métal
 	{
 		scene.add(box(27, .5, 14.6, M("#efebe3", { roughness:.55 }), 0, -.5, 0));
-		const edge = box(27.2, .18, 14.8, "#b8925f", 0, -.62, 0); scene.add(edge);
+		const edge = box(27.2, .18, 14.8, new THREE.MeshStandardMaterial({ map:grain(renderer, "#b8925f", { w:90, h:1.4, tilt:.015, n:1800, flecks:["rgba(0,0,0,.10)", "rgba(255,240,220,.07)", "rgba(0,0,0,.05)"] }), roughness:.5 }), 0, -.62, 0); scene.add(edge);
 		for(const sx of [-1, 1]) for(const sz of [-1, 1]) scene.add(box(.6, 11.4, .6, M("#5f656d", { metalness:.6, roughness:.35 }), sx*12.6, FY, sz*6.6));
 		// lampe, ordinateur portable (le logiciel comptable ouvert), mug, pot à crayons
 		const lamp = new THREE.Group(); lamp.position.set(11.6, 0, -5.2); scene.add(lamp);
@@ -188,6 +188,17 @@ function world(canvas){
 		pens.add(mesh(new THREE.CylinderGeometry(.55, .55, 1.5, 16, 1, true), M("#5f656d", { side:THREE.DoubleSide, metalness:.5 }), 0, .75, 0));
 		[["#c4362f", .2], ["#2f6b45", -.2], ["#1e3f8a", .05], ["#d9a441", -.1]].forEach(([c, a], i) => { const p = mesh(new THREE.CylinderGeometry(.07, .07, 2.4, 6), M(c), Math.cos(i*1.6)*.2, 1.6, Math.sin(i*1.6)*.2); p.rotation.z = a; pens.add(p); });
 	}
+
+	/* --- le mobilier (modeles/mobilier.glb, Kenney CC0) : il arrive après la scène, le jeu n'en dépend pas --- */
+	modele("modeles/mobilier.glb").then(gl => {
+		const put = (n, o) => meuble(gl, n, { parent:scene, ...o });
+		const tone = col => m => { const hsl = {}; m.color.getHSL(hsl); if(hsl.s < .25) return m; const c = m.clone(); c.color.set(col); return c; };
+		put("chairDesk", { h:13, x:0, y:FY, z:-8.2, tint:tone("#1e305e") });              // le fauteuil, poussé sous le bureau
+		put("pottedPlant", { h:10, x:27, y:FY, z:-6 });
+		put("trashcan", { h:4, x:-15.5, y:FY, z:3.5 });
+		put("coatRackStanding", { h:17, x:-29, y:FY, z:-6.5 });
+		put("cardboardBoxClosed", { w:4.4, x:28, y:FY, z:2, ry:.4 });                    // les archives de l'exercice
+	}).catch(() => {});
 
 	/* --- étiquettes dessinées au canvas, plus grandes sur téléphone --- */
 	let LS = 1;

@@ -15,11 +15,11 @@
    anglais écrit et oral, écrire pour convaincre, communication interpersonnelle et simulations d'entretien.
    Marque, cabinet, personnes, chiffres et documents sont fictifs ; écoles réelles citées comme débouchés.
    Contenu à relire par l'équipe de la prépa (docs/validation-prepa-cupge.md). */
-import { guideGeste, modele, meuble, grain } from "./rendu.js?v=59fb9159af";
-import { stage3d, THREE } from "./stage3d.js?v=59fb9159af";
-import { makePerson } from "../kit.js?v=59fb9159af";
-import { jpoCard } from "./jpo.js?v=59fb9159af";
-import { palier } from "./palier.js?v=59fb9159af";
+import { guideGeste, modele, meuble, grain } from "./rendu.js?v=ff1070917c";
+import { stage3d, THREE } from "./stage3d.js?v=ff1070917c";
+import { makePerson } from "../kit.js?v=ff1070917c";
+import { jpoCard } from "./jpo.js?v=ff1070917c";
+import { palier } from "./palier.js?v=ff1070917c";
 
 const COURSES = {
 	doc:    ["Prépa 1", "Technique du document", "Dépouiller une liasse, juger une source, ne garder que ce qui prouve : la base de toute synthèse."],
@@ -240,6 +240,13 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 		cyl(1, 1.1, .3, "#1f2430", 0, 0, 0, g); const arm = cyl(.1, .1, 6, "#1f2430", -.8, .3, 0, g); arm.rotation.z = .3;
 		const sh = mesh(G(new THREE.ConeGeometry(1.3, 1.6, 24, 1, true)), M("#1f2430", { side:THREE.DoubleSide }), -1.9, 6, 0, g); sh.rotation.z = .5;
 		mesh(G(new THREE.SphereGeometry(.35, 12, 8)), new THREE.MeshBasicMaterial({ color:"#fff3cf" }), -1.6, 5.3, 0, g); }
+	// le halo de la lampe : une lueur autour de l'ampoule, une flaque de lumière chaude sur le bureau (éteints au matin)
+	const glow = (size, a) => canvasTex(128, 128, (x, w) => { const g = x.createRadialGradient(w/2, w/2, 0, w/2, w/2, w/2); g.addColorStop(0, `rgba(255,214,140,${a})`); g.addColorStop(.35, `rgba(255,190,110,${a*.45})`); g.addColorStop(1, "rgba(255,180,100,0)"); x.fillStyle = g; x.fillRect(0, 0, w, w); });
+	const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map:glow(128, .9), blending:THREE.AdditiveBlending, depthWrite:false, transparent:true, toneMapped:false }));
+	halo.scale.set(5.5, 5.5, 1); halo.position.set(10.9, 5.2, -5); scene.add(halo); G(halo.material);
+	const pool = mesh(G(new THREE.PlaneGeometry(20, 20)), new THREE.MeshBasicMaterial({ map:glow(128, .32), blending:THREE.AdditiveBlending, depthWrite:false, transparent:true, toneMapped:false }), 9.5, .02, -3.5);
+	pool.rotation.x = -Math.PI/2; pool.castShadow = pool.receiveShadow = false; pool.renderOrder = -1;
+	W.onFrame(now => { const on = lampLight.intensity > 0; halo.visible = pool.visible = on; if(on) halo.material.opacity = .92 + Math.sin(now/900)*.05; });
 	// l'ordinateur portable : le courriel de Claire
 	{ const g = new THREE.Group(); g.position.set(-11, 0, -4.6); g.rotation.y = .35; scene.add(g);
 		box(6, .25, 4, M("#9aa1aa", { metalness:.5, roughness:.35 }), 0, 0, 0, g);

@@ -6,7 +6,8 @@
    On raisonne avec le droit d'aujourd'hui. Famille fictive. Contenu à relire par l'équipe du master. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=59fb9159af";
+import { soigner, modele, meuble, grain } from "./rendu.js?v=ff1070917c";
+import { jpoCard } from "./jpo.js?v=ff1070917c";
 
 const COURSES = {
 	famille: ["Droit de la famille", "Régimes matrimoniaux, PACS, concubinage : qui possède quoi dans un couple, et que changer quand la vie change."],
@@ -164,9 +165,10 @@ function world(canvas){
 	const camera = new THREE.PerspectiveCamera(36, 1, .1, 200);
 	const controls = new OrbitControls(camera, canvas);
 	controls.enableDamping = true; controls.enablePan = false; controls.minDistance = 7; controls.maxDistance = 42; controls.maxPolarAngle = 1.3;
-	scene.add(new THREE.HemisphereLight("#fff6e0", "#2a4a3c", 1.1));
+	soigner(renderer, scene, { env:.35 });                     // le rendu soigné (rendu.js) : ton neutre, lumière d'ambiance
+	scene.add(new THREE.HemisphereLight("#fff6e0", "#2a4a3c", .85));
 	const sun = new THREE.DirectionalLight("#fff1d6", 2.2); sun.position.set(-8, 16, 10); sun.castShadow = true;
-	sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left:-16, right:16, top:16, bottom:-16, near:1, far:50 }); sun.shadow.bias = -.0005;
+	sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left:-16, right:16, top:16, bottom:-16, near:1, far:50 }); sun.shadow.bias = -.0005; sun.shadow.normalBias = .03; sun.shadow.radius = 4;
 	scene.add(sun);
 
 	const mats = {}, M = (c, o = {}) => mats[c + JSON.stringify(o)] || (mats[c + JSON.stringify(o)] = new THREE.MeshStandardMaterial({ color:c, roughness:.75, ...o }));
@@ -175,7 +177,7 @@ function world(canvas){
 
 	// le plateau : un grand guéridon en bois recouvert de papier
 	const board = new THREE.Group(); scene.add(board);
-	board.add(mesh(new THREE.CylinderGeometry(14.2, 14.6, .8, 64), M("#6e4a32"), 0, -.4, 0));
+	board.add(mesh(new THREE.CylinderGeometry(14.2, 14.6, .8, 64), new THREE.MeshStandardMaterial({ map:grain(renderer, "#6e4a32", { w:90, h:1.4, tilt:.015, n:1800, flecks:["rgba(0,0,0,.10)", "rgba(255,240,220,.07)", "rgba(0,0,0,.05)"] }), roughness:.38 }), 0, -.4, 0));
 	board.add(mesh(new THREE.CylinderGeometry(13.6, 13.6, .06, 64), M("#efe6cf"), 0, .03, 0));
 	const rim = mesh(new THREE.TorusGeometry(13.62, .07, 8, 96), M("#b08a3e", { metalness:.6, roughness:.35 }), 0, .06, 0); rim.rotation.x = Math.PI/2; board.add(rim);
 
@@ -218,11 +220,17 @@ function world(canvas){
 		// plaque de l'étude, entre la bibliothèque et la fenêtre
 		const plaque = tex(512, 128, (x, w, h) => { x.fillStyle = "#c9a548"; x.fillRect(0, 0, w, h); x.strokeStyle = "#7a5a1a"; x.lineWidth = 8; x.strokeRect(8, 8, w - 16, h - 16); x.fillStyle = "#3b2a10"; x.textAlign = "center"; x.font = "300 44px Tiempos Headline,Times New Roman,serif"; x.fillText("Maître Bonchamp", w/2, 62); x.font = "700 26px Inter,Arial,sans-serif"; x.fillText("NOTAIRE", w/2, 100); });
 		still(new THREE.PlaneGeometry(5, 1.25), new THREE.MeshStandardMaterial({ map:plaque, metalness:.4, roughness:.4 }), -8.75, FY + 13, -31.4);
-		// deux plantes dans les angles
-		for(const sx of [-1, 1]){
-			still(new THREE.CylinderGeometry(1.4, 1.1, 2.6, 20), M("#8a4b2c"), sx*31, FY + 1.3, -26);
-			for(let i = 0; i < 6; i++) still(new THREE.SphereGeometry(1.5 + (i % 2)*.4, 12, 10), M(i % 2 ? "#3f6b3a" : "#4f7d45"), sx*31 + Math.cos(i)*1.1, FY + 3.6 + i*.7, -26 + Math.sin(i*2)*1.1);
-		}
+		// le mobilier de l'étude (modeles/mobilier.glb, Kenney CC0) : plantes, fauteuils club, lampadaire ; hors du chemin de la caméra
+		modele("modeles/mobilier.glb").then(gl => {
+			const put = (n, o) => meuble(gl, n, { parent:deco, ...o });
+			const tone = col => m => { const hsl = {}; m.color.getHSL(hsl); if(hsl.s < .25) return m; const c = m.clone(); c.color.set(col); return c; };
+			for(const sx of [-1, 1]){
+				put("pottedPlant", { h:9, x:sx*31, y:FY, z:-26 });
+				put("loungeChair", { h:6.5, x:sx*29, y:FY, z:-17, ry:-sx*.9, tint:tone("#6b2328") });
+			}
+			put("lampSquareFloor", { h:15, x:-33.5, y:FY, z:-12, tint:tone("#1f6b45") });
+			put("sideTableDrawers", { h:4, x:33, y:FY, z:-11, ry:-Math.PI/2 });
+		}).catch(() => {});
 		// sur le bureau, en bordure du plateau : lampe de banquier, dossiers, tampon, stylo
 		const lamp = new THREE.Group(); lamp.position.set(9, 0, -9.4); lamp.rotation.y = -.6; scene.add(lamp);
 		const brass = M("#c9a548", { metalness:.8, roughness:.3 });
