@@ -19,9 +19,10 @@
    L'interface est le dossier de visite de la clinique ; la Dre Vasseur, vétérinaire associée, y colle ses mots.
    Ferme, personnes, animaux, produit et valeurs sont fictifs ou simplifiés ; écoles réelles citées comme débouchés.
    Contenu à relire par l'équipe de la prépa (docs/validation-veto.md). */
-import { stage3d, THREE } from "./stage3d.js?v=47250b128e";
-import { jpoCard } from "./jpo.js?v=47250b128e";
-import { palier } from "./palier.js?v=47250b128e";
+import { stage3d, THREE } from "./stage3d.js?v=e370aeda6d";
+import { jpoCard } from "./jpo.js?v=e370aeda6d";
+import { palier } from "./palier.js?v=e370aeda6d";
+import { soleil, modele, copie, recolorer, grain, guideGeste } from "./rendu.js?v=e370aeda6d";
 
 const SPEED = /[?&]vite/.test(location.search) ? 5 : 1;      // ?vite : attentes et animations 5 fois plus rapides (tests)
 
@@ -70,6 +71,7 @@ const CSS = `
 .cr-prv i{font-style:normal;color:#13808f}
 .cr-hint{position:absolute;left:50%;transform:translateX(calc(-50% - 208px));top:88px;z-index:5;background:#0f3168;color:#fff;border-radius:999px;padding:8px 14px;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(15,49,104,.3);white-space:nowrap;pointer-events:none;animation:crW .3s both}
 .cr-hint:empty{display:none}
+.cr-hint{white-space:normal;text-align:center;width:max-content;max-width:calc(100vw - 470px)}
 .cr-book{position:absolute;right:12px;top:60px;bottom:12px;width:404px;z-index:3;overflow:auto;box-sizing:border-box;padding:0 16px 18px 44px;border-radius:4px 10px 10px 4px;overscroll-behavior:contain;scrollbar-width:thin;color:#0c2340;
 	background:linear-gradient(90deg,#c8a46b 0 24px,#a9834c 24px 26px,transparent 26px) local,
 		repeating-linear-gradient(transparent 0 25px,rgba(33,183,203,.2) 25px 26px) 0 64px local,#fffdf8;
@@ -147,11 +149,14 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 	const later = (ms, f) => { const t = setTimeout(() => { timers.delete(t); if(!closed) f(); }, ms/SPEED); timers.add(t); return t; };
 
 	/* ================= la scène : l'étable, les prés, le labo de la clinique ================= */
-	const W = stage3d(cv, { panel:book, side:"right", panelW:416, bg:"#e6eee3", fog:[70, 170], minD:3, maxD:90, maxPolar:1.45, rotate:false, shadows:false });
+	const W = stage3d(cv, { panel:book, side:"right", panelW:416, bg:"#e6eee3", fog:[70, 170], minD:3, maxD:90, maxPolar:1.45, rotate:false, shadows:false, soin:{ env:.45 } });
 	const { scene, M, G, mesh, box, cyl, label } = W;
-	scene.add(new THREE.HemisphereLight("#ffffff", "#9c947f", 1.3));
-	const sun = new THREE.DirectionalLight("#fff4e2", 1.5); sun.position.set(-10, 20, 14); scene.add(sun);
+	scene.add(new THREE.HemisphereLight("#f4f8ff", "#8f8a74", .75));
+	// le soleil, et une ombre douce qui suit la caméra d'un lieu à l'autre (étable, prés, labo)
+	const SUN = soleil(W.renderer, scene, W.controls, { intensity:1.9, radius:20, dir:[-.5, 1, .6] });
+	W.onFrame(SUN.follow);
 	const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+	const own = x => G(x);                              // tout ce qui doit être libéré à la fermeture
 	const glass = M("#dcecff", { transparent:true, opacity:.3, roughness:.05, depthWrite:false, side:THREE.DoubleSide });
 	const steel = M("#b9c1c9", { metalness:.7, roughness:.3 });
 	const hidden = new THREE.MeshBasicMaterial({ visible:false });
@@ -169,43 +174,98 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 		if(small){ x.fillStyle = "#7fa6c4"; x.font = `700 ${Math.round(h*.18)}px Inter,Arial,sans-serif`; x.fillText(small, w/2, h*.84); }
 	});
 
-	/* --- les vaches flamandes (génisses) --- */
+	/* --- les vaches flamandes (génisses) ---
+	   Le modèle : « Farm Animals » de Quaternius (CC0, modeles/LICENCE-quaternius-farm.txt), recoloré en rouge flamand.
+	   makeCow rend tout de suite un groupe vide avec ses repères (tête, marque) : le jeu démarre sans attendre ; le modèle
+	   s'y glisse dès qu'il est chargé. S'il ne se charge pas, on garde l'ancienne vache en volumes simples. */
 	const coatOk = M("#7b2f22", { roughness:.9 }), coatDull = M("#94604f", { roughness:1 }), ribM = M("#5c3127"), pinkM = M("#d9a596"), darkM = M("#161616"), tagM = M("#f3d23b"), markM = M("#1f5fbf", { roughness:.6 });
+	const COWS = [], mixers = [];
+	function makeCow({ thin = false, s = 1, x = 0, z = 0, ry = 0 } = {}){
+		const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; g.scale.setScalar(s); scene.add(g);
+		const w = thin ? .74 : 1, top = thin ? 2.67 : 2.75;
+		const head = new THREE.Group(); head.position.set(2.35, thin ? 1.85 : 2.5, 0); g.add(head);
+		const tail = new THREE.Group(); tail.position.set(-1.72, 2.45, 0); g.add(tail);
+		const mark = mesh(G(new THREE.BoxGeometry(1.3, .06, .7)), markM, -.2, top + .02, 0, g); mark.visible = false;
+		const c = { g, head, tail, thin, mark, w, top };
+		COWS.push(c);
+		return c;
+	}
+	/* l'ancienne vache, en volumes simples : le filet de sécurité si le modèle ne se charge pas */
 	const bodyGeo = G(new THREE.CapsuleGeometry(.8, 1.9, 6, 14));
 	const legGeo = G(new THREE.CylinderGeometry(.15, .12, 1.4, 8)); legGeo.translate(0, .7, 0);
 	const neckGeo = G(new THREE.BoxGeometry(.9, .75, .6)), headGeo = G(new THREE.BoxGeometry(1, .62, .56)), muzGeo = G(new THREE.BoxGeometry(.36, .44, .5));
 	const earGeo = G(new THREE.BoxGeometry(.12, .16, .42)), eyeGeo = G(new THREE.SphereGeometry(.07, 8, 6)), tagGeo = G(new THREE.BoxGeometry(.05, .14, .12));
 	const ribGeo = G(new THREE.BoxGeometry(.07, .78, .05)), hipGeo = G(new THREE.SphereGeometry(.15, 8, 6)), spineGeo = G(new THREE.BoxGeometry(2.4, .09, .14));
 	const tailGeo = G(new THREE.CylinderGeometry(.05, .04, 1.3, 6)); tailGeo.translate(0, -.65, 0);
-	const tuftGeo = G(new THREE.SphereGeometry(.13, 8, 6)), markGeo = G(new THREE.BoxGeometry(1.3, .06, .7));
-	function makeCow({ thin = false, s = 1, x = 0, z = 0, ry = 0 } = {}){
-		const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; g.scale.setScalar(s); scene.add(g);
-		const coat = thin ? coatDull : coatOk, w = thin ? .74 : 1, top = thin ? 2.67 : 2.75;
+	const tuftGeo = G(new THREE.SphereGeometry(.13, 8, 6));
+	function cowSimple({ g, head, tail, thin, w, top }){
+		const coat = thin ? coatDull : coatOk;
 		const body = mesh(bodyGeo, coat, 0, 1.95, 0, g); body.rotation.z = Math.PI/2; body.scale.set(thin ? .9 : 1, 1, w);
 		for(const [lx, lz] of [[1.1, .42], [1.1, -.42], [-1.1, .42], [-1.1, -.42]]) mesh(legGeo, coat, lx, 0, lz*w, g);
 		mesh(neckGeo, coat, 1.75, thin ? 2.15 : 2.35, 0, g).rotation.z = thin ? .2 : -.45;
-		const head = new THREE.Group(); head.position.set(2.35, thin ? 1.85 : 2.5, 0); head.rotation.z = thin ? -.35 : 0; g.add(head);
+		head.rotation.z = thin ? -.35 : 0;
 		mesh(headGeo, coat, 0, 0, 0, head); mesh(muzGeo, pinkM, .6, -.08, 0, head);
 		for(const ez of [.36, -.36]) mesh(earGeo, coat, -.3, .22, ez, head).rotation.y = ez > 0 ? .3 : -.3;
 		mesh(tagGeo, tagM, -.3, .17, .6, head);
 		for(const ez of [.29, -.29]) mesh(eyeGeo, darkM, .12, .12, ez, head);
-		const tail = new THREE.Group(); tail.position.set(-1.72, 2.45, 0); tail.rotation.z = -.12; g.add(tail);
-		mesh(tailGeo, coat, 0, 0, 0, tail); mesh(tuftGeo, darkM, 0, -1.35, 0, tail);
+		tail.rotation.z = -.12; mesh(tailGeo, coat, 0, 0, 0, tail); mesh(tuftGeo, darkM, 0, -1.35, 0, tail);
 		if(thin){
 			for(const sz of [1, -1]) for(let i = 0; i < 3; i++) mesh(ribGeo, ribM, .1 + i*.3, 1.9, sz*(.8*w - .01), g);
 			for(const hz of [.36, -.36]) mesh(hipGeo, coat, -1.1, 2.5, hz, g);
 			mesh(spineGeo, ribM, -.1, top - .02, 0, g);
 		}
-		const mark = mesh(markGeo, markM, -.2, top + .02, 0, g); mark.visible = false;
-		return { g, head, tail, thin, mark, w };
 	}
+	/* le vrai modèle : une génisse en bon état broute (animation « Idle », chacune à son rythme) ; une maigre reste
+	   immobile, tête basse, plus étroite, le poil terne, la colonne, les hanches et les côtes qui saillent */
+	const COW_S = .6;                                   // le modèle mesure ≈ 9 unités de long : on le ramène à ≈ 5,4
+	const coat = (base, rough) => m => { const n = m.clone(); n.roughness = rough; n.metalness = 0; n.color.set(base[m.name] || m.color); return n; };
+	const OK_COL = { White:"#8a3524", Black:"#6a2519", Pink:"#d68a80" }, THIN_COL = { White:"#9a6552", Black:"#7d4a3b", Pink:"#c9938a" };
+	function cowModel(c, gltf){
+		const m = copie(gltf);
+		m.rotation.y = Math.PI/2; m.scale.setScalar(COW_S);
+		if(c.thin) m.scale.z = COW_S*.78;           // plus étroite (après rotation, l'axe z du modèle devient la largeur)
+		recolorer(m, coat(c.thin ? THIN_COL : OK_COL, c.thin ? 1 : .82)).forEach(x => own(x));
+		c.g.add(m);
+		const bone = n => m.getObjectByName(n);
+		if(c.thin){
+			// tête basse : on fige le cou et la tête vers le bas, sans animation
+			const neck = bone("Neck"), hd = bone("Head");
+			if(neck) neck.rotation.x += .45; if(hd) hd.rotation.x += .25;
+			c.g.updateMatrixWorld(true); m.traverse(n => { if(n.isSkinnedMesh){ n.skeleton.update(); n.computeBoundingSphere(); n.computeBoundingBox(); } });
+			// la colonne, les hanches et les côtes qui saillent : posées sur la vraie surface du modèle (on la sonde au rayon)
+			const ribRelief = G(new THREE.CapsuleGeometry(.04, .42, 3, 8)), ribTone = M("#7f4a3a", { roughness:1 });
+			const rc = new THREE.Raycaster(), wv = (x, y, z) => c.g.localToWorld(V3(x, y, z)), lv = p => c.g.worldToLocal(p.clone());
+			const hitAt = (from, to) => { const o = wv(...from), d = wv(...to).sub(o).normalize(); rc.set(o, d); const h = rc.intersectObject(m, true)[0]; return h ? lv(h.point) : null; };
+			const backAt = x => (hitAt([x, 6, 0], [x, 0, 0]) || V3(x, c.top - .5, 0)).y;
+			const yb = backAt(-.2);
+			const sp = mesh(spineGeo, ribM, -.25, yb - .03, 0, c.g); sp.scale.set(.9, 1, 1);
+			c.mark.position.y = yb + .04;                // la marque à la bombe, posée sur le dos
+			for(const hz of [.27, -.27]){ const yh = (hitAt([-1.05, 6, hz], [-1.05, 0, hz]) || V3(0, yb, 0)).y; mesh(hipGeo, coatDull, -1.05, yh - .02, hz, c.g).scale.set(1.1, .8, 1.1); }
+			for(const sz of [1, -1]) for(let i = 0; i < 4; i++){
+				const x = -.35 + i*.27, y = yb - .62, f = hitAt([x, y, sz*3], [x, y, 0]);
+				if(!f) continue;
+				const r = mesh(ribRelief, ribTone, x, y, f.z + sz*.01, c.g); r.rotation.set(sz*.18, 0, .28); r.castShadow = false;
+			}
+		} else {
+			const mix = new THREE.AnimationMixer(m), clip = gltf.animations[0];
+			if(clip){ const a = mix.clipAction(clip); a.play(); a.time = Math.random()*clip.duration; a.timeScale = .7 + Math.random()*.5; }
+			mixers.push(mix);
+		}
+		// la tête suit l'os de la tête : l'œil reste sous le doigt quand la génisse bouge
+		const hd = bone("Head");
+		if(hd){ m.updateMatrixWorld(true); const p = hd.getWorldPosition(new THREE.Vector3()); c.head.position.copy(c.g.worldToLocal(p)); c.head.position.x += .25; c.head.position.y -= .05; hd.attach(c.head); }
+		c.model = m;
+	}
+	modele("modeles/vache.glb").then(gltf => { if(!closed) COWS.forEach(c => cowModel(c, gltf)); })
+		.catch(() => { if(!closed) COWS.forEach(cowSimple); });
+	W.onFrame((now, dt) => { for(const m of mixers) m.update(dt); });
 
 	/* --- l'étable : la génisse 27 au cornadis, la caisse du vétérinaire --- */
 	{
 		const planks = W.canvasTex(256, 256, (x, w, h) => { x.fillStyle = "#93714c"; x.fillRect(0, 0, w, h); x.fillStyle = "#7e5f3e"; for(let i = 0; i < w; i += 32) x.fillRect(i, 0, 3, h); });
 		planks.wrapS = planks.wrapT = THREE.RepeatWrapping; planks.repeat.set(6, 1);
-		mesh(G(new THREE.PlaneGeometry(40, 24)), M("#b3ad9f", { roughness:.95 }), 0, 0, 0).rotation.x = -Math.PI/2;
-		mesh(G(new THREE.PlaneGeometry(9, 9)), M("#d8c27c", { roughness:1 }), -1, .02, 0).rotation.x = -Math.PI/2;       // la paille
+		mesh(G(new THREE.PlaneGeometry(40, 24)), M("#ffffff", { roughness:.95, map:own(grain(W.renderer, "#b3ad9f", { n:5000, w:2, h:2, tilt:3, flecks:["rgba(0,0,0,.07)", "rgba(255,255,255,.08)"], repeat:[8, 5] })) }), 0, 0, 0).rotation.x = -Math.PI/2;
+		mesh(G(new THREE.PlaneGeometry(9, 9)), M("#ffffff", { roughness:1, map:own(grain(W.renderer, "#d6bd72", { n:4200, w:1.4, h:16, tilt:3.2, flecks:["rgba(150,110,40,.35)", "rgba(255,240,180,.45)", "rgba(120,90,30,.25)"], repeat:[3, 3] })) }), -1, .02, 0).rotation.x = -Math.PI/2;       // la paille
 		box(40, 11, .4, M("#ffffff", { map:planks }), 0, 0, -8);
 		box(40, 1.6, .5, "#cfcac0", 0, 0, -7.6);
 		box(.4, 11, 20, "#8b6a46", -20, 0, 2); box(.4, 11, 20, "#8b6a46", 20, 0, 2);
@@ -221,11 +281,16 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 	const c27L = tag(`Génisse n° ${TAG}`, { size:.022 }); c27L.position.set(-.2, 3.8, 0); c27.g.add(c27L);
 	const bodyHit = hitBox(3.3, 1.6, 1.5, c27.g, -.1, 1.95, 0);
 	const chestAt = new THREE.Object3D(); chestAt.position.set(.75, 2.4, .6); c27.g.add(chestAt);
-	const eyeHit = hitBox(.6, .6, .5, c27.head, .1, .1, .32);
+	const eyeHit = hitBox(1, .9, .8, c27.head, .1, .1, .32);
 	const tailHit = hitBox(.9, 2.2, 1.4, c27.g, -2.05, 1.5, 0);
 	const conj = mesh(G(new THREE.BoxGeometry(.2, .05, .02)), M("#f1dcd8"), .12, .02, .3, c27.head); conj.visible = false;
 	const ring = new THREE.Mesh(G(new THREE.TorusGeometry(1, .045, 6, 48)), M("#f3b23b", { roughness:.5 })); ring.rotation.y = Math.PI/2; ring.scale.set(.63, .76, 1); ring.position.y = 1.95; ring.visible = false; c27.g.add(ring);
 	let ringGeo = null;
+	// le cercle fantôme : où passer le ruban (il clignote tant que le ruban n'est pas posé)
+	const guideRing = new THREE.Mesh(G(new THREE.TorusGeometry(1, .03, 6, 64)), M("#21b7cb", { transparent:true, opacity:.6, emissive:"#21b7cb", emissiveIntensity:.6, depthWrite:false }));
+	guideRing.rotation.y = Math.PI/2; guideRing.scale.set(.63, .76, 1); guideRing.position.set(.75, 1.95, 0); guideRing.visible = false; c27.g.add(guideRing);
+	W.onFrame(now => { if(guideRing.visible) guideRing.material.opacity = .35 + .35*Math.sin(now/260); });
+	const headAt = new THREE.Vector3();
 	function setRing(x, p){ if(ringGeo) ringGeo.dispose(); ringGeo = new THREE.TorusGeometry(1, .045, 6, 48, Math.max(.02, p)*Math.PI*2); ring.geometry = ringGeo; ring.position.x = x; ring.visible = p > 0; }
 	// la caisse du vétérinaire : ruban, thermomètre, tube, pistolet doseur
 	const KX = -.4, KZ = 3.7, KY = 1.3;
@@ -270,15 +335,35 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 
 	/* --- les deux prés : le haut, sec ; le bas, le long du marais --- */
 	{
-		mesh(G(new THREE.PlaneGeometry(62, 30)), M("#8bb75c", { roughness:1 }), 72, 0, 0).rotation.x = -Math.PI/2;
-		mesh(G(new THREE.PlaneGeometry(25, 20)), M("#6c9f4a", { roughness:1 }), 84.5, .01, 0).rotation.x = -Math.PI/2;
+		const grass = (base, seed) => own(grain(W.renderer, base, { seed, n:9000, w:1.3, h:7, tilt:.9, flecks:["rgba(40,80,20,.22)", "rgba(210,235,150,.16)", "rgba(90,120,40,.2)"], repeat:[16, 8] }));
+		mesh(G(new THREE.PlaneGeometry(62, 30)), M("#ffffff", { roughness:1, map:grass("#8bb75c", 11) }), 72, 0, 0).rotation.x = -Math.PI/2;
+		// la campagne autour, jusqu'au brouillard : les prés ne flottent plus sur le vide
+		{ const far = grass("#9cbf6e", 53); const t = far.clone(); t.repeat.set(60, 30); t.needsUpdate = true; own(t);
+		  const g = mesh(G(new THREE.PlaneGeometry(420, 220)), M("#ffffff", { roughness:1, map:t }), 72, -.03, 0); g.rotation.x = -Math.PI/2; g.castShadow = false; }
+		mesh(G(new THREE.PlaneGeometry(25, 20)), M("#ffffff", { roughness:1, map:grass("#6c9f4a", 29) }), 84.5, .01, 0).rotation.x = -Math.PI/2;
 		box(1.3, .06, 22, "#5e9fc4", 97.6, 0, 0);                                          // le ru
 		const post = G(new THREE.CylinderGeometry(.1, .1, 1.5, 6)); post.translate(0, .75, 0);
 		const wood = M("#9c7a52");
 		const fence = (x0, z0, x1, z1) => { const n = Math.max(1, Math.round(Math.hypot(x1 - x0, z1 - z0)/2.5)); for(let i = 0; i <= n; i++) mesh(post, wood, x0 + (x1 - x0)*i/n, 0, z0 + (z1 - z0)*i/n); const wire = mesh(G(new THREE.CylinderGeometry(.03, .03, 1, 4)), "#6b6b6b", 0, 0, 0); stick(wire, V3(x0, 1.2, z0), V3(x1, 1.2, z1)); };
 		fence(47, -10, 97, -10); fence(47, 10, 97, 10); fence(47, -10, 47, 10); fence(71, -10, 71, 10);
-		const tree = M("#4f7d3a"), trunk = M("#6b4f33");
-		for(let i = 0; i < 13; i++){ const x = 46 + i*4.2, s = 1.6 + (i % 3)*.4; cyl(.25, .3, 2, trunk, x, 0, -12.5); mesh(G(new THREE.SphereGeometry(s, 10, 8)), tree, x, 2 + s*.8, -12.5); }
+		// la haie d'arbres et les touffes d'herbe : modèles « Stylized Nature MegaKit » de Quaternius (CC0,
+		// modeles/LICENCE-quaternius-nature.txt) ; à défaut, les arbres en volumes simples d'avant
+		const treeSimple = () => { const tree = M("#4f7d3a"), trunk = M("#6b4f33"); for(let i = 0; i < 13; i++){ const x = 46 + i*4.2, s = 1.6 + (i % 3)*.4; cyl(.25, .3, 2, trunk, x, 0, -12.5); mesh(G(new THREE.SphereGeometry(s, 10, 8)), tree, x, 2 + s*.8, -12.5); } };
+		modele("modeles/nature.glb").then(gltf => {
+			if(closed) return;
+			const r = rng(404), kinds = ["CommonTree_3", "CommonTree_5"].map(n => gltf.scene.getObjectByName(n)).filter(Boolean);
+			if(!kinds.length) return treeSimple();
+			for(let i = 0; i < 13; i++){
+				const t = copie({ scene:kinds[i % kinds.length] }); t.position.set(46 + i*4.2 + (r() - .5)*1.2, 0, -12.8 + (r() - .5)*1.4);
+				t.rotation.y = r()*Math.PI*2; t.scale.setScalar(.62 + r()*.2); scene.add(t);
+			}
+			const tuft = gltf.scene.getObjectByName("Grass_Common_Tall");
+			if(tuft) for(let i = 0; i < 90; i++){
+				const x = 48 + r()*48, z = -9.5 + r()*19; if(((x - WET.x)/WET.rx)**2 + ((z - WET.z)/WET.rz)**2 < 1.3) continue;      // pas d'herbe haute dans la boue
+				const t = copie({ scene:tuft }, { cast:false }); t.position.set(x, 0, z); t.rotation.y = r()*Math.PI*2; t.scale.setScalar(.5 + r()*.5); scene.add(t);
+			}
+			scene.traverse(n => { if(n.isMesh && n.material && n.material.map && n.material.alphaTest === 0 && n.material.transparent){ n.material.alphaTest = .5; n.material.transparent = false; } });
+		}).catch(() => { if(!closed) treeSimple(); });
 		const reedM = M("#7d8a3d"), reed = G(new THREE.CylinderGeometry(.03, .05, 1.4, 4)); reed.translate(0, .7, 0);
 		const r = rng(77);
 		for(let i = 0; i < 70; i++){ const a = r()*Math.PI*2, d = .55 + r()*.5; const m = mesh(reed, reedM, WET.x + Math.cos(a)*WET.rx*d, 0, WET.z + Math.sin(a)*WET.rz*d); m.rotation.z = (r() - .5)*.4; }
@@ -380,10 +465,18 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 	const micL = tag("Microscope", { size:.018 }); micL.position.set(0, 4.8, 0); mic.add(micL);
 	const MIC_AT = V3(LX + 9.5, Y + 1.66, -3.8);
 
+	scene.traverse(n => { if(n.isMesh && n.material && n.material.transparent) n.castShadow = false; });     // le verre ne fait pas d'ombre pleine
+
 	/* --- la flèche qui montre quoi toucher --- */
 	const arrow = label("▼", { size:.03, bg:"#21b7cb", fg:"#0f3168" }); arrow.visible = false; scene.add(arrow);
 	let arrowAt = null; const tmp = new THREE.Vector3();
-	function point(obj, dy = 1.6){ arrowAt = obj ? { obj, dy } : null; arrow.visible = !!obj; }
+	// point(objet, hauteur de la flèche, geste) : la flèche dit où, le guide mime quoi faire (tap, hold, down, side, trace)
+	const guide = guideGeste(root, W.camera, cv);
+	function point(obj, dy = 1.6, k = "tap", o = {}){
+		arrowAt = obj ? { obj, dy } : null; arrow.visible = !!obj;
+		guide.show(obj, k, o);
+	}
+	W.onFrame(guide.update);
 	W.onFrame(now => { if(!arrowAt) return; arrowAt.obj.getWorldPosition(tmp); arrow.position.set(tmp.x, tmp.y + arrowAt.dy + Math.sin(now/220)*.12, tmp.z); });
 
 	/* --- petites animations --- */
@@ -478,10 +571,10 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 			<div class="cr-num"><div><small>tour de poitrine</small><span data-r>—</span></div><div><small>température</small><span data-t>—</span></div><div><small>muqueuse</small><span data-m>—</span></div></div>
 			<canvas class="cr-graph" width="640" height="210" data-eye hidden aria-label="La muqueuse de l'œil, comparée au nuancier"></canvas>`);
 		function nextHint(){
-			if(!rub){ point(chestAt, 1.3); hint("✋ Glisse sur sa poitrine pour passer le ruban"); }
-			else if(!th){ point(thermo, 1.4); hint("✋ Maintiens le thermomètre jusqu'au bip"); }
-			else if(!eyeOk){ point(eyeHit, .9); hint("✋ Glisse vers le bas sur l'œil pour tirer la paupière"); }
-			else { point(null); hint(""); }
+			if(!rub){ point(chestAt, 1.3, "down"); guideRing.visible = true; hint("✋ Glisse de haut en bas sur sa poitrine, derrière les pattes avant"); }
+			else if(!th){ guideRing.visible = false; point(thermo, 1.4, "hold", { gy:.3 }); hint("✋ Appuie sur le thermomètre et garde le doigt jusqu'au bip"); }
+			else if(!eyeOk){ guideRing.visible = false; c27.head.getWorldPosition(headAt); view(headAt.clone().add(V3(.06, -.36, .32)), 4.6, 4, 1.05, .85); /* gros plan de trois quarts, entre les barreaux du cornadis */ point(eyeHit, .9, "down"); hint("✋ Glisse vers le bas sur l'œil pour tirer la paupière"); }
+			else { point(null); hint(""); guideRing.visible = false; view(V3(.2, 1.5, 1.8), 13.5, 10, 1.08, .05); }
 		}
 		nextHint();
 		function check(){
@@ -535,9 +628,9 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 			}, move:(a, e) => {
 				if(rub || !a.zone || a.fin) return;
 				a.path += Math.hypot(e.clientX - a.lx, e.clientY - a.ly); a.lx = e.clientX; a.ly = e.clientY;
-				const p = Math.min(1, a.path/220); setRing(a.rx, p);
+				const p = Math.min(1, a.path/(innerWidth < 760 ? 110 : 140)); setRing(a.rx, p);      // un seul glissé franc suffit
 				if(p >= 1){ a.fin = true; play("swipe"); measured(a.zone); }
-			}, up:a => { if(!rub && a.zone && !a.fin){ ring.visible = false; hint("✋ Glisse plus longtemps : le ruban doit faire tout le tour"); } } },
+			}, up:a => { if(!rub && a.zone && !a.fin){ ring.visible = false; nextHint(); hint("✋ Glisse plus loin, jusque sous le ventre : le ruban doit faire tout le tour"); } } },
 			{ hit:thermoHit, down:() => {
 				if(th || holding) return;
 				holding = true; bip = false; t0 = performance.now(); point(null); hint("⏳ Garde le doigt appuyé…");
@@ -571,7 +664,7 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 		stage("lot", "2 · Comparer les deux prés");
 		if(innerWidth < 760) W.fly(V3(70.5, 0, -.5), 40, .9, 1.45); else W.fly(V3(70.5, 0, -.5), 52, .85, 1.15);      // sur téléphone, les deux prés de face, l'un derrière l'autre
 		let marked = 0, done = false;
-		HERD.forEach(c => { c.mark.visible = false; c.marked = false; });
+		HERD.forEach(c => { c.mark.visible = false; c.marked = false; c.g.visible = true; });
 		page("2 · Au pré · maths", "Est-ce l'aliment ?",
 			`<p class="cr-p">Rémi est formel : « C'est le nouvel aliment ! » Mais ses génisses vivent en deux lots : <b>douze au pré du haut</b>, <b>douze au pré du bas</b>, le long du marais. Et les deux lots reçoivent <b>le même aliment</b>, dans les mêmes auges.</p>
 			<p class="cr-p"><b>Touche chaque génisse maigre</b> pour la marquer à la bombe : colonne et hanches qui saillent, côtes visibles, tête basse. Regarde bien les deux prés.</p>
@@ -610,10 +703,10 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 			`<p class="cr-p">Des muqueuses pâles font penser à une <b>anémie</b>. On la mesure par l'<b>hématocrite</b> : la part du volume du sang occupée par les globules rouges.</p>
 			<p class="cr-p"><b>Maintiens le tube</b> contre la veine, sous la queue, le temps qu'il se remplisse.</p>
 			<div class="cr-num"><div><small>tube</small><span data-f>0 %</span></div></div>`);
-		point(tailHit, 1.6); hint("✋ Maintiens le tube sous la queue");
+		point(tailHit, 1.6, "hold"); hint("✋ Appuie sous la queue et garde le doigt : le tube se remplit");
 		const slotTargets = () => [{ hit:rotorHit, tap:a => { const lp = rotor.worldToLocal(a.h.point.clone()); slotTap(((Math.round(Math.atan2(lp.z, lp.x)/(Math.PI/4)) % 8) + 8) % 8); } }];
 		targets = [{ hit:tailHit, down:() => { if(phase !== "draw") return; holding = true; point(null); moveTo(tube.g, TUBE_AT, 250, .4); },
-			up:() => { if(!holding) return; holding = false; if(fill < 1){ moveTo(tube.g, tube.home, 250, .4); hint("✋ Maintiens jusqu'à ce que le tube soit plein"); point(tailHit, 1.6); } } }];
+			up:() => { if(!holding) return; holding = false; if(fill < 1){ moveTo(tube.g, tube.home, 250, .4); hint("✋ Garde le doigt jusqu'à ce que le tube soit plein"); point(tailHit, 1.6, "hold"); } } }];
 		hook((now, dt) => {
 			if(holding && phase === "draw"){
 				fill = Math.min(1, fill + dt*.75*SPEED); tube.set(fill); setTxt("[data-f]", Math.round(fill*100) + " %");
@@ -771,7 +864,7 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 			hint("⏳ 5 minutes de repos : tout tombe au fond");
 			const c0 = new THREE.Color("#8a6a3e"), c1 = new THREE.Color("#cbbf9b");
 			tween(1600, e => { vLiq.material.color.copy(c0).lerp(c1, e); culot.scale.setScalar(.4 + .6*e); }, () => {
-				settled = true; S.clock += 5; point(verre, 3.6); hint("✋ Maintiens le verre pour verser l'eau du dessus");
+				settled = true; S.clock += 5; point(verre, 3.6, "hold", { gy:1.6 }); hint("✋ Appuie sur le verre et garde le doigt pour verser l'eau du dessus");
 				targets = [{ hit:vHit, down:startPour, up:stopPour }];
 			});
 		}
@@ -785,7 +878,7 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 				visa("Le culot est parti avec l'eau, et les œufs avec lui. On recommence avec un autre morceau de bouse, et on lâche <b>dès que le fond trouble arrive au bord</b>.");
 				later(700, settle); return;
 			}
-			if(level > .42){ hint("✋ Encore : verse l'eau claire du dessus"); point(verre, 3.6); return; }
+			if(level > .42){ hint("✋ Encore : verse l'eau claire du dessus"); point(verre, 3.6, "hold", { gy:1.6 }); return; }
 			phase = "mic"; play("good"); hint(""); visa("");
 			entry("Eau du dessus versée, culot gardé ; une goutte sur la lame, avec du bleu de méthylène.");
 			drawMic(mc, EGGS); targets = [];
@@ -834,10 +927,11 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 		view(V3(85, 0, .5), 34, 22, .85, 0);
 		const cored = new Set(), snails = []; let busy = false, drawing = false, pts = [], done = false;
 		STAKES.forEach(s => s.core.visible = false); snailG.clear(); fenceG.clear(); auger.visible = false;
+		HERD.forEach(c => { if(c.lot === "bas") c.g.visible = false; });         // Rémi a rentré le lot du bas : le pré est libre pour travailler
 		page("5 · Au pré · géologie, écologie", "Où vit la limnée ?",
-			`<p class="cr-p">Le pré du bas descend en pente douce vers le ru. <b>Carotte le sol à la tarière</b> aux trois piquets, du haut (A) jusqu'au bas (C).</p>
+			`<p class="cr-p">Rémi a rentré les génisses du bas. Le pré descend en pente douce vers le ru. <b>Carotte le sol à la tarière</b> aux trois piquets, du haut (A) jusqu'au bas (C).</p>
 			<table class="cr-tbl" data-soil>${STAKES.map(s => `<tr><td>${s.id} · ${{ A:"en haut", B:"au milieu", C:"en bas, près du ru" }[s.id]}</td><td data-c="${s.id}">—</td></tr>`).join("")}</table>`);
-		point(STAKES[0].g, 2.9); hint("👆 Touche un piquet pour carotter le sol");
+		point(STAKES[0].g, 3.6, "tap", { gy:1 }); hint("👆 Touche le piquet A pour carotter le sol");
 		const stakeTargets = STAKES.map(s => ({ hit:s.hit, tap:() => coreAt(s) }));
 		targets = stakeTargets;
 		function coreAt(s){
@@ -847,7 +941,7 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 			tween(900, (e, k) => { auger.position.y = 1.2 - 1.6*e; auger.rotation.y = k*Math.PI*6; }, () => {
 				auger.visible = false; s.core.visible = true; cored.add(s.id); busy = false;
 				const td = book.querySelector(`[data-c="${s.id}"]`); if(td) td.innerHTML = s.soil;
-				if(cored.size < 3){ const n = STAKES.find(q => !cored.has(q.id)); point(n.g, 2.9); return; }
+				if(cored.size < 3){ const n = STAKES.find(q => !cored.has(q.id)); point(n.g, 3.6, "tap", { gy:1 }); hint(`👆 Touche le piquet ${n.id}`); return; }
 				entry("Trois carottages : limon sec en haut, argile grise détrempée en bas.");
 				append(`<p class="cr-p">En bas, une <b>argile</b> : ses grains minuscules laissent à peine passer l'eau, elle est presque <b>imperméable</b>. L'eau de la pente et de la source s'y accumule. Le gris trahit un sol privé d'oxygène ; les taches de rouille, le fer qui s'oxyde quand l'eau baisse l'été : un <b>sol hydromorphe</b>, détrempé presque toute l'année. Le domaine de la limnée.</p>${course("geol")}`);
 				point(mud, 1); hint("👆 Fouille la boue au bord du ru");
@@ -869,7 +963,8 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 				<canvas class="cr-graph" width="640" height="330" data-cycle aria-label="Le cycle de la grande douve du foie"></canvas>
 				<p class="cr-p">Pour le casser sans traiter à vie, on coupe le maillon du pré : <b>trace au doigt une clôture</b> autour de la zone humide (la boue et les joncs), sans prendre plus de pré qu'il n'en faut.</p>`);
 			drawCycle(book.querySelector("[data-cycle]"));
-			hint("✋ Trace une clôture autour de la zone humide");
+			hint("✋ Trace au doigt une boucle autour de la boue et des joncs");
+			point(mud, 0, "trace", { r:innerWidth < 760 ? 60 : 95 }); arrow.visible = false;
 			targets = [{ hit:groundHit, down:fenceDown, move:fenceMove, up:fenceUp }];
 		}
 		function drawCycle(c){
@@ -890,7 +985,7 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 			mesh(fPost, fPostM, x, 0, z, fenceG);
 			if(last){ const w = new THREE.Mesh(fWire, fWireM); fenceG.add(w); stick(w, V3(last[0], .95, last[1]), V3(x, .95, z)); }
 		}
-		function fenceDown(a){ if(done) return; fenceG.clear(); pts = []; drawing = true; visa(""); addPt(a.h.point.x, a.h.point.z); }
+		function fenceDown(a){ if(done) return; point(null); fenceG.clear(); pts = []; drawing = true; visa(""); addPt(a.h.point.x, a.h.point.z); }
 		function fenceMove(a, e){
 			if(!drawing) return; setRay(e); if(!ray.ray.intersectPlane(G0, gp)) return;
 			const last = pts[pts.length - 1]; if(Math.hypot(gp.x - last[0], gp.z - last[1]) >= .9) addPt(gp.x, gp.z);
@@ -928,7 +1023,7 @@ export function openClinique({ formation, audio, isFav, toggleFav, onClose, onEv
 			<div class="cr-num"><div><small>dose par génisse</small><span data-d>10 mL</span></div></div>
 			<button class="cr-go" data-a="dose">Valider la dose</button>`);
 		setDose(10);
-		point(doseur, 1.2); hint("✋ Glisse le piston du doseur, à gauche ou à droite");
+		point(doseur, 1.2, "side"); hint("✋ Glisse le piston du doseur, à gauche ou à droite");
 		targets = [{ hit:doseHit, down:a => { a.v0 = vol; point(null); }, move:(a, e) => { if(!done) setDose(a.v0 + (a.x0 - e.clientX)/4 + (a.y0 - e.clientY)/6); } }];
 		actions.dose = () => {
 			if(done) return;

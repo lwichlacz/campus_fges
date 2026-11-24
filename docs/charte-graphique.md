@@ -30,3 +30,22 @@ dans la charte. Les verts « juste » et rouges « faux » des jeux sont conserv
 - **Système graphique « courbe »** (blason découpé, aplats arrondis) et **traitement tramé** des images : non
   repris dans l'interface ; à envisager pour l'écran d'accueil et les bandeaux des fiches.
 - **Couleurs des lignes de métro** (rouge de la ligne 2) : couleurs réelles de Lille, gardées.
+
+## Rendu des mini-jeux et modèles 3D (novembre 2026)
+
+Le module `js/games/rendu.js` donne aux mini-jeux un rendu « fini » :
+- un ton neutre (Khronos PBR Neutral), qui garde justes les couleurs de la charte ;
+- une lumière d'ambiance et des ombres douces ;
+- des modèles glTF compressés ;
+- le **guide de geste** : un point de contact qui mime toucher, glisser, maintenir ou tracer.
+
+Règle : on guide la manipulation, jamais la décision.
+
+Modèles utilisés, tous dans le domaine public (CC0) et publiables dans ce dépôt :
+
+| Fichier | Source | Licence |
+|---|---|---|
+| `modeles/vache.glb` | *Farm Animals Pack*, Quaternius (recoloré en rouge flamand dans le jeu) | CC0, `modeles/LICENCE-quaternius-farm.txt` |
+| `modeles/nature.glb` | *Stylized Nature MegaKit* (version gratuite), Quaternius : deux arbres, une touffe d'herbe | CC0, `modeles/LICENCE-quaternius-nature.txt` |
+
+Pour ajouter un modèle, n'utiliser que des sources CC0 (Quaternius, Kenney, Poly Haven), puis le compresser (meshopt, textures ≤ 512 px).
