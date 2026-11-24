@@ -69,6 +69,30 @@ export function copie(gltf, o = {}){
 	});
 	return root;
 }
+/* un meuble du kit (modeles/mobilier.glb, Kenney CC0) : centré, posé au sol, mis à l'échelle.
+   o : { w (largeur voulue) | h (hauteur voulue) | s (échelle), x, y, z, ry, parent, tint (couleur ou fonction(mat)) }
+   Le kit a son origine dans un coin : on recentre, pour qu'un meuble se pose comme une boîte. */
+const _b = new THREE.Box3(), _c = new THREE.Vector3(), _s = new THREE.Vector3(), lit = new WeakMap();
+export function meuble(gltf, nom, o = {}){
+	const src = gltf.scene.getObjectByName(nom); if(!src) return null;
+	const inner = copie({ scene:src }, o), g = new THREE.Group();
+	inner.position.set(0, 0, 0); inner.rotation.set(0, 0, 0); inner.scale.set(1, 1, 1); inner.updateMatrixWorld(true);
+	_b.setFromObject(inner); _b.getCenter(_c); _b.getSize(_s);
+	const k = o.s ?? (o.w ? o.w/_s.x : o.h ? o.h/_s.y : o.d ? o.d/_s.z : 1);
+	inner.position.set(-_c.x*k, -_b.min.y*k, -_c.z*k); inner.scale.setScalar(k);
+	g.add(inner); g.position.set(o.x || 0, o.y || 0, o.z || 0); g.rotation.y = o.ry || 0;
+	// le kit est en matériaux « sans lumière » (plats) : on les passe en matériaux éclairés, qui prennent ombres et reflets
+	recolorer(inner, m => {
+		let c = lit.get(m);
+		if(!c){ c = m.isMeshBasicMaterial ? new THREE.MeshStandardMaterial({ color:m.color, map:m.map, vertexColors:m.vertexColors, transparent:m.transparent, opacity:m.opacity, roughness:.72 }) : m; lit.set(m, c); }
+		if(!o.tint) return c;
+		if(typeof o.tint === "function") return o.tint(c) || c;
+		const t = c.clone(); t.color.set(o.tint); return t;
+	});
+	g.userData.size = _s.clone().multiplyScalar(k);
+	(o.parent || null)?.add(g);
+	return g;
+}
 /* remplace chaque matériau par une copie (ou par ce que renvoie f) : pour recolorer un modèle sans toucher aux autres */
 export function recolorer(root, f){
 	const seen = new Map();

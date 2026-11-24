@@ -12,11 +12,11 @@
      5 · le Conseil (le verdict) : à chaque objection, poser la bonne pièce sur le rétroprojecteur, avant la fin du sablier.
    Chaque pièce remplit la note au Conseil, dans le panneau. Banque, personnes et chiffres sont fictifs et simplifiés ;
    contenu à relire par l'équipe de la prépa (docs/validation-prepa-d2.md). */
-import { guideGeste } from "./rendu.js?v=979a7cec82";
-import { stage3d, THREE } from "./stage3d.js?v=979a7cec82";
-import { makePerson } from "../kit.js?v=979a7cec82";
-import { jpoCard } from "./jpo.js?v=979a7cec82";
-import { palier } from "./palier.js?v=979a7cec82";
+import { guideGeste, modele, meuble, grain } from "./rendu.js?v=59fb9159af";
+import { stage3d, THREE } from "./stage3d.js?v=59fb9159af";
+import { makePerson } from "../kit.js?v=59fb9159af";
+import { jpoCard } from "./jpo.js?v=59fb9159af";
+import { palier } from "./palier.js?v=59fb9159af";
 
 const COURSES = {
 	stats: ["Statistique", "Indices et pondérations", "Un indice des prix est une moyenne pondérée : avant de réagir, on regarde d'où vient la hausse."],
@@ -222,7 +222,7 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 	const parquet = canvasTex(512, 512, (x, w, h) => { x.fillStyle = "#b8916a"; x.fillRect(0, 0, w, h); for(let i = 0; i < 16; i++){ x.fillStyle = i % 2 ? "#ad865f" : "#c09a72"; x.fillRect(0, i*32, w, 30); x.fillStyle = "rgba(60,40,20,.25)"; x.fillRect(((i*137) % w), i*32, 2, 30); } });
 	parquet.wrapS = parquet.wrapT = THREE.RepeatWrapping; parquet.repeat.set(10, 4);
 	mesh(G(new THREE.PlaneGeometry(220, 80)), M("#ffffff", { map:parquet, roughness:.75 }), -20, FY, 0).rotation.x = -Math.PI/2;
-	box(220, 34, .6, "#eef0ec", -20, FY, -17);
+	box(220, 34, .6, "#eef0ec", -20, FY, -17); box(220, 5, .3, "#d9d2c4", -20, FY, -16.6); box(220, .5, .5, "#c2b8a6", -20, FY + 5, -16.5);
 	// les fenêtres : Lille, l'après-midi
 	const city = canvasTex(1024, 512, (x, w, h) => {
 		const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#9cc8ec"); g.addColorStop(.7, "#dfeefa"); g.addColorStop(1, "#f1ead9"); x.fillStyle = g; x.fillRect(0, 0, w, h);
@@ -239,7 +239,7 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 		const cols = ["#0f3168", "#21b7cb", "#c9c2b4", "#8a2a2a", "#4f5c69", "#e0a03a"];
 		for(let r = 0; r < 4; r++) for(let i = 0; i < 11; i++) box(.62, 3 + (i*7 % 5)*.18, 1.2, cols[(i + r*3) % cols.length], -4 + i*.78, 1.2 + r*4.6, .5, g); }
 	// le bureau
-	box(32, .6, 17, M("#c9a77f", { roughness:.55 }), 0, -.6, 0);
+	box(32, .6, 17, M("#ffffff", { map:grain(W.renderer, "#c9a77f", { w:90, h:1.4, tilt:.015, n:1800, flecks:["rgba(0,0,0,.10)", "rgba(255,240,220,.07)", "rgba(0,0,0,.05)"], repeat:[1, 1] }), roughness:.45 }), 0, -.6, 0);
 	for(const sx of [-1, 1]) for(const sz of [-1, 1]) box(.7, 10.4, .7, "#3a3f47", sx*15, FY, sz*7.6);
 	// l'écran : le flash de l'institut statistique
 	{ const g = new THREE.Group(); g.position.set(11.5, 0, -5.4); g.rotation.y = -.3; scene.add(g);
@@ -352,21 +352,44 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 	for(const sx of [-1, 1]) box(.5, 30, 40, "#d8cfbf", CX + sx*24, CF, -2);
 	const screenT = canvasTex(1280, 760, (x, w, h) => { x.fillStyle = "#f7f9fb"; x.fillRect(0, 0, w, h); x.fillStyle = NAVY; x.fillRect(0, 0, w, 110); x.fillStyle = "#fff"; x.font = `300 56px ${SERIF}`; x.fillText("Conseil de politique monétaire", 40, 74); x.fillStyle = INK; x.font = `300 40px ${SANS}`; x.fillText("Jeudi 9 h · décision sur le taux directeur (aujourd'hui : 3,25 %)", 40, 220); });
 	mesh(G(new THREE.PlaneGeometry(18, 10.7)), new THREE.MeshBasicMaterial({ map:screenT, toneMapped:false }), CX + 5, 15, -19.6);
-	box(34, .7, 16, M("#5a3e2b", { roughness:.5 }), CX, -.7, -2);
+	box(34, .7, 16, M("#ffffff", { map:grain(W.renderer, "#5a3e2b", { w:90, h:1.4, tilt:.015, n:1800, flecks:["rgba(0,0,0,.10)", "rgba(255,240,220,.07)", "rgba(0,0,0,.05)"], repeat:[1, 1] }), roughness:.4 }), CX, -.7, -2);
 	for(const sx of [-1, 1]) box(1.2, 10, 10, "#3e2a1d", CX + sx*14, CF, -2);
 	// le rétroprojecteur
 	const PJ = new THREE.Vector3(CX, 0, -2.6);
 	{ const g = new THREE.Group(); g.position.copy(PJ); scene.add(g);
 		box(4.2, 1, 4.2, "#d9dde2", 0, 0, 0, g); mesh(G(new THREE.BoxGeometry(3.8, .06, 3.8)), M("#bfefff", { emissive:"#21b7cb", emissiveIntensity:.35 }), 0, 1.03, 0, g);
 		box(.25, 4.4, .25, "#9aa1aa", 2.2, 0, -1.6, g); box(1.2, .9, 1.2, "#2b2f36", 1.4, 4.2, -1.6, g); }
-	const members = {};
+	const members = {}, BACKS = [];
 	[["bernard", -9, "pro"], ["mathilde", 0, "senior"], ["james", 9, "pro"]].forEach(([k, x, kind]) => {
 		const p = makePerson(scene, true, kind); p.g.scale.setScalar(10.5); p.g.position.set(CX + x, CF, -14.5); members[k] = p;
 		const l = label(PEOPLE[k][0], { size:.026, bg:"#ffffff", fg:NAVY }); l.position.set(CX + x, 11.5, -14.5); scene.add(l);
-		cyl(2.2, 2.4, 9.2, "#2b2f36", CX + x, CF, -16.6);
+		BACKS.push(cyl(2.2, 2.4, 9.2, "#2b2f36", CX + x, CF, -16.6));
 	});
 
 	const sheetTags = [["1 · Indice", "A"], ["2 · Enquête", "D"], ["3 · Salaires", "B"], ["4 · Machine", "E"]].map(([t]) => { const l = label(t, { size:.02, bg:NAVY, fg:"#fff" }); l.visible = false; scene.add(l); return l; });
+
+
+	/* --- le mobilier (modeles/mobilier.glb, Kenney CC0) : il arrive après la scène, le jeu n'en dépend pas --- */
+	modele("modeles/mobilier.glb").then(gl => {
+		if(closed) return;
+		const put = (n, o) => meuble(gl, n, { parent:scene, ...o });
+		// les couleurs vives du kit (rose, orange) passent dans la palette de la pièce
+		const tone = col => m => { const hsl = {}; m.color.getHSL(hsl); if(hsl.s < .25) return m; const c = m.clone(); c.color.set(col); return c; };
+		// le bureau
+		put("chairDesk", { h:17, x:0, y:FY, z:-12.2, tint:tone("#1d2433") });
+		put("rugRectangle", { w:48, x:0, y:FY + .03, z:-1, receive:true, cast:false, tint:"#8c9aab" });
+		put("pottedPlant", { h:15, x:30, y:FY, z:-13 });
+		put("lampSquareFloor", { h:23, x:-21, y:FY, z:-13 });
+		put("loungeChair", { h:9, x:-30, y:FY, z:-10, ry:.5, tint:tone("#0f3168") });
+		put("books", { w:3.2, x:-14.5, y:0, z:-6.8, ry:-.25 });
+		// autour de la machine : une plante, un tabouret
+		put("pottedPlant", { h:15, x:MX - 16, y:FY, z:-12 });
+		put("stoolBar", { h:7.5, x:MX + 13, y:FY, z:MZ + 6, ry:-.4, tint:tone("#0f3168") });
+		// la salle du conseil : de vrais fauteuils derrière les membres, des plantes dans les angles
+		BACKS.forEach(b => { b.visible = false; put("chairDesk", { h:15.5, x:b.position.x, y:CF, z:-17, tint:tone("#1d2433") }); });
+		put("pottedPlant", { h:16, x:CX - 26, y:CF, z:-16 }); put("pottedPlant", { h:13, x:CX + 27, y:CF, z:-15 });
+
+	}).catch(() => {});
 
 	/* ================= les pièces : du papier, une face dessinée au canvas ================= */
 	const docs = {};

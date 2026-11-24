@@ -37,6 +37,7 @@ Le module `js/games/rendu.js` donne aux mini-jeux un rendu « fini » :
 - un ton neutre (Khronos PBR Neutral), qui garde justes les couleurs de la charte ;
 - une lumière d'ambiance et des ombres douces ;
 - des modèles glTF compressés ;
+- `meuble()` pour poser un objet du kit (recentré, mis à l'échelle, matériaux éclairés) ;
 - le **guide de geste** : un point de contact qui mime toucher, glisser, maintenir ou tracer.
 
 Règle : on guide la manipulation, jamais la décision.
@@ -47,5 +48,6 @@ Modèles utilisés, tous dans le domaine public (CC0) et publiables dans ce dép
 |---|---|---|
 | `modeles/vache.glb` | *Farm Animals Pack*, Quaternius (recoloré en rouge flamand dans le jeu) | CC0, `modeles/LICENCE-quaternius-farm.txt` |
 | `modeles/nature.glb` | *Stylized Nature MegaKit* (version gratuite), Quaternius : deux arbres, une touffe d'herbe | CC0, `modeles/LICENCE-quaternius-nature.txt` |
+| `modeles/mobilier.glb` | *Furniture Kit* 2.0, Kenney : bureaux, fauteuils, bibliothèques, plantes, tapis, meubles de cuisine (servent de paillasses), tabourets (32 objets, recolorés dans les jeux) | CC0, `modeles/LICENCE-kenney-furniture.txt` |
 
 Pour ajouter un modèle, n'utiliser que des sources CC0 (Quaternius, Kenney, Poly Haven), puis le compresser (meshopt, textures ≤ 512 px).

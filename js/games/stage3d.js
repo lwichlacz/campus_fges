@@ -8,7 +8,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { soigner } from "./rendu.js?v=979a7cec82";
+import { soigner } from "./rendu.js?v=59fb9159af";
 
 export { THREE };
 

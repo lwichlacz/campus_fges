@@ -15,11 +15,11 @@
    anglais écrit et oral, écrire pour convaincre, communication interpersonnelle et simulations d'entretien.
    Marque, cabinet, personnes, chiffres et documents sont fictifs ; écoles réelles citées comme débouchés.
    Contenu à relire par l'équipe de la prépa (docs/validation-prepa-cupge.md). */
-import { guideGeste } from "./rendu.js?v=979a7cec82";
-import { stage3d, THREE } from "./stage3d.js?v=979a7cec82";
-import { makePerson } from "../kit.js?v=979a7cec82";
-import { jpoCard } from "./jpo.js?v=979a7cec82";
-import { palier } from "./palier.js?v=979a7cec82";
+import { guideGeste, modele, meuble, grain } from "./rendu.js?v=59fb9159af";
+import { stage3d, THREE } from "./stage3d.js?v=59fb9159af";
+import { makePerson } from "../kit.js?v=59fb9159af";
+import { jpoCard } from "./jpo.js?v=59fb9159af";
+import { palier } from "./palier.js?v=59fb9159af";
 
 const COURSES = {
 	doc:    ["Prépa 1", "Technique du document", "Dépouiller une liasse, juger une source, ne garder que ce qui prouve : la base de toute synthèse."],
@@ -209,8 +209,8 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 
 	/* --- le bureau du cabinet, la nuit : moquette, mur, grande fenêtre sur Lille, horloge, bureau, lampe --- */
 	const FY = -11;
-	mesh(G(new THREE.PlaneGeometry(120, 80)), M("#2a2f3c", { roughness:1 }), 0, FY, 0).rotation.x = -Math.PI/2;
-	box(70, 32, .6, "#3a4255", 0, FY, -17);
+	mesh(G(new THREE.PlaneGeometry(120, 80)), M("#ffffff", { map:grain(W.renderer, "#2a2f3c", { n:9000, w:1.2, h:1.2, tilt:3, flecks:["rgba(255,255,255,.05)", "rgba(0,0,0,.18)"], repeat:[10, 7] }), roughness:1 }), 0, FY, 0).rotation.x = -Math.PI/2;
+	box(70, 32, .6, "#3a4255", 0, FY, -17); box(70, 5, .3, "#2e3546", 0, FY, -16.6); box(70, .5, .5, "#596277", 0, FY + 5, -16.5);
 	const night = canvasTex(1024, 640, (x, w, h) => {
 		const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#07101f"); g.addColorStop(.7, "#14244a"); g.addColorStop(1, "#2b3b6a"); x.fillStyle = g; x.fillRect(0, 0, w, h);
 		for(let i = 0; i < 90; i++){ x.fillStyle = `rgba(255,255,255,${.2 + Math.random()*.5})`; x.fillRect(Math.random()*w, Math.random()*h*.45, 2, 2); }
@@ -233,7 +233,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 	mesh(G(new THREE.BoxGeometry(.22, 1.5, .05)), NAVY, 0, .7, 0, hourH); mesh(G(new THREE.BoxGeometry(.14, 2.3, .05)), NAVY, 0, 1.1, 0, minH);
 	let shownMin = S.time;
 	// le bureau : un grand plateau clair, des pieds sombres
-	box(32, .6, 17, M("#4a3527", { roughness:.55 }), 0, -.6, 0);
+	box(32, .6, 17, M("#ffffff", { map:grain(W.renderer, "#4a3527", { w:90, h:1.4, tilt:.015, n:1800, flecks:["rgba(0,0,0,.10)", "rgba(255,240,220,.07)", "rgba(0,0,0,.05)"], repeat:[1, 1] }), roughness:.45 }), 0, -.6, 0);
 	for(const sx of [-1, 1]) for(const sz of [-1, 1]) box(.7, 10.4, .7, "#2b2f36", sx*15, FY, sz*7.6);
 	// la lampe de bureau
 	{ const g = new THREE.Group(); g.position.set(12.5, 0, -5); scene.add(g);
@@ -260,17 +260,38 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 	const dawn = canvasTex(1024, 512, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#9cc8ec"); g.addColorStop(.75, "#f4dfc4"); g.addColorStop(1, "#e7c9a5"); x.fillStyle = g; x.fillRect(0, 0, w, h);
 		x.fillStyle = "#8d96a8"; for(let X = 0; X < w; X += 50 + Math.random()*40){ const bh = 50 + Math.random()*110; x.fillRect(X, h - bh, 46 + Math.random()*26, bh); } x.fillStyle = "#7d8698"; x.fillRect(470, h - 270, 46, 270); x.beginPath(); x.moveTo(462, h - 270); x.lineTo(493, h - 340); x.lineTo(524, h - 270); x.fill(); });
 	mesh(G(new THREE.PlaneGeometry(40, 18)), new THREE.MeshBasicMaterial({ map:dawn }), CX, 6, -19.6);
-	box(34, .7, 16, M("#5a3e2b", { roughness:.5 }), CX, -.7, -2);
+	box(34, .7, 16, M("#ffffff", { map:grain(W.renderer, "#5a3e2b", { w:90, h:1.4, tilt:.015, n:1800, flecks:["rgba(0,0,0,.10)", "rgba(255,240,220,.07)", "rgba(0,0,0,.05)"], repeat:[1, 1] }), roughness:.4 }), CX, -.7, -2);
 	for(const sx of [-1, 1]) box(1.2, 10, 10, "#3e2a1d", CX + sx*14, CF, -2);
 	const screenTex = canvasTex(800, 260, (x, w, h) => { x.fillStyle = NAVY; x.fillRect(0, 0, w, h); x.fillStyle = CYAN; x.fillRect(0, h - 10, w, 10); x.fillStyle = "#fff"; x.font = `300 64px ${SERIF}`; x.fillText("Pavé · comité de direction", 40, 120); x.font = `700 34px ${SANS}`; x.fillStyle = "#bff3fa"; x.fillText("Jeudi 19 novembre · 8 h · recommandation", 40, 190); });
 	mesh(G(new THREE.PlaneGeometry(16, 5.2)), new THREE.MeshBasicMaterial({ map:screenTex }), CX + 21, 10, -19.5);
 	const morning = new THREE.PointLight("#fff2dc", 220, 70, 1.1); morning.position.set(CX, 16, 6); scene.add(morning);
-	const members = {};
+	const members = {}, BACKS = [];
 	[["marc", -9, "pro"], ["claire", 0, "senior"], ["sarah", 9, "pro"]].forEach(([k, x, kind]) => {
 		const p = makePerson(scene, true, kind); p.g.scale.setScalar(10.5); p.g.position.set(CX + x, CF, -14.5); members[k] = p;
 		const l = label(`${PEOPLE[k][0]}`, { size:.026, bg:"#fbfaf6", fg:NAVY }); l.position.set(CX + x, 11.5, -14.5); scene.add(l);
-		cyl(2.2, 2.4, 9.2, "#2b2f36", CX + x, CF, -16.6);      // le dossier du fauteuil
+		BACKS.push(cyl(2.2, 2.4, 9.2, "#2b2f36", CX + x, CF, -16.6));
 	});
+
+
+	/* --- le mobilier (modeles/mobilier.glb, Kenney CC0) : il arrive après la scène, le jeu n'en dépend pas --- */
+	modele("modeles/mobilier.glb").then(gl => {
+		if(closed) return;
+		const put = (n, o) => meuble(gl, n, { parent:scene, ...o });
+		// les couleurs vives du kit (rose, orange) passent dans la palette de la pièce
+		const tone = col => m => { const hsl = {}; m.color.getHSL(hsl); if(hsl.s < .25) return m; const c = m.clone(); c.color.set(col); return c; };
+		// le bureau
+		put("chairDesk", { h:17, x:0, y:FY, z:-12.2, tint:tone("#1d2433") });
+		put("rugRectangle", { w:48, x:0, y:FY + .03, z:-1, receive:true, cast:false, tint:"#39415a" });
+		const bk = put("bookcaseClosedWide", { h:17, x:-29, y:FY, z:-14.8, tint:m => { const c = m.clone(); c.color.multiplyScalar(.45); return c; } });
+		put("books", { w:3.4, x:-32, y:FY + bk.userData.size.y, z:-14.8, ry:.2 }); put("plantSmall2", { h:3, x:-25.5, y:FY + bk.userData.size.y, z:-14.8 });
+		put("pottedPlant", { h:15, x:25, y:FY, z:-13 });
+		put("lampSquareFloor", { h:23, x:31, y:FY, z:-9 });
+		put("books", { w:3.2, x:-14.5, y:0, z:-6.8, ry:-.25 });
+		// la salle du conseil : de vrais fauteuils derrière les membres, des plantes dans les angles
+		BACKS.forEach(b => { b.visible = false; put("chairDesk", { h:15.5, x:b.position.x, y:CF, z:-17, tint:tone("#1d2433") }); });
+		put("pottedPlant", { h:16, x:CX - 26, y:CF, z:-16 }); put("pottedPlant", { h:13, x:CX + 27, y:CF, z:-15 });
+		put("tableCross", { w:9, x:CX + 22, y:CF, z:-15, tint:m => { const c = m.clone(); c.color.multiplyScalar(.8); return c; } });
+	}).catch(() => {});
 
 	/* ================= les pièces : du papier, une face dessinée au canvas, des zones qu'on touche ================= */
 	const docs = {}, live = new Set();

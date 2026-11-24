@@ -12,9 +12,9 @@
    Mise en scène illustrative (cellule, client et chiffres fictifs) ; contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { makePerson } from "../kit.js?v=979a7cec82";
-import { jpoCard } from "./jpo.js?v=979a7cec82";
-import { palier } from "./palier.js?v=979a7cec82";
+import { makePerson } from "../kit.js?v=59fb9159af";
+import { jpoCard } from "./jpo.js?v=59fb9159af";
+import { palier } from "./palier.js?v=59fb9159af";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];

@@ -15,10 +15,10 @@
    indénombrable) ; on ne gomme jamais, on barre dans le cahier de labo, on explique, puis on refait avec la méthode.
    L'interface est le cahier de laboratoire, à petits carreaux ; la responsable, Nadia Keller, y laisse ses visas.
    École, laboratoire, personnes et valeurs sont fictifs ou simplifiés. Contenu à relire par l'équipe de l'APES. */
-import { soleil, guideGeste } from "./rendu.js?v=979a7cec82";
-import { stage3d, THREE } from "./stage3d.js?v=979a7cec82";
-import { jpoCard } from "./jpo.js?v=979a7cec82";
-import { palier } from "./palier.js?v=979a7cec82";
+import { soleil, guideGeste, modele, meuble, grain } from "./rendu.js?v=59fb9159af";
+import { stage3d, THREE } from "./stage3d.js?v=59fb9159af";
+import { jpoCard } from "./jpo.js?v=59fb9159af";
+import { palier } from "./palier.js?v=59fb9159af";
 
 const SPEED = /[?&]vite/.test(location.search) ? 5 : 1;      // ?vite : attentes et animations 5 fois plus rapides (tests)
 
@@ -148,7 +148,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	const SUN = soleil(W.renderer, scene, W.controls, { intensity:1.7, radius:14, dir:[-.45, 1, .6] }); W.onFrame(SUN.follow);
 	const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
 	const Y = 3.2;                                      // dessus des paillasses et du comptoir
-	const glass = M("#dcecff", { transparent:true, opacity:.3, roughness:.05, depthWrite:false, side:THREE.DoubleSide });
+	const glass = M("#e4f1ff", { transparent:true, opacity:.28, roughness:.04, metalness:.1, envMapIntensity:1.6, depthWrite:false, side:THREE.DoubleSide });
 	const steel = M("#b9c1c9", { metalness:.7, roughness:.3 });
 	const hidden = new THREE.MeshBasicMaterial({ visible:false });
 	function hitBox(w, h, d, parent, x = 0, y = 0, z = 0){ const m = new THREE.Mesh(G(new THREE.BoxGeometry(w, h, d)), hidden); m.position.set(x, y, z); parent.add(m); return m; }
@@ -215,7 +215,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	// le flacon stérile, au bouchon bleu (le même revient au labo)
 	function makeFlask(x, y, z){
 		const g = new THREE.Group(); g.position.set(x, y, z); scene.add(g);
-		cyl(.5, .5, 1.45, glass, 0, 0, 0, g); cyl(.22, .5, .35, glass, 0, 1.45, 0, g); cyl(.22, .22, .3, glass, 0, 1.8, 0, g);
+		mesh(G(new THREE.LatheGeometry([[0, 0], [.44, 0], [.5, .06], [.5, 1.42], [.44, 1.6], [.26, 1.74], [.22, 1.8], [.22, 2.06], [.24, 2.08]].map(([x, y]) => new THREE.Vector2(x, y)), 32)), glass, 0, 0, 0, g);
 		const cap = cyl(.27, .27, .28, "#1f5fbf", 0, 2.08, 0, g);
 		const lg = G(new THREE.CylinderGeometry(.45, .45, 1, 20)); lg.translate(0, .5, 0);
 		const liq = mesh(lg, M("#bfe0f5", { transparent:true, opacity:.8 }), 0, .04, 0, g);
@@ -240,7 +240,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	box(.7, .12, .1, "#21b7cb", 0, -.06, 0, cock);
 	const cockHit = hitBox(1.8, 1.4, 1.6, bur, 0, 1.6, .3);
 	const erl = new THREE.Group(); erl.position.set(CX - 5.6, Y, -3.6); scene.add(erl);
-	mesh(G(new THREE.CylinderGeometry(.24, .8, 1.15, 24, 1, true)), glass, 0, .58, 0, erl);
+	mesh(G(new THREE.LatheGeometry([[0, 0], [.76, 0], [.8, .05], [.78, .14], [.3, .98], [.24, 1.06], [.24, 1.32], [.27, 1.35]].map(([x, y]) => new THREE.Vector2(x, y)), 32)), glass, 0, 0, 0, erl);
 	const elg = G(new THREE.CylinderGeometry(.55, .78, 1, 24)); elg.translate(0, .5, 0);
 	const erlLiq = mesh(elg, M("#ee6fae", { transparent:true, opacity:.9 }), 0, .02, 0, erl); erlLiq.scale.y = .4;
 	const drop = mesh(G(new THREE.SphereGeometry(.06, 8, 6)), M("#f1eccd"), 0, 0, 0); drop.visible = false;
@@ -249,13 +249,16 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	const burL = label("Burette (FAS)", { size:.022, bg:"#0f3168", fg:"#fff" }); burL.position.set(0, 6.6, 0); bur.add(burL);
 
 	/* --- le laboratoire d'analyses des eaux (fictif) --- */
+	const LAB = {};
 	{
 		const ft = tiles("#e9ecee", "#dde1e5"); ft.wrapS = ft.wrapT = THREE.RepeatWrapping; ft.repeat.set(6, 3);
 		mesh(G(new THREE.PlaneGeometry(40, 20)), M("#ffffff", { map:ft, roughness:.6 }), 0, 0, 0).rotation.x = -Math.PI/2;
 		box(40, 12, .4, "#e3eaef", 0, 0, -6.4); box(.4, 12, 20, "#dbe3ea", -20, 0, 0); box(.4, 12, 20, "#dbe3ea", 20, 0, 0);
-		box(34.4, .3, 4.6, "#f4f5f2", 0, Y - .3, -3.7); box(34, Y - .3, 4.2, "#0f3168", 0, 0, -3.8);
-		for(let i = 0; i < 9; i++) box(.06, 2.4, .02, "#2a4a80", -15 + i*3.75, .3, -1.68);                  // portes des placards
+		box(34.4, .3, 4.6, M("#ffffff", { map:grain(W.renderer, "#eef0ee", { n:5000, w:1.4, h:1.4, tilt:3, flecks:["rgba(15,49,104,.08)", "rgba(0,0,0,.05)"], repeat:[6, 1] }), roughness:.35 }), 0, Y - .3, -3.7); LAB.base = box(34, Y - .3, 4.2, "#0f3168", 0, 0, -3.8);
+		LAB.doors = []; for(let i = 0; i < 9; i++) LAB.doors.push(box(.06, 2.4, .02, "#2a4a80", -15 + i*3.75, .3, -1.68));                  // portes des placards
 		box(40, .3, .5, "#21b7cb", 0, 11.2, -6.1);
+		{ const ct = tiles("#f6f8f9", "#eef2f4", 16); ct.wrapS = ct.wrapT = THREE.RepeatWrapping; ct.repeat.set(9, 1);
+			const cr = mesh(G(new THREE.PlaneGeometry(34.4, 2.8)), M("#ffffff", { map:ct, roughness:.25 }), 0, Y + 1.4, -6.18); cr.castShadow = false; }
 		// la fenêtre sur la cour, en plein jour
 		const sky = W.canvasTex(256, 128, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, "#9cc8ea"); g.addColorStop(1, "#e8f1f6"); x.fillStyle = g; x.fillRect(0, 0, w, h); x.fillStyle = "#b9c4cc"; x.fillRect(0, h*.7, w, h); x.fillStyle = "#93a3af"; for(let i = 0; i < 6; i++) x.fillRect(10 + i*42, h*.55, 30, h*.3); });
 		box(11, 4.6, .3, "#f7f8f9", -4, 6.2, -6.2);
@@ -344,6 +347,28 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	const bulPaper = box(5.7, .04, 4.1, "#f1eee6", 14.6, Y, -3.6); bulPaper.visible = false;
 	const pen = new THREE.Group(); pen.position.set(17.6, Y + .1, -2.4); pen.rotation.y = .5; scene.add(pen);
 	mesh(G(new THREE.CylinderGeometry(.07, .07, 1.6, 8)), M("#0f3168"), 0, 0, 0, pen).rotation.z = Math.PI/2;
+
+	/* --- le mobilier (modeles/mobilier.glb, Kenney CC0) : il arrive après la scène, le jeu n'en dépend pas --- */
+	modele("modeles/mobilier.glb").then(gl => {
+		if(closed) return;
+		const put = (n, o) => meuble(gl, n, { parent:scene, ...o });
+		const tone = col => m => { const hsl = {}; m.color.getHSL(hsl); if(hsl.s < .25) return m; const c = m.clone(); c.color.set(col); return c; };
+		// les meubles bas sous la paillasse : douze caissons à tiroirs et à portes
+		const one = put("kitchenCabinetDrawer", { h:Y - .3 }); if(!one) return;
+		const cw = one.userData.size.x, cd = one.userData.size.z, n = Math.floor(34/cw); one.removeFromParent();
+		for(let i = 0; i < n; i++) put(i % 3 === 1 ? "kitchenCabinet" : "kitchenCabinetDrawer", { h:Y - .3, x:-n*cw/2 + cw*(i + .5), z:-1.6 - cd/2, ry:0, tint:tone("#eef1f3") });
+		LAB.base.material = M("#dfe4e8"); LAB.doors.forEach(d => d.visible = false);
+		// les placards hauts, à gauche de la fenêtre
+		for(const x of [-16, -12.9]) put("kitchenCabinetUpper", { h:2.6, x, y:7.6, z:-5.4, tint:tone("#eef1f3") });
+		// les tabourets de labo, le portemanteau des blouses, la poubelle, une plante sur l'appui de fenêtre
+		for(const x of [-8.5, 3.4, 12]) put("stoolBar", { h:2.7, x, z:.7, tint:tone("#0f3168") });
+		put("coatRackStanding", { h:7, x:18.4, z:-.2 });
+		put("trashcan", { h:2.4, x:-18.4, z:-.4 });
+		put("plantSmall1", { h:1.2, x:-8.4, y:6.2, z:-5.9 }); put("plantSmall2", { h:1.1, x:.4, y:6.2, z:-5.9 });
+		// à la cantine : une plante, des chaises d'enfants autour des tables
+		put("pottedPlant", { h:6, x:CX + 11.6, z:-4 });
+		for(let i = 0; i < 3; i++) for(const dz of [-1.9, 1.9]) put("chairModernCushion", { h:3, x:CX - 6 + i*6, z:4 + dz, ry:dz < 0 ? 0 : Math.PI, tint:tone(["#f3b23b", "#4fa3d9", "#e2617f"][i]) });
+	}).catch(() => {});
 
 	/* --- la flèche qui montre quoi toucher --- */
 	const arrow = label("▼", { size:.03, bg:"#21b7cb", fg:"#0f3168" }); arrow.visible = false; scene.add(arrow);
