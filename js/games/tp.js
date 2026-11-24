@@ -15,9 +15,10 @@
    indénombrable) ; on ne gomme jamais, on barre dans le cahier de labo, on explique, puis on refait avec la méthode.
    L'interface est le cahier de laboratoire, à petits carreaux ; la responsable, Nadia Keller, y laisse ses visas.
    École, laboratoire, personnes et valeurs sont fictifs ou simplifiés. Contenu à relire par l'équipe de l'APES. */
-import { stage3d, THREE } from "./stage3d.js?v=e370aeda6d";
-import { jpoCard } from "./jpo.js?v=e370aeda6d";
-import { palier } from "./palier.js?v=e370aeda6d";
+import { soleil, guideGeste } from "./rendu.js?v=979a7cec82";
+import { stage3d, THREE } from "./stage3d.js?v=979a7cec82";
+import { jpoCard } from "./jpo.js?v=979a7cec82";
+import { palier } from "./palier.js?v=979a7cec82";
 
 const SPEED = /[?&]vite/.test(location.search) ? 5 : 1;      // ?vite : attentes et animations 5 fois plus rapides (tests)
 
@@ -141,10 +142,10 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	const later = (ms, f) => { const t = setTimeout(() => { timers.delete(t); if(!closed) f(); }, ms/SPEED); timers.add(t); return t; };
 
 	/* ================= la scène : la cantine de l'école, puis le laboratoire ================= */
-	const W = stage3d(cv, { panel:book, side:"right", panelW:416, bg:"#e7edf1", fog:[50, 120], minD:3, maxD:60, maxPolar:1.45, rotate:false, shadows:false });
+	const W = stage3d(cv, { panel:book, side:"right", panelW:416, bg:"#e7edf1", fog:[50, 120], minD:3, maxD:60, maxPolar:1.45, rotate:false, shadows:false, soin:{ env:.5 } });
 	const { scene, M, G, mesh, box, cyl, label } = W;
-	scene.add(new THREE.HemisphereLight("#ffffff", "#b8b2a6", 1.25));
-	const sun = new THREE.DirectionalLight("#fff4e2", 1.5); sun.position.set(-10, 20, 14); scene.add(sun);
+	scene.add(new THREE.HemisphereLight("#ffffff", "#b8b2a6", .8));
+	const SUN = soleil(W.renderer, scene, W.controls, { intensity:1.7, radius:14, dir:[-.45, 1, .6] }); W.onFrame(SUN.follow);
 	const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
 	const Y = 3.2;                                      // dessus des paillasses et du comptoir
 	const glass = M("#dcecff", { transparent:true, opacity:.3, roughness:.05, depthWrite:false, side:THREE.DoubleSide });
@@ -347,7 +348,10 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 	/* --- la flèche qui montre quoi toucher --- */
 	const arrow = label("▼", { size:.03, bg:"#21b7cb", fg:"#0f3168" }); arrow.visible = false; scene.add(arrow);
 	let arrowAt = null; const tmp = new THREE.Vector3();
-	function point(obj, dy = 1.6){ arrowAt = obj ? { obj, dy } : null; arrow.visible = !!obj; }
+	// point(objet, hauteur de la flèche, geste) : la flèche dit où, le guide mime le geste (on guide la manipulation, jamais la décision)
+	const guide = guideGeste(root, W.camera, cv);
+	function point(obj, dy = 1.6, k = "tap", o = {}){ arrowAt = obj ? { obj, dy } : null; arrow.visible = !!obj; guide.show(obj, k, o); }
+	W.onFrame(guide.update);
 	W.onFrame(now => { if(!arrowAt) return; arrowAt.obj.getWorldPosition(tmp); arrow.position.set(tmp.x, tmp.y + arrowAt.dy + Math.sin(now/220)*.12, tmp.z); });
 
 	/* --- petites animations --- */
@@ -462,7 +466,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 			moveTo(torch, V3(NOZ.x - .9, NOZ.y - 1.9, NOZ.z + .5), 450, .6, () => {
 				torch.rotation.z = -.5; flame.visible = true;
 				const off = W.onFrame(now => { flame.scale.set(1, .8 + Math.sin(now/40)*.2, 1); });
-				later(1400, () => { off(); flame.visible = false; torch.rotation.z = 0; moveTo(torch, home, 450, .6); flamed = true; entry("Bec du robinet flambé au chalumeau."); point(handle, 1); hint("👉 Fais glisser la manette pour ouvrir le robinet"); });
+				later(1400, () => { off(); flame.visible = false; torch.rotation.z = 0; moveTo(torch, home, 450, .6); flamed = true; entry("Bec du robinet flambé au chalumeau."); point(handle, 1, "side"); hint("👉 Fais glisser la manette pour ouvrir le robinet"); });
 			});
 		}
 		const notYet = () => { visa("D'abord <b>flamber le bec</b> : sinon on analyse les microbes collés au robinet, pas ceux de l'eau."); wiggle(torch); };
@@ -470,7 +474,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 			{ hit:torchHit, tap:flameIt },
 			{ hit:handleHit, down:a => { a.o0 = open; },
 				move:(a, e) => { if(!flamed) return; setOpen(a.o0 + (e.clientX - a.x0)/150 + (a.y0 - e.clientY)/300); },
-				up:a => { if(!flamed){ notYet(); return; } if(!a.moved) setOpen(open > .05 ? 0 : 1); if(open > .05 && !warned){ warned = true; entry("Robinet ouvert : l'eau coule, le thermomètre est dans le jet."); point(flask.g, 3.3); hint("✋ Maintiens le flacon sous le jet"); } } },
+				up:a => { if(!flamed){ notYet(); return; } if(!a.moved) setOpen(open > .05 ? 0 : 1); if(open > .05 && !warned){ warned = true; entry("Robinet ouvert : l'eau coule, le thermomètre est dans le jet."); point(flask.g, 3.3, "hold", { gy:.8 }); hint("✋ Appuie sur le flacon et garde le doigt : il se remplit sous le jet"); } } },
 			{ hit:flask.hit, down:() => {
 				if(done) return;
 				if(!flamed){ notYet(); return; }
@@ -526,7 +530,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 			<button class="lb-go" data-a="note">Noter le volume dans le cahier</button>`);
 		function upd(){ const el = book.querySelector("[data-v]"); if(el) el.textContent = fr(V, 2) + " mL"; }
 		reset();
-		point(cock, .9); hint("✋ Glisse le robinet de la burette vers le haut pour l'ouvrir");
+		point(cock, .9, "up"); hint("✋ Glisse le robinet de la burette vers le haut pour l'ouvrir");
 		targets = [{ hit:cockHit, down:a => { a.o0 = open; }, move:(a, e) => { if(!done) setOpen(a.o0 + (a.y0 - e.clientY)/160); }, up:a => { if(done) return; point(null); if(!a.moved){ setOpen(open > .02 ? 0 : .12); play("clic"); } hint(open > .02 ? "👆 Touche le robinet pour fermer, puis note le volume" : ""); } }];
 		hook((now, dt) => {
 			if(open > .02 && !done){
@@ -682,7 +686,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 			<p class="lb-p" data-proto><b>Protocole : filtre ${target()} mL.</b> Maintiens ton flacon pour verser jusqu'au trait.</p>
 			<div class="lb-num"><div><small>eau dans l'entonnoir</small><span data-v>0 mL</span></div><div><small>E. coli comptées</small><span data-n>—</span></div></div>`);
 		const upd = () => { const v = book.querySelector("[data-v]"); if(v) v.textContent = Math.round(vol) + " mL"; const n = book.querySelector("[data-n]"); if(n && phase === "count") n.textContent = counted; };
-		point(flask2.g, 3.3); hint(`✋ Maintiens le flacon pour verser ${target()} mL`);
+		point(flask2.g, 3.3, "hold", { gy:.8 }); hint(`✋ Garde le doigt sur le flacon pour verser ${target()} mL`);
 		const POUR = V3(-.2, Y + 3.9, -4.1);
 		function drawDish(mode){
 			dishTex.redraw((x, w, h) => {
@@ -716,7 +720,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 				err("trop d'eau filtrée");
 				const e = entry(`${Math.round(vol)} mL versés au lieu de ${t}.`); strike(e, "volume au-delà du trait");
 				visa(`Trop versé : le résultat se ramène à un volume précis. On vide l'entonnoir et on recommence${t === 10 ? ", doucement : 10 mL, c'est quelques secondes" : ""}.`);
-				later(500, () => { vol = 0; funLiq.visible = false; upd(); point(flask2.g, 3.3); }); return;
+				later(500, () => { vol = 0; funLiq.visible = false; upd(); point(flask2.g, 3.3, "hold", { gy:.8 }); }); return;
 			}
 			phase = "filter"; hint(""); play("swipe");
 			const v0 = vol; tween(1200, e => { vol = v0*(1 - e); funLiq.scale.y = Math.max(.01, FUN_H*vol/100); upd(); }, () => {
@@ -757,7 +761,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 			const b = book.querySelector('[data-a="redo"]'); if(b) b.remove();
 			dish.visible = false; vol = 0; phase = "pour"; upd();
 			const p = book.querySelector("[data-proto]"); if(p) p.innerHTML = `<b>Protocole corrigé : filtre 10 mL.</b> Maintiens ton flacon, et lâche tôt.`;
-			view(V3(1.2, Y + 1.2, -3.2), 12, 8, 1.0, .1); point(flask2.g, 3.3); hint("✋ Verse 10 mL seulement");
+			view(V3(1.2, Y + 1.2, -3.2), 12, 8, 1.0, .1); point(flask2.g, 3.3, "hold", { gy:.8 }); hint("✋ Verse 10 mL seulement");
 		};
 		function countTap(a){
 			if(phase !== "count" || done) return;
@@ -826,7 +830,7 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 			if(f) f.textContent = sharp() ? "nette" : "floue";
 		}
 		draw();
-		point(knob, 1.1); hint("✋ Glisse sur la vis de mise au point");
+		point(knob, 1.1, "vert"); hint("✋ Glisse de haut en bas sur la vis de mise au point");
 		eye.addEventListener("pointerdown", e => {
 			if(done) return;
 			const r = eye.getBoundingClientRect(), px = (e.clientX - r.left)/r.width*260, py = (e.clientY - r.top)/r.height*260;
@@ -844,13 +848,13 @@ export function openTP({ formation, audio, isFav, toggleFav, onClose, onEvent, o
 			{ hit:knobHit, down:a => { a.f0 = focus; }, move:(a, e) => { focus = Math.max(0, Math.min(100, a.f0 + (a.y0 - e.clientY)*.25)); knob.rotation.x = focus*.08; draw(); if(sharp() && obj === 10 && !S.micFocus10){ S.micFocus10 = true; entry("Mise au point à ×10 : des petits points roses."); point(turret, 1); hint("👆 Passe à l'objectif ×100"); } }, up:() => { if(obj === 100 && !oiled && Math.abs(focus - tgt()) < 6 && !oilWarned){ oilWarned = true; oilHelp(); } } },
 			{ hit:turretHit, tap:() => {
 				obj = obj === 10 ? 100 : 10; play("clic"); tween(300, e => turret.rotation.y = (obj === 100 ? e : 1 - e)*Math.PI); draw();
-				if(obj === 100 && !oiled){ point(knob, 1.1); hint("✋ Refais la mise au point"); oilT = performance.now(); later(3500, () => { if(obj === 100 && !oiled && !oilWarned){ oilWarned = true; oilHelp(); } }); }
+				if(obj === 100 && !oiled){ point(knob, 1.1, "vert"); hint("✋ Refais la mise au point"); oilT = performance.now(); later(3500, () => { if(obj === 100 && !oiled && !oilWarned){ oilWarned = true; oilHelp(); } }); }
 				else if(obj === 100 && oiled) hint("✋ Ajuste la mise au point");
 			} },
 			{ hit:oilHit, tap:() => {
 				if(oiled) return; play("pop");
 				const home = oil.position.clone();
-				moveTo(oil, V3(mic.position.x, Y + 2.3, mic.position.z + .1), 400, .6, () => { later(300, () => moveTo(oil, home, 400, .6)); oiled = true; entry("Une goutte d'huile à immersion sur la lame."); draw(); point(knob, 1.1); hint(obj === 100 ? "✋ Ajuste la mise au point" : "👆 Passe à l'objectif ×100"); visa(""); });
+				moveTo(oil, V3(mic.position.x, Y + 2.3, mic.position.z + .1), 400, .6, () => { later(300, () => moveTo(oil, home, 400, .6)); oiled = true; entry("Une goutte d'huile à immersion sur la lame."); draw(); point(knob, 1.1, "vert"); hint(obj === 100 ? "✋ Ajuste la mise au point" : "👆 Passe à l'objectif ×100"); visa(""); });
 			} }
 		];
 		function oilHelp(){ err("×100 sans huile"); visa("Sans huile, l'image reste sombre et floue : la lumière se disperse dans l'air entre la lame et l'objectif ×100. Méthode : <b>une goutte d'huile à immersion</b>, qui a le même indice que le verre."); point(oil, 1.4); hint("👆 Dépose une goutte d'huile"); }

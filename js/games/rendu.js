@@ -99,7 +99,8 @@ export function grain(renderer, base, o = {}){
 
 /* --- le guide de geste ---
    Un point de contact (blanc cerclé de cyan) posé sur l'objet, qui mime le geste : tap (toucher), hold (maintenir),
-   down (glisser vers le bas), side (glisser de côté), trace (tracer une boucle). La flèche du jeu dit où ; le guide dit
+   down / up (glisser vers le bas / le haut), vert (glisser de haut en bas), side (glisser de côté), trace (tracer une boucle),
+   drag (emporter l'objet jusqu'à o.to). La flèche du jeu dit où ; le guide dit
    quoi faire. Règle de conception : on guide la MANIPULATION (prendre, poser, maintenir, glisser), jamais la DÉCISION
    (quelle pièce, quelle dose, quel logement) : la réflexion reste au joueur.
    Usage : const g = guideGeste(conteneur, camera, canevas) ; g.show(objet3D, "hold", { gy:.3, r:90 }) ; g.hide() ;
@@ -127,21 +128,35 @@ const GUIDE_CSS = `.g3-g{position:absolute;left:0;top:0;z-index:4;width:0;height
 .g3-g[data-k=trace] i{animation:g3Trace 2.4s linear infinite}
 @keyframes g3Trace{from{transform:rotate(0) translateX(var(--r,70px)) rotate(0)}to{transform:rotate(360deg) translateX(var(--r,70px)) rotate(-360deg)}}
 .g3-g[data-k=trace] b{display:block;border:3px dashed rgba(255,255,255,.9);border-radius:50%;left:calc(-1*var(--r,70px));top:calc(-1*var(--r,70px));width:calc(2*var(--r,70px));height:calc(2*var(--r,70px));box-sizing:border-box}
+.g3-g[data-k=up] b{display:block;left:-1.5px;top:-70px;height:120px}
+.g3-g[data-k=up] i{animation:g3Up 1.6s cubic-bezier(.4,0,.3,1) infinite}
+@keyframes g3Up{0%{transform:translateY(50px);opacity:0}12%{opacity:1}70%{transform:translateY(-70px);opacity:1}100%{transform:translateY(-70px);opacity:0}}
+.g3-g[data-k=vert] b{display:block;left:-1.5px;top:-50px;height:100px}
+.g3-g[data-k=vert] i{animation:g3Vert 2s ease-in-out infinite}
+@keyframes g3Vert{0%,100%{transform:translateY(-45px)}50%{transform:translateY(45px)}}
+.g3-g[data-k=drag] i{animation:g3Drag 2s cubic-bezier(.45,0,.3,1) infinite}
+.g3-g[data-k=drag] u{animation:g3Ripple 2s ease-out infinite}
+@keyframes g3Drag{0%,12%{transform:translate(0,0) scale(1);opacity:0}18%{opacity:1;transform:translate(0,0) scale(.8)}75%{transform:translate(var(--dx,0),var(--dy,0)) scale(.8);opacity:1}90%,100%{transform:translate(var(--dx,0),var(--dy,0)) scale(1);opacity:0}}
 @media (prefers-reduced-motion:reduce){.g3-g i,.g3-g u{animation:none!important}}`;
 export function guideGeste(host, camera, canvas){
 	if(!document.getElementById("g3-css")){ const st = document.createElement("style"); st.id = "g3-css"; st.textContent = GUIDE_CSS; document.head.appendChild(st); }
 	const el = document.createElement("div"); el.className = "g3-g"; el.hidden = true; el.setAttribute("aria-hidden", "true");
 	el.innerHTML = "<u></u><b></b><i></i>"; host.appendChild(el);
-	let at = null; const v = new THREE.Vector3();
+	let at = null; const v = new THREE.Vector3(), w = new THREE.Vector3();
+	// l'objet peut être un Object3D ou un simple point (Vector3) ; o.to (pour "drag") : où poser l'objet
+	const pos = (o, out) => o.isVector3 ? out.copy(o) : o.getWorldPosition(out);
+	const px = p => [(p.x + 1)/2*canvas.clientWidth, (1 - p.y)/2*canvas.clientHeight];
 	return {
 		el,
-		show(obj, k = "tap", o = {}){ at = obj ? { obj, dy:o.gy || 0 } : null; el.hidden = !obj; el.dataset.k = k; el.style.setProperty("--r", (o.r || 70) + "px"); },
+		show(obj, k = "tap", o = {}){ at = obj ? { obj, dy:o.gy || 0, to:o.to || null } : null; el.hidden = !obj; el.dataset.k = k; el.style.setProperty("--r", (o.r || 70) + "px"); },
 		hide(){ at = null; el.hidden = true; },
 		update(){
 			if(!at) return;
-			at.obj.getWorldPosition(v); v.y += at.dy; v.project(camera);
+			pos(at.obj, v); v.y += at.dy; v.project(camera);
 			if(v.z > 1){ el.style.opacity = 0; return; }
-			el.style.opacity = ""; el.style.transform = `translate(${(v.x + 1)/2*canvas.clientWidth}px,${(1 - v.y)/2*canvas.clientHeight}px)`;
+			const [x, y] = px(v);
+			if(at.to){ pos(at.to, w).project(camera); const [x2, y2] = px(w); el.style.setProperty("--dx", (x2 - x) + "px"); el.style.setProperty("--dy", (y2 - y) + "px"); }
+			el.style.opacity = ""; el.style.transform = `translate(${x}px,${y}px)`;
 		},
 		dispose(){ el.remove(); }
 	};

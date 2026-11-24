@@ -8,7 +8,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { soigner } from "./rendu.js?v=e370aeda6d";
+import { soigner } from "./rendu.js?v=979a7cec82";
 
 export { THREE };
 
@@ -31,7 +31,7 @@ export function stage3d(canvas, o = {}){
 	const own = [];
 	const M = (c, op = {}) => { const m = new THREE.MeshStandardMaterial({ color:c, roughness:.8, ...op }); own.push(m); return m; };
 	const G = g => (own.push(g), g);
-	function mesh(geo, mat, x = 0, y = 0, z = 0, parent = scene){ const m = new THREE.Mesh(geo, typeof mat === "string" ? M(mat) : mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; parent.add(m); return m; }
+	function mesh(geo, mat, x = 0, y = 0, z = 0, parent = scene){ const m = new THREE.Mesh(geo, typeof mat === "string" ? M(mat) : mat); m.position.set(x, y, z); m.castShadow = !m.material.transparent; m.receiveShadow = true; parent.add(m); return m; }
 	// avec le rendu soigné, les boîtes ont des arêtes légèrement arrondies : elles accrochent la lumière comme un vrai objet
 	const boxGeo = (w, h, d) => { const r = Math.min(.06, Math.min(w, h, d)*.18); return o.soin && r > .004 ? new RoundedBoxGeometry(w, h, d, 2, r) : new THREE.BoxGeometry(w, h, d); };
 	const box = (w, h, d, c, x, y, z, parent) => mesh(G(boxGeo(w, h, d)), c, x, y + h/2, z, parent);

@@ -12,9 +12,9 @@
    La lumière des fenêtres suit les 48 heures (vendredi 18 h → dimanche 17 h) ; le style choisi habille toute la salle.
    Équipe, joueurs et scores sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
-import { makePerson } from "../kit.js?v=e370aeda6d";
-import { jpoCard } from "./jpo.js?v=e370aeda6d";
-import { palier } from "./palier.js?v=e370aeda6d";
+import { makePerson } from "../kit.js?v=979a7cec82";
+import { jpoCard } from "./jpo.js?v=979a7cec82";
+import { palier } from "./palier.js?v=979a7cec82";
 
 const COURSES = {
 	gaming: ["L1", "Projet Gaming", "Toute la première année, chaque équipe conçoit et programme son propre jeu vidéo : idée, niveaux, code, tests, présentation devant un jury."],

@@ -12,10 +12,11 @@
      5 · le Conseil (le verdict) : à chaque objection, poser la bonne pièce sur le rétroprojecteur, avant la fin du sablier.
    Chaque pièce remplit la note au Conseil, dans le panneau. Banque, personnes et chiffres sont fictifs et simplifiés ;
    contenu à relire par l'équipe de la prépa (docs/validation-prepa-d2.md). */
-import { stage3d, THREE } from "./stage3d.js?v=e370aeda6d";
-import { makePerson } from "../kit.js?v=e370aeda6d";
-import { jpoCard } from "./jpo.js?v=e370aeda6d";
-import { palier } from "./palier.js?v=e370aeda6d";
+import { guideGeste } from "./rendu.js?v=979a7cec82";
+import { stage3d, THREE } from "./stage3d.js?v=979a7cec82";
+import { makePerson } from "../kit.js?v=979a7cec82";
+import { jpoCard } from "./jpo.js?v=979a7cec82";
+import { palier } from "./palier.js?v=979a7cec82";
 
 const COURSES = {
 	stats: ["Statistique", "Indices et pondérations", "Un indice des prix est une moyenne pondérée : avant de réagir, on regarde d'où vient la hausse."],
@@ -211,11 +212,11 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 	const wait = ms => P(r => { const t = setTimeout(() => { timers.delete(t); r(); }, ms); timers.add(t); });
 
 	/* ================= la scène : le service de conjoncture, en plein jour ================= */
-	const W = stage3d(cv, { panel:note, side:"right", panelW:330, bg:"#dfe6ee", minD:1, maxD:500, maxPolar:1.5, minPolar:0, rotate:false, fov:38 });
+	const W = stage3d(cv, { panel:note, side:"right", panelW:330, bg:"#dfe6ee", minD:1, maxD:500, maxPolar:1.5, minPolar:0, rotate:false, fov:38, soin:{ env:.4 } });
 	const { scene, camera, M, G, mesh, box, cyl, canvasTex, label } = W;
-	const hemi = new THREE.HemisphereLight("#ffffff", "#9a8f80", 1.05); scene.add(hemi);
+	const hemi = new THREE.HemisphereLight("#ffffff", "#9a8f80", .8); scene.add(hemi);
 	const sun = new THREE.DirectionalLight("#fff4e0", 1.25); sun.position.set(-20, 34, 18); sun.castShadow = true;
-	sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left:-30, right:30, top:30, bottom:-30, near:1, far:120 }); scene.add(sun);
+	sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left:-30, right:30, top:30, bottom:-30, near:1, far:120 }); sun.shadow.bias = -.0004; sun.shadow.normalBias = .03; sun.shadow.radius = 4; scene.add(sun);
 
 	const FY = -11;
 	const parquet = canvasTex(512, 512, (x, w, h) => { x.fillStyle = "#b8916a"; x.fillRect(0, 0, w, h); for(let i = 0; i < 16; i++){ x.fillStyle = i % 2 ? "#ad865f" : "#c09a72"; x.fillRect(0, i*32, w, 30); x.fillStyle = "rgba(60,40,20,.25)"; x.fillRect(((i*137) % w), i*32, 2, 30); } });
@@ -618,6 +619,10 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 	};
 	cv.addEventListener("pointerup", endPtr); cv.addEventListener("pointercancel", endPtr);
 	// une tâche : ses réactions au pointeur, et done() qui la termine
+	// le guide de geste : seulement sur les objets uniques (curseur, calque, vanne, levier), ou sur l'objet que le joueur a lui-même choisi
+	const guide = guideGeste(root, camera, cv); W.onFrame(guide.update);
+	const pin = (D, px, py) => D.g.localToWorld(new THREE.Vector3((px/D.W - .5)*D.w, .1, (py/D.H - .5)*D.h));
+	cv.addEventListener("pointerdown", () => guide.hide());
 	const task = make => P(res => { const T = make(() => { if(input === T) input = null; res(); }); input = T; });
 
 	/* ================= l'interface : messages, note, horloge ================= */
@@ -637,7 +642,7 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 		if(o.btn) return P(r => { const b = msg.querySelector(".mo-btn"); const go = () => { btnAuto = null; play("pop"); r(); }; b.onclick = go; btnAuto = go; setTimeout(() => b.focus({ preventScroll:true }), 300); });
 	}
 	const next = (who, html, btn = "Continuer →") => say(who, html, { btn });
-	function stage(k, title, time){
+	function stage(k, title, time){ guide.hide();
 		S.step = k; ev("stage", title); input = null; btnAuto = null;
 		root.querySelectorAll(".mo-steps li").forEach(li => { const i = STEPS_UI.findIndex(s => s[0] === li.dataset.s), n = STEPS_UI.findIndex(s => s[0] === k); li.className = i < n ? "done" : i === n ? "now" : ""; });
 		S.time = Math.max(time, S.time); showClock();
@@ -681,7 +686,7 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 			up(){
 				const d = PEEL.drag; PEEL.drag = null; A.dirty = true; if(!d) return;
 				const L = LAYERS.find(l => l.k === d.k);
-				if(Math.hypot(d.dx, d.dy) < 150){ say(null, null, { hint:`Attrape la couche « ${L.n} » et <b>tire-la</b> hors du graphique.` }); return; }
+				if(Math.hypot(d.dx, d.dy) < 150){ say(null, null, { hint:`Attrape la couche « ${L.n} » et <b>tire-la</b> hors du graphique.` }); guide.show(pin(A, d.x0, d.y0), "up"); return; }
 				if(!L.peel){ err("indice : poste stable arraché", "peel"); say("yasmine", L.why, { task:"Arrache les postes volatils : ceux qui bondissent avec les cours mondiaux" }); return; }
 				PEEL.gone.add(d.k); play("good");
 				if(PEEL.gone.size < 2){ say("yasmine", d.k === "ener" ? "L'énergie : 1,8 point à elle seule, et ses prix se fixent sur les marchés mondiaux, pas ici. Il reste un poste qui bondit avec la météo et les cours." : "L'alimentation : récoltes, cours mondiaux, météo. Volatile. Il reste un poste qui suit les cours mondiaux.", { task:"Arrache encore un poste volatil" }); return; }
@@ -703,6 +708,7 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 		await lay(["D"]);
 		await next("james", "<i>Hi! Before tomorrow's vote: the new survey of professional forecasters. The average forecast for 2028 is 2.5 %. If expectations drift up, inflation will stick. That worries me.</i>", "Regarder l'enquête →");
 		say("yasmine", "James regarde la <b>moyenne</b>. Méfie-toi : une moyenne se laisse tirer par un seul extrême. Cherche la <b>médiane</b> : la prévision du milieu, autant de points au-dessous qu'au-dessus.", { task:"Slide the cursor to the median forecast, then let go" });
+		guide.show(pin(Dd, SV.x, Dd.H*.5), "side");
 		await task(done => ({
 			down(){ const p = docPt(Dd); if(!p.in) return false; SV.x = Math.max(60, Math.min(Dd.W - 60, p.x)); Dd.dirty = true; play("swipe"); return true; },
 			move(){ const p = docPt(Dd); if(!p.w) return; SV.x = Math.max(60, Math.min(Dd.W - 60, p.x)); Dd.dirty = true; },
@@ -731,6 +737,10 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 		moveTo(Cq.g, B.g.position.clone().add(off), { ry:.14, dur:.7 });
 		if(tall) fit(.2, .4 + 1.2, 5.8, 3.5 + 2.4 + .8); else fit(.75, .4 + .5, 5 + 1.5 + .8, 3.5 + 1.0 + .8);
 		say("yasmine", "18 h 30. Bernard a annoté la courbe des salaires : « +13,5 %, la spirale ! » Mais +13,5 %, <b>comparé à quoi ?</b> J'ai tiré les prix sur un calque, dans la même base 100.", { task:"Fais glisser le calque des prix pour poser son « 100 » sur celui des salaires" });
+		// le geste va d'une croix « 100 » à l'autre (deux repères accrochés aux feuilles : ils suivent le calque qui arrive)
+		const crossAt = D => { const o = new THREE.Object3D(); o.position.set((D.cross[0]/D.W - .5)*D.w, .1, (D.cross[1]/D.H - .5)*D.h); D.g.add(o); return o; };
+		const cq0 = crossAt(Cq), b0 = crossAt(B);
+		guide.show(cq0, "drag", { to:b0 });
 		const crossW = D => { const [px, py] = D.cross; return D.g.localToWorld(new THREE.Vector3((px/D.W - .5)*D.w, .1, (py/D.H - .5)*D.h)); };
 		let drag = null;
 		await task(done => ({
@@ -744,6 +754,7 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 			},
 			auto(){ Cq.g.visible = false; CQ.aligned = true; B.dirty = true; done(); }
 		}));
+		cq0.removeFromParent(); b0.removeFromParent();
 		await wait(400);
 		tile("real", "−3 %", "salaires 113,5 · prix 117");
 		score("salaires", 2, 2); learn("micro");
@@ -759,11 +770,12 @@ export function openMoniac({ formation, audio, isFav, toggleFav, onClose, onEven
 		fitFront(MX + 13, FY + 11.5, MZ + 1, 34, 24, 1.6);
 		say("yasmine", "21 h. La MONIAC de Phillips, réglée sur notre économie : l'eau, c'est l'argent. La vanne rouge, c'est le <b>taux</b> : elle freine le crédit, donc l'investissement. Bernard l'a laissée sur sa proposition, <b>3,75 %</b>.", { task:"Tourne la vanne (glisse à gauche ou à droite), puis tire le levier RUN : il faut 2 % en 2028" });
 		const hits = o => ray.intersectObject(o, true).length > 0;
-		let turn = null;
+		let turn = null, turned = false;
+		guide.show(wheelHit, "side");
 		await task(done => ({
 			down(e, p){ if(running) return false; if(hits(wheelHit)){ turn = { x:p.x, r0:rate }; play("clic"); return true; } return false; },
 			move(e){ if(!turn) return; const r = Math.max(2.5, Math.min(4.5, turn.r0 + Math.round((e.clientX - turn.x)/38)*.25)); if(r !== rate){ rate = r; drawDial(); play("clic"); } },
-			up(){ turn = null; },
+			up(){ turn = null; if(!turned && rate !== BERNARD){ turned = true; guide.show(leverHit, "tap"); } },
 			tap(){ if(running) return; if(hits(leverHit)) run(done); else if(hits(wheelHit)) say(null, null, { hint:"Pour tourner la vanne : appuie dessus et <b>glisse</b> vers la droite (plus haut) ou la gauche (plus bas)." }); },
 			auto(){ if(running) return; rate = RATE0; drawDial(); run(done); }
 		}));

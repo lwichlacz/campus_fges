@@ -5,9 +5,9 @@
      seuil de rentabilité, décision d'investissement) qui révèle le cours de la licence.
    Les chiffres sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
-import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=e370aeda6d";
-import { jpoCard } from "./jpo.js?v=e370aeda6d";
-import { palier } from "./palier.js?v=e370aeda6d";
+import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=979a7cec82";
+import { jpoCard } from "./jpo.js?v=979a7cec82";
+import { palier } from "./palier.js?v=979a7cec82";
 
 /* ---------- Économie du Comptoir (à valider par l'enseignant) ---------- */
 const ECO = { amortVelo:7, cafe:.25, lait:.20, gobelet:.10, tasse:.55, croissantAchat:.45, croissantPrix:1.2, salaire:25,

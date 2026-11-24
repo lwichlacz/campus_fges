@@ -15,10 +15,11 @@
    anglais écrit et oral, écrire pour convaincre, communication interpersonnelle et simulations d'entretien.
    Marque, cabinet, personnes, chiffres et documents sont fictifs ; écoles réelles citées comme débouchés.
    Contenu à relire par l'équipe de la prépa (docs/validation-prepa-cupge.md). */
-import { stage3d, THREE } from "./stage3d.js?v=e370aeda6d";
-import { makePerson } from "../kit.js?v=e370aeda6d";
-import { jpoCard } from "./jpo.js?v=e370aeda6d";
-import { palier } from "./palier.js?v=e370aeda6d";
+import { guideGeste } from "./rendu.js?v=979a7cec82";
+import { stage3d, THREE } from "./stage3d.js?v=979a7cec82";
+import { makePerson } from "../kit.js?v=979a7cec82";
+import { jpoCard } from "./jpo.js?v=979a7cec82";
+import { palier } from "./palier.js?v=979a7cec82";
 
 const COURSES = {
 	doc:    ["Prépa 1", "Technique du document", "Dépouiller une liasse, juger une source, ne garder que ce qui prouve : la base de toute synthèse."],
@@ -199,11 +200,11 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 	const wait = ms => P(r => { const t = setTimeout(() => { timers.delete(t); r(); }, ms); timers.add(t); });
 
 	/* ================= la scène ================= */
-	const W = stage3d(cv, { panel:note, side:"right", panelW:360, bg:"#0b1426", minD:1, maxD:500, maxPolar:1.5, minPolar:0, rotate:false, fov:38 });
+	const W = stage3d(cv, { panel:note, side:"right", panelW:360, bg:"#0b1426", minD:1, maxD:500, maxPolar:1.5, minPolar:0, rotate:false, fov:38, soin:{ env:.25 } });
 	const { scene, camera, M, G, mesh, box, cyl, canvasTex, label } = W;
 	const hemi = new THREE.HemisphereLight("#9fb6e0", "#1b2236", .75); scene.add(hemi);
 	const moon = new THREE.DirectionalLight("#bcd0ff", .7); moon.position.set(-14, 26, -10); moon.castShadow = true;
-	moon.shadow.mapSize.set(1024, 1024); Object.assign(moon.shadow.camera, { left:-20, right:20, top:20, bottom:-20, near:1, far:80 }); scene.add(moon);
+	moon.shadow.mapSize.set(1024, 1024); Object.assign(moon.shadow.camera, { left:-20, right:20, top:20, bottom:-20, near:1, far:80 }); moon.shadow.bias = -.0004; moon.shadow.normalBias = .03; moon.shadow.radius = 4; scene.add(moon);
 	const lampLight = new THREE.PointLight("#ffd08a", 90, 40, 1.2); lampLight.position.set(11, 7, -4); scene.add(lampLight);
 
 	/* --- le bureau du cabinet, la nuit : moquette, mur, grande fenêtre sur Lille, horloge, bureau, lampe --- */
@@ -547,8 +548,12 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 	function hitDoc(list){ const h = ray.intersectObjects(list.filter(D => D.g.visible).map(D => D.face), false)[0]; if(!h) return null; const D = h.object.userData.doc; return { D, p:{ x:h.uv.x*D.W, y:(1 - h.uv.y)*D.H }, w:h.point }; }
 	// la zone touchée : on teste chaque ligne de la zone (une phrase sur deux lignes ne couvre pas tout son rectangle), la plus petite l'emporte
 	function zoneAt(D, p, keys){ let best = null, ba = Infinity; for(const [z, rs] of Object.entries(D.zl)){ if(keys && !keys.includes(z)) continue; for(const r of rs) if(p.x >= r[0] - 12 && p.x <= r[2] + 12 && p.y >= r[1] - 12 && p.y <= r[3] + 12){ const a = (r[2] - r[0])*(r[3] - r[1]); if(a < ba){ ba = a; best = z; } } } return best; }
+	// le guide de geste : il mime le geste (surligner, glisser vers le bac), jamais la pièce ou la phrase à choisir
+	const guide = guideGeste(root, camera, cv); W.onFrame(guide.update);
+	const pin = (D, px, py) => D.g.localToWorld(new THREE.Vector3((px/D.W - .5)*D.w, .1, (py/D.H - .5)*D.h));
 	let ptr = null;
 	cv.addEventListener("pointerdown", e => {
+		guide.hide();
 		if(!input || e.button > 0) return;
 		setRay(e); ptr = { x:e.clientX, y:e.clientY };
 		if(input.type === "hl"){ const h = hitDoc([input.D]); if(h){ ptr.hl = [h.p]; input.D.live = ptr.hl; marker.visible = true; marker.position.copy(h.w); W.controls.enabled = false; cv.setPointerCapture(e.pointerId); } }
@@ -572,7 +577,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 			let best = null, bc = 0;
 			for(const z of input.keys){ const r = D.zones[z]; if(!r) continue; const inn = pts.filter(p => p.y >= r[1] - 26 && p.y <= r[3] + 26 && p.x >= r[0] - 30 && p.x <= r[2] + 30); if(inn.length < 2) continue; const c = (Math.min(r[2], Math.max(...inn.map(p => p.x))) - Math.max(r[0], Math.min(...inn.map(p => p.x))))/Math.max(1, Math.min(r[2] - r[0], D.W*.55)); if(c > bc){ bc = c; best = z; } }
 			if(best && bc >= .3) input.fn(best);
-			else if(span < 30){ const z = zoneAt(D, pts[0], input.keys); if(z && input.tapped === z) input.fn(z); else { input.tapped = z; say(null, null, { hint:"Appuie et <b>glisse</b> le surligneur tout le long de la phrase." }); } }
+			else if(span < 30){ const z = zoneAt(D, pts[0], input.keys); if(z && input.tapped === z) input.fn(z); else { input.tapped = z; say(null, null, { hint:"Appuie et <b>glisse</b> le surligneur tout le long de la phrase." }); guide.show(pin(D, pts[0].x, pts[0].y), "side"); } }
 		}
 		else if(ptr.drag){ const { it, from } = ptr.drag; input.drop(it, it.D.g.position.clone(), from); }
 		else if(input.type === "tap" && moved < 12){ setRay(e); const h = hitDoc(input.docs); if(h) input.fn(h.D, zoneAt(h.D, h.p, input.keys && input.keys[h.D.id]), h.p); }
@@ -602,7 +607,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 		if(o.btn) return P(r => { const b = msg.querySelector(".ny-btn"); const go = () => { btnAuto = null; play("pop"); r(); }; b.onclick = go; btnAuto = go; setTimeout(() => b.focus({ preventScroll:true }), 300); });
 	}
 	const next = (who, html, btn = "Continuer →") => say(who, html, { btn });
-	function stage(k, title, time){
+	function stage(k, title, time){ guide.hide();
 		S.step = k; ev("stage", title); input = null; btnAuto = null; clearExtra();
 		root.querySelectorAll(".ny-steps li").forEach(li => { const i = STEPS_UI.findIndex(s => s[0] === li.dataset.s), n = STEPS_UI.findIndex(s => s[0] === k); li.className = i < n ? "done" : i === n ? "now" : ""; });
 		S.time = Math.max(time, S.time); showClock();
@@ -638,6 +643,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 		say("helene", `<b>21 h 47.</b> Claire Vandamme, PDG de <b>Pavé</b>, les baskets lilloises, vient d'écrire : « On perd nos clients. Il me faut une recommandation <b>demain, 8 h</b>. » On commence par la voix des clients.`, { task:"Surligne les 3 avis qui expliquent pourquoi les clients partent" });
 		await wait(1300);
 		await lay(["A"]);
+		guide.show(pin(A, A.W*.5, A.H*.06), "side");
 		const ok = { a2:["Livraison : commandées le 2, reçues le 11", "Pièce A"], a3:["Le paiement plante sur téléphone", "Pièce A"], a5:["Prix : 95 € l'an dernier, 119 € aujourd'hui", "Pièce A"] };
 		const found = new Set();
 		await hlTask(A, z => {
@@ -733,6 +739,7 @@ export function openJourJ({ formation, audio, isFav, toggleFav, onClose, onEvent
 		}, { F:["p87", "n212"] }, () => input.fn(F, "n212"));
 		mark(F, { type:"stamp", text:"ÉCARTÉE" }); play("stamp");
 		say("helene", "212 abonnés, déjà fans de la marque : ils ne disent rien des clients qui partent. <b>Échantillon biaisé.</b>", { task:"Fais glisser la capture dans le bac « Écartées »" });
+		guide.show(F.g, "drag", { to:X.g });
 		await dragTask([{ D:F }], (it, pos, from) => {
 			if(pos.distanceTo(X.g.position.clone().setY(1)) < 3.4){ moveTo(F.g, X.g.position.clone().setY(.4), { ry:.15, dur:.35, lift:.3 }); tween(.35, k => F.g.scale.setScalar(1 - .32*k)); play("pop"); onDesk = onDesk.filter(d => d !== F); return true; }
 			moveTo(F.g, from, { dur:.3, lift:.3 }); return false;
