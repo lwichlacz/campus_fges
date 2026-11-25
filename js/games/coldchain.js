@@ -5,7 +5,7 @@
    La déléguée à la protection des données bloque le rangement tant qu'une bande est mal traitée ;
    quand tout est juste, le tube reçoit son code-barres pseudonyme et part au congélateur dans un nuage de givre. */
 import * as THREE from "three";
-import { studio } from "./studio.js?v=22644ce8bd";
+import { studio } from "./studio.js?v=af8698b034";
 
 // la valeur « repliée » (généralisée) de chaque champ
 const FOLD = { name:"A. M.", ssn:"1 98 •• •• ••• …", mail:"a•••@…", dob:"1998 · aged 27", zip:"59 · Nord", sex:"M", sym:"Fatigue …", fer:"> 1,000 µg/L", ts:"> 45 %", code:"P-04••" };

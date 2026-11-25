@@ -2,20 +2,20 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=22644ce8bd";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain, GRADE, gradeAll, bakeGroundAO, groundAO, crownGeo, glassLook } from "./render.js?v=22644ce8bd";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=22644ce8bd";
-import { MAP } from "./vauban.js?v=22644ce8bd";
-import { buildLandmarks } from "./landmarks.js?v=22644ce8bd";
-import { buildMonuments } from "./monuments.js?v=22644ce8bd";
-import { buildCity, pointInPoly, polyDist, FACADE } from "./city.js?v=22644ce8bd";
-import { CIT } from "./citadelle_osm.js?v=22644ce8bd";
-import { createTraffic } from "./traffic.js?v=22644ce8bd";
-import { buildCitadel, porteDauphine, handExclude, champDeMars } from "./citadelle.js?v=22644ce8bd";
-import { buildStation } from "./station.js?v=22644ce8bd";
-import { createRame } from "./rame.js?v=22644ce8bd";
-import { Audio } from "./audio.js?v=22644ce8bd";
-import { DETAILS } from "./details.js?v=22644ce8bd";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=af8698b034";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain, GRADE, gradeAll, bakeGroundAO, groundAO, crownGeo, glassLook } from "./render.js?v=af8698b034";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=af8698b034";
+import { MAP } from "./vauban.js?v=af8698b034";
+import { buildLandmarks } from "./landmarks.js?v=af8698b034";
+import { buildMonuments } from "./monuments.js?v=af8698b034";
+import { buildCity, pointInPoly, polyDist, FACADE } from "./city.js?v=af8698b034";
+import { CIT } from "./citadelle_osm.js?v=af8698b034";
+import { createTraffic } from "./traffic.js?v=af8698b034";
+import { buildCitadel, porteDauphine, handExclude, champDeMars } from "./citadelle.js?v=af8698b034";
+import { buildStation } from "./station.js?v=af8698b034";
+import { createRame } from "./rame.js?v=af8698b034";
+import { Audio } from "./audio.js?v=af8698b034";
+import { DETAILS } from "./details.js?v=af8698b034";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -1498,7 +1498,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=22644ce8bd").then(({ FAR }) => {
+	import("./vauban_far.js?v=af8698b034").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -2040,27 +2040,27 @@ setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=22644ce8bd").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=22644ce8bd").then(m => m.createChapelle), eura:() => import("./eura.js?v=22644ce8bd").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=22644ce8bd").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=22644ce8bd").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=af8698b034").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=af8698b034").then(m => m.createChapelle), eura:() => import("./eura.js?v=af8698b034").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=af8698b034").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=af8698b034").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=22644ce8bd").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=22644ce8bd").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=22644ce8bd").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=22644ce8bd").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=22644ce8bd").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=22644ce8bd").then(m => m.openBiodata),
-	crise:() => import("./games/crise.js?v=22644ce8bd").then(m => m.openCrise),
-	patrimoine:() => import("./games/patrimoine.js?v=22644ce8bd").then(m => m.openPatrimoine),
-	affaires:() => import("./games/affaires.js?v=22644ce8bd").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=22644ce8bd").then(m => m.openBoutique),
-	ruee:() => import("./games/ruee.js?v=22644ce8bd").then(m => m.openRuee),
-	tp:() => import("./games/tp.js?v=22644ce8bd").then(m => m.openTP),
-	clinique:() => import("./games/clinique.js?v=22644ce8bd").then(m => m.openClinique),
-	jourj:() => import("./games/jourj.js?v=22644ce8bd").then(m => m.openJourJ),
-	moniac:() => import("./games/moniac.js?v=22644ce8bd").then(m => m.openMoniac),
-	cargo:() => import("./games/cargo.js?v=22644ce8bd").then(m => m.openCargo),
-	marquelle:() => import("./games/marquelle.js?v=22644ce8bd").then(m => m.openMarquelle),
-	guichet:() => import("./games/guichet.js?v=22644ce8bd").then(m => m.openGuichet),
-	telephone:() => import("./games/dossier.js?v=22644ce8bd").then(m => m.openDossier)
+	comptoir:() => import("./games/comptoir.js?v=af8698b034").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=af8698b034").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=af8698b034").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=af8698b034").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=af8698b034").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=af8698b034").then(m => m.openBiodata),
+	crise:() => import("./games/crise.js?v=af8698b034").then(m => m.openCrise),
+	patrimoine:() => import("./games/patrimoine.js?v=af8698b034").then(m => m.openPatrimoine),
+	affaires:() => import("./games/affaires.js?v=af8698b034").then(m => m.openAffaires),
+	boutique:() => import("./games/boutique.js?v=af8698b034").then(m => m.openBoutique),
+	ruee:() => import("./games/ruee.js?v=af8698b034").then(m => m.openRuee),
+	tp:() => import("./games/tp.js?v=af8698b034").then(m => m.openTP),
+	clinique:() => import("./games/clinique.js?v=af8698b034").then(m => m.openClinique),
+	jourj:() => import("./games/jourj.js?v=af8698b034").then(m => m.openJourJ),
+	moniac:() => import("./games/moniac.js?v=af8698b034").then(m => m.openMoniac),
+	cargo:() => import("./games/cargo.js?v=af8698b034").then(m => m.openCargo),
+	marquelle:() => import("./games/marquelle.js?v=af8698b034").then(m => m.openMarquelle),
+	guichet:() => import("./games/guichet.js?v=af8698b034").then(m => m.openGuichet),
+	telephone:() => import("./games/dossier.js?v=af8698b034").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -3209,25 +3209,35 @@ $("leadForm").querySelector("form").addEventListener("submit", async e => {
 	};
 	btn.disabled = true; btn.textContent = "Envoi…";
 	try {
-		const r = LEAD_DEMO ? { ok:true } : await fetch(LEAD_API, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(body) });
-		const res = LEAD_DEMO ? { ok:true, dryRun:true } : await r.json().catch(() => ({}));
-		if(!r.ok || !res.ok) throw new Error(res.error || "Envoi impossible pour le moment.");
-		store.set("leadSent", true);
-		countEvent(`formulaire-envoye/${leadFrom}`, "Demande de plaquette envoyée");
-		Audio.play("win");
+		// le relais a-t-il répondu ? (null : injoignable ou bloqué en route, par exemple par un pare-feu anti-robots)
+		let r = null, res = {};
+		if(LEAD_DEMO){ r = { ok:true }; res = { ok:true, dryRun:true }; }
+		else {
+			try { r = await fetch(LEAD_API, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(body) }); } catch(x){ r = null; }
+			if(r) res = await r.json().catch(() => null) || {};
+		}
+		const answered = r && res && (res.ok || res.error);          // une vraie réponse du relais (JSON), pas une page de vérification
+		if(answered && (!r.ok || !res.ok)) throw new Error(res.error || "Envoi impossible pour le moment.");          // erreur de saisie : on la montre, le visiteur corrige
+		const sent = !!answered;
+		if(sent){ store.set("leadSent", true); countEvent(`formulaire-envoye/${leadFrom}`, "Demande de plaquette envoyée"); Audio.play("win"); }
+		else countEvent(`formulaire-echec/${leadFrom}`, "Demande de plaquette non transmise (relais injoignable)");
 		// plaquette PDF quand on l'a (choisie dans WordPress, sinon dans data.js), sinon le catalogue de toutes les plaquettes
 		const PLAQ = Object.assign({}, PLAQUETTES, res.plaquettes || {});
 		const direct = chosen.filter(f => PLAQ[f.id]);
-		$("leadDoneP").textContent = (direct.length
-			? `Voici ${direct.length > 1 ? "tes plaquettes" : "ta plaquette"}. L'équipe de la FGES pourra aussi te recontacter pour répondre à tes questions.`
-			: "Toutes nos plaquettes sont à feuilleter ci-dessous. L'équipe de la FGES pourra aussi te recontacter pour répondre à tes questions.") + (res.dryRun ? " (Mode essai : rien n'a été transmis au CRM.)" : "");
+		const here = direct.length ? `Voici ${direct.length > 1 ? "tes plaquettes" : "ta plaquette"}.` : "Toutes nos plaquettes sont à feuilleter ci-dessous.";
+		$("leadDoneP").textContent = sent
+			? `${here} L'équipe de la FGES pourra aussi te recontacter pour répondre à tes questions.` + (res.dryRun ? " (Mode essai : rien n'a été transmis au CRM.)" : "")
+			// repli : la demande n'est pas partie, mais le visiteur ne repart pas les mains vides
+			: `Ta demande n'a pas pu être transmise pour l'instant. ${here} Pour être recontacté·e, ${chosen.length ? `laisse tes coordonnées sur la page de ${chosen.length > 1 ? "chaque formation" : "la formation"} (lien ci-dessous)` : "écris-nous depuis fges.fr"} ou passe nous voir à la journée portes ouvertes.`;
 		const missing = chosen.length === 0 || chosen.some(f => !PLAQ[f.id]);
+		const rdv = (RENDEZ_VOUS || []).find(x => new Date(x.date + "T23:59") >= new Date());
 		$("leadLinks").innerHTML =
 			direct.map(f => `<a class="dl" href="${PLAQ[f.id]}" target="_blank" rel="noopener">📄 Plaquette · ${f.name}<span>↓</span></a>`).join("") +
 			(missing ? `<a class="dl" href="${CATALOGUE_PLAQUETTES}" target="_blank" rel="noopener">📚 Feuilleter nos plaquettes<span>↗</span></a>` : "") +
-			chosen.map(f => `<a href="${f.url}" target="_blank" rel="noopener">${f.name} sur fges.fr<span>↗</span></a>`).join("");
+			chosen.map(f => `<a href="${f.url}" target="_blank" rel="noopener">${f.name} sur fges.fr<span>↗</span></a>`).join("") +
+			(!sent && rdv ? `<a href="${rdv.url}" target="_blank" rel="noopener">Journée portes ouvertes · ${new Date(rdv.date).toLocaleDateString("fr-FR", { day:"numeric", month:"long" })}<span>↗</span></a>` : "");
 		$("leadForm").hidden = true; $("leadDone").hidden = false;
-		form.reset();
+		form.reset();          // toujours : sur la borne d'un stand, le visiteur suivant ne doit pas voir les coordonnées du précédent
 	} catch(x){
 		fail(x.message || "Envoi impossible pour le moment. Réessaie dans un instant.");
 	} finally { btn.disabled = false; btn.textContent = "Recevoir les plaquettes"; }

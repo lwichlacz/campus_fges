@@ -9,11 +9,11 @@
    on agrafe une page du carnet à chaque cause retenue et à chacune des deux actions choisies.
    Personnage, rucher et chiffres sont fictifs. Contenus à relire par un enseignant de la licence. */
 import * as THREE from "three";
-import { studio } from "./studio.js?v=22644ce8bd";
+import { studio } from "./studio.js?v=af8698b034";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { std, mesh, box, cyl, mulberry32 } from "../kit.js?v=22644ce8bd";
-import { jpoCard } from "./jpo.js?v=22644ce8bd";
-import { palier } from "./palier.js?v=22644ce8bd";
+import { std, mesh, box, cyl, mulberry32 } from "../kit.js?v=af8698b034";
+import { jpoCard } from "./jpo.js?v=af8698b034";
+import { palier } from "./palier.js?v=af8698b034";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : animations 6 fois plus rapides (tests)
 

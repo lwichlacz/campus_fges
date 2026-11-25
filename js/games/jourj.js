@@ -15,11 +15,11 @@
    anglais écrit et oral, écrire pour convaincre, communication interpersonnelle et simulations d'entretien.
    Marque, cabinet, personnes, chiffres et documents sont fictifs ; écoles réelles citées comme débouchés.
    Contenu à relire par l'équipe de la prépa (docs/validation-prepa-cupge.md). */
-import { guideGeste, modele, meuble, grain } from "./rendu.js?v=22644ce8bd";
-import { stage3d, THREE } from "./stage3d.js?v=22644ce8bd";
-import { makePerson } from "../kit.js?v=22644ce8bd";
-import { jpoCard } from "./jpo.js?v=22644ce8bd";
-import { palier } from "./palier.js?v=22644ce8bd";
+import { guideGeste, modele, meuble, grain } from "./rendu.js?v=af8698b034";
+import { stage3d, THREE } from "./stage3d.js?v=af8698b034";
+import { makePerson } from "../kit.js?v=af8698b034";
+import { jpoCard } from "./jpo.js?v=af8698b034";
+import { palier } from "./palier.js?v=af8698b034";
 
 const COURSES = {
 	doc:    ["Prépa 1", "Technique du document", "Dépouiller une liasse, juger une source, ne garder que ce qui prouve : la base de toute synthèse."],

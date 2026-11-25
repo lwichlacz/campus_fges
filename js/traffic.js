@@ -2,7 +2,7 @@
    carrefours, allument leurs phares la nuit ; des cyclistes longent le trottoir. Tout est instancié (quelques appels de
    dessin) ; le nombre suit la qualité graphique. Ni ombre portée (la carte d'ombres est figée), mais une ombre douce au sol. */
 import * as THREE from "three";
-import { std } from "./kit.js?v=22644ce8bd";
+import { std } from "./kit.js?v=af8698b034";
 
 const nk = (x, z) => Math.round(x*2) + "," + Math.round(z*2);
 

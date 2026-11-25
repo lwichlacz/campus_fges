@@ -10,12 +10,12 @@
    La fiche est une feuille de travail d'auditeur sur son porte-bloc ; la responsable laisse des notes de revue.
    Entreprise, personnes, sociétés et documents sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
-import { studio } from "./studio.js?v=22644ce8bd";
+import { studio } from "./studio.js?v=af8698b034";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { soigner, modele, meuble, grain } from "./rendu.js?v=22644ce8bd";
-import { mountTable, MOBILE } from "./table.js?v=22644ce8bd";
-import { jpoCard } from "./jpo.js?v=22644ce8bd";
-import { palier } from "./palier.js?v=22644ce8bd";
+import { soigner, modele, meuble, grain } from "./rendu.js?v=af8698b034";
+import { mountTable, MOBILE } from "./table.js?v=af8698b034";
+import { jpoCard } from "./jpo.js?v=af8698b034";
+import { palier } from "./palier.js?v=af8698b034";
 
 const COURSES = {
 	compta:   ["L1", "Comptabilité financière", "Classer chaque opération : une charge, un produit, ou un investissement qui s'amortit sur plusieurs années."],
