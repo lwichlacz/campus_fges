@@ -460,6 +460,7 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 	.grab:after{content:"";position:absolute;left:50%;top:9px;width:42px;height:5px;border-radius:3px;background:#c4c6c9;transform:translateX(-50%)}
 	/* barre du haut : le logo et un seul bouton de réglages */
 	#btnProfile,#btnTheme,#btnMusic,#btnHome{display:none}
+	body.inside #btnStreet{display:none}
 	body.inside #btnHome{display:inline-flex}     /* dans un intérieur : le bouton pour ressortir reste là */
 	#btnMore{display:inline-flex;justify-content:center;width:46px;min-height:46px;padding:0;font-size:22px;font-weight:900;letter-spacing:1px}
 	.more-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 4px}
@@ -501,16 +502,16 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 <script type="importmap">
 {"imports":{"three":"./vendor/three-0.165.0/build/three.module.min.js","three/addons/":"./vendor/three-0.165.0/examples/jsm/"}}
 </script>
-<link rel="modulepreload" href="js/main.js?v=af8a8a599e">
-<link rel="modulepreload" href="js/kit.js?v=af8a8a599e">
-<link rel="modulepreload" href="js/data.js?v=af8a8a599e">
-<link rel="modulepreload" href="js/details.js?v=af8a8a599e">
-<link rel="modulepreload" href="js/vauban.js?v=af8a8a599e">
-<link rel="modulepreload" href="js/city.js?v=af8a8a599e">
-<link rel="modulepreload" href="js/render.js?v=af8a8a599e">
-<link rel="modulepreload" href="js/landmarks.js?v=af8a8a599e">
-<link rel="modulepreload" href="js/monuments.js?v=af8a8a599e">
-<link rel="modulepreload" href="js/audio.js?v=af8a8a599e">
+<link rel="modulepreload" href="js/main.js?v=22644ce8bd">
+<link rel="modulepreload" href="js/kit.js?v=22644ce8bd">
+<link rel="modulepreload" href="js/data.js?v=22644ce8bd">
+<link rel="modulepreload" href="js/details.js?v=22644ce8bd">
+<link rel="modulepreload" href="js/vauban.js?v=22644ce8bd">
+<link rel="modulepreload" href="js/city.js?v=22644ce8bd">
+<link rel="modulepreload" href="js/render.js?v=22644ce8bd">
+<link rel="modulepreload" href="js/landmarks.js?v=22644ce8bd">
+<link rel="modulepreload" href="js/monuments.js?v=22644ce8bd">
+<link rel="modulepreload" href="js/audio.js?v=22644ce8bd">
 <link rel="modulepreload" href="vendor/three-0.165.0/build/three.module.min.js">
 <link rel="modulepreload" href="vendor/three-0.165.0/examples/jsm/controls/OrbitControls.js">
 </head>
@@ -570,6 +571,7 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 		<button class="chip" id="btnProfile" title="Changer de profil"></button>
 		<button class="chip" id="btnTheme" title="Ambiance" aria-haspopup="true"></button>
 		<button class="chip icon" id="btnMusic" title="Musique et sons" aria-label="Musique et sons">🔇</button>
+		<button class="chip icon" id="btnStreet" title="Vue piéton : au niveau de la rue" aria-label="Vue piéton" aria-pressed="false">🚶</button>
 		<button class="chip icon" id="btnHome" title="Vue d'ensemble" aria-label="Vue d'ensemble">⌂</button>
 		<button class="chip icon" id="btnMore" aria-label="Réglages : profil, musique, ambiance" aria-haspopup="true">⋯</button>
 	</div>
@@ -703,7 +705,7 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 	<div class="pb" id="pbody"></div>
 </aside>
 
-<script type="module" src="js/main.js?v=af8a8a599e"></script>
+<script type="module" src="js/main.js?v=22644ce8bd"></script>
 <!-- mesure d audience anonyme, sans cookie (GoatCounter) -->
 <script data-goatcounter="https://lucas-wichlacz.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <!-- cache hors ligne (sw.js) : la borne de la JPO survit à une coupure du Wi-Fi ; installé après le chargement, sans retarder le campus.

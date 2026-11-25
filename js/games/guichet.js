@@ -8,11 +8,11 @@
    comparer des pièces, compter des jours ouvrés, régler le simulateur, couper un budget, maintenir « Stop ».
    Les contenus (répliques, chiffres, indices, cours) sont dans guichet-data.js. */
 import * as THREE from "three";
-import { studio } from "./studio.js?v=af8a8a599e";
-import { makePerson, std, box, cyl } from "../kit.js?v=af8a8a599e";
-import { jpoCard } from "./jpo.js?v=af8a8a599e";
-import { palier } from "./palier.js?v=af8a8a599e";
-import { COURSES, CLIENTS, NOTE, PINS, ALERTS, SUSPECTS, CULPRIT, IMMO, immoCalc, immoBest, euro } from "./guichet-data.js?v=af8a8a599e";
+import { studio } from "./studio.js?v=22644ce8bd";
+import { makePerson, std, box, cyl } from "../kit.js?v=22644ce8bd";
+import { jpoCard } from "./jpo.js?v=22644ce8bd";
+import { palier } from "./palier.js?v=22644ce8bd";
+import { COURSES, CLIENTS, NOTE, PINS, ALERTS, SUSPECTS, CULPRIT, IMMO, immoCalc, immoBest, euro } from "./guichet-data.js?v=22644ce8bd";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];

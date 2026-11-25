@@ -10,7 +10,7 @@
      fermé par l'anneau des bâtiments ; la chapelle, la poudrière de Turenne et le corps de garde faits main.
    Rien n'est instancié ici : bakeStatic (js/render.js) fusionne tout par matériau. */
 import * as THREE from "three";
-import { std } from "./kit.js?v=af8a8a599e";
+import { std } from "./kit.js?v=22644ce8bd";
 
 const P2 = f => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; };
 function pointIn(x, z, p){ let ins = false; for(let i=0, j=p.length-1; i<p.length; j=i++){ const [xi,zi] = p[i], [xj,zj] = p[j]; if(((zi > z) !== (zj > z)) && x < (xj-xi)*(z-zi)/(zj-zi) + xi) ins = !ins; } return ins; }

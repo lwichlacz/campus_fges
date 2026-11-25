@@ -19,7 +19,7 @@ export async function calage(zone = "vauban", { taille = 1400, zoom = null, rece
 	let [x0, x1, z0, z1] = zoom || [Math.min(A[0], B[0], Cc[0], D[0]), Math.max(A[0], B[0], Cc[0], D[0]), Math.min(A[1], B[1], Cc[1], D[1]), Math.max(A[1], B[1], Cc[1], D[1])];
 	const s = taille/Math.max(x1 - x0, z1 - z0), W = Math.round((x1 - x0)*s), H = Math.round((z1 - z0)*s);
 	// vue de dessus orthographique : x vers la droite, z vers le bas de l'image
-	const cam = new T.OrthographicCamera(x0, x1, -z0, -z1, 1, 900);
+	const cam = new T.OrthographicCamera(x0, x1, -z0, -z1, 480, 900);          // plan proche à 120 au-dessus du sol : ni nuages ni oiseaux
 	cam.position.set(0, 600, 0); cam.up.set(0, 0, -1); cam.lookAt(0, 0, 0); cam.updateMatrixWorld(true);
 	const rt = new T.WebGLRenderTarget(W, H, { samples:4 });
 	const fog = scene.fog; scene.fog = null;

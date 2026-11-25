@@ -2,19 +2,20 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=af8a8a599e";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain, GRADE, gradeAll, bakeGroundAO, groundAO, crownGeo } from "./render.js?v=af8a8a599e";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=af8a8a599e";
-import { MAP } from "./vauban.js?v=af8a8a599e";
-import { buildLandmarks } from "./landmarks.js?v=af8a8a599e";
-import { buildMonuments } from "./monuments.js?v=af8a8a599e";
-import { buildCity, pointInPoly, polyDist, FACADE } from "./city.js?v=af8a8a599e";
-import { CIT } from "./citadelle_osm.js?v=af8a8a599e";
-import { buildCitadel, porteDauphine, handExclude, champDeMars } from "./citadelle.js?v=af8a8a599e";
-import { buildStation } from "./station.js?v=af8a8a599e";
-import { createRame } from "./rame.js?v=af8a8a599e";
-import { Audio } from "./audio.js?v=af8a8a599e";
-import { DETAILS } from "./details.js?v=af8a8a599e";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=22644ce8bd";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain, GRADE, gradeAll, bakeGroundAO, groundAO, crownGeo, glassLook } from "./render.js?v=22644ce8bd";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=22644ce8bd";
+import { MAP } from "./vauban.js?v=22644ce8bd";
+import { buildLandmarks } from "./landmarks.js?v=22644ce8bd";
+import { buildMonuments } from "./monuments.js?v=22644ce8bd";
+import { buildCity, pointInPoly, polyDist, FACADE } from "./city.js?v=22644ce8bd";
+import { CIT } from "./citadelle_osm.js?v=22644ce8bd";
+import { createTraffic } from "./traffic.js?v=22644ce8bd";
+import { buildCitadel, porteDauphine, handExclude, champDeMars } from "./citadelle.js?v=22644ce8bd";
+import { buildStation } from "./station.js?v=22644ce8bd";
+import { createRame } from "./rame.js?v=22644ce8bd";
+import { Audio } from "./audio.js?v=22644ce8bd";
+import { DETAILS } from "./details.js?v=22644ce8bd";
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -86,6 +87,7 @@ const WB = windowBatch(.55);
 const win = WB.win;
 const glassLit = std("#2f3c54", { roughness:.3, metalness:.15, flatShading:false, emissive:"#ffb25e", emissiveIntensity:0 });
 const glassDark = std("#2f3c54", { roughness:.3, metalness:.15, flatShading:false });
+glassLook(glassLit); glassLook(glassDark);          // vitres : reflet du ciel, rideaux (js/render.js)
 const frameMat = std("#efe3cf");
 const slateMats = [];
 function mats(brick, stone="#e8d9bf"){
@@ -197,9 +199,11 @@ const lawnMat = city.ground.lawn, waterMat = city.ground.water;
 // ombres de nuages sur le sol, les rues, les toits et les façades
 for(const m of [groundMat, lawnMat, city.ground.road, city.ground.ped, city.ground.walk, ...city.roofs, ...city.flats, ...city.walls]) if(m) cloudShade(m);
 const rain = createRain(scene);
+const traffic = createTraffic(scene, MAP);          // voitures et cyclistes (js/traffic.js)
 // rues mouillées : chaussée et trottoirs plus sombres et brillants sous la pluie
 const wetBase = [city.ground.road, city.ground.ped].map(m => ({ m, c:m.color.clone(), r:m.roughness }));
 function setWet(on){
+	try { if(poolWet !== on){ poolWet = on; placePools(); } } catch(e){}          // flaques de lumière (déclarées plus bas : ignoré pendant le démarrage)
 	for(const { m, c, r } of wetBase){ m.color.copy(c).multiplyScalar(on ? .7 : 1); m.roughness = on ? .26 : r; m.metalness = on ? .15 : 0; }
 	const w = city.ground.walk; w.color.multiplyScalar(on ? .74 : 1); w.roughness = on ? .32 : .92; w.metalness = on ? .1 : 0;
 	if(on) solU.uPaved.value.multiplyScalar(.74);
@@ -1494,7 +1498,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=af8a8a599e").then(({ FAR }) => {
+	import("./vauban_far.js?v=22644ce8bd").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -1540,6 +1544,21 @@ const glowPos = new Float32Array(lampSpots.length*3);
 const glowGeo = new THREE.BufferGeometry(); glowGeo.setAttribute("position", new THREE.BufferAttribute(glowPos, 3));
 const glowPts = new THREE.Points(glowGeo, new THREE.PointsMaterial({ map:glowTex, size:4.2, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, sizeAttenuation:true }));
 glowPts.visible = false; scene.add(glowPts);
+/* la nuit, une flaque de lumière chaude au sol sous chaque réverbère ; étirée et plus vive sur la chaussée mouillée (reflet) */
+const poolTex = (() => {
+	const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d");
+	const g = x.createRadialGradient(64,64,0,64,64,64); g.addColorStop(0,"rgba(255,206,140,.95)"); g.addColorStop(.45,"rgba(255,186,110,.4)"); g.addColorStop(1,"rgba(255,170,90,0)");
+	x.fillStyle = g; x.fillRect(0,0,128,128); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
+const poolMat = new THREE.MeshBasicMaterial({ map:poolTex, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending, toneMapped:false, polygonOffset:true, polygonOffsetFactor:-6, polygonOffsetUnits:-12 });
+const poolIM = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI/2), poolMat, Math.max(1, lampSpots.length));
+let poolWet = false;
+function placePools(){
+	const d = new THREE.Object3D();
+	lampSpots.forEach(([x, z], i) => { d.position.set(x, .12, z); const k = poolWet ? 7.4 : 6.2; d.scale.set(k, 1, k); d.updateMatrix(); poolIM.setMatrixAt(i, d.matrix); });
+	poolIM.count = lampSpots.length; poolIM.instanceMatrix.needsUpdate = true;
+}
+placePools(); poolIM.renderOrder = 4; poolIM.visible = false; scene.add(poolIM);
 
 /* =====================================================================
    Étudiants sur les trottoirs (réseau des rues réelles)
@@ -1921,6 +1940,7 @@ function showLight(){
 	glassLit.emissiveIntensity = k > 0 ? 1.7 : 0;          // fenêtre par fenêtre : voir windowsGate
 	lampMat.emissiveIntensity = 2.2*lamp;
 	glowPts.visible = lamp > .01; glowPts.material.opacity = lamp;
+	poolIM.visible = lamp > .01; poolMat.opacity = lamp*(poolWet ? .75 : .55);
 	faliseGlass.emissiveIntensity = .9*k;
 	if(rameauGlass) rameauGlass.forEach(m => m.emissiveIntensity = .8*k);
 	if(buGlass) buGlass.forEach(m => m.emissiveIntensity = .7*k);
@@ -1928,7 +1948,7 @@ function showLight(){
 	atriumRoof.emissiveIntensity = .55*k;
 	atriumGlow.emissiveIntensity = .4 + 1.6*k;
 	wenovGlass.emissiveIntensity = .28*k;
-	city.setNight(k); landmarks.setNight(k); monuments.setNight(k);
+	city.setNight(k); landmarks.setNight(k); monuments.setNight(k); traffic.setNight(k);
 	// paillettes sur l'eau : la lune la nuit (argentée), le soleil le jour, orangé à l'heure dorée
 	GLINT.dir.value.copy(st.sunPos).normalize();
 	FACADE.uSunW.value.copy(st.sunPos).normalize();
@@ -2020,27 +2040,27 @@ setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=af8a8a599e").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=af8a8a599e").then(m => m.createChapelle), eura:() => import("./eura.js?v=af8a8a599e").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=af8a8a599e").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=af8a8a599e").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=22644ce8bd").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=22644ce8bd").then(m => m.createChapelle), eura:() => import("./eura.js?v=22644ce8bd").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=22644ce8bd").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=22644ce8bd").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=af8a8a599e").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=af8a8a599e").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=af8a8a599e").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=af8a8a599e").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=af8a8a599e").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=af8a8a599e").then(m => m.openBiodata),
-	crise:() => import("./games/crise.js?v=af8a8a599e").then(m => m.openCrise),
-	patrimoine:() => import("./games/patrimoine.js?v=af8a8a599e").then(m => m.openPatrimoine),
-	affaires:() => import("./games/affaires.js?v=af8a8a599e").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=af8a8a599e").then(m => m.openBoutique),
-	ruee:() => import("./games/ruee.js?v=af8a8a599e").then(m => m.openRuee),
-	tp:() => import("./games/tp.js?v=af8a8a599e").then(m => m.openTP),
-	clinique:() => import("./games/clinique.js?v=af8a8a599e").then(m => m.openClinique),
-	jourj:() => import("./games/jourj.js?v=af8a8a599e").then(m => m.openJourJ),
-	moniac:() => import("./games/moniac.js?v=af8a8a599e").then(m => m.openMoniac),
-	cargo:() => import("./games/cargo.js?v=af8a8a599e").then(m => m.openCargo),
-	marquelle:() => import("./games/marquelle.js?v=af8a8a599e").then(m => m.openMarquelle),
-	guichet:() => import("./games/guichet.js?v=af8a8a599e").then(m => m.openGuichet),
-	telephone:() => import("./games/dossier.js?v=af8a8a599e").then(m => m.openDossier)
+	comptoir:() => import("./games/comptoir.js?v=22644ce8bd").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=22644ce8bd").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=22644ce8bd").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=22644ce8bd").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=22644ce8bd").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=22644ce8bd").then(m => m.openBiodata),
+	crise:() => import("./games/crise.js?v=22644ce8bd").then(m => m.openCrise),
+	patrimoine:() => import("./games/patrimoine.js?v=22644ce8bd").then(m => m.openPatrimoine),
+	affaires:() => import("./games/affaires.js?v=22644ce8bd").then(m => m.openAffaires),
+	boutique:() => import("./games/boutique.js?v=22644ce8bd").then(m => m.openBoutique),
+	ruee:() => import("./games/ruee.js?v=22644ce8bd").then(m => m.openRuee),
+	tp:() => import("./games/tp.js?v=22644ce8bd").then(m => m.openTP),
+	clinique:() => import("./games/clinique.js?v=22644ce8bd").then(m => m.openClinique),
+	jourj:() => import("./games/jourj.js?v=22644ce8bd").then(m => m.openJourJ),
+	moniac:() => import("./games/moniac.js?v=22644ce8bd").then(m => m.openMoniac),
+	cargo:() => import("./games/cargo.js?v=22644ce8bd").then(m => m.openCargo),
+	marquelle:() => import("./games/marquelle.js?v=22644ce8bd").then(m => m.openMarquelle),
+	guichet:() => import("./games/guichet.js?v=22644ce8bd").then(m => m.openGuichet),
+	telephone:() => import("./games/dossier.js?v=22644ce8bd").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2064,7 +2084,8 @@ function fade(mid){
 }
 function loadInterior(id){
 	return interiors[id] ? Promise.resolve() : MAKERS[id]().then(make => {
-		interiors[id] = make({ background:skyTex }); qualityInterior(interiors[id]); gradeAll(interiors[id].scene);
+		// Euratechnologies est un quartier en plein air : le même ciel que Vauban (brume d'horizon de la couleur du brouillard), pas le dégradé plaqué sur l'écran des intérieurs
+		interiors[id] = make({ background:id === "eura" ? sky.background : skyTex }); qualityInterior(interiors[id]); gradeAll(interiors[id].scene);
 		if(interiors[id].setAmbiance) interiors[id].setAmbiance(season, night ? NIGHT : season.day, night); else interiors[id].setNight(night);
 		// shaders préparés à l'avance (en parallèle si le navigateur le permet) : pas d'à-coup à l'entrée
 		return renderer.compileAsync(interiors[id].scene, camera).catch(() => {});
@@ -2094,7 +2115,7 @@ const WELCOME = {
 	eura:"Bienvenue à Euratechnologies 💡 le quartier de l'École du Numérique",
 	wenovin:"Bienvenue dans Wenov 💡 salles de l'École du Numérique, Campus Cyber et coworking"
 };
-function enterInterior(id, then, quiet){
+function enterInterior(id, then, quiet){ if(street) endStreet();
 	if(id === "eura" && mode !== "wenovin"){ goEura(); return; }      // le quartier se rejoint en métro
 	closePanel(); setHover(null); Audio.play("pop");
 	const f = $("fade"); f.classList.add("on");
@@ -2319,7 +2340,42 @@ $("btnMusic").addEventListener("click", () => {
 	if(Audio.on){ Audio.disable(); musicWanted = false; } else { Audio.enable(); musicWanted = true; }
 	store.set("music", musicWanted); $("musicPref").checked = musicWanted; refreshHud();
 });
-$("btnHome").addEventListener("click", () => { closePanel(); if(mode !== "ext") exitInterior(); else flyHome(1.4); });
+$("btnHome").addEventListener("click", () => { closePanel(); if(street) endStreet(); if(mode !== "ext") exitInterior(); else flyHome(1.4); });
+/* Vue piéton : la caméra descend à hauteur d'yeux, sur le trottoir le plus proche de l'endroit regardé ; on tourne la tête
+   (glisser), on avance (clic droit glissé ou deux doigts), on s'approche (molette). Le bouton 🚶 ou ⌂ ramène la vue d'ensemble. */
+let street = null;
+const STREET_EYE = 1.45;
+function startStreet(){
+	if(mode !== "ext" || walk || cine || riding || intro) return;
+	closePanel(); setHover(null); if(tour) stopTour();
+	let x = controls.target.x, z = controls.target.z;
+	// un point libre : ni dans un bâtiment, ni sur la chaussée
+	const ok = (a, b) => !city.inBuilding(a, b, .4) && city.roadGap(a, b).g > .2 && !inCitadel(a, b);
+	if(!ok(x, z)){ let found = null; for(let r = .5; r < 25 && !found; r += .5) for(let k = 0; k < 16; k++){ const a = k/16*Math.PI*2, px = x + Math.cos(a)*r, pz = z + Math.sin(a)*r; if(ok(px, pz)){ found = [px, pz]; break; } } if(found) [x, z] = found; }
+	const dir = V(controls.target.x - camera.position.x, 0, controls.target.z - camera.position.z).normalize();
+	// on regarde dans l'axe de la rue la plus proche (le sens le plus proche de la vue d'avant), pas dans une façade
+	const rg = city.roadGap(x, z);
+	if(rg.best){ const [, ax, az, bx, bz] = rg.best, l = Math.hypot(bx - ax, bz - az) || 1; let ux = (bx - ax)/l, uz = (bz - az)/l; if(ux*dir.x + uz*dir.z < 0){ ux = -ux; uz = -uz; } dir.set(ux, 0, uz); }
+	// pas de tronc juste devant les yeux : on avance le long de la rue jusqu'à une place dégagée
+	const clear = (px, pz) => trees.every(t => Math.hypot(t.x - px, t.z - pz) > 1.1 && Math.hypot(t.x - (px + dir.x*2), t.z - (pz + dir.z*2)) > .9);
+	for(let n = 0; n < 8 && !clear(x, z); n++){ x += dir.x*1.5; z += dir.z*1.5; }
+	street = { limits, near:camera.near, fov:camera.fov, rotate:controls.autoRotate };
+	applyLimits({ minDistance:.15, maxDistance:2.5, minPolarAngle:.75, maxPolarAngle:2.05, box:limits.box });
+	controls.autoRotate = false;
+	camera.near = .15; camera.fov = innerWidth < innerHeight ? 64 : 55; camera.updateProjectionMatrix();
+	fly = { k:0, dur:1.6, p0:camera.position.clone(), t0:controls.target.clone(), p1:V(x - dir.x*.6, STREET_EYE, z - dir.z*.6), t1:V(x + dir.x*1.4, STREET_EYE - .05, z + dir.z*1.4) };
+	$("btnStreet").setAttribute("aria-pressed", "true"); document.body.classList.add("street");
+	toast("🚶 Vue piéton · glisse pour regarder autour, clic droit (ou deux doigts) pour avancer · 🚶 pour remonter", 4200);
+	Audio.play("pop");
+}
+function endStreet(){
+	if(!street) return;
+	const S0 = street; street = null;
+	applyLimits(S0.limits); controls.autoRotate = S0.rotate;
+	camera.near = S0.near; camera.fov = S0.fov; camera.updateProjectionMatrix();
+	$("btnStreet").setAttribute("aria-pressed", "false"); document.body.classList.remove("street");
+}
+$("btnStreet").addEventListener("click", () => { if(street){ endStreet(); flyHome(1.4); } else startStreet(); });
 
 $("close").addEventListener("click", closePanel);
 addEventListener("keydown", e => { if(e.key === "Escape" && !$("lead").hidden){ closeLead(); return; } if(e.key === "Escape"){ closePanel(); $("ambiance").hidden = true; if(intro) endIntro(); if(coach) endCoach(); if(tour) stopTour(); } });
@@ -2496,6 +2552,12 @@ function walkTo(id){
 	const pts = [];
 	for(const [x, z] of R){ const q = pts[pts.length - 1]; if(!q || Math.hypot(q.x - x, q.z - z) > 1.5) pts.push(V(x, WALK_EYE, z)); }
 	pts.push(V(st.x, WALK_EYE, st.z));
+	// sur le trottoir de droite, pas au milieu de la chaussée : chaque point s'écarte jusqu'à 0,6 au-delà du bord de la rue
+	for(let i = 1; i < pts.length - 1; i++){
+		const a = pts[i-1], c = pts[i+1], dx = c.x - a.x, dz = c.z - a.z, l = Math.hypot(dx, dz) || 1, rx = -dz/l, rz = dx/l;
+		const g = city.roadGap(pts[i].x, pts[i].z).g, sh = THREE.MathUtils.clamp(.6 - g, 0, 4);
+		if(sh > 0 && !city.inBuilding(pts[i].x + rx*sh, pts[i].z + rz*sh, .3)){ pts[i].x += rx*sh; pts[i].z += rz*sh; }
+	}
 	const curve = new THREE.CatmullRomCurve3(pts, false, "centripetal"), len = curve.getLength();
 	// tracé au sol : tirets bleus FGES, au-dessus des rues et des trottoirs
 	const B = [], N = Math.floor(len/1.2), hw = .32;
@@ -3064,7 +3126,7 @@ function openGame(fid, loader){
 		}
 	}); }).catch(() => { gamePaused = false; gameNow = null; toast("Impossible de lancer le mini-jeu : vérifie ta connexion.", 3500); });
 }
-function flyToPlace(id, dur){
+function flyToPlace(id, dur){ if(street) endStreet();
 	if(mode === "eura" && interiors.eura.places[id]){ focusEura(id, false); return true; }
 	const p = PLACES[id] || LIFE[id];
 	if(!p || !p.target) return false;
@@ -3489,12 +3551,12 @@ function fogFollow(force){
 	else if(weather === "pluie"){ near = Math.max(90, d*.7); far = Math.max(near + 200, Q.far*.85); }
 	// caméra haute : le plan proche recule (de 2 à 8 m), la profondeur gagne en précision et les façades lointaines
 	// ne scintillent plus, même sur les appareils à 16 bits de profondeur ; rien ne dépasse les toits à cette hauteur
-	if(!walk){ const n = THREE.MathUtils.clamp(2 + (camera.position.y - 40)*.05, 2, 8); if(Math.abs(n - camera.near) > .25){ camera.near = n; camera.updateProjectionMatrix(); } }
+	if(!walk && !street){ const n = THREE.MathUtils.clamp(2 + (camera.position.y - 40)*.05, 2, 8); if(Math.abs(n - camera.near) > .25){ camera.near = n; camera.updateProjectionMatrix(); } }
 	if(!force && Math.abs(far - scene.fog.far) < 8 && Math.abs(near - scene.fog.near) < 8) return;
 	scene.fog.near = near; scene.fog.far = far;
 	camera.far = far + 60; camera.updateProjectionMatrix();
 }
-function flyHome(d){ const h = homeView(); flyTo(h.pos, h.target, d); }
+function flyHome(d){ if(street) endStreet(); const h = homeView(); flyTo(h.pos, h.target, d); }
 /* La source d'ombre suit la caméra par pas d'un texel : sans ça, les bords d'ombre « grouillent ». */
 const _sx = new THREE.Vector3(), _sy = new THREE.Vector3(), _sz = new THREE.Vector3(), _up = new THREE.Vector3(0,1,0);
 const _sunWas = new THREE.Vector3();
@@ -3589,7 +3651,7 @@ function setQuality(level){
 	smallCasters(scene);
 	shadowDirty = true;
 	setFarLevel(Q.horizon);
-	canopyIM.geometry = [simpleCrown, midCrown, fullCrown][Q.rank]; trunkIM.geometry = Q.rank === 0 ? simpleTrunk : trunkGeo;
+	canopyIM.geometry = [simpleCrown, midCrown, fullCrown][Q.rank]; traffic.setLevel(Q.rank === 2 ? 1 : Q.rank === 1 ? .6 : .3); trunkIM.geometry = Q.rank === 0 ? simpleTrunk : trunkGeo;
 	const walkers = students.filter(s => !s.chat); walkers.forEach((s, i) => { s.off = (i + .5)/walkers.length > Q.crowd; s.g.visible = !s.off; });
 	fogFollow(true);
 	for(const k in interiors) if(interiors[k]) qualityInterior(interiors[k]);
@@ -3701,6 +3763,7 @@ function frame(){
 		controls.target.x = THREE.MathUtils.clamp(controls.target.x, b[0], b[1]);
 		controls.target.z = THREE.MathUtils.clamp(controls.target.z, b[2], b[3]);
 		controls.update();
+		if(street && !fly){ const dy = STREET_EYE - camera.position.y; camera.position.y = STREET_EYE; controls.target.y += dy; }          // à hauteur d'yeux, on ne vole pas
 	}
 
 	// fiche ouverte (ordinateur : à droite) ou fiche / carrousel (téléphone : en bas) : la vue se décale
@@ -3746,6 +3809,7 @@ function frame(){
 		if(now.getMinutes() === 0 && lastMinute === 59 && entered){ Audio.play("chime"); setTimeout(scarePigeons, 250); }
 		lastMinute = now.getMinutes();
 		if(mode === "ext") fogFollow();
+		if(mode === "ext") traffic.update(dt);
 		if(mode === "ext" && landmarks.declutter && (++declutterN % 6 === 0)) landmarks.declutter(camera);          // étiquettes qui se recouvrent à l'écran : la plus lointaine monte
 		crowd.update();
 		// la rame et la station souterraine bougent pendant les cinématiques : ombres en continu ; sinon à la demande

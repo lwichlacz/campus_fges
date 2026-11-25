@@ -3,9 +3,9 @@
    maillages pour rester léger, sauf les bâtiments « à visiter » (POI) qui
    restent séparés pour être cliquables. */
 import * as THREE from "three";
-import { std, mulberry32 } from "./kit.js?v=af8a8a599e";
-import { TIME } from "./render.js?v=af8a8a599e";
-import { HAUTEURS } from "./hauteurs.js?v=af8a8a599e";
+import { std, mulberry32 } from "./kit.js?v=22644ce8bd";
+import { TIME } from "./render.js?v=22644ce8bd";
+import { HAUTEURS } from "./hauteurs.js?v=22644ce8bd";
 
 const FH = 2.3, BAY = 1.4;
 let FHc = FH;          // hauteur d'un étage pour la carte en cours (MAP.fh : à l'échelle de l'Hôtel Académique)
@@ -348,6 +348,35 @@ function streetFurniture(MAP, scene, S){
 	return { bikes:bikes.length, benches:benches.length };
 }
 
+/* ---------- toits plats : une matière par immeuble (shader) ----------
+   Vus du ciel, ils couvrent une bonne part de l'image : gravier, membrane bitumée à lés, membrane claire, toiture
+   végétalisée (sédum), selon l'immeuble (la teinte de l'immeuble sert de graine) ; la teinte de base (BD TOPO) reste. */
+function flatRoofLook(mat){
+	if(mat.userData.flatLook) return; mat.userData.flatLook = true;
+	const prev = mat.onBeforeCompile, hasPrev = prev && prev !== THREE.Material.prototype.onBeforeCompile;
+	mat.onBeforeCompile = (sh, r) => {
+		if(hasPrev) prev.call(mat, sh, r);
+		sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec2 vRW;")
+			.replace("#include <project_vertex>", "#include <project_vertex>\n	vRW = ( modelMatrix*vec4( transformed, 1.0 ) ).xz;");
+		sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying vec2 vRW;\n" + NOISE_GLSL)
+			.replace("#include <color_fragment>", `#include <color_fragment>
+	#ifdef USE_COLOR
+	{ float h = fract( dot( vColor, vec3( 71.3, 29.7, 11.9 ) ) );
+	  float fade = 1.0 - smoothstep( 40.0, 120.0, length( vViewPosition ) );
+	  vec3 c = diffuseColor.rgb;
+	  float n = sNoise( vRW*3.0 )*0.6 + sNoise( vRW*9.0 )*0.4;
+	  if( h < 0.42 ) c *= 0.9 + 0.2*mix( 0.5, n, fade );                                            // gravier
+	  else if( h < 0.75 ){ c *= 0.72; c *= 1.0 - 0.12*fade*step( 0.93, fract( vRW.x*0.9 + vRW.y*0.1 ) ); }      // membrane bitumée, lés
+	  else if( h < 0.9 ){ c = mix( c, vec3( 0.78, 0.78, 0.76 ), 0.45 ); c *= 1.0 - 0.08*fade*step( 0.95, fract( vRW.y*0.9 ) ); }   // membrane claire
+	  else { vec3 sed = mix( vec3( 0.42, 0.47, 0.3 ), vec3( 0.58, 0.52, 0.34 ), sNoise( vRW*1.7 ) ); c = mix( c, sed, 0.6 ); }  // sédum
+	  diffuseColor.rgb = c; }
+	#endif`);
+	};
+	const pk = mat.customProgramCacheKey && mat.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey ? mat.customProgramCacheKey.call(mat) : "";
+	mat.customProgramCacheKey = () => pk + "|flatroof";
+	mat.needsUpdate = true;
+}
+
 /* ---------- accumulateurs de géométrie ---------- */
 function bucket(){ return { pos:[], nor:[], uv:[], col:[], top:[] }; }
 let TINT = [1, 1, 1], TOP = -1;          // TOP : hauteur du haut du mur (corniche) ; -1 : pas de corniche (pignons, toits)
@@ -685,6 +714,7 @@ export function buildCity(scene, MAP, opts={}){
 	// toits plats vus d'avion : gravier clair, gris, bitume sombre, végétalisé
 	const flatMats = { 11:flatMat };
 	for(const [k, c] of [[10, "#a8a39a"], [12, "#626369"], [13, "#7f8c5c"]]){ const m = flatMat.clone(); m.color.set(c); m.userData.base = c; out.flats.push(m); flatMats[k] = m; }
+	for(const m of out.flats) flatRoofLook(m);
 	const extras = [];
 	const glassRoof = new THREE.MeshStandardMaterial({ color:"#d9eef0", transparent:true, opacity:.55, roughness:.1, metalness:.2, emissive:"#ffd08a", emissiveIntensity:0 });
 	out.glassRoof = glassRoof;
@@ -741,7 +771,7 @@ export function buildCity(scene, MAP, opts={}){
 			const ex = [], H = addBuilding(G.w, G.r, G.f, rec, i, ex);
 			const grp = new THREE.Group(); scene.add(grp);
 			if(ex.length) roofKit(ex, grp);          // ses blocs techniques disparaissent avec lui s'il est remplacé
-			const w2 = wm.clone(), r2 = rm.clone(), f2 = kind === 5 ? glassRoof : flatMat.clone();
+			const w2 = wm.clone(), r2 = rm.clone(), f2 = kind === 5 ? glassRoof : flatMat.clone(); if(f2 !== glassRoof){ f2.userData.flatLook = false; flatRoofLook(f2); }
 			softenFar(w2, out.nightU);
 			out.walls.push(w2); out.roofs.push(r2); if(f2 !== glassRoof) out.flats.push(f2);
 			for(const [B, m] of [[G.w, w2], [G.r, r2], [G.f, f2]]){ if(!B.pos.length) continue; const me = new THREE.Mesh(toGeo(B), m); me.castShadow = me.receiveShadow = true; grp.add(me); }
@@ -971,6 +1001,27 @@ export function buildCity(scene, MAP, opts={}){
 
 	/* arbres d'alignement */
 	for(let i=0;i<MAP.trees.length;i+=2) out.trees.push({ x:MAP.trees[i], z:MAP.trees[i+1], k:"d", s:.85 + rnd()*.3 });
+	/* Boulevard Vauban : sur la photo IGN, une voûte continue de grands platanes sur plusieurs rangées (calage, nov. 2026) ;
+	   deux rangées de plus de chaque côté de chaque chaussée, là où il y a la place (ni chaussée, ni bâtiment, ni arbre trop près). */
+	{
+		const bv = (MAP.streets || []).indexOf("Boulevard Vauban");
+		// les arbres déjà relevés sur la photo le long du boulevard deviennent de grands platanes : leurs houppiers se rejoignent
+		const segs = []; if(bv >= 0) for(const [w, , p, ni] of MAP.roads) if(ni === bv) for(let i=0;i+3<p.length;i+=2) segs.push([w, p[i], p[i+1], p[i+2], p[i+3]]);
+		for(const t of out.trees) if(segs.some(([w, ax, az, bx, bz]) => segDist(t.x, t.z, ax, az, bx, bz) < w/2 + 4.5)) t.s = 1.45 + rnd()*.25;
+		if(bv >= 0) for(const [w, code, p, ni] of MAP.roads){
+			if(ni !== bv) continue;
+			for(let i=0;i+3<p.length;i+=2){
+				const ax = p[i], az = p[i+1], bx = p[i+2], bz = p[i+3], l = Math.hypot(bx-ax, bz-az); if(l < 1) continue;
+				const tx = (bx-ax)/l, tz = (bz-az)/l;
+				for(let t = 1.6; t < l; t += 3.2) for(const sd of [1, -1]) for(const off of [w/2 + 1.15, w/2 + 3.1]){
+					const x = ax + tx*t - tz*off*sd, z = az + tz*t + tx*off*sd;
+					if(S.inBuilding(x, z, 1) || S.roadGap(x, z).g < .5 || S.inHand(x, z)) continue;
+					if(out.trees.some(q => Math.abs(q.x - x) < 1.7 && Math.abs(q.z - z) < 1.7)) continue;
+					out.trees.push({ x, z, k:"d", s:1.45 + rnd()*.25 });
+				}
+			}
+		}
+	}
 	out.trees = settleTrees(MAP, out.trees); out.parkTrees = settleTrees(MAP, out.parkTrees);
 
 	/* saisons & nuit */

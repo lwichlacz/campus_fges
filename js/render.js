@@ -224,6 +224,30 @@ export function contactShade(mat, { depth = .66, height = 1.5 } = {}){
 	});
 }
 
+/* Vitres des bâtiments faits main (fenêtres instanciées) : reflet du ciel en dégradé (plus clair en haut), un rideau sur
+   une fenêtre sur trois, comme les façades du quartier (js/city.js, facadeDetail). */
+export function glassLook(mat){
+	if(mat.userData.glass) return; mat.userData.glass = true;
+	mat.roughness = .12; mat.metalness = .05;
+	chain(mat, "glass", sh => {
+		sh.vertexShader = sh.vertexShader
+			.replace("#include <common>", "#include <common>\nvarying float vGY; varying float vGH;")
+			.replace("#include <begin_vertex>", `#include <begin_vertex>
+	vGY = position.y + 0.5;
+	#ifdef USE_INSTANCING
+		vGH = fract( sin( dot( instanceMatrix[3].xyz, vec3( 12.9898, 78.233, 37.719 ) ) )*43758.5453 );
+	#else
+		vGH = 0.5;
+	#endif`);
+		sh.fragmentShader = sh.fragmentShader
+			.replace("#include <common>", "#include <common>\nvarying float vGY; varying float vGH;")
+			.replace("#include <color_fragment>", `#include <color_fragment>
+	{ vec3 g = mix( diffuseColor.rgb*0.7, diffuseColor.rgb*1.45 + vec3( 0.04, 0.05, 0.07 ), smoothstep( 0.0, 1.0, vGY ) );
+	  if( vGH < 0.33 ) g = mix( g, vec3( 0.66, 0.6, 0.52 ), 0.6*step( vGY, 0.45 + vGH ) );
+	  diffuseColor.rgb = g; }`);
+	});
+}
+
 /* Vent : la couronne des arbres (maillages instanciés) se balance doucement, chaque arbre à son rythme. */
 export function windSway(mat, amp = .06){
 	chain(mat, "wind" + amp, sh => {

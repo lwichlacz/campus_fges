@@ -65,6 +65,7 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/kit.js` | Outils 3D partagés (formes, fenêtres, étudiants) |
 | `tools/build_map.py` | Régénère `js/vauban.js` depuis les extraits de `tools/osm/` |
 | `tools/mesure_rendu.cjs` | Mesure triangles et appels de dessin par qualité et point de vue (Chrome sans écran), vérifie les shaders |
+| `js/traffic.js` | Circulation : voitures et cyclistes sur les rues carrossables, phares la nuit, nombre selon la qualité |
 | `js/citadelle.js` | La Citadelle : profil des remparts, guérites, fossés, forêt, place d'armes, bâtiments nommés, Porte Dauphine, Champ de Mars (données `js/citadelle_osm.js`, **générées** par `tools/build_citadelle.py`) |
 | `js/eura_extra.js` | Euratechnologies : jardin Le Blan-Lafont, quais et passerelles de la Deûle (données `js/eura_details.js`, **générées** par `tools/build_eura_details.py`) |
 | `tools/calage.py` · `tools/film/calage.js` | Calage sur la photo IGN : vue de dessus du campus, photo recalée et superposition, pour repérer ce qui manque |

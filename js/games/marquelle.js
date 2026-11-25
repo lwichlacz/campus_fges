@@ -13,11 +13,11 @@
    Commune, personnes, entreprises et chiffres sont fictifs et simplifiés. Contenus à relire par l'équipe pédagogique
    (docs/validation-licence-aese.md). */
 import * as THREE from "three";
-import { studio } from "./studio.js?v=af8a8a599e";
+import { studio } from "./studio.js?v=22644ce8bd";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { makePerson } from "../kit.js?v=af8a8a599e";
-import { jpoCard } from "./jpo.js?v=af8a8a599e";
-import { palier } from "./palier.js?v=af8a8a599e";
+import { makePerson } from "../kit.js?v=22644ce8bd";
+import { jpoCard } from "./jpo.js?v=22644ce8bd";
+import { palier } from "./palier.js?v=22644ce8bd";
 
 /* ---------- les cours (disciplines de la licence, fiche fges.fr ; la maquette par année n'est pas encore publiée) ---------- */
 const COURSES = {

@@ -5,10 +5,10 @@
    Le site est montré comme une boutique en 3D vue en coupe : chaque personnage est un groupe de visiteurs,
    ceux qui font demi-tour sont des ventes perdues. Chiffres simplifiés et illustratifs, à relire par l'équipe du master. */
 import * as THREE from "three";
-import { studio } from "./studio.js?v=af8a8a599e";
+import { studio } from "./studio.js?v=22644ce8bd";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=af8a8a599e";
-import { palier } from "./palier.js?v=af8a8a599e";
+import { jpoCard } from "./jpo.js?v=22644ce8bd";
+import { palier } from "./palier.js?v=22644ce8bd";
 
 const COURSES = {
 	ux:    ["UX design, UI et accessibilité", "Observer les utilisateurs, simplifier les parcours, rendre un site lisible par tous (contrastes, formulaires, WCAG)."],

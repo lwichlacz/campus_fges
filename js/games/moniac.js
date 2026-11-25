@@ -12,11 +12,11 @@
      5 · le Conseil (le verdict) : à chaque objection, poser la bonne pièce sur le rétroprojecteur, avant la fin du sablier.
    Chaque pièce remplit la note au Conseil, dans le panneau. Banque, personnes et chiffres sont fictifs et simplifiés ;
    contenu à relire par l'équipe de la prépa (docs/validation-prepa-d2.md). */
-import { guideGeste, modele, meuble, grain } from "./rendu.js?v=af8a8a599e";
-import { stage3d, THREE } from "./stage3d.js?v=af8a8a599e";
-import { makePerson } from "../kit.js?v=af8a8a599e";
-import { jpoCard } from "./jpo.js?v=af8a8a599e";
-import { palier } from "./palier.js?v=af8a8a599e";
+import { guideGeste, modele, meuble, grain } from "./rendu.js?v=22644ce8bd";
+import { stage3d, THREE } from "./stage3d.js?v=22644ce8bd";
+import { makePerson } from "../kit.js?v=22644ce8bd";
+import { jpoCard } from "./jpo.js?v=22644ce8bd";
+import { palier } from "./palier.js?v=22644ce8bd";
 
 const COURSES = {
 	stats: ["Statistique", "Indices et pondérations", "Un indice des prix est une moyenne pondérée : avant de réagir, on regarde d'où vient la hausse."],
