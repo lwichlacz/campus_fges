@@ -1,27 +1,32 @@
-# Fiche de validation · Mini-jeu « La salle de TP » (APES, année préparatoire aux études scientifiques)
+# Fiche de validation · Mini-jeu « L'eau des Tilleuls » (APES, année préparatoire aux études scientifiques)
 
 **À relire par :** un enseignant de l'APES
-**Objectif du jeu :** montrer à un lycéen ce que l'APES lui apporte : prendre pied en sciences et, surtout, apprendre à apprendre. Chaque premier essai bute ; l'atelier de méthode fait réussir le second.
-**Univers :** une salle de travaux pratiques le soir, porte fermée par quatre cadenas ; un tableau noir où s'écrit la courbe ; M. Diallo, professeur de méthodologie (fictif), écrit ses conseils à la craie.
-**Durée :** environ 6 minutes ; la première scène (le dosage) se joue en une minute, puis un palier propose de continuer.
-**Fichier :** `js/games/tp.js` (constantes en tête : `VEQ`, `CB`, `VA`, `L`, `DROP`, `SLIDES`).
+**Objectif du jeu :** faire vivre à un lycéen le métier de technicien·ne d'analyse en laboratoire, et l'esprit de l'APES : la méthode scientifique, « apprendre à apprendre ». Un premier essai bâclé fausse la preuve ; on barre dans le cahier, on comprend, on refait avec la méthode.
+**Le dossier :** à l'école des Tilleuls (fictive), douze élèves ont la gastro, tous ont mangé à la cantine. L'eau du robinet est-elle en cause ? Verdict : oui (E. coli, chlore épuisé dans une canalisation où l'eau stagnait) ; la piste des nitrates des champs est écartée.
+**Univers :** la cantine (prélèvement, dosage sur place) puis un laboratoire des eaux en 3D ; l'interface est le cahier de laboratoire à petits carreaux ; Nadia Keller, responsable du labo (fictive), y laisse ses visas.
+**Durée :** environ 7 minutes ; la première scène (le prélèvement) se joue en une minute, puis un palier propose de continuer.
+**Fichier :** `js/games/tp.js` (constantes en tête : `T_HOT`, `T_NET`, `VEQ`, `K_CL`, `STD`, `A_ECH`, `N_BLUE`, `N_PINK`).
 
 Merci de cocher, corriger ou commenter chaque point.
 
 ## 1. Déroulé
 
-| Cadenas | Matière | Ce que fait le joueur | Le premier essai qui bute | La méthode |
+| Étape | Matières | Geste du joueur | Premier essai qui bute | Preuve |
 |---|---|---|---|---|
-| 1 | Chimie | Verse la soude en maintenant un bouton ; la phénolphtaléine vire au rose pâle à l'équivalence (12,4 mL) | Verser trop vite et dépasser (fuchsia) | Un dosage rapide pour situer l'équivalence, puis vite jusqu'à 11 mL et goutte à goutte |
-| 2 | Physique | Chronomètre un pendule de 50 cm pour trouver g = 4π²L/T² | Mesurer une seule période (erreur du doigt énorme) | Mesurer dix périodes et diviser par dix |
-| 3 | SVTU | Règle un microscope (×4, ×10, ×40, vis de mise au point) et identifie trois lames : élodée (végétale), frottis de joue (animale), yaourt (bactéries) | Commencer directement au ×40 : on ne voit rien | Toujours partir du ×4, faire le point, puis monter |
-| 4 | Maths | Fait passer une droite par l'origine au plus près des points d'une chute libre | Tracer d en fonction de t : les points courbent | Changer de variable : d en fonction de t², pente 4,9, donc g = 9,8 |
+| 1 · Prélever | Physique, maths | Flamber le bec au chalumeau, ouvrir le robinet, attendre une température stable (courbe qui tend vers un palier), remplir le flacon stérile au trait | Remplir tout de suite : l'eau du tuyau (19,6 °C) n'est pas celle du réseau | 19,6 °C au premier jet, 12,4 °C après ~11 L : l'eau stagnait |
+| 2 · Chlore | Chimie | Dosage DPD/FAS à la burette : on ouvre le robinet en le faisant glisser, le rose disparaît à l'équivalence (4,0 mL ; 1 mL = 0,01 mg/L) | Verser à flot : la valeur, trop forte, ferait croire l'eau protégée | Chlore libre 0,04 mg/L (0,3 en sortie d'usine) |
+| 3 · Nitrates | Physique, chimie, maths | Spectrophotomètre : blanc puis ZÉRO, étalons 10/25/50 mg/L, tracer la droite d'étalonnage par l'origine, y lire l'échantillon (A = 0,236) | Mesurer un étalon sans avoir fait le zéro (décalage de 0,085) | 19 mg/L < 50 : fausse piste écartée |
+| 4 · Bactéries | SVTU, maths | Filtration sur membrane, gélose chromogène, étuve 36 °C 21 h, pointer au feutre les colonies bleues | 100 mL filtrés : boîte indénombrable ; on refait avec 10 mL | 14 E. coli / 10 mL = 140 / 100 mL (limite 0) ; coliformes 200 / 100 mL |
+| 5 · Microscope | SVTU, physique | Mise au point à ×10, objectif ×100, goutte d'huile à immersion, mesurer un bacille | ×100 sans huile : image sombre et floue | Bacilles Gram négatif de 2 µm |
+| 6 · Bulletin | — | Juger chaque ligne (conforme / non conforme) face à sa limite, puis signer au doigt | Une case fausse : le stylo s'arrête | Bulletin signé : eau non conforme |
 
-- [ ] Les quatre manipulations sont-elles représentatives des TP de l'APES ?
-- [ ] Le calcul c(acide) = c(soude) × V(éq) ÷ V(acide) = 0,10 × 12,4 ÷ 20 = 0,062 mol/L convient-il ?
-- [ ] L'élodée est donnée comme exemple de cellule végétale (paroi, chloroplastes) ; la joue comme cellule animale (pas de paroi) ; les lactobacilles comme bactéries (pas de noyau). Correct ?
-- [x] Les deux parcours (Sciences de la Vie, Maths-Physique-Chimie) sont confirmés par la plaquette FGES « Licences & Masters 2025-2026 », comme le programme (maths, physique, chimie, SVTU, anglais, ateliers méthodologiques, bases de données et programmation).
-- [x] « 94 % de réussite » **retiré** : la plaquette annonce 57 % de réussite en 2023-24 (20 étudiants). Le bilan parle désormais du petit effectif, du suivi personnalisé et des poursuites d'études listées par la plaquette.
+- [ ] Les gestes sont-ils représentatifs des TP de l'APES et du métier visé ?
+- [ ] Dosage du chlore libre DPD/FAS (FAS dilué, 1 mL = 0,01 mg/L) : simplification acceptable ?
+- [ ] « Repère ≥ 0,1 mg/L » de chlore libre au robinet : formulation correcte (ce n'est pas une limite réglementaire) ?
+- [ ] Limites affichées : E. coli et coliformes 0 / 100 mL, nitrates 50 mg/L. Correct ?
+- [ ] Incubation 21 h à 36 °C sur gélose chromogène (E. coli bleues, autres coliformes roses) : correct ?
+- [x] Programme vérifié sur la fiche fges.fr (19/11/2026) : parcours Sciences de la Vie (maths, physique, chimie, SVTU) et Maths-Physique-Chimie ; ateliers méthodologiques au S1 ; poursuites d'études citées dans le bilan.
+- [x] Aucun taux de réussite affiché (la fiche annonce 94 %, la plaquette 57 % en 2023-24 : à harmoniser).
 
 ## 2. Remarques libres
 

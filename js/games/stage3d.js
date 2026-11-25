@@ -7,7 +7,9 @@
    - les étiquettes gardent une taille constante à l'écran, réduite sur téléphone. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { studio } from "./studio.js?v=5545d023b6";
+import { studio } from "./studio.js?v=af8a8a599e";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { soigner } from "./rendu.js?v=af8a8a599e";
 
 export { THREE };
 
@@ -18,6 +20,8 @@ export function stage3d(canvas, o = {}){
 	if(o.shadows !== false){ renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; }
 	canvas.style.width = "100%"; canvas.style.height = "100%";
 	const scene = new THREE.Scene(); scene.background = new THREE.Color(o.bg || "#dfe6ee");
+	// o.soin : le rendu soigné (ton neutre, lumière d'ambiance, arêtes arrondies), voir rendu.js
+	if(o.soin) soigner(renderer, scene, o.soin === true ? {} : o.soin);
 	studio(renderer, scene, o.studio || {});          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	if(o.fog) scene.fog = new THREE.Fog(o.bg || "#dfe6ee", o.fog[0], o.fog[1]);
 	const camera = new THREE.PerspectiveCamera(o.fov || 38, 1, o.near || .3, o.far || 800);
@@ -29,8 +33,10 @@ export function stage3d(canvas, o = {}){
 	const own = [];
 	const M = (c, op = {}) => { const m = new THREE.MeshStandardMaterial({ color:c, roughness:.8, ...op }); own.push(m); return m; };
 	const G = g => (own.push(g), g);
-	function mesh(geo, mat, x = 0, y = 0, z = 0, parent = scene){ const m = new THREE.Mesh(geo, typeof mat === "string" ? M(mat) : mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; parent.add(m); return m; }
-	const box = (w, h, d, c, x, y, z, parent) => mesh(G(new THREE.BoxGeometry(w, h, d)), c, x, y + h/2, z, parent);
+	function mesh(geo, mat, x = 0, y = 0, z = 0, parent = scene){ const m = new THREE.Mesh(geo, typeof mat === "string" ? M(mat) : mat); m.position.set(x, y, z); m.castShadow = !m.material.transparent; m.receiveShadow = true; parent.add(m); return m; }
+	// avec le rendu soigné, les boîtes ont des arêtes légèrement arrondies : elles accrochent la lumière comme un vrai objet
+	const boxGeo = (w, h, d) => { const r = Math.min(.06, Math.min(w, h, d)*.18); return o.soin && r > .004 ? new RoundedBoxGeometry(w, h, d, 2, r) : new THREE.BoxGeometry(w, h, d); };
+	const box = (w, h, d, c, x, y, z, parent) => mesh(G(boxGeo(w, h, d)), c, x, y + h/2, z, parent);
 	const cyl = (rt, rb, h, c, x, y, z, parent, seg = 20) => mesh(G(new THREE.CylinderGeometry(rt, rb, h, seg)), c, x, y + h/2, z, parent);
 	function canvasTex(w, h, draw){ const c = document.createElement("canvas"); c.width = w; c.height = h; const x = c.getContext("2d"); draw && draw(x, w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; own.push(t); t.ctx = x; t.redraw = f => { f(x, w, h); t.needsUpdate = true; }; return t; }
 	function label(text, op = {}){
@@ -116,6 +122,6 @@ export function stage3d(canvas, o = {}){
 		setDrags(list, plane, move, drop){ drags = list; if(plane) dragPlane = plane; onDrag = move; onDrop = drop; },
 		clearInput(){ taps = []; onTap = null; drags = []; onDrag = onDrop = null; drag = null; controls.enabled = true; },
 		tap(id){ onTap && onTap(id); },
-		dispose(){ cancelAnimationFrame(raf); hooks.clear(); removeEventListener("resize", resize); controls.dispose(); own.forEach(q => q.dispose && q.dispose()); renderer.dispose(); renderer.forceContextLoss(); }
+		dispose(){ cancelAnimationFrame(raf); hooks.clear(); removeEventListener("resize", resize); controls.dispose(); own.forEach(q => q.dispose && q.dispose()); if(scene.environment) scene.environment.dispose(); renderer.dispose(); renderer.forceContextLoss(); }
 	};
 }

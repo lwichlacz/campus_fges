@@ -48,13 +48,13 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/games/audit.js` | Mini-jeu « L'Enquête de l'auditeur » (Licence Comptabilité-Finance-Audit) |
 | `js/games/robot.js` | Mini-jeu « Cellule robotique Wenov » (Licence Sciences pour l'Ingénieur) : bras 3D, programmation, vision |
 | `js/games/boutique.js` | Mini-jeu « Courée, la boutique en 3D » (Master E-Business & Marketing Digital) : le site vu de l'intérieur, tunnel de commande, SEO, cookies, acquisition, CRM, Black Friday en direct |
-| `js/games/cargo.js` | Mini-jeu « Cargo » (Licence Internationale Économie & Gestion), en anglais : une carte du monde de nuit, le cours de la livre en direct, les cartes Incoterms, un cargo dans l'Atlantique, une négociation en visio |
-| `js/games/marquelle.js` | Mini-jeu « Marquelle » (Licence AES-E) : une ville miniature qui vit selon l'heure, l'enquête par quotas, les échelons, l'aménagement de la friche, les bocaux du budget, l'hémicycle |
+| `js/games/cargo.js` | Mini-jeu « The Lone Star order » (Licence Internationale Économie & Gestion), en anglais : analyste export chez un fabricant lillois de vélos, une commande pour Austin payée par lettre de crédit ; entourer les écarts du crédit, planter les drapeaux CIF, vendre ses dollars à terme, placer le prix sur le rayon, pointer les documents et démasquer le « freight collect » |
+| `js/games/marquelle.js` | Mini-jeu « Le dossier de la friche » (Licence AES-E) : chargé·e de mission en mairie, un dossier de subvention à monter (enquête par quotas à l'horloge, métré du devis, maquette budgétaire au stylo rouge, plan de financement sous plafonds, délibération) puis à défendre au conseil municipal |
 | `js/games/stage3d.js` | Ossature 3D invisible des jeux des prépas : rendu, caméra qui évite le panneau et s'adapte au téléphone, étiquettes, toucher |
 | `js/games/tp.js` | Mini-jeu « La salle de TP » (APES) : quatre cadenas, un dosage, un pendule, un microscope, une courbe |
-| `js/games/clinique.js` | Mini-jeu « La clinique rurale » (Prépa Véto & Agro) : stéthoscope, rumen, carrière, rotation, oral du concours B |
+| `js/games/clinique.js` | Mini-jeu « Le troupeau du Riez » (Prépa Véto & Agro) : un dossier de vétérinaire rural·e, ruban, centrifugeuse, coproscopie, tarière, doseur, ordonnance |
 | `js/games/jourj.js` | Mini-jeu « Le jour J » (Prépa grandes écoles de commerce) : épreuves chronométrées, jury, tableau des admis |
-| `js/games/moniac.js` | Mini-jeu « La machine de l'économiste » (Prépa D2) : économie hydraulique, paradoxe de l'épargne, théorie des jeux |
+| `js/games/moniac.js` | Mini-jeu « Faut-il monter les taux ? » (Prépa D2) : économiste en banque centrale, l'indice décomposé, la médiane d'une enquête en anglais, le calque des prix, la machine de Phillips, le Conseil |
 | `js/games/studio.js` | Qualité de rendu commune aux mini-jeux : reflets d'un studio généré en code, fond de pièce, ombres douces, légère profondeur de champ sur ordinateur (rien ne change l'univers d'un jeu) |
 | `js/games/palier.js` | Le « teasing » commun aux mini-jeux : chaque jeu s'ouvre à chaud sur une scène d'une minute, puis ce palier propose de continuer, de recevoir la plaquette ou de revenir au campus (compté dans l'entonnoir : `jeu-palier`, `jeu-suite`) |
 | `docs/validation-*.md` | Fiches de validation des mini-jeux (contenus validés par les enseignants) |

@@ -55,19 +55,22 @@ const TILT = {
 
 export function studio(renderer, scene, o = {}){
 	const own = [];
-	// reflets du studio
-	const pmrem = new THREE.PMREMGenerator(renderer);
-	const room = roomScene(o.warm ?? .4);
-	const envRT = pmrem.fromScene(room, .035);
-	room.traverse(m => { if(m.isMesh){ m.geometry.dispose(); m.material.dispose(); } });
-	pmrem.dispose(); own.push(envRT);
-	if(!scene.environment) scene.environment = envRT.texture;
-	scene.environmentIntensity = o.env ?? .55;
 	if(renderer.shadowMap.enabled) renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-	let lit = false, bgColor = null, bgTex = null;
+	// reflets du studio : décidés au premier rendu, une fois le jeu monté. Si le jeu a déjà sa lumière d'ambiance
+	// (rendu soigné, js/games/rendu.js), on n'y touche pas : on n'ajoute que le fond de pièce et la profondeur de champ.
+	let lit = false, bgColor = null, bgTex = null, envRT = null;
 	function prep(){
-		if(!lit){ lit = true; scene.traverse(l => { if(l.isHemisphereLight || l.isAmbientLight) l.intensity *= o.hemiK ?? .72; }); }
+		if(!lit){
+			lit = true;
+			if(!scene.environment){
+				const pmrem = new THREE.PMREMGenerator(renderer), room = roomScene(o.warm ?? .4);
+				envRT = pmrem.fromScene(room, .035);
+				room.traverse(m => { if(m.isMesh){ m.geometry.dispose(); m.material.dispose(); } });
+				pmrem.dispose(); own.push(envRT);
+				scene.environment = envRT.texture; scene.environmentIntensity = o.env ?? .55;
+				scene.traverse(l => { if(l.isHemisphereLight || l.isAmbientLight) l.intensity *= o.hemiK ?? .72; });
+			}
+		}
 		const b = scene.background;
 		if(o.backdrop !== false && b && b.isColor){
 			if(!bgColor || !bgColor.equals(b)){ bgColor = b.clone(); if(bgTex) bgTex.dispose(); bgTex = backdrop(b); }
@@ -107,5 +110,5 @@ export function studio(renderer, scene, o = {}){
 	};
 	const dispose = renderer.dispose.bind(renderer);
 	renderer.dispose = () => { own.forEach(q => q.dispose && q.dispose()); if(bgTex) bgTex.dispose(); renderer.render = orig; renderer.dispose = dispose; dispose(); };
-	return { envMap:envRT.texture };
+	return { get envMap(){ return envRT && envRT.texture; } };
 }

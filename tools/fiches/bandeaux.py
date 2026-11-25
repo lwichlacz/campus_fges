@@ -31,12 +31,12 @@ ACCROCHE = {
     "mh": "Un bad buzz frappe une chocolaterie : trie faits et rumeurs, décide avec Kant et Weber, tiens ton équipe, puis écris le communiqué.",
     "ecofi": "Le comité de 18 h : le fonds a perdu 3,2 % et on te demande pourquoi. Mesure, calcule, ajuste la régression, retrouve le ticket d'ordre, puis défends ton dossier.",
     "lpabf": "Samedi, 9 h : des fonds suspects transitent par ton agence. Sers tes cinq clients, vérifie leurs pièces, épingle les indices… et trouve qui blanchit.",
-    "apes": "19 h, la salle de TP est fermée à clé : quatre cadenas, quatre manipulations. Chaque premier essai bute, la méthode te fait réussir.",
-    "veto": "Une journée de vétérinaire rural : le cœur affolé d'un chien, le rumen d'une vache, une carrière à dater, un champ à faire tourner… puis l'oral.",
-    "cupge": "Le jour du concours : l'horloge du hall tourne, le jury attend tes cartes d'expérience, et ton nom t'attend peut-être sur le tableau des admis.",
-    "d2": "Une économie hydraulique comme la MONIAC de 1949 : le multiplicateur, le paradoxe de l'épargne, un tournoi de théorie des jeux en anglais.",
-    "lieg": "En anglais, comme la licence : bloque le cours de la livre, règle ton prix, envoie un cargo à travers l'Atlantique et négocie avec Austin.",
-    "aese": "Une ville miniature, une usine qui ferme : interroge les vrais habitants, aménage la friche, remplis les bocaux du budget et gagne le vote du conseil.",
+    "apes": "Douze élèves malades : l'eau de la cantine est-elle en cause ? Prélève, dose, étalonne, compte les bactéries… puis signe le bulletin d'analyse.",
+    "veto": "Les génisses d'une ferme flamande maigrissent : l'aliment est-il en cause ? Pèse, compare les prés, traque le parasite au microscope… puis signe l'ordonnance.",
+    "cupge": "Une nuit de consultant·e junior : une marque lilloise perd ses clients. Démasque le chiffre qui ment, bâtis ta note, puis défends-la à 8 h devant la direction.",
+    "d2": "Économiste en banque centrale : l'inflation bondit à 4,2 %. Décompose l'indice, fais tourner la machine de Phillips, puis défends ta recommandation au Conseil.",
+    "lieg": "En anglais, comme la licence : analyste export, fais payer ta première commande américaine. Lettre de crédit, Incoterm, dollar, prix… et le document qui bloque 282 000 $.",
+    "aese": "Chargé·e de mission à la mairie : interroge les habitants, démasque le devis gonflé, boucle budget et financeurs, puis défends le dossier de la friche devant le conseil.",
     "ebmd": "Un téléphone oublié sur un banc de Wenov : fouille les données de Camille, démasque le graphique trompeur et contredis le comité Black Friday, preuves à l'appui.",
 }
 

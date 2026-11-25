@@ -11,11 +11,11 @@
    Tableau de bord : cadrans d'articulations, capteur d'effort de la pince, caméra de la pince, journal.
    Mise en scène illustrative (cellule, client et chiffres fictifs) ; contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
-import { studio } from "./studio.js?v=5545d023b6";
+import { studio } from "./studio.js?v=af8a8a599e";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { makePerson } from "../kit.js?v=5545d023b6";
-import { jpoCard } from "./jpo.js?v=5545d023b6";
-import { palier } from "./palier.js?v=5545d023b6";
+import { makePerson } from "../kit.js?v=af8a8a599e";
+import { jpoCard } from "./jpo.js?v=af8a8a599e";
+import { palier } from "./palier.js?v=af8a8a599e";
 
 const SPEED = /[?&]vite/.test(location.search) ? 6 : 1;      // ?vite : tout va 6 fois plus vite (pour tester)
 const MENTIONS = ["De justesse", "Assez bien", "Bien", "Très bien"];

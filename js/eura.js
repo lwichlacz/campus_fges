@@ -5,14 +5,14 @@
    le Blan-Lafont (filature de coton de 1896, siège d'Euratechnologies depuis 2009) et sa tour.
    Chargé à la demande, comme l'atrium : une seule scène de quartier à la fois (léger sur téléphone). */
 import * as THREE from "three";
-import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js?v=5545d023b6";
-import { buildCity, pointInPoly, softenFar } from "./city.js?v=5545d023b6";
-import { buildStation } from "./station.js?v=5545d023b6";
-import { EMAP } from "./euramap.js?v=5545d023b6";
-import { buildLandmarks } from "./landmarks.js?v=5545d023b6";
-import { waterRipples, cloudShade, createRain, CLOUDS, crownGeo } from "./render.js?v=5545d023b6";
-import { EURA_DETAILS } from "./eura_details.js?v=5545d023b6";
-import { euraDetails } from "./eura_extra.js?v=5545d023b6";
+import { std, box, cyl, cone, mesh, beam, makePerson, mulberry32 } from "./kit.js?v=af8a8a599e";
+import { buildCity, pointInPoly, softenFar } from "./city.js?v=af8a8a599e";
+import { buildStation } from "./station.js?v=af8a8a599e";
+import { EMAP } from "./euramap.js?v=af8a8a599e";
+import { buildLandmarks } from "./landmarks.js?v=af8a8a599e";
+import { waterRipples, cloudShade, createRain, CLOUDS, crownGeo } from "./render.js?v=af8a8a599e";
+import { EURA_DETAILS } from "./eura_details.js?v=af8a8a599e";
+import { euraDetails } from "./eura_extra.js?v=af8a8a599e";
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const ring = f => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; };
@@ -121,7 +121,7 @@ export function createEura({ background }){
 	{ const blk = ring(EMAP.wenov.street); EMAP.greens = EMAP.greens.filter(([, f]) => { const p = ring(f), [cx, cz] = cen(p); return !pointInPoly(cx, cz, blk); }); }
 	const city = buildCity(scene, EMAP, { offices:true });
 	// horizon : les vrais bâtiments des environs (js/eura_far.js), chargés après le quartier, en un seul lot de volumes
-	import("./eura_far.js?v=5545d023b6").then(({ EFAR }) => {
+	import("./eura_far.js?v=af8a8a599e").then(({ EFAR }) => {
 		const n = EFAR.length/7, geo = new THREE.BoxGeometry(1, 1, 1).translate(0, .5, 0);
 		const im = new THREE.InstancedMesh(geo, std("#ffffff"), n), d = new THREE.Object3D(), c = new THREE.Color();
 		const TINT = [["#a9533c", "#9a4a36", "#b8664a", "#8e4a3c"], ["#d8cfc0", "#cbbfa9", "#e2d9c8"], ["#b9b4ab", "#a7a39b", "#c9c4ba", "#8f949b"]];
