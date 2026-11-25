@@ -1,0 +1,73 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-11-25T12:34:46Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "relation",
+  "id": 10754117,
+  "bounds": {
+    "minlat": 50.6397950,
+    "minlon": 3.0484569,
+    "maxlat": 50.6445647,
+    "maxlon": 3.0523116
+  },
+  "members": [
+    {
+      "type": "way",
+      "ref": 558810387,
+      "role": "outer",
+      "geometry": [
+         { "lat": 50.6398752, "lon": 3.0505434 },
+         { "lat": 50.6404870, "lon": 3.0497431 },
+         { "lat": 50.6407421, "lon": 3.0500648 },
+         { "lat": 50.6409894, "lon": 3.0496964 },
+         { "lat": 50.6422402, "lon": 3.0508608 },
+         { "lat": 50.6426133, "lon": 3.0506383 },
+         { "lat": 50.6430247, "lon": 3.0484569 },
+         { "lat": 50.6433588, "lon": 3.0485146 },
+         { "lat": 50.6433526, "lon": 3.0485598 },
+         { "lat": 50.6440258, "lon": 3.0499488 }
+      ]
+    },
+    {
+      "type": "way",
+      "ref": 776521843,
+      "role": "outer",
+      "geometry": [
+         { "lat": 50.6440258, "lon": 3.0499488 },
+         { "lat": 50.6444132, "lon": 3.0494907 },
+         { "lat": 50.6444449, "lon": 3.0495553 },
+         { "lat": 50.6445647, "lon": 3.0497904 },
+         { "lat": 50.6440576, "lon": 3.0504068 },
+         { "lat": 50.6440041, "lon": 3.0502989 },
+         { "lat": 50.6437865, "lon": 3.0505662 },
+         { "lat": 50.6438367, "lon": 3.0506754 },
+         { "lat": 50.6436318, "lon": 3.0509273 },
+         { "lat": 50.6430697, "lon": 3.0516125 },
+         { "lat": 50.6430830, "lon": 3.0516387 },
+         { "lat": 50.6427506, "lon": 3.0520351 },
+         { "lat": 50.6415758, "lon": 3.0521540 },
+         { "lat": 50.6407669, "lon": 3.0522295 },
+         { "lat": 50.6398993, "lon": 3.0523085 },
+         { "lat": 50.6398648, "lon": 3.0523116 },
+         { "lat": 50.6397950, "lon": 3.0505510 },
+         { "lat": 50.6398752, "lon": 3.0505434 }
+      ]
+    }
+  ],
+  "tags": {
+    "highway": "pedestrian",
+    "lit": "yes",
+    "name": "Esplanade du Champ de Mars",
+    "type": "multipolygon",
+    "wikidata": "Q36699933"
+  }
+}
+
+  ]
+}

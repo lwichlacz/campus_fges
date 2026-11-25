@@ -12,6 +12,7 @@
    La lumière des fenêtres suit les 48 heures (vendredi 18 h → dimanche 17 h) ; le style choisi habille toute la salle.
    Équipe, joueurs et scores sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { makePerson } from "../kit.js?v=5545d023b6";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
 import { palier } from "./palier.js?v=5545d023b6";
@@ -234,6 +235,7 @@ export function openGaming({ formation, audio, isFav, toggleFav, onClose, onEven
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping;
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#11142a");
+	studio(renderer, scene, { env:.4, warm:.1 });          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	const camera = new THREE.PerspectiveCamera(45, 1, .05, 80);
 	const hemi = new THREE.HemisphereLight("#ffffff", "#545a78", 1); scene.add(hemi);
 	const sun = new THREE.DirectionalLight("#ffffff", 1.2); sun.position.set(-7, 9, 5); sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024);

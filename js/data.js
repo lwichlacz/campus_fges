@@ -297,26 +297,31 @@ export const SEASONS = {
 	automne: {
 		icon:"🍂", label:"Automne",
 		grass:"#a9b05c", lawn:"#9cb257", path:"#dec59c", water:"#6e9aa4", slate:"#4f5767",
-		trees:["#d9822b","#e6a43c","#c4532f","#b98a2f","#a03d2a","#e9b84b","#8f9a3c"], conifer:"#4d6a44", bush:["#7c8f3e","#b0602e","#97a046"],
+		trees:["#c97f34","#d9a043","#b05532","#a8893a","#8e4630","#d6b04f","#8a9440","#a3a24a"], conifer:"#4d6a44", bush:["#7c8f3e","#b0602e","#97a046"],
 		parts:{ n:150, colors:["#d9822b","#c4532f","#e6a43c","#b98a2f"], w:.38, h:.26, speed:1.3, sway:1.3 },
-		day:{ skyTop:"#a8c6df", skyBot:"#fbe8cc", fog:"#f3e4cb", hemiSky:"#ffe8c4", hemiGround:"#7d5b3c", hemiI:1.15, sun:"#ffcf8f", sunI:2.5, sunPos:[-70,62,50], cloud:"#fff1dc", exposure:1 }
+		day:{ skyTop:"#86aed3", skyBot:"#eef0ea", fog:"#dfe3e1", hemiSky:"#d2dce6", hemiGround:"#7a6048", hemiI:.98, sun:"#ffe6c2", sunI:3.7, sunPos:[-70,62,50], cloud:"#fbf9f4", exposure:1.02,
+			gSat:.97, gCon:1.07, gLift:"#04080f", gGain:"#fffaf2" }
 	},
 	hiver: {
 		icon:"❄️", label:"Hiver",
 		grass:"#dfe6f1", lawn:"#e9eff7", path:"#c4bfcc", water:"#4d6a8a", slate:"#c8d1df",
 		trees:["#eef3f9","#dde6f1","#d0dae8"], conifer:"#35503f", bush:["#dfe7f0","#cbd6e2","#e9eef5"], snowy:true,
 		parts:{ n:400, colors:["#ffffff","#eef3ff"], w:.17, h:.17, speed:1.7, sway:.7 },
-		day:{ skyTop:"#9db5d4", skyBot:"#eaf0f6", fog:"#e1e8f0", hemiSky:"#eef4ff", hemiGround:"#7a8296", hemiI:1.05, sun:"#fff0dc", sunI:2.1, sunPos:[-60,50,55], cloud:"#f6f8fb", exposure:.95 }
+		day:{ skyTop:"#8eaacd", skyBot:"#eaf0f6", fog:"#dde5ee", hemiSky:"#e2ecfa", hemiGround:"#7a8296", hemiI:.85, sun:"#fff0dc", sunI:2.7, sunPos:[-60,50,55], cloud:"#f6f8fb", exposure:.97,
+			gSat:.95, gCon:1.06, gLift:"#050a14", gGain:"#fdfdff" }
 	},
 	printemps: {
 		icon:"🌸", label:"Printemps",
 		grass:"#8dc463", lawn:"#80c05a", path:"#e3d4b1", water:"#79b5c9", slate:"#4f5767",
 		trees:["#7dbb4f","#93c95a","#f3b3c6","#6aa848","#f7c9d6","#5f9e43"], conifer:"#466f48", bush:["#6aa848","#e88fb0","#f2c94c"],
 		parts:{ n:120, colors:["#f8c3d3","#fbd7e1","#ffffff"], w:.27, h:.2, speed:.8, sway:1.5 },
-		day:{ skyTop:"#8dc4e6", skyBot:"#e6f4f4", fog:"#d8ecef", hemiSky:"#e6f5ff", hemiGround:"#6b7b4a", hemiI:1.05, sun:"#fff2d6", sunI:2.7, sunPos:[-55,80,55], cloud:"#ffffff", exposure:1 }
+		day:{ skyTop:"#7fb6dd", skyBot:"#e8f3f2", fog:"#d6e7ea", hemiSky:"#d6e9fa", hemiGround:"#6b7b4a", hemiI:.86, sun:"#fff2d6", sunI:3.3, sunPos:[-55,80,55], cloud:"#ffffff", exposure:1.02,
+			gSat:1, gCon:1.06, gLift:"#03080c", gGain:"#fffcf4" }
 	}
 };
 // heure dorée : soleil bas à l'ouest, ombres longues, ciel rose ; les premières fenêtres s'allument (nightK)
-export const GOLDEN = { skyTop:"#7d8cc6", skyBot:"#ffb487", fog:"#efb894", hemiSky:"#ffcaa0", hemiGround:"#6a4733", hemiI:.98, sun:"#ff9a4f", sunI:2.9, sunPos:[-95,17,28], cloud:"#ffc2a0", exposure:1.1, nightK:.3 };
-export const NIGHT = { skyTop:"#141a38", skyBot:"#4f4b7c", fog:"#33375f", hemiSky:"#8394cc", hemiGround:"#221f38", hemiI:.6, sun:"#a8b9ff", sunI:.65, sunPos:[60,55,-30], cloud:"#4f5684", exposure:1.05 };
+export const GOLDEN = { skyTop:"#7d8cc6", skyBot:"#ffb487", fog:"#efb894", hemiSky:"#ffcaa0", hemiGround:"#6a4733", hemiI:.78, sun:"#ff9a4f", sunI:3.5, sunPos:[-95,17,28], cloud:"#ffc2a0", exposure:1.1, nightK:.3,
+	gSat:1.04, gCon:1.08, gLift:"#0b0716", gGain:"#fff3e4" };
+export const NIGHT = { skyTop:"#141a38", skyBot:"#4f4b7c", fog:"#33375f", hemiSky:"#8394cc", hemiGround:"#221f38", hemiI:.6, sun:"#a8b9ff", sunI:.65, sunPos:[60,55,-30], cloud:"#4f5684", exposure:1.05,
+	gSat:.92, gCon:1.08, gLift:"#04071a", gGain:"#f2f4ff" };
 export const SEASON_ORDER = ["automne","hiver","printemps"];

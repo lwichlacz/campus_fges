@@ -5,6 +5,7 @@
    Le site est montré comme une boutique en 3D vue en coupe : chaque personnage est un groupe de visiteurs,
    ceux qui font demi-tour sont des ventes perdues. Chiffres simplifiés et illustratifs, à relire par l'équipe du master. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
 import { palier } from "./palier.js?v=5545d023b6";
@@ -300,6 +301,7 @@ function world(canvas){
 	renderer.setClearColor(0x000000, 0);
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	const scene = new THREE.Scene();
+	studio(renderer, scene, { dof:false });          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	// vue isométrique (caméra orthographique) : la maquette se lit comme une illustration
 	const camera = new THREE.OrthographicCamera(-10, 10, 10, -10, .1, 400);
 	const OFF = new THREE.Vector3(15, 25, 31).normalize().multiplyScalar(90);

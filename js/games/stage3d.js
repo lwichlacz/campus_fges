@@ -7,6 +7,7 @@
    - les étiquettes gardent une taille constante à l'écran, réduite sur téléphone. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { studio } from "./studio.js?v=5545d023b6";
 
 export { THREE };
 
@@ -17,6 +18,7 @@ export function stage3d(canvas, o = {}){
 	if(o.shadows !== false){ renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; }
 	canvas.style.width = "100%"; canvas.style.height = "100%";
 	const scene = new THREE.Scene(); scene.background = new THREE.Color(o.bg || "#dfe6ee");
+	studio(renderer, scene, o.studio || {});          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	if(o.fog) scene.fog = new THREE.Fog(o.bg || "#dfe6ee", o.fog[0], o.fog[1]);
 	const camera = new THREE.PerspectiveCamera(o.fov || 38, 1, o.near || .3, o.far || 800);
 	const controls = new OrbitControls(camera, canvas);

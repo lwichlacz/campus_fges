@@ -9,6 +9,7 @@
      - au comité, la pièce du dossier qu'on prend sur la table, puis le chiffre qu'on montre du doigt.
    Le dossier, les chiffres et les cours sont dans ruee-data.js. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { makePerson, std, box, cyl } from "../kit.js?v=5545d023b6";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
 import { palier } from "./palier.js?v=5545d023b6";
@@ -99,6 +100,7 @@ export function openRuee({ formation, audio, isFav, toggleFav, onClose, onEvent,
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.NeutralToneMapping;
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#efe9df");
+	studio(renderer, scene, { warm:.6 });          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	const camera = new THREE.PerspectiveCamera(45, 1, .05, 60);
 	scene.add(new THREE.HemisphereLight("#fffdf7", "#a89b86", 1.45));
 	const sun = new THREE.DirectionalLight("#fff1dc", 1.7); sun.position.set(-3, 7, -6); sun.castShadow = true;

@@ -9,7 +9,7 @@ import { HAUTEURS } from "./hauteurs.js?v=5545d023b6";
 
 const FH = 2.3, BAY = 1.4;
 let FHc = FH;          // hauteur d'un étage pour la carte en cours (MAP.fh : à l'échelle de l'Hôtel Académique)
-const HOUSE_WALLS = ["#b5563d","#a84e3a","#c46a4a","#9c4a38","#b9603f","#efe6d6","#e6d9c1","#d9cbb5","#f3eee6","#cdbfa8","#e9d3b4","#c9c2b8"];
+const HOUSE_WALLS = ["#a8553f","#9b4d3b","#b4654f","#8f4838","#ab5d45","#efe6d6","#e6d9c1","#d9cbb5","#f3eee6","#cdbfa8","#e9d3b4","#c9c2b8"];
 const CAMPUS_WALLS = ["#a9533c","#ebe6dc","#c9b8a0"];
 // ardoises (0, 1, 3, 7), tuiles flamandes (2, 4, 5), zinc (6) ; la teinte vue sur la photo aérienne (rec[8]) prime
 const ROOFS = ["#4f5767","#5d6170","#8d4a3a","#4a505d","#a9583c","#b86a4b","#7f8791","#3b3d42"];
@@ -118,14 +118,244 @@ export function softenFar(mat, nightU){
 	mat.customProgramCacheKey = () => nightU ? "softenFar|night2" : "softenFar";
 }
 
+/* ---------- relief des façades (shader, aucune géométrie en plus) ----------
+   Les fenêtres dessinées sur la texture deviennent des baies creusées : on voit le tableau (l'épaisseur du mur)
+   du côté opposé à la caméra et l'appui d'en haut, le linteau et le jambage portent leur ombre sur la vitre
+   selon la position du soleil. La vitre reflète le ciel (rugosité basse), certaines ont un rideau.
+   Corniche claire en haut des murs (ombre portée dessous), soubassement sombre au pied,
+   et vitrines au rez-de-chaussée d'une partie des immeubles de ville (enseigne colorée, éclairées la nuit). */
+export const FACADE = { uSunW:{ value:new THREE.Vector3(-.6, .6, .4) }, uFH:{ value:FH } };
+const GLASS_RECT = {          // vitre dans une cellule (une travée × un étage), v vers le haut ; couleur du tableau
+	house:[.344, .656, .297, .828, "#d9ccb6", 1],
+	campus:[.109, .891, .297, .766, "#d4ccbe", 0],
+	modern:[.047, .953, .344, .734, null, 0],
+	recent:[.156, .844, .141, .891, "#3b3f46", 0],
+	office:[.047, .953, .125, .9375, null, 0]          // mur-rideau (Euratechnologies) : lames ou bandeaux selon le bâtiment, voir plus bas
+};
+const v3 = c => { const k = new THREE.Color(c); return `vec3( ${k.r.toFixed(3)}, ${k.g.toFixed(3)}, ${k.b.toFixed(3)} )`; };
+function facadeDetail(mat, style, wall, nightU){
+	const G = GLASS_RECT[style]; if(!G) return;
+	const [gx0, gx1, gy0, gy1, rev, shops] = G;
+	const prev = mat.onBeforeCompile, prevKey = mat.customProgramCacheKey;
+	mat.onBeforeCompile = (sh, r) => {
+		prev.call(mat, sh, r);
+		Object.assign(sh.uniforms, FACADE);
+		if(nightU) sh.uniforms.uFNight = nightU;
+		sh.vertexShader = sh.vertexShader
+			.replace("#include <common>", "#include <common>\nattribute float aTop; varying float vFTop; varying float vFY;")
+			.replace("#include <project_vertex>", `#include <project_vertex>
+	vFTop = aTop; vFY = ( modelMatrix*vec4( transformed, 1.0 ) ).y;`);
+		sh.fragmentShader = sh.fragmentShader
+			.replace("#include <common>", `#include <common>
+uniform vec3 uSunW; uniform float uFH; ${nightU ? "uniform float uFNight;" : ""} varying float vFTop; varying float vFY;
+float fHash( vec2 p ){ return fract( sin( dot( p, vec2( 12.9898, 78.233 ) ) )*43758.5453 ); }`)
+			.replace("#include <color_fragment>", `#include <color_fragment>
+	float fGlass = 0.0, fShop = 0.0;
+	#ifdef USE_MAP
+	{
+		vec3 N = normalize( vNormal ), U = normalize( ( viewMatrix*vec4( 0.0, 1.0, 0.0, 0.0 ) ).xyz );
+		vec3 T = normalize( cross( N, U ) ), V = normalize( vViewPosition ), L = normalize( ( viewMatrix*vec4( uSunW, 0.0 ) ).xyz );
+		float flat_ = 1.0 - abs( dot( N, U ) );                      // murs seulement (pas les dessous ni les dessus)
+		vec2 cell = fract( vMapUv ), cid = floor( vMapUv + 0.001 );
+		float bh = fract( dot( vColor, vec3( 91.7, 37.3, 13.1 ) ) );
+		float sc = uFH/2.3, top = vFTop;
+		// vitrines : rez-de-chaussée des immeubles de ville d'au moins trois niveaux, un sur trois
+		${shops ? `if( top > uFH*2.6 && cid.y < 0.5 && bh < 0.36 && flat_ > 0.5 ){
+			fShop = 1.0;
+			float sx = step( 0.05, cell.x )*step( cell.x, 0.95 );
+			float glassS = sx*step( 0.12, cell.y )*step( cell.y, 0.74 );
+			float fascia = step( 0.78, cell.y )*step( cell.y, 0.95 );
+			vec3 sign_ = bh < 0.09 ? vec3( 0.13, 0.25, 0.19 ) : bh < 0.18 ? vec3( 0.36, 0.09, 0.12 ) : bh < 0.27 ? vec3( 0.10, 0.13, 0.24 ) : vec3( 0.09, 0.09, 0.10 );
+			diffuseColor.rgb = mix( diffuseColor.rgb, sign_, fascia );
+			diffuseColor.rgb = mix( diffuseColor.rgb, vec3( 0.24, 0.25, 0.25 ), step( cell.y, 0.12 )*sx );
+			vec3 inside = mix( vec3( 0.17, 0.2, 0.24 ), vec3( 0.34, 0.31, 0.27 ), smoothstep( 0.1, 0.6, cell.y ) );
+			diffuseColor.rgb = mix( diffuseColor.rgb, inside, glassS );
+			fGlass = glassS;
+		} else` : ""} {
+			// la baie : tableau visible (parallaxe), ombres du linteau et du jambage, vitre
+			float inG = step( ${gx0.toFixed(3)}, cell.x )*step( cell.x, ${gx1.toFixed(3)} )*step( ${gy0.toFixed(3)}, cell.y )*step( cell.y, ${gy1.toFixed(3)} );
+			if( inG > 0.5 && flat_ > 0.5 ){
+				float dU = 0.13*sc/( 1.4*sc ), dV = 0.13*sc/uFH;          // 13 cm de tableau visible, en unités de cellule
+				float vn = max( dot( V, N ), 0.12 ), vt = dot( V, T ), vu = dot( V, U );
+				float x0 = ${gx0.toFixed(3)}, x1 = ${gx1.toFixed(3)}, y0 = ${gy0.toFixed(3)}, y1 = ${gy1.toFixed(3)};
+				// côté vu de la caméra : le tableau du côté opposé, l'appui (vu d'en haut) ou le linteau (vu d'en bas)
+				float ox = min( dU*abs( vt )/vn, 0.22*( x1 - x0 ) ), oy = min( dV*abs( vu )/vn, 0.16*( y1 - y0 ) );
+				float side = vt > 0.0 ? step( cell.x, x0 + ox ) : step( x1 - ox, cell.x );
+				float sill = vu > 0.0 ? step( cell.y, y0 + oy ) : step( y1 - oy, cell.y );
+				float ln = dot( L, N ), lt = dot( L, T ), lu = dot( L, U ), sunOn = step( 0.02, ln );
+				vec3 revC = ${rev ? v3(rev) : "diffuseColor.rgb*0.92"};
+				float gl = 1.0 - max( side, sill );
+				// ombres portées sur la vitre (soleil sur la façade) : sous le linteau, contre le jambage
+				float lnm = max( ln, 0.05 );
+				float sh = sunOn*max( step( y1 - min( dV*1.6*max( lu, 0.0 )/lnm, 0.5*( y1 - y0 ) ), cell.y ), lt > 0.0 ? step( x1 - min( dU*1.6*lt/lnm, 0.5*( x1 - x0 ) ), cell.x ) : step( cell.x, x0 + min( -dU*1.6*lt/lnm, 0.5*( x1 - x0 ) ) ) );
+				// le tableau prend la lumière selon son orientation
+				float revLit = side > 0.5 ? ( vt > 0.0 ? clamp( -lt*1.4 + 0.75, 0.55, 1.15 ) : clamp( lt*1.4 + 0.75, 0.55, 1.15 ) ) : clamp( lu*0.9 + 0.8, 0.6, 1.2 );
+				vec3 c = diffuseColor.rgb;
+				// vitre : reflet du ciel en dégradé, rideau sur certaines fenêtres, ombre portée
+				float h = fHash( cid + bh*17.0 );
+				vec3 glassC = mix( vec3( 0.13, 0.16, 0.21 ), vec3( 0.24, 0.28, 0.33 ), smoothstep( y0, y1, cell.y ) );
+				if( h < 0.3 ) glassC = mix( glassC, vec3( 0.62, 0.58, 0.52 ), 0.55*step( y0 + ( y1 - y0 )*( 0.25 + h ), cell.y ) );
+				glassC *= 1.0 - 0.45*sh;
+				c = mix( glassC, revC*revLit*0.82, 1.0 - gl );
+				${style === "office" ? `// bureaux : un bâtiment sur trois a des lames verticales (et leur ombre), un sur trois des bandeaux horizontaux
+				if( bh < 0.34 ){
+					float fin = max( step( cell.x, 0.11 ), step( 0.89, cell.x ) );
+					c = mix( c*( 1.0 - 0.35*sunOn*( lt > 0.0 ? step( cell.x, 0.2 ) : step( 0.8, cell.x ) ) ), bh < 0.17 ? vec3( 0.16, 0.17, 0.19 ) : vec3( 0.82, 0.84, 0.85 ), fin );
+					gl *= 1.0 - fin;
+				} else if( bh < 0.67 ){
+					float band = step( 0.82, cell.y );
+					c = mix( c*( 1.0 - 0.3*sunOn*step( 0.68, cell.y ) ), diffuseColor.rgb*1.15 + 0.06, band );
+					gl *= 1.0 - band;
+				}` : ""}
+				diffuseColor.rgb = c;
+				fGlass = gl;
+			}
+		}
+		// corniche et soubassement
+		if( top > 0.0 && flat_ > 0.5 ){
+			float cb = 0.32*sc;
+			float corn = step( top - cb, vFY );
+			float under = step( top - cb - 0.14*sc, vFY )*( 1.0 - corn );
+			diffuseColor.rgb = mix( diffuseColor.rgb, ${style === "house" || style === "campus" ? v3("#e3d8c4") : "diffuseColor.rgb*1.12"}, corn );
+			diffuseColor.rgb *= 1.0 - 0.38*under;
+			float plinth = 1.0 - step( 0.6*sc, vFY );
+			if( fShop < 0.5 ) diffuseColor.rgb = mix( diffuseColor.rgb, ${style === "house" ? v3("#5f6064") : "diffuseColor.rgb*0.72"}, plinth*0.85 );
+		}
+	}
+	#endif`)
+			.replace("#include <roughnessmap_fragment>", `#include <roughnessmap_fragment>
+	roughnessFactor = mix( roughnessFactor, 0.16, fGlass );`)
+			.replace("#include <lights_physical_fragment>", `${nightU ? "if( fShop > 0.5 ) totalEmissiveRadiance = fGlass*vec3( 1.0, 0.78, 0.5 )*1.6*smoothstep( 0.1, 0.45, uFNight );\n" : ""}#include <lights_physical_fragment>`);
+	};
+	const base = prevKey ? prevKey.call(mat) : "";
+	mat.customProgramCacheKey = () => base + "|facade-" + style;
+}
+
+/* ---------- marquages et revêtements (shaders) ----------
+   Chaussée : enrobé taché et rapiécé, caniveaux, passage piéton à chaque carrefour, axe en tirets sur les grandes rues.
+   Trottoir : bordure de pierre côté rue, dalles. Rues piétonnes : pavés. Les motifs fins s'effacent au loin (pas de fourmillement). */
+const NOISE_GLSL = `float sNoise( vec2 p ){ vec2 i = floor( p ), f = fract( p ); f = f*f*( 3.0 - 2.0*f );
+	float a = fract( sin( dot( i, vec2( 127.1, 311.7 ) ) )*43758.5453 ), b = fract( sin( dot( i + vec2( 1.0, 0.0 ), vec2( 127.1, 311.7 ) ) )*43758.5453 );
+	float c = fract( sin( dot( i + vec2( 0.0, 1.0 ), vec2( 127.1, 311.7 ) ) )*43758.5453 ), d = fract( sin( dot( i + vec2( 1.0, 1.0 ), vec2( 127.1, 311.7 ) ) )*43758.5453 );
+	return mix( mix( a, b, f.x ), mix( c, d, f.x ), f.y ); }`;
+function streetShade(mat, key, body){
+	const prev = mat.onBeforeCompile;
+	const hasPrev = prev && prev !== THREE.Material.prototype.onBeforeCompile;
+	mat.onBeforeCompile = (sh, r) => {
+		if(hasPrev) prev.call(mat, sh, r);
+		sh.vertexShader = sh.vertexShader
+			.replace("#include <common>", "#include <common>\nvarying vec2 vSUV; varying vec2 vSW;")
+			.replace("#include <project_vertex>", "#include <project_vertex>\n	vSUV = uv; vSW = ( modelMatrix*vec4( transformed, 1.0 ) ).xz;");
+		sh.fragmentShader = sh.fragmentShader
+			.replace("#include <common>", "#include <common>\nvarying vec2 vSUV; varying vec2 vSW;\n" + NOISE_GLSL)
+			.replace("#include <color_fragment>", `#include <color_fragment>
+	{ float kq = floor( ( vSUV.x + 500.0 )/1000.0 ), hw = kq*0.25, rem = vSUV.x - kq*1000.0, dualC = step( 50.0, rem ), ac = rem - 100.0*dualC, a = abs( ac ), v = vSUV.y;
+	  float fade = 1.0 - smoothstep( 35.0, 90.0, length( vViewPosition ) );
+	  vec3 c = diffuseColor.rgb;
+	  ${body}
+	  diffuseColor.rgb = c; }`);
+	};
+	const pk = mat.customProgramCacheKey && mat.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey ? mat.customProgramCacheKey.call(mat) : "";
+	mat.customProgramCacheKey = () => pk + "|street-" + key;
+	mat.needsUpdate = true;
+}
+function streetShaders(roadM, pedM, walkM){
+	// v (voir les rues) : jd = distance au carrefour ; mk = passages piétons permis
+	const JD = `float far_ = step( 900.0, v ), noMk = step( 400.0, v )*( 1.0 - far_ ), jd = far_ > 0.5 ? 1e4 : v - 500.0*noMk, mk = ( 1.0 - noMk )*( 1.0 - far_ );`;
+	streetShade(roadM, "road", JD + `
+	  // unités de la carte (1 ≈ 2,5 m)
+	  float n = sNoise( vSW*0.45 )*0.55 + sNoise( vSW*2.2 )*0.3 + sNoise( vSW*7.0 )*0.15;
+	  c *= 0.9 + 0.2*n;
+	  c *= 1.0 - 0.1*step( 0.82, sNoise( vSW*0.17 + 3.3 ) );                          // reprises d'enrobé
+	  c = mix( c, c*0.72, smoothstep( hw - 0.28, hw - 0.05, a )*step( 2.6, jd ) );       // caniveau (pas dans un carrefour)
+	  float zb = mk*step( 2.9, jd )*step( jd, 4.2 )*step( a, hw - 0.14 )*step( 0.5, fract( a/0.42 + 0.25 ) )*step( 1.15, hw );
+	  c = mix( c, vec3( 0.84, 0.83, 0.8 ), zb*0.9 );
+	  float stopL = mk*step( 4.4, jd )*step( jd, 4.5 )*step( a, hw - 0.14 )*step( 1.15, hw );
+	  c = mix( c, vec3( 0.82 ), stopL*0.85*step( 0.0, ac ) );
+	  float dv = far_ > 0.5 ? v : jd;
+	  float dash = step( a, 0.035 )*step( fract( dv/2.4 ), 0.5 )*step( 5.2, dv )*step( 1.75, hw )*( 1.0 - dualC );
+	  c = mix( c, vec3( 0.8, 0.79, 0.76 ), dash*0.85 );`);
+	streetShade(pedM, "ped", `
+	  vec2 q = vSW*vec2( 7.0, 10.0 ); q.x += step( 1.0, mod( floor( q.y ), 2.0 ) )*0.5;
+	  vec2 f = fract( q ); float j = smoothstep( 0.0, 0.1, f.x )*smoothstep( 1.0, 0.9, f.x )*smoothstep( 0.0, 0.14, f.y )*smoothstep( 1.0, 0.86, f.y );
+	  float h = fract( sin( dot( floor( q ), vec2( 12.9898, 78.233 ) ) )*43758.5453 );
+	  c *= mix( 1.0, ( 0.8 + 0.12*h )*mix( 0.82, 1.0, j ), fade ) * ( 0.95 + 0.1*sNoise( vSW*0.3 ) );`);
+	streetShade(walkM, "walk", JD + `
+	  float rw = hw - 1.3;                                                              // bord de la chaussée
+	  float curb = step( rw - 0.02, a )*step( a, rw + 0.11 )*step( 2.6, jd );           // pas de bordure dans un carrefour
+	  vec2 g = fract( vSW/0.32 ); float joint = max( step( 0.93, g.x ), step( 0.93, g.y ) );
+	  c *= 1.0 - 0.07*joint*fade*( 1.0 - curb );
+	  c *= 0.95 + 0.08*sNoise( vSW*1.1 );
+	  c = mix( c, vec3( 0.86, 0.83, 0.79 ), curb );
+	  c *= 1.0 - 0.25*step( rw + 0.11, a )*step( a, rw + 0.15 )*step( 2.6, jd );                        // joint sombre derrière la bordure`);
+}
+
+/* ---------- mobilier : vélos V'Lille aux stations, bancs au bord des pelouses ----------
+   Stations : les lieux « 🚲 » de la carte ; une rangée de bornettes et de vélos sur le trottoir, le long de la rue la plus
+   proche, et la borne rouge. Bancs : sur les pelouses d'au moins 120 unités², face au centre, un pour 160 unités² (4 au plus). */
+function streetFurniture(MAP, scene, S){
+	const d = new THREE.Object3D(), bikes = [], docks = [], kiosks = [], benches = [];
+	for(const [px, pz, icon] of MAP.places || []){
+		if(icon !== "🚲") continue;
+		let best = null;
+		for(const [w, code, p] of MAP.roads){ if(code === 1) continue; for(let i=0;i+3<p.length;i+=2){ const dd = segDist(px, pz, p[i], p[i+1], p[i+2], p[i+3]); if(!best || dd < best.d) best = { d:dd, w, ax:p[i], az:p[i+1], bx:p[i+2], bz:p[i+3] }; } }
+		if(!best || best.d > 12) continue;
+		const ux = best.bx - best.ax, uz = best.bz - best.az, l = Math.hypot(ux, uz) || 1, tx = ux/l, tz = uz/l;
+		const t = Math.max(0, Math.min(l, (px - best.ax)*tx + (pz - best.az)*tz)), cx = best.ax + tx*t, cz = best.az + tz*t;
+		let nx = -tz, nz = tx; if((px - cx)*nx + (pz - cz)*nz < 0){ nx = -nx; nz = -nz; }
+		const off = best.w/2 + .62, ang = Math.atan2(nx, nz);
+		for(let k = -3; k <= 3; k++){
+			const x = cx + nx*off + tx*k*.55, z = cz + nz*off + tz*k*.55;
+			if(S.inBuilding(x, z, .2)) continue;
+			if(k === -3){ kiosks.push([x, z, ang]); continue; }
+			docks.push([x, z, ang]);
+			if((k*7 + Math.round(px)) % 3) bikes.push([x - nx*.05, z - nz*.05, ang]);
+		}
+	}
+	const rnd = mulberry32(77);
+	for(const [code, flat] of MAP.greens || []){
+		if(code === 1) continue;
+		const p = ring(flat); if(p.length < 3) continue;
+		const A = Math.abs(signedArea(p)); if(A < 120) continue;
+		const cx = p.reduce((a, q) => a + q[0], 0)/p.length, cz = p.reduce((a, q) => a + q[1], 0)/p.length;
+		const n = Math.min(4, Math.round(A/160));
+		for(let k=0;k<n;k++){
+			const i = Math.floor(rnd()*p.length), a = p[i], b = p[(i+1) % p.length], f = .3 + rnd()*.4;
+			let x = a[0] + (b[0]-a[0])*f, z = a[1] + (b[1]-a[1])*f; const dl = Math.hypot(cx - x, cz - z) || 1; x += (cx - x)/dl*1.1; z += (cz - z)/dl*1.1;
+			if(!pointInPoly(x, z, p) || S.inBuilding(x, z, .6) || benches.some(([bx, bz]) => Math.hypot(bx - x, bz - z) < 4)) continue;
+			benches.push([x, z, Math.atan2(cx - x, cz - z)]);
+		}
+	}
+	const inst = (geo, mat, list, y = 0, cast = true) => {
+		if(!list.length) return;
+		const im = new THREE.InstancedMesh(geo, mat, list.length);
+		list.forEach(([x, z, a], i) => { d.position.set(x, y, z); d.rotation.set(0, a, 0); d.updateMatrix(); im.setMatrixAt(i, d.matrix); });
+		im.castShadow = cast; im.receiveShadow = true; scene.add(im);
+	};
+	// vélo (le long de l'axe z local : roues en avant et en arrière), ~0,7 de long
+	const wheel = new THREE.TorusGeometry(.17, .022, 4, 12).rotateY(Math.PI/2);
+	inst(wheel.clone().translate(0, .19, .26), std("#2b2b2e"), bikes);
+	inst(wheel.clone().translate(0, .19, -.26), std("#2b2b2e"), bikes);
+	inst(new THREE.BoxGeometry(.05, .05, .5).rotateX(-.25).translate(0, .33, 0), std("#d9dadc", { roughness:.5 }), bikes);
+	inst(new THREE.BoxGeometry(.06, .06, .3).translate(0, .3, -.22), std("#c8202f"), bikes);          // garde-boue et panier rouges de V'Lille
+	inst(new THREE.BoxGeometry(.32, .04, .05).translate(0, .5, .22), std("#2b2b2e"), bikes);
+	inst(new THREE.BoxGeometry(.08, .2, .08).translate(0, .1, -.38), std("#3a3d44"), docks);          // bornettes
+	inst(new THREE.BoxGeometry(.28, .9, .18).translate(0, .45, 0), std("#c8202f", { roughness:.5 }), kiosks);
+	// banc : assise et dossier de bois, piètement noir
+	inst(new THREE.BoxGeometry(1.1, .06, .32).translate(0, .3, 0), std("#8a6446"), benches);
+	inst(new THREE.BoxGeometry(1.1, .26, .05).rotateX(-.18).translate(0, .48, -.16), std("#8a6446"), benches);
+	for(const lx of [-.45, .45]) inst(new THREE.BoxGeometry(.06, .3, .3).translate(lx, .15, 0), std("#2e2f33"), benches, 0, false);
+	return { bikes:bikes.length, benches:benches.length };
+}
+
 /* ---------- accumulateurs de géométrie ---------- */
-function bucket(){ return { pos:[], nor:[], uv:[], col:[] }; }
-let TINT = [1, 1, 1];
+function bucket(){ return { pos:[], nor:[], uv:[], col:[], top:[] }; }
+let TINT = [1, 1, 1], TOP = -1;          // TOP : hauteur du haut du mur (corniche) ; -1 : pas de corniche (pignons, toits)
 function tri(B, a, b, c, n, ua=[0,0], ub=[0,0], uc=[0,0]){
 	const e1x=b[0]-a[0], e1y=b[1]-a[1], e1z=b[2]-a[2], e2x=c[0]-a[0], e2y=c[1]-a[1], e2z=c[2]-a[2];
 	const cx=e1y*e2z-e1z*e2y, cy=e1z*e2x-e1x*e2z, cz=e1x*e2y-e1y*e2x;
 	if(cx*n[0] + cy*n[1] + cz*n[2] < 0){ [b,c] = [c,b]; [ub,uc] = [uc,ub]; }
-	B.pos.push(...a,...b,...c); B.nor.push(...n,...n,...n); B.uv.push(...ua,...ub,...uc); B.col.push(...TINT,...TINT,...TINT);
+	B.pos.push(...a,...b,...c); B.nor.push(...n,...n,...n); B.uv.push(...ua,...ub,...uc); B.col.push(...TINT,...TINT,...TINT); B.top.push(TOP, TOP, TOP);
 }
 function toGeo(B){
 	const g = new THREE.BufferGeometry();
@@ -133,6 +363,7 @@ function toGeo(B){
 	g.setAttribute("normal", new THREE.Float32BufferAttribute(B.nor, 3));
 	g.setAttribute("uv", new THREE.Float32BufferAttribute(B.uv, 2));
 	g.setAttribute("color", new THREE.Float32BufferAttribute(B.col, 3));
+	if(B.top.length === B.pos.length/3) g.setAttribute("aTop", new THREE.Float32BufferAttribute(B.top, 1));
 	g.computeBoundingSphere();
 	return g;
 }
@@ -309,7 +540,7 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 	const flatRoof = !roof && !mans && kind !== 5;
 	const tr = mulberry32(i*131 + 17), wv = .9 + tr()*.17, wh = (tr() - .5)*.05;
 	const wallTint = [wv*(1 + wh), wv, wv*(1 - wh)], rv = .84 + tr()*.3, roofTint = [rv*(1 + (tr() - .5)*.08), rv, rv*(1 + (tr() - .5)*.1)];
-	TINT = wallTint;
+	TINT = wallTint; TOP = flatRoof ? H + PARAPET : H;
 	let per = (rec[2]*3.7) % 5;
 	for(let i=0;i<p.length;i++){
 		const a = p[i], b = p[(i+1)%p.length];
@@ -327,6 +558,7 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 		}
 		per += len;
 	}
+	TOP = -1;
 	if(roof){
 		const [cx, cz, ang, L, D, eave = .25] = roof;
 		const ux = Math.cos(ang), uz = Math.sin(ang), wx = -uz, wz = ux;
@@ -388,7 +620,7 @@ function addBuilding(Bw, Br, Bf, rec, i=0, extras=null){
 }
 
 export function buildCity(scene, MAP, opts={}){
-	FHc = MAP.fh || FH;
+	FHc = MAP.fh || FH; FACADE.uFH.value = FHc;
 	// niveaux corrigés d'après les hauteurs de l'IGN (js/hauteurs.js), seulement si le bâtiment est bien celui attendu
 	if(MAP.ha) for(const [i, cx, cz, lv] of HAUTEURS){
 		const f = MAP.buildings[i] && MAP.buildings[i][4]; if(!f) continue;
@@ -403,6 +635,7 @@ export function buildCity(scene, MAP, opts={}){
 	const wallMat = (hex, style) => {
 		const m = new THREE.MeshStandardMaterial({ map:facade(hex, style), roughness: style === "office" ? .38 : .92, metalness: style === "office" ? .25 : 0, emissive:"#ffffff", emissiveIntensity:0, emissiveMap: style === "house" ? litHouse : litCampus, vertexColors:true });
 		softenFar(m, out.nightU);
+		facadeDetail(m, style, hex, out.nightU);
 		out.walls.push(m); return m;
 	};
 	const houseMats = HOUSE_WALLS.map(c => wallMat(c, "house"));
@@ -420,7 +653,27 @@ export function buildCity(scene, MAP, opts={}){
 		for(let j=0; j<8; j++){ const g = x.createLinearGradient(0, j*16, 0, j*16 + 16); g.addColorStop(0, "rgba(0,0,0,.02)"); g.addColorStop(.75, "rgba(0,0,0,.09)"); g.addColorStop(1, "rgba(0,0,0,.16)"); x.fillStyle = g; x.fillRect(0, j*16, 16, 16); }
 		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.repeat.set(1, 1.6); t.anisotropy = 4; return t;
 	})();
-	const roofMats = ROOFS.map(c => { const m = std(c, { roughness:.8, map:slateTex, vertexColors:true }); m.userData.base = c; out.roofs.push(m); return m; });
+	// ardoises posées en quinconce (joints verticaux décalés d'un rang à l'autre), tuiles flamandes ondulées, zinc à joints debout
+	const roofCanvas = draw => { const c = document.createElement("canvas"); c.width = 64; c.height = 128; const x = c.getContext("2d"); x.fillStyle = "#ffffff"; x.fillRect(0, 0, 64, 128); draw(x);
+		const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.repeat.set(1, 1.6); t.anisotropy = 8; return t; };
+	const slateTex2 = roofCanvas(x => {
+		for(let j=0; j<8; j++){
+			const g = x.createLinearGradient(0, j*16, 0, j*16 + 16); g.addColorStop(0, "rgba(0,0,0,.0)"); g.addColorStop(.7, "rgba(0,0,0,.08)"); g.addColorStop(1, "rgba(0,0,0,.2)");
+			x.fillStyle = g; x.fillRect(0, j*16, 64, 16);
+			x.fillStyle = "rgba(0,0,0,.13)"; for(let i=0; i<4; i++) x.fillRect(((i*16 + (j % 2)*8) % 64), j*16, 2, 16);
+			x.fillStyle = `rgba(255,255,255,${.03 + (j*37 % 5)*.012})`; x.fillRect((j*23) % 48, j*16 + 2, 14, 10);
+		}
+	});
+	const tileTex = roofCanvas(x => {
+		for(let i=0; i<4; i++){ const g = x.createLinearGradient(i*16, 0, i*16 + 16, 0); g.addColorStop(0, "rgba(0,0,0,.2)"); g.addColorStop(.35, "rgba(255,255,255,.08)"); g.addColorStop(.7, "rgba(0,0,0,.02)"); g.addColorStop(1, "rgba(0,0,0,.24)"); x.fillStyle = g; x.fillRect(i*16, 0, 16, 128); }
+		for(let j=0; j<8; j++){ const g = x.createLinearGradient(0, j*16, 0, j*16 + 16); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(.8, "rgba(0,0,0,.06)"); g.addColorStop(1, "rgba(0,0,0,.26)"); x.fillStyle = g; x.fillRect(0, j*16, 64, 16); }
+	});
+	const zincTex = roofCanvas(x => {
+		for(const i of [0, 32]){ x.fillStyle = "rgba(255,255,255,.35)"; x.fillRect(i, 0, 2, 128); x.fillStyle = "rgba(0,0,0,.18)"; x.fillRect(i + 2, 0, 3, 128); }
+		const g = x.createLinearGradient(0, 0, 0, 128); g.addColorStop(0, "rgba(0,0,0,.04)"); g.addColorStop(1, "rgba(0,0,0,0)"); x.fillStyle = g; x.fillRect(0, 0, 64, 128);
+	});
+	const ROOF_TEX = [slateTex2, slateTex2, tileTex, slateTex2, tileTex, tileTex, zincTex, slateTex2];
+	const roofMats = ROOFS.map((c, i) => { const m = std(c, { roughness:i === 6 ? .55 : .82, metalness:i === 6 ? .25 : 0, map:ROOF_TEX[i] || slateTex, vertexColors:true }); m.userData.base = c; out.roofs.push(m); return m; });
 	const roofTex = (() => {
 		const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
 		x.fillStyle = "#ffffff"; x.fillRect(0,0,64,64);
@@ -581,29 +834,96 @@ export function buildCity(scene, MAP, opts={}){
 	const curbM = std("#bdb2a3", { flatShading:false, side:THREE.DoubleSide });
 	out.ground.walk = walkM;
 	const BR = bucket(), BP = bucket(), BW = bucket();
-	function ribbon(B, pts, w, y){
-		const hw = w/2;
+	/* Coordonnées de rue pour les shaders (marquages, bordures) : u = position en travers (m, signée) + 1000 × la
+	   demi-largeur en quarts de mètre ; v = distance au carrefour le plus proche (m), + 1000 si la rue n'en touche pas. */
+	function ribbon(B, pts, w, y0, vAt = null, lift = null, tier = 0, dual = false){
+		const hw = w/2, enc = 1000*Math.round(hw*4) + (dual ? 100 : 0);          // + 100 : une des deux chaussées d'un boulevard (pas de ligne médiane)
+		const V = k => vAt ? vAt[k] : 1000, Y = k => y0 + tier + (lift ? lift[k] : 0);
 		for(let i=0;i+3<pts.length;i+=2){
 			const ax = pts[i], az = pts[i+1], bx = pts[i+2], bz = pts[i+3];
 			const dx = bx-ax, dz = bz-az, l = Math.hypot(dx,dz); if(l < .01) continue;
-			const nx = -dz/l*hw, nz = dx/l*hw;
-			const A = [ax+nx,y,az+nz], Bq = [ax-nx,y,az-nz], C = [bx-nx,y,bz-nz], D = [bx+nx,y,bz+nz];
-			tri(B, A, Bq, C, [0,1,0]); tri(B, A, C, D, [0,1,0]);
+			const nx = -dz/l*hw, nz = dx/l*hw, va = V(i/2), vb = V(i/2 + 1), par = (i/2 % 2)*.001, ya = Y(i/2) + par, yb = Y(i/2 + 1) + par;          // un tronçon sur deux un peu plus haut : dans un virage, l'ordre des deux est toujours le même
+			const A = [ax+nx,ya,az+nz], Bq = [ax-nx,ya,az-nz], C = [bx-nx,yb,bz-nz], D = [bx+nx,yb,bz+nz];
+			tri(B, A, Bq, C, [0,1,0], [enc + hw, va], [enc - hw, va], [enc - hw, vb]); tri(B, A, C, D, [0,1,0], [enc + hw, va], [enc - hw, vb], [enc + hw, vb]);
 		}
 		for(let i=0;i<pts.length;i+=2){
-			const cx = pts[i], cz = pts[i+1], n = 8;
+			// raccord rond entre deux tronçons : un peu plus bas (les tronçons passent devant) et sans marquage (v < 0)
+			const cx = pts[i], cz = pts[i+1], n = 8, yc = Y(i/2) - .006, U0 = [enc, -1];
 			for(let k=0;k<n;k++){
 				const a0 = k/n*Math.PI*2, a1 = (k+1)/n*Math.PI*2;
-				tri(B, [cx,y,cz], [cx+Math.cos(a0)*hw,y,cz+Math.sin(a0)*hw], [cx+Math.cos(a1)*hw,y,cz+Math.sin(a1)*hw], [0,1,0]);
+				tri(B, [cx,yc,cz], [cx+Math.cos(a0)*hw,yc,cz+Math.sin(a0)*hw], [cx+Math.cos(a1)*hw,yc,cz+Math.sin(a1)*hw], [0,1,0], U0, U0, U0);
 			}
 		}
 	}
-	for(const [w, code, pts] of MAP.roads){
-		ribbon(BW, pts, w + 2.6, .035);
-		ribbon(code === 1 ? BP : BR, pts, w, code === 1 ? .085 : .07);
-	}
+	// carrefours : un bout de rue posé sur un nœud partagé avec une autre rue
+	const nk = (x, z) => Math.round(x*2) + "," + Math.round(z*2);
+	const deg = new Map();
+	MAP.roads.forEach(([, , p], r) => { const seen = new Set(); for(let i=0;i<p.length;i+=2){ const k = nk(p[i], p[i+1]); if(seen.has(k)) continue; seen.add(k); deg.set(k, (deg.get(k) || 0) + 1); } });
+	const bollards = [];
+	/* Aux carrefours, les rubans de deux rues se recouvrent à la même hauteur : tout ce qui y diffère (passage piéton,
+	   caniveau, bordure) clignoterait. On mesure donc, sommet par sommet, la distance au carrefour le plus proche
+	   (bout de rue ou croisement en plein milieu) : à moins de 2,6 unités, ni marquage, ni caniveau, ni bordure, et les
+	   deux enrobés, identiques (motifs calés sur le monde), peuvent se recouvrir sans que cela se voie. Les passages
+	   piétons commencent au-delà de la rue croisée, et le sommet du carrefour est surélevé de quelques millimètres :
+	   une rue qui débouche passe devant le caniveau de celle qu'elle rejoint.
+	   v = distance au carrefour (passages piétons permis) ; 500 + distance (rue sans marquage) ; 1000 + abscisse (aucun carrefour). */
+	// boulevards à deux chaussées : deux voies parallèles qui se touchent (OpenStreetMap en trace une par sens)
+	const mids = MAP.roads.map(([w, , p]) => { const k = Math.max(0, Math.floor(p.length/4)*2 - 2); const dx = p[k+2] - p[k], dz = p[k+3] - p[k+1], l = Math.hypot(dx, dz) || 1; return [(p[k] + p[k+2])/2, (p[k+1] + p[k+3])/2, dx/l, dz/l, w]; });
+	const dual = MAP.roads.map(([w, code, p], r) => code !== 1 && w >= 2.4 && MAP.roads.some(([w2, c2, q], r2) => {
+		if(r2 === r || c2 === 1) return false;
+		const [mx, mz, ux, uz] = mids[r];
+		for(let i=0;i+3<q.length;i+=2){
+			const dx = q[i+2] - q[i], dz = q[i+3] - q[i+1], l = Math.hypot(dx, dz) || 1;
+			if(Math.abs(ux*dx/l + uz*dz/l) < .92) continue;
+			if(segDist(mx, mz, q[i], q[i+1], q[i+2], q[i+3]) < (w + w2)/2*1.15) return true;
+		}
+		return false;
+	}));
+	MAP.roads.forEach(([w, code, pts0], ri) => {
+		let pts = pts0, cum = [0];
+		for(let i=0;i+3<pts.length;i+=2) cum.push(cum[cum.length-1] + Math.hypot(pts[i+2]-pts[i], pts[i+3]-pts[i+1]));
+		const L = cum[cum.length-1];
+		let J = [];
+		for(let i=0;i<pts.length;i+=2) if((deg.get(nk(pts[i], pts[i+1])) || 0) > 1) J.push(cum[i/2]);
+		J = J.filter((d, i) => i === 0 || d - J[i-1] > .01);
+		// un sommet à mi-chemin entre deux carrefours : la distance au plus proche reste exacte entre les sommets
+		for(let q=0; q+1<J.length; q++){
+			const m = (J[q] + J[q+1])/2; let k = 1; while(k < cum.length-1 && cum[k] < m) k++;
+			if(cum[k] - m > .05 && m - cum[k-1] > .05){
+				const t = (m - cum[k-1])/(cum[k] - cum[k-1]), x = pts[2*k-2] + (pts[2*k] - pts[2*k-2])*t, z = pts[2*k-1] + (pts[2*k+1] - pts[2*k-1])*t;
+				pts = [...pts.slice(0, 2*k), x, z, ...pts.slice(2*k)]; cum = [...cum.slice(0, k), m, ...cum.slice(k)];
+			}
+		}
+		const jd = d => J.length ? Math.min(...J.map(j => Math.abs(d - j))) : 1e9;
+		const marks = code !== 1 && w >= 2.4 && L > 9 && J.length > 0;
+		const vAt = cum.map(d => !J.length ? 1000 + d : marks ? jd(d) : 500 + jd(d));
+		// chaque rue a son étage (2 mm × 0…4) : deux voies parallèles qui se recouvrent (boulevards à deux chaussées) ne se disputent plus les pixels
+		const lift = cum.map(d => jd(d) < .01 ? .012 : 0), tier = (ri % 5)*.002;
+		ribbon(BW, pts, w + 2.6, .035, vAt, lift, tier);
+		ribbon(code === 1 ? BP : BR, pts, w, code === 1 ? .105 : .07, vAt, lift, tier, dual[ri]);
+		// potelets de part et d'autre de chaque passage piéton, sur le trottoir
+		if(marks){
+			const walkAlong = d => { let k = 1; while(k < cum.length-1 && cum[k] < d) k++; const a = 2*k-2, t = Math.min(1, Math.max(0, (d - cum[k-1])/((cum[k] - cum[k-1]) || 1)));
+				const ax = pts[a], az = pts[a+1], bx = pts[a+2], bz = pts[a+3], l = Math.hypot(bx-ax, bz-az) || 1; return [ax + (bx-ax)*t, az + (bz-az)*t, -(bz-az)/l, (bx-ax)/l]; };
+			for(const j of J) for(const dir of [1, -1]) for(const dv of [2.45, 4.65]){
+				const d = j + dir*dv; if(d < 0 || d > L || jd(d) < dv - .01) continue;          // passage d'un autre carrefour : on n'en pose pas deux fois
+				const [cx, cz, nx, nz] = walkAlong(d);
+				for(const sd of [1, -1]){ const x = cx + nx*sd*(w/2 + .2), z = cz + nz*sd*(w/2 + .2);
+					if(!S.inBuilding(x, z, .25) && S.roadGap(x, z).g > .2 && !S.inHand(x, z) && bollards.every(([a, b]) => Math.hypot(a - x, b - z) > .5)) bollards.push([x, z]); }
+			}
+		}
+	});
 	placeLamps(MAP, out.lampSpots);
 	for(const [B, m, y] of [[BW, walkM], [BR, roadM], [BP, pedM]]){ if(!B.pos.length) continue; const me = new THREE.Mesh(toGeo(B), m); me.receiveShadow = true; scene.add(me); }
+	streetShaders(roadM, pedM, walkM);
+	out.stats.furniture = streetFurniture(MAP, scene, S);
+	if(bollards.length){
+		const bm = new THREE.InstancedMesh(new THREE.CylinderGeometry(.03, .04, .42, 6).translate(0, .21, 0), std("#2d2f35", { roughness:.5 }), bollards.length);
+		const d = new THREE.Object3D();
+		bollards.forEach(([x, z], i) => { d.position.set(x, 0, z); d.updateMatrix(); bm.setMatrixAt(i, d.matrix); });
+		bm.castShadow = true; bm.receiveShadow = true; scene.add(bm);
+	}
+	out.stats.bollards = bollards.length;
 
 	/* ---------- espaces verts ---------- */
 	const lawnM = layer(std("#9cb257", { flatShading:false, side:THREE.DoubleSide }), 1); out.ground.lawn = lawnM;
@@ -623,14 +943,17 @@ export function buildCity(scene, MAP, opts={}){
 			k++;
 		}
 	}
+	const citRing = MAP.citadel ? ring(MAP.citadel.outline) : null, wPolys = (MAP.water || []).map(ring);
 	for(const [far, flat] of MAP.parks){
 		const p = ring(flat);
 		capTris(BL, p, .04, () => [0,0]);
 		const A = Math.abs(signedArea(p)), xs = p.map(q => q[0]), zs = p.map(q => q[1]);
-		const n = Math.min(260, Math.round(A/(far === "Bois de Boulogne" ? 9 : 22)));
+		// le Bois de Boulogne est une vraie forêt (photo IGN) : bien plus dense que les jardins ; ni dans l'eau, ni dans la Citadelle (elle a sa forêt)
+		const bois = far === "Bois de Boulogne", n = bois ? Math.min(1100, Math.round(A/4.5)) : Math.min(260, Math.round(A/22));
 		for(let k=0, tries=0; k<n && tries<n*6; tries++){
 			const x = Math.min(...xs) + rnd()*(Math.max(...xs)-Math.min(...xs)), z = Math.min(...zs) + rnd()*(Math.max(...zs)-Math.min(...zs));
 			if(!pointInPoly(x, z, p)) continue;
+			if(bois && (citRing && pointInPoly(x, z, citRing) || wPolys.some(w => pointInPoly(x, z, w)) || S.inWater(x, z))) continue;
 			out.parkTrees.push({ x, z, k: rnd() < .35 ? "c" : "d", s:.8 + rnd()*.6 });
 			k++;
 		}

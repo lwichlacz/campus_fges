@@ -15,14 +15,14 @@ export const TIME = { value:0 };
 // formes qu'on garde à facettes (style low-poly) même quand le matériau est lissé
 const FACETED = new Set(["IcosahedronGeometry", "OctahedronGeometry", "DodecahedronGeometry", "TetrahedronGeometry", "ConeGeometry"]);
 const facets = g => FACETED.has(g.type) || (g.type === "CylinderGeometry" && g.parameters.radialSegments <= 6);
-const KEEP = ["position", "normal", "uv", "color"];
+const KEEP = ["position", "normal", "uv", "color", "aTop"];          // aTop : haut des murs du quartier (corniches, js/city.js)
 function flipWinding(g){
 	for(const a of Object.values(g.attributes)){
 		const n = a.itemSize, arr = a.array;
 		for(let i=0; i<a.count; i+=3) for(let k=0; k<n; k++){ const t = arr[(i+1)*n + k]; arr[(i+1)*n + k] = arr[(i+2)*n + k]; arr[(i+2)*n + k] = t; }
 	}
 }
-function prep(o, color){
+function prep(o, color, top){
 	let g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
 	for(const k of Object.keys(g.attributes)) if(!KEEP.includes(k)) g.deleteAttribute(k);
 	g.morphAttributes = {}; g.clearGroups();
@@ -31,6 +31,8 @@ function prep(o, color){
 	if(!g.attributes.uv) g.setAttribute("uv", new THREE.Float32BufferAttribute(new Float32Array(n*2), 2));
 	if(color && !g.attributes.color) g.setAttribute("color", new THREE.Float32BufferAttribute(new Float32Array(n*3).fill(1), 3));
 	if(!color && g.attributes.color) g.deleteAttribute("color");
+	if(top && !g.attributes.aTop) g.setAttribute("aTop", new THREE.Float32BufferAttribute(new Float32Array(n).fill(-1), 1));          // pas de corniche
+	if(!top && g.attributes.aTop) g.deleteAttribute("aTop");
 	g.applyMatrix4(o.matrixWorld);
 	if(o.matrixWorld.determinant() < 0) flipWinding(g);
 	return g;
@@ -53,8 +55,9 @@ export function bakeStatic(root){
 	const out = [], mats = new Set();
 	for(const list of groups.values()){
 		const m = list[0].material;
-		const geo = mergeGeometries(list.map(o => prep(o, !!m.vertexColors)), false);
-		if(!geo){ console.warn("bakeStatic : fusion impossible", m.name || m.uuid); continue; }
+		const top = list.some(o => o.geometry.attributes.aTop);
+		const geo = mergeGeometries(list.map(o => prep(o, !!m.vertexColors, top)), false);
+		if(!geo){ console.warn("bakeStatic : fusion impossible", m.name || m.uuid, list.map(o => o.geometry.type + ":" + Object.keys(o.geometry.attributes).join("/")).filter((v, i, A) => A.indexOf(v) === i).join(" | ")); continue; }
 		geo.computeBoundingSphere(); geo.computeBoundingBox();
 		const me = new THREE.Mesh(geo, m);
 		me.castShadow = list[0].castShadow; me.receiveShadow = list[0].receiveShadow;
@@ -279,6 +282,120 @@ export function windowsGate(mat, U){
 	});
 }
 
+/* Houppier en grappes (Vauban et Euratechnologies) : boules bosselées fusionnées, plus sombres en dessous et au cœur,
+   plus claires au sommet (couleur par sommet, multipliée par la teinte de saison de chaque arbre). n : 4 ou 2 boules. */
+export function crownGeo(n){
+	const blobs = n === 4 ? [[0, 0, 0, .86], [.48, .2, .12, .6], [-.4, .3, -.22, .58], [.05, .55, .4, .5]] : [[-.12, 0, 0, .86], [.42, .3, .1, .62]];
+	const parts = blobs.map(([x, y, z, r]) => new THREE.IcosahedronGeometry(r, 0).translate(x, y, z));
+	const g = mergeGeometries(parts.map(p => { p.deleteAttribute("uv"); return p; }));
+	const P = g.attributes.position, col = new Float32Array(P.count*3);
+	const hsh = (x, y, z) => { const v = Math.sin(x*12.9898 + y*78.233 + z*37.719)*43758.5453; return v - Math.floor(v); };
+	for(let i=0; i<P.count; i++){
+		let x = P.getX(i), y = P.getY(i), z = P.getZ(i);
+		const k = .88 + .24*hsh(Math.round(x*100), Math.round(y*100), Math.round(z*100));          // bosses (même sommet, même décalage)
+		x *= k; z *= k; y *= .94 + .12*hsh(Math.round(z*100), Math.round(x*100), 3);
+		P.setXYZ(i, x, y, z);
+		const up = THREE.MathUtils.smoothstep(y, -.8, .9), out = Math.min(1, Math.hypot(x, y*.6, z)/1.05);
+		const v = (.58 + .5*up)*(.82 + .22*out);
+		col[i*3] = v*1.0; col[i*3+1] = v*1.01; col[i*3+2] = v*.97;
+	}
+	g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+	g.computeVertexNormals();
+	return g;
+}
+
+/* =====================================================================
+   Étalonnage des couleurs (toutes qualités) : saturation, contraste, teinte des ombres (lift) et des lumières (gain),
+   réglés par ambiance (jour, heure dorée, nuit, pluie, brouillard). Appliqué en fin de shader, dans l'espace de
+   l'écran, uniquement quand l'image va directement à l'écran (TONE_MAPPING) ; en qualité haute, c'est la passe
+   de sortie du post-traitement qui l'applique (même formule), une seule fois.
+   ===================================================================== */
+export const GRADE = { gSat:{ value:1 }, gCon:{ value:1 }, gLift:{ value:new THREE.Color(0, 0, 0) }, gGain:{ value:new THREE.Color(1, 1, 1) } };
+const GRADE_GLSL = `uniform float gSat, gCon; uniform vec3 gLift, gGain;
+vec3 gradeRGB( vec3 c ){
+	float l = dot( c, vec3( 0.2126, 0.7152, 0.0722 ) );
+	c = mix( vec3( l ), c, gSat );
+	c = ( c - 0.5 )*gCon + 0.5;
+	c = c*gGain + gLift*( 1.0 - c );
+	return clamp( c, 0.0, 1.0 ); }`;
+export function gradeShade(mat){
+	if(mat.userData.grade || mat.isShaderMaterial || mat.isRawShaderMaterial || mat.toneMapped === false) return;
+	mat.userData.grade = true;
+	chain(mat, "grade", sh => {
+		Object.assign(sh.uniforms, GRADE);
+		sh.fragmentShader = sh.fragmentShader
+			.replace("#include <common>", "#include <common>\n#ifdef TONE_MAPPING\n" + GRADE_GLSL + "\n#endif")
+			.replace("#include <colorspace_fragment>", "#include <colorspace_fragment>\n#ifdef TONE_MAPPING\n	gl_FragColor.rgb = gradeRGB( gl_FragColor.rgb );\n#endif");
+	});
+}
+export function gradeAll(root){
+	root.traverse(o => { const m = o.material; if(!m) return; for(const x of Array.isArray(m) ? m : [m]) gradeShade(x); });
+}
+
+/* =====================================================================
+   Occlusion au sol (toutes qualités, calculée une fois) : le quartier est photographié d'en haut (hauteur de chaque
+   point), puis flouté à deux échelles. Le sol s'assombrit doucement au pied des bâtiments, dans les rues étroites,
+   les cours et sous les arbres, comme une maquette éclairée par le ciel. Une seule lecture de texture par pixel.
+   ===================================================================== */
+export const GAO = { uAO:{ value:null }, uAOBox:{ value:new THREE.Vector4(0, 0, 1, 1) }, uAOK:{ value:0 } };
+function boxBlur(src, w, h, r){
+	const tmp = new Float32Array(w*h), out = new Float32Array(w*h), n = 2*r + 1;
+	for(let y=0; y<h; y++){ let acc = 0; const o = y*w;
+		for(let x=-r; x<=r; x++) acc += src[o + Math.min(w-1, Math.max(0, x))];
+		for(let x=0; x<w; x++){ tmp[o+x] = acc/n; acc += src[o + Math.min(w-1, x+r+1)] - src[o + Math.max(0, x-r)]; } }
+	for(let x=0; x<w; x++){ let acc = 0;
+		for(let y=-r; y<=r; y++) acc += tmp[Math.min(h-1, Math.max(0, y))*w + x];
+		for(let y=0; y<h; y++){ out[y*w+x] = acc/n; acc += tmp[Math.min(h-1, y+r+1)*w + x] - tmp[Math.max(0, y-r)*w + x]; } }
+	return out;
+}
+export function bakeGroundAO(renderer, scene, x0, z0, w, h, res = 1024){
+	const cam = new THREE.OrthographicCamera(x0, x0 + w, -z0, -(z0 + h), 1, 600);
+	cam.position.set(0, 400, 0); cam.up.set(0, 0, -1); cam.lookAt(0, 0, 0); cam.updateMatrixWorld(true);
+	const rh = Math.round(res*h/w);
+	const rt = new THREE.WebGLRenderTarget(res, rh);
+	const mat = new THREE.ShaderMaterial({
+		vertexShader:`varying float vH; void main(){ vec4 p = vec4( position, 1.0 );
+			#ifdef USE_INSTANCING
+				p = instanceMatrix*p;
+			#endif
+			vec4 wp = modelMatrix*p; vH = wp.y; gl_Position = projectionMatrix*viewMatrix*wp; }`,
+		fragmentShader:`varying float vH; void main(){ gl_FragColor = vec4( vec3( smoothstep( 0.5, 1.6, vH ) ), 1.0 ); }`,
+		side:THREE.DoubleSide
+	});
+	const bg = scene.background, fog = scene.fog, ov = scene.overrideMaterial, was = renderer.getRenderTarget(), auto = renderer.shadowMap.autoUpdate;
+	scene.background = null; scene.fog = null; scene.overrideMaterial = mat; renderer.shadowMap.autoUpdate = false;
+	renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 1); renderer.clear(); renderer.render(scene, cam);
+	const px = new Uint8Array(res*rh*4); renderer.readRenderTargetPixels(rt, 0, 0, res, rh, px);
+	renderer.setRenderTarget(was); scene.background = bg; scene.fog = fog; scene.overrideMaterial = ov; renderer.shadowMap.autoUpdate = auto;
+	rt.dispose(); mat.dispose();
+	const occ = new Float32Array(res*rh); for(let i=0; i<occ.length; i++) occ[i] = px[i*4]/255;
+	const mpp = w/res;          // unités de carte par pixel (1 ≈ 2,5 m)
+	const near = boxBlur(boxBlur(occ, res, rh, Math.max(1, Math.round(.8/mpp))), res, rh, Math.max(1, Math.round(.8/mpp)));
+	const wide = boxBlur(boxBlur(occ, res, rh, Math.max(1, Math.round(2.6/mpp))), res, rh, Math.max(1, Math.round(2.6/mpp)));
+	const data = new Uint8Array(res*rh*4);
+	for(let i=0; i<occ.length; i++){ const v = Math.min(1, near[i]*.6 + wide[i]*.75); data[i*4] = data[i*4+1] = data[i*4+2] = Math.round(v*255); data[i*4+3] = 255; }
+	const tex = new THREE.DataTexture(data, res, rh);          // première ligne = bas de l'image = z0 + h
+	tex.magFilter = tex.minFilter = THREE.LinearFilter; tex.needsUpdate = true;
+	GAO.uAO.value = tex; GAO.uAOBox.value.set(x0, z0, w, h); GAO.uAOK.value = 1;
+	return tex;
+}
+export function groundAO(mat, k = .5){
+	if(mat.userData.gao) return; mat.userData.gao = true;
+	chain(mat, "gao" + k, sh => {
+		Object.assign(sh.uniforms, GAO);
+		sh.vertexShader = sh.vertexShader
+			.replace("#include <common>", "#include <common>\nvarying vec2 vAOXZ;")
+			.replace("#include <project_vertex>", `#include <project_vertex>\n	{ ${WORLD_VS}\n	vAOXZ = fxW.xz; }`);
+		sh.fragmentShader = sh.fragmentShader
+			.replace("#include <common>", "#include <common>\nuniform sampler2D uAO; uniform vec4 uAOBox; uniform float uAOK; varying vec2 vAOXZ;")
+			.replace("#include <aomap_fragment>", `#include <aomap_fragment>
+	{ vec2 st = ( vAOXZ - uAOBox.xy )/uAOBox.zw; st.y = 1.0 - st.y;
+	  float e = step( 0.0, st.x )*step( st.x, 1.0 )*step( 0.0, st.y )*step( st.y, 1.0 );
+	  float gA = 1.0 - ${k.toFixed(2)}*uAOK*e*texture2D( uAO, clamp( st, 0.0, 1.0 ) ).r;
+	  reflectedLight.indirectDiffuse *= gA; reflectedLight.directDiffuse *= mix( 1.0, gA, 0.45 ); }`);
+	});
+}
+
 /* =====================================================================
    Post-traitement (qualité haute) : occlusion ambiante, halo des lumières, vignette, rendu des couleurs
    ===================================================================== */
@@ -306,6 +423,12 @@ export async function createPost(renderer, scene, camera){
 			c.rgb *= mix( 1.0 - amount, 1.0, v ); gl_FragColor = c; }`
 	});
 	const output = new OutputPass();
+	// étalonnage (même formule que gradeShade) à la fin de la passe de sortie, après le passage en sRGB
+	Object.assign(output.material.uniforms, GRADE);
+	output.material.fragmentShader = output.material.fragmentShader
+		.replace("void main() {", GRADE_GLSL + "\nvoid main() {")
+		.replace(/}\s*$/, "	gl_FragColor.rgb = gradeRGB( gl_FragColor.rgb );\n}");
+	output.material.needsUpdate = true;
 	composer.addPass(render); composer.addPass(gtao); composer.addPass(bloom); composer.addPass(vignette); composer.addPass(output);
 	return {
 		composer, bloom, gtao,

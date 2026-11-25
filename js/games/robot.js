@@ -11,6 +11,7 @@
    Tableau de bord : cadrans d'articulations, capteur d'effort de la pince, caméra de la pince, journal.
    Mise en scène illustrative (cellule, client et chiffres fictifs) ; contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { makePerson } from "../kit.js?v=5545d023b6";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
@@ -190,6 +191,7 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 	renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping;
 	renderer.setClearColor("#e6eaee");
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#eef1f4");
+	studio(renderer, scene, { warm:.1, env:.65 });          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	scene.add(new THREE.HemisphereLight("#ffffff", "#9aa5b1", 1.1));
 	const sun = new THREE.DirectionalLight("#ffffff", 1.7); sun.position.set(4, 9, 6); sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024);
 	Object.assign(sun.shadow.camera, { left:-6, right:6, top:6, bottom:-6, near:1, far:30 }); sun.shadow.bias = -.0005; sun.shadow.normalBias = .02; scene.add(sun);
@@ -203,6 +205,42 @@ export function openRobot({ formation, audio, isFav, toggleFav, onClose, onEvent
 	const grid = new THREE.GridHelper(30, 60, "#c4ccd4", "#d3d9df"); grid.position.y = .002; scene.add(grid);
 	add(boxG(6.4, .02, .12), M("#f2c63c"), scene, -.4, .011, 3.0, false);            // marquage de sécurité au sol
 	add(boxG(.12, .02, 5.2), M("#f2c63c"), scene, 2.8, .011, .4, false);
+
+	/* ---------- l'atelier autour de la cellule : soubassement peint, bardage, fenêtres hautes, poteaux, chemins de câbles.
+	   Les murs ne sont dessinés que côté intérieur : quand la caméra tourne derrière l'un d'eux, il disparaît. ---------- */
+	{
+		const R = 7.5, H = 5.6, plane = (w, h) => G(new THREE.PlaneGeometry(w, h));
+		const clad = (() => { const c = document.createElement("canvas"); c.width = 64; c.height = 8; const x = c.getContext("2d");
+			x.fillStyle = "#e9ecef"; x.fillRect(0, 0, 64, 8); for(let i=0;i<64;i+=8){ x.fillStyle = "rgba(0,0,0,.09)"; x.fillRect(i, 0, 2, 8); x.fillStyle = "rgba(255,255,255,.5)"; x.fillRect(i + 2, 0, 1, 8); }
+			const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(R*2/1.2, 1); t.colorSpace = THREE.SRGBColorSpace; own.push(t); return t; })();
+		const dado = M("#7c8b99", { roughness:.8 }), cladM = M("#ffffff", { map:clad, roughness:.7 }), win = M("#cfe2ef", { emissive:"#dbeaf5", emissiveIntensity:.55, roughness:.15, metalness:.1 });
+		const post = M("#3d4651", { roughness:.5, metalness:.3 }), tray = M("#a9b2bb", { metalness:.5, roughness:.4 }), red = M("#c8202f"), yel = M("#f2c63c"), wood = M("#a57c52", { roughness:.8 });
+		for(const [ang, ox, oz] of [[0, 0, -R], [Math.PI/2, -R, 0], [Math.PI, 0, R], [-Math.PI/2, R, 0]]){
+			const w = new THREE.Group(); w.position.set(ox, 0, oz); w.rotation.y = ang; scene.add(w);
+			add(plane(R*2, 1.4), dado, w, 0, .7, 0, false);
+			add(plane(R*2, 2.1), cladM, w, 0, 2.45, 0, false);
+			add(plane(R*2, 1.3), win, w, 0, 4.15, 0, false);
+			add(plane(R*2, .8), cladM, w, 0, 5.2, 0, false);
+			for(let k = -2; k <= 2; k++) add(plane(.12, 1.3), post, w, k*R*.4 + R*.2, 4.15, .01, false);          // meneaux
+			for(let k = -2; k <= 2; k++) add(plane(.4, H), post, w, k*R*.4, H/2, .03, false);                      // poteaux d'acier
+			add(plane(R*2, .1), yel, w, 0, .05, .02, false);                                                        // plinthe jaune
+			add(plane(R*2, .12), tray, w, 0, 3.3, .05, false);                                                       // chemin de câbles
+		}
+		// le long du mur du fond : établi, panneau d'outils, armoire électrique ; extincteur et pictogrammes de danger
+		add(boxG(2.4, .08, .7), wood, scene, -3.2, .92, -R + .45);
+		for(const x of [-4.3, -2.1]) add(boxG(.08, .9, .6), post, scene, x, .45, -R + .45);
+		add(boxG(2, 1, .04), M("#56606b"), scene, -3.2, 1.75, -R + .04, false);
+		for(let k = 0; k < 6; k++) add(boxG(.06, .32 + (k % 3)*.08, .04), M(["#c8202f", "#2b3138", "#f2c63c"][k % 3]), scene, -4 + k*.32, 1.75, -R + .09, false);
+		add(boxG(1, 1.9, .45), M("#d9dde1", { metalness:.2 }), scene, 2.2, .95, -R + .25);
+		add(cylG(.12, .12, .5, 12), red, scene, -R + .2, .35, -2.6);
+		const sign = (() => { const c = document.createElement("canvas"); c.width = 128; c.height = 128; const x = c.getContext("2d");
+			x.fillStyle = "#f2c63c"; x.beginPath(); x.moveTo(64, 8); x.lineTo(122, 116); x.lineTo(6, 116); x.closePath(); x.fill(); x.lineWidth = 8; x.strokeStyle = "#1d1d1f"; x.stroke();
+			x.fillStyle = "#1d1d1f"; x.font = "900 64px Arial"; x.textAlign = "center"; x.fillText("!", 64, 102);
+			const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; own.push(t); return t; })();
+		const sM = M("#ffffff", { map:sign, transparent:true, roughness:.6 });
+		add(plane(.55, .55), sM, scene, .8, 2.2, -R + .06, false);
+		const s2 = add(plane(.55, .55), sM, scene, -R + .06, 2.2, .6, false); s2.rotation.y = Math.PI/2;
+	}
 
 	/* ---------- le bras ---------- */
 	const grey = M("#9aa3ad", { metalness:.5, roughness:.35 }), dark = M("#2b3138", { metalness:.3, roughness:.5 }), cyan = M("#21b6ce", { roughness:.45 }), white = M("#eef1f4", { roughness:.4 });

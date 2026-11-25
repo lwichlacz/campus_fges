@@ -5,6 +5,7 @@
    suit le dossier : les biens se rangent dans leur zone, la communauté se partage au décès, l'héritage se place…
    On raisonne avec le droit d'aujourd'hui. Famille fictive. Contenu à relire par l'équipe du master. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
 
@@ -161,6 +162,7 @@ function world(canvas){
 	renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#241c15"); scene.fog = new THREE.Fog("#241c15", 70, 140);
+	studio(renderer, scene, { warm:.9, env:.5 });          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	const camera = new THREE.PerspectiveCamera(36, 1, .1, 200);
 	const controls = new OrbitControls(camera, canvas);
 	controls.enableDamping = true; controls.enablePan = false; controls.minDistance = 7; controls.maxDistance = 42; controls.maxPolarAngle = 1.3;

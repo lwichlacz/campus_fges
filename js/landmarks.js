@@ -188,7 +188,8 @@ export function buildLandmarks(scene, MAP, { inBuilding = () => false, inHand = 
 		// deux étiquettes voisines (bulle dépliée comprise) s'empilent au lieu de se recouvrir
 		const placed = [];
 		for(const l of labels.filter(l => l.mode < 2)){
-			while(placed.some(o => Math.hypot(o.x - l.x, o.z - l.z) < 7 && Math.abs(o.y - l.y) < 1.1)) l.y += 1.15;
+			// 11 : la largeur d'une étiquette vue à 40-50 m ; à 7, deux lieux alignés dans l'axe de la caméra se recouvraient encore
+			while(placed.some(o => Math.hypot(o.x - l.x, o.z - l.z) < 11 && Math.abs(o.y - l.y) < 1.1)) l.y += 1.15;
 			placed.push(l);
 		}
 		const A = atlas(labels.length, 512, 96, (x, k, a, b, w, h) => {
@@ -244,6 +245,35 @@ export function buildLandmarks(scene, MAP, { inBuilding = () => false, inHand = 
 		});
 		const me = new THREE.Mesh(geo, m); me.frustumCulled = false; me.renderOrder = 5;
 		out.group.add(me); out.labels = m; out.nPlaces = P.length; out.nGroups = groups.length;
+		/* Deux étiquettes peuvent se recouvrir à l'écran même loin l'une de l'autre (alignées dans l'axe de la vue) :
+		   quelques fois par seconde, on les projette et, de la plus proche à la plus lointaine, celle qui en recouvre
+		   une déjà posée monte d'un cran (jusqu'à cinq). Même taille et mêmes seuils que dans le shader. */
+		const posA = geo.attributes.aPos, base = labels.map(l => [l.x, l.y, l.z]), _v = new THREE.Vector3();
+		out.declutter = cam => {
+			const Pm = cam.projectionMatrix.elements, Vm = cam.matrixWorldInverse, cand = [];
+			labels.forEach((l, k) => {
+				_v.set(base[k][0], base[k][1], base[k][2]).applyMatrix4(Vm);
+				const d = -_v.z; if(d < 6 || d > 85) return;
+				if(l.mode === 1 && d > 34 || l.mode === 2 && d < 32) return;
+				const s = Math.min(2.6, Math.max(.55, d*.03)), cx = Pm[0]*_v.x/d, cy = Pm[5]*_v.y/d;
+				if(cx < -1.3 || cx > 1.3 || cy < -1.3 || cy > 1.3) return;
+				cand.push({ k, d, cx, cy, w:5.3*s*Pm[0]/d, h:s*Pm[5]/d });
+			});
+			cand.sort((a, b) => a.d - b.d);
+			const placed = []; let moved = false;
+			const lift = new Map();
+			for(const c of cand){
+				let up = 0;
+				for(let n = 0; n < 5; n++){
+					const y0 = c.cy + up, hit = placed.some(o => Math.abs(o.cx - c.cx) < (o.w + c.w)/2*.96 && y0 < o.y1 && y0 + c.h > o.y0);
+					if(!hit) break; up += c.h*1.08;
+				}
+				placed.push({ cx:c.cx, w:c.w, y0:c.cy + up, y1:c.cy + up + c.h });
+				lift.set(c.k, up*c.d/Pm[5]);
+			}
+			labels.forEach((l, k) => { const y = base[k][1] + (lift.get(k) || 0); if(Math.abs(posA.getY(k) - y) > .01){ posA.setY(k, y); moved = true; } });
+			if(moved) posA.needsUpdate = true;
+		};
 
 		// vitrines : sur la façade derrière chaque étiquette, éclairées la nuit
 		const shops = [];
