@@ -55,6 +55,7 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/games/clinique.js` | Mini-jeu « La clinique rurale » (Prépa Véto & Agro) : stéthoscope, rumen, carrière, rotation, oral du concours B |
 | `js/games/jourj.js` | Mini-jeu « Le jour J » (Prépa grandes écoles de commerce) : épreuves chronométrées, jury, tableau des admis |
 | `js/games/moniac.js` | Mini-jeu « La machine de l'économiste » (Prépa D2) : économie hydraulique, paradoxe de l'épargne, théorie des jeux |
+| `js/games/studio.js` | Qualité de rendu commune aux mini-jeux : reflets d'un studio généré en code, fond de pièce, ombres douces, légère profondeur de champ sur ordinateur (rien ne change l'univers d'un jeu) |
 | `js/games/palier.js` | Le « teasing » commun aux mini-jeux : chaque jeu s'ouvre à chaud sur une scène d'une minute, puis ce palier propose de continuer, de recevoir la plaquette ou de revenir au campus (compté dans l'entonnoir : `jeu-palier`, `jeu-suite`) |
 | `docs/validation-*.md` | Fiches de validation des mini-jeux (contenus validés par les enseignants) |
 | `docs/mise-en-ligne.md` | **Mise en ligne** : GitHub Pages, branchement du formulaire sur le CRM |
@@ -64,6 +65,9 @@ Sans interaction pendant 60 s, la visite guidée se lance seule (écran de veill
 | `js/kit.js` | Outils 3D partagés (formes, fenêtres, étudiants) |
 | `tools/build_map.py` | Régénère `js/vauban.js` depuis les extraits de `tools/osm/` |
 | `tools/mesure_rendu.cjs` | Mesure triangles et appels de dessin par qualité et point de vue (Chrome sans écran), vérifie les shaders |
+| `js/citadelle.js` | La Citadelle : profil des remparts, guérites, fossés, forêt, place d'armes, bâtiments nommés, Porte Dauphine, Champ de Mars (données `js/citadelle_osm.js`, **générées** par `tools/build_citadelle.py`) |
+| `js/eura_extra.js` | Euratechnologies : jardin Le Blan-Lafont, quais et passerelles de la Deûle (données `js/eura_details.js`, **générées** par `tools/build_eura_details.py`) |
+| `tools/calage.py` · `tools/film/calage.js` | Calage sur la photo IGN : vue de dessus du campus, photo recalée et superposition, pour repérer ce qui manque |
 | `js/eura.js` | Quartier Euratechnologies en 3D (Wenov, le Blan-Lafont, la Deûle, le métro), chargé à la demande |
 | `js/rame.js` | L'intérieur d'une rame VAL pendant le trajet (sièges, plans de ligne, passagers, tunnel et quais qui défilent) |
 | `js/station.js` | Station souterraine de la ligne 2 (quai, portes palières, rame VAL) : arrivées et départs en 3D |

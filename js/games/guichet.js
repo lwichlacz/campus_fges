@@ -8,6 +8,7 @@
    comparer des pièces, compter des jours ouvrés, régler le simulateur, couper un budget, maintenir « Stop ».
    Les contenus (répliques, chiffres, indices, cours) sont dans guichet-data.js. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { makePerson, std, box, cyl } from "../kit.js?v=5545d023b6";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
 import { palier } from "./palier.js?v=5545d023b6";
@@ -214,6 +215,7 @@ export function openGuichet({ formation, audio, isFav, toggleFav, onClose, onEve
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.NeutralToneMapping;
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#e9eef3");
+	studio(renderer, scene, {});          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	const camera = new THREE.PerspectiveCamera(46, 1, .1, 80);
 	scene.add(new THREE.HemisphereLight("#ffffff", "#9aa6b5", 1.35));
 	const key = new THREE.DirectionalLight("#fff4e6", 1.6); key.position.set(4, 9, 6); key.castShadow = true;

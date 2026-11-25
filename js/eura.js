@@ -10,7 +10,9 @@ import { buildCity, pointInPoly, softenFar } from "./city.js?v=5545d023b6";
 import { buildStation } from "./station.js?v=5545d023b6";
 import { EMAP } from "./euramap.js?v=5545d023b6";
 import { buildLandmarks } from "./landmarks.js?v=5545d023b6";
-import { waterRipples, cloudShade, createRain, CLOUDS } from "./render.js?v=5545d023b6";
+import { waterRipples, cloudShade, createRain, CLOUDS, crownGeo } from "./render.js?v=5545d023b6";
+import { EURA_DETAILS } from "./eura_details.js?v=5545d023b6";
+import { euraDetails } from "./eura_extra.js?v=5545d023b6";
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const ring = f => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; };
@@ -314,7 +316,10 @@ export function createEura({ background }){
 		const off = darkOffices(); off.repeat.set(1/1.8, 1/FH2);
 		const offM = new THREE.MeshStandardMaterial({ map:off, roughness:.4, metalness:.3, emissive:"#ffffff", emissiveIntensity:0, emissiveMap:officeLit() }); softenFar(offM);
 		ringSlab(F, null, FH2*2.5, offM, FH2*2.5, scene);
-		ringSlab(F, null, .3, std("#1f2226"), FH2*5, scene);
+		// toit-terrasse : membrane grise, acrotère de métal noir, édicules techniques (plus d'aplat noir vu d'en haut)
+		ringSlab(F, null, .12, std("#6b6e72", { roughness:.95 }), FH2*5, scene);
+		ringSlab(F, offset(F, .35), .45, std("#1f2226"), FH2*5, scene);
+		{ const [dx, dz] = cen(F), u = std("#9a9da1"); for(const [ox, oz, w, d, h] of [[-2, -1, 2.4, 1.6, .9], [2.5, 1.2, 1.6, 1.6, .7], [0, 2.6, 3, 1, .5]]){ const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d).translate(0, h/2, 0), u); b.position.set(dx + ox, FH2*5 + .12, dz + oz); b.castShadow = b.receiveShadow = true; scene.add(b); } }
 		var diamantM = offM;
 	}
 	/* ---------- Student Factory (Post Architectes, 2021) : bardage de tuiles de terre cuite bleu fumé, poutres d'acier
@@ -388,10 +393,12 @@ export function createEura({ background }){
 	}
 
 	/* ---------- végétation et réverbères ---------- */
-	const trees = [...city.trees, ...city.parkTrees, ...patioTrees.map(t => ({ ...t, k:"d" }))];
+	// jardin Le Blan-Lafont, quais et passerelles de la Deûle (js/eura_extra.js) : plus d'arbres « devinés » au milieu du jardin
+	const X = euraDetails({ scene, EMAP, D:EURA_DETAILS, city });
+	const trees = [...city.trees, ...city.parkTrees.filter(t => !(X.gardenPoly && pointInPoly(t.x, t.z, X.gardenPoly))), ...X.trees, ...patioTrees.map(t => ({ ...t, k:"d" }))];
 	const R = mulberry32(31); trees.forEach(t => t.c = R());
 	const trunkIM = new THREE.InstancedMesh(new THREE.CylinderGeometry(.22, .34, 2.4, 6, 1, true).translate(0, 1.2, 0), std("#6b4a35"), trees.length);
-	const canopyIM = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), std("#ffffff"), trees.length*2);
+	const canopyIM = new THREE.InstancedMesh(crownGeo(2), std("#ffffff", { vertexColors:true }), trees.length*2);          // houppiers en grappes, comme à Vauban
 	{
 		const d = new THREE.Object3D();
 		trees.forEach((t, i) => {

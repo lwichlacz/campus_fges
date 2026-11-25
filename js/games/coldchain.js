@@ -5,6 +5,7 @@
    La déléguée à la protection des données bloque le rangement tant qu'une bande est mal traitée ;
    quand tout est juste, le tube reçoit son code-barres pseudonyme et part au congélateur dans un nuage de givre. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 
 // la valeur « repliée » (généralisée) de chaque champ
 const FOLD = { name:"A. M.", ssn:"1 98 •• •• ••• …", mail:"a•••@…", dob:"1998 · aged 27", zip:"59 · Nord", sex:"M", sym:"Fatigue …", fer:"> 1,000 µg/L", ts:"> 45 %", code:"P-04••" };
@@ -72,6 +73,7 @@ export function coldChain({ host, fields, av, play, onWrong, onDone, onHelp }){
 	const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
 	renderer.setPixelRatio(Math.min(2, devicePixelRatio)); renderer.outputColorSpace = THREE.SRGBColorSpace;
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#071426"); scene.fog = new THREE.Fog("#071426", 9, 22);
+	studio(renderer, scene, { env:.35, warm:0 });          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	const camera = new THREE.PerspectiveCamera(34, 1, .1, 60);
 	scene.add(new THREE.HemisphereLight("#cfe8ff", "#0b1a2e", 1.15));
 	const key = new THREE.DirectionalLight("#ffffff", 2.0); key.position.set(-3, 6, 7); scene.add(key);

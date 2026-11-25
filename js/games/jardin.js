@@ -9,6 +9,7 @@
    on agrafe une page du carnet à chaque cause retenue et à chacune des deux actions choisies.
    Personnage, rucher et chiffres sont fictifs. Contenus à relire par un enseignant de la licence. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { std, mesh, box, cyl, mulberry32 } from "../kit.js?v=5545d023b6";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
@@ -212,6 +213,7 @@ export function openJardin({ formation, audio, isFav, toggleFav, onClose, onEven
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace;
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#c6dfee"); scene.fog = new THREE.Fog("#c6dfee", 32, 64);
+	studio(renderer, scene, { backdrop:false, warm:.6 });          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	const camera = new THREE.PerspectiveCamera(45, 1, .1, 120);
 	const controls = new OrbitControls(camera, canvas);
 	Object.assign(controls, { enablePan:false, enableDamping:true, dampingFactor:.08, minDistance:1.2, maxDistance:30, minPolarAngle:.15, maxPolarAngle:1.25, rotateSpeed:.7 });

@@ -5,6 +5,7 @@
      seuil de rentabilité, décision d'investissement) qui révèle le cours de la licence.
    Les chiffres sont volontairement simples et doivent être relus par un enseignant de la licence. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { makeStudent, std, box, cyl, mesh, mulberry32 } from "../kit.js?v=5545d023b6";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
 import { palier } from "./palier.js?v=5545d023b6";
@@ -189,6 +190,7 @@ export function openComptoir({ formation, audio, isFav, toggleFav, onClose, onEv
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace;
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#3a2a22");
+	studio(renderer, scene, { warm:.8, env:.5 });          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	const camera = new THREE.PerspectiveCamera(38, 1, .5, 100);
 	scene.add(new THREE.HemisphereLight("#fff1dd", "#6d5a4e", 1.15));
 	const sun = new THREE.DirectionalLight("#ffe7c2", 1.9); sun.position.set(-6, 12, 8); sun.castShadow = true;

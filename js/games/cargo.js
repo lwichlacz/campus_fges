@@ -11,6 +11,7 @@
    6 · L3 : l'année à l'étranger, un avion trace la route jusqu'à la ville choisie.
    Entreprise, personnes et chiffres sont fictifs et simplifiés. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
 import { palier } from "./palier.js?v=5545d023b6";
@@ -205,6 +206,7 @@ export function openCargo({ formation, audio, isFav, toggleFav, onClose, onEvent
 	const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
 	renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#050d18"); scene.fog = new THREE.Fog("#050d18", 170, 520);
+	studio(renderer, scene, { env:.3, warm:0, backdrop:false, dof:false });          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	const camera = new THREE.PerspectiveCamera(40, 1, .5, 1400);
 	const controls = new OrbitControls(camera, canvas);
 	controls.enableDamping = true; controls.enablePan = false; controls.minDistance = 4; controls.maxDistance = 320; controls.maxPolarAngle = 1.25; controls.minPolarAngle = .25;

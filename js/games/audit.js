@@ -10,6 +10,7 @@
    La fiche est une feuille de travail d'auditeur sur son porte-bloc ; la responsable laisse des notes de revue.
    Entreprise, personnes, sociétés et documents sont fictifs. Contenu à relire par un enseignant de la licence. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { mountTable, MOBILE } from "./table.js?v=5545d023b6";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
@@ -108,6 +109,7 @@ function world(canvas){
 	renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#dfe3e6"); scene.fog = new THREE.Fog("#dfe3e6", 70, 140);
+	studio(renderer, scene, {});          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	const camera = new THREE.PerspectiveCamera(38, 1, .1, 200);
 	const controls = new OrbitControls(camera, canvas);
 	controls.enableDamping = true; controls.enablePan = false; controls.minDistance = 6; controls.maxDistance = 36; controls.maxPolarAngle = 1.3;

@@ -11,6 +11,7 @@
      4. parler au public : doser l'émotion, citer ses faits, s'engager et signer, pendant que les commentaires réagissent.
    Entreprise, personnes et chiffres fictifs. Contenu à relire par l'équipe pédagogique (docs/validation-licence-mh.md). */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
 import { palier } from "./palier.js?v=5545d023b6";
@@ -316,6 +317,7 @@ function world(canvas){
 	renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 900 ? 1.5 : 2));
 	renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#e9e4da"); scene.fog = new THREE.Fog("#e9e4da", 70, 140);
+	studio(renderer, scene, {});          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	const camera = new THREE.PerspectiveCamera(38, 1, .1, 200);
 	const controls = new OrbitControls(camera, canvas);
 	controls.enableDamping = true; controls.enablePan = false; controls.minDistance = 6; controls.maxDistance = 40; controls.maxPolarAngle = 1.3;

@@ -1,13 +1,16 @@
 /* Campus FGES — le quartier Vauban, l'interface et les intérieurs (atrium, chapelle). */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=5545d023b6";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain } from "./render.js?v=5545d023b6";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain, GRADE, gradeAll, bakeGroundAO, groundAO, crownGeo } from "./render.js?v=5545d023b6";
 import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=5545d023b6";
 import { MAP } from "./vauban.js?v=5545d023b6";
 import { buildLandmarks } from "./landmarks.js?v=5545d023b6";
 import { buildMonuments } from "./monuments.js?v=5545d023b6";
-import { buildCity, pointInPoly, polyDist } from "./city.js?v=5545d023b6";
+import { buildCity, pointInPoly, polyDist, FACADE } from "./city.js?v=5545d023b6";
+import { CIT } from "./citadelle_osm.js?v=5545d023b6";
+import { buildCitadel, porteDauphine, handExclude, champDeMars } from "./citadelle.js?v=5545d023b6";
 import { buildStation } from "./station.js?v=5545d023b6";
 import { createRame } from "./rame.js?v=5545d023b6";
 import { Audio } from "./audio.js?v=5545d023b6";
@@ -170,9 +173,14 @@ if(MAP.sol){
 	{ vec2 st = ( vSolXZ - uSolBox.xy )/uSolBox.zw;
 	  if( uSolOn > 0.5 && st.x > 0.0 && st.y > 0.0 && st.x < 1.0 && st.y < 1.0 ){
 	    float veg = smoothstep( 0.25, 0.75, texture2D( uSol, st ).r );
-	    diffuseColor.rgb = mix( uPaved, diffuseColor.rgb, veg ); } }`);
+	    // cours pavées : pavés en quinconce, chacun sa teinte ; le motif s'efface au loin
+	    vec2 q = vSolXZ*6.5; q.x += step( 1.0, mod( floor( q.y ), 2.0 ) )*0.5; vec2 f = fract( q );
+	    float j = smoothstep( 0.0, 0.12, f.x )*smoothstep( 1.0, 0.88, f.x )*smoothstep( 0.0, 0.12, f.y )*smoothstep( 1.0, 0.88, f.y );
+	    float fade = 1.0 - smoothstep( 35.0, 90.0, length( vViewPosition ) );
+	    vec3 pav = uPaved*mix( 1.0, mix( 0.84, 1.0, j )*( 0.9 + 0.13*fract( sin( dot( floor( q ), vec2( 12.9898, 78.233 ) ) )*43758.5453 ) ), fade );
+	    diffuseColor.rgb = mix( pav, diffuseColor.rgb, veg ); } }`);
 	};
-	groundMat.customProgramCacheKey = () => "sol";
+	groundMat.customProgramCacheKey = () => "sol2";
 }
 ground.receiveShadow = true; scene.add(ground);
 /* Repère « historique » de l'Hôtel Académique (ancienne racine en z = -6), calé sur la carte. */
@@ -184,7 +192,7 @@ const HAG = new THREE.Group();
 	HAG.rotation.y = -a;
 	scene.add(HAG); HAG.updateMatrixWorld(true);
 }
-const city = buildCity(scene, MAP);
+const city = buildCity(scene, MAP, { exclude:handExclude(CIT) });          // chapelle, poudrière et corps de garde de la Citadelle : faits main (js/citadelle.js)
 const lawnMat = city.ground.lawn, waterMat = city.ground.water;
 // ombres de nuages sur le sol, les rues, les toits et les façades
 for(const m of [groundMat, lawnMat, city.ground.road, city.ground.ped, city.ground.walk, ...city.roofs, ...city.flats, ...city.walls]) if(m) cloudShade(m);
@@ -498,6 +506,9 @@ function buildFalise(){
 	for(const [x,z] of [[-3, -1],[3, 2]]) for(let k=0;k<2;k++){ const s = makeStudent(scene), a = k ? Math.PI : 0; s.g.position.set(gx + x + Math.sin(a)*.75, 0, gz + z + Math.cos(a)*.75); s.g.rotation.y = a + Math.PI; gardenChat.push(s); }
 }
 const gardenTrees = [], gardenChat = [], extraCrowd = [];
+let declutterN = 0;
+let citWood = null;          // la forêt de la Citadelle, voir woodGroups
+const clearings = [], forestTrees = [];          // forestTrees : bois de la Citadelle, dessinés comme le lointain (sans tronc ni ombre)          // [x, z, rayon] : aucun arbre (abords des portes de la Citadelle)
 function picnic(parent, x, z){
 	const g = new THREE.Group(); g.position.set(x,0,z); parent.add(g);
 	box(g, 2.8, .14, 1.2, woodMat, 0, .85, 0);
@@ -576,23 +587,40 @@ const citadelRing = MAP.citadel ? (() => { const f = MAP.citadel.outline, p = []
 const inCitadel = (x, z) => citadelRing ? pointInPoly(x, z, citadelRing) : Math.hypot(x - MAP.citadelle[0], z - MAP.citadelle[1]) < 56;
 function buildCitadelleReal(){
 	const [cx, cz] = MAP.citadelle, P = citadelRing;
-	const shape = pts => new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x - cx, -(z - cz))));
-	const inner = P.map(([x, z]) => [cx + (x - cx)*.8, cz + (z - cz)*.8]);          // le rempart fait un cinquième du rayon
-	const ring = shape(P); ring.holes.push(new THREE.Path(inner.map(([x, z]) => new THREE.Vector2(x - cx, -(z - cz)))));
+	const turf = std("#8fa957", { flatShading:false }); citadelTurf = turf;          // remparts engazonnés et sous-bois (teinte de saison)
+	const C = buildCitadel({ scene, CIT, MAP, outline:P, waterMat:city.ground.water, turf });
+	for(const t of C.trees) forestTrees.push(t);
+	for(const t of champDeMars(scene, CIT)) gardenTrees.push(t);
+	// la couronne boisée autour de l'enceinte (photo IGN : la boucle de la Deûle est une forêt), hors eau, rues et esplanade
+	{
+		const xs = P.map(q => q[0]), zs = P.map(q => q[1]), champ = (CIT.champ || []).map(f => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; });
+		const water = [...(MAP.citadel.water || []), ...(MAP.water || [])].map(f => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; });
+		const bois = (MAP.parks || []).filter(([n]) => n === "Bois de Boulogne").map(([, f]) => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; });          // déjà planté (js/city.js)
+		const fr = mulberry(23); let n = 0;
+		for(let x = Math.min(...xs) - 40; x < Math.max(...xs) + 40; x += 3.1) for(let z = Math.min(...zs) - 40; z < Math.max(...zs) + 40; z += 3.1){
+			const tx = x + (fr() - .5)*2.6, tz = z + (fr() - .5)*2.6;
+			if(inCitadel(tx, tz) || polyDist(tx, tz, P) > 34) continue;
+			if(bois.some(b => pointInPoly(tx, tz, b))) continue;
+			if(water.some(w => pointInPoly(tx, tz, w)) || champ.some(c => pointInPoly(tx, tz, c)) || nearCanal(tx, tz, 6.5)) continue;
+			if(city.roadGap(tx, tz).g < 1.2 || city.inBuilding(tx, tz, 1)) continue;
+			forestTrees.push({ x:tx, z:tz, k: fr() < .25 ? "c" : "d", s:.85 + fr()*.45 }); n++;
+		}
+	}
 	const g = new THREE.Group(); g.position.set(cx, 0, cz); scene.add(g);
-	const wall = new THREE.Mesh(new THREE.ExtrudeGeometry(ring, { depth:3.4, bevelEnabled:false }).rotateX(-Math.PI/2), std("#a9533c"));
-	wall.castShadow = wall.receiveShadow = true; g.add(wall);
-	const turf = std("#8fa957", { flatShading:false }); citadelTurf = turf;          // rempart engazonné (sans décalage de profondeur : il est bien au-dessus de la brique)
-	const top = new THREE.Mesh(new THREE.ShapeGeometry(ring).rotateX(-Math.PI/2), turf); top.position.y = 3.46; top.receiveShadow = true; g.add(top);
-	const cordS = shape(P.map(([x, z]) => [cx + (x - cx)*1.004, cz + (z - cz)*1.004]));
-	cordS.holes.push(new THREE.Path(P.map(([x, z]) => new THREE.Vector2((x - cx)*.985, -(z - cz)*.985))));
-	const cord = new THREE.Mesh(new THREE.ExtrudeGeometry(cordS, { depth:.25, bevelEnabled:false }).rotateX(-Math.PI/2), std("#e3d7c1"));
-	cord.position.y = 3.2; g.add(cord);                                                             // cordon de pierre blanche
-	const court = new THREE.Mesh(new THREE.ShapeGeometry(shape(inner)).rotateX(-Math.PI/2), std("#cdbf9f", { flatShading:false })); court.position.y = .08;          // place d'armes en gravier
-	court.receiveShadow = true; g.add(court);
 	buildPorteRoyale(P, cx, cz, g);
+	// Porte Dauphine : là où la direction du sud-ouest coupe l'enceinte, façade vers l'extérieur
+	if(CIT.sw){
+		const [rx, rz] = CIT.sw; let hitT = 0;
+		for(let i=0;i<P.length;i++){
+			const [ax, az] = P[i], [bx, bz] = P[(i+1) % P.length], ex = bx - ax, ez = bz - az, den = rx*ez - rz*ex;
+			if(Math.abs(den) < 1e-9) continue;
+			const t = ((ax - cx)*ez - (az - cz)*ex)/den, u = ((ax - cx)*rz - (az - cz)*rx)/den;
+			if(t > 0 && u >= 0 && u <= 1) hitT = Math.max(hitT, t);
+		}
+		if(hitT){ porteDauphine(scene, [cx + rx*(hitT - .6), cz + rz*(hitT - .6)], Math.atan2(rx, rz)); clearings.push([cx + rx*(hitT + 3), cz + rz*(hitT + 3), 7]); }
+	}
 	LIFE.citadelle.pos = V(cx, 0, cz);
-	register(g, "citadelle");
+	register(g, "citadelle"); register(C.group, "citadelle");
 }
 /* La Porte Royale (1670), entrée principale de la Citadelle côté ville : pavillon de brique à façade de pierre blanche,
    arche, fronton et soleil de Louis XIV, et son pont sur les douves. Position : OpenStreetMap, nœud 897130482. */
@@ -609,6 +637,7 @@ function buildPorteRoyale(P, cx, cz, g){
 		if(t > 0 && u >= 0 && u <= 1) hitT = Math.max(hitT, t);
 	}
 	const best = { px:cx + rx*(hitT - .4), pz:cz + rz*(hitT - .4) }, nx = rx, nz = rz;
+	clearings.push([best.px + rx*4, best.pz + rz*4, 7]);
 	const G = new THREE.Group(); G.position.set(best.px - cx, 0, best.pz - cz); G.rotation.y = Math.atan2(nx, nz); g.add(G);
 	const brick = std("#a9533c"), stone = std("#e8dcc6"), dark = std("#2a2226"), slate = std("#4a4f5c"), gold = std("#d9a441", { metalness:.5, roughness:.35 });
 	box(G, 7.2, 5.2, 3.2, brick, 0, 0, -.6);                                   // pavillon dans le rempart
@@ -809,6 +838,7 @@ varying vec3 vFarP; varying vec3 vFarN;`)
 function setFarLevel(level){
 	if(horizon) for(const m of horizon.meshes) m.count = m.counts[level];
 	if(farWood) for(const m of farWood.meshes){ m.count = m.counts[level]; m.visible = m.count > 0; }
+	if(citWood) for(const m of citWood.meshes){ m.count = m.counts[level]; m.visible = m.count > 0; }
 }
 function mulberry(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 
@@ -1351,6 +1381,7 @@ const inOsmBuilding = (x, z) => MAP.buildings.some(r => { const f = r[4], p = []
 // la cour d'honneur et le jardin de Michel Falise ont leurs propres plantations
 const trees = [...city.trees, ...city.parkTrees, ...gardenTrees.filter(t => !inOsmBuilding(t.x, t.z))].filter(t => {
 	if(city.inHand(t.x, t.z)) return false;
+	if(clearings.some(([x, z, r]) => Math.hypot(t.x - x, t.z - z) < r)) return false;
 	const r = 2.3*t.s; let d = 0;
 	while(d < r && !city.inBuilding(t.x, t.z, d + .25)) d += .25;
 	if(d >= r) return true;
@@ -1359,17 +1390,31 @@ const trees = [...city.trees, ...city.parkTrees, ...gardenTrees.filter(t => !inO
 });
 const decid = trees.filter(t => t.k === "d"), conif = trees.filter(t => t.k === "c");
 trees.forEach(t => { t.c = rng(); });
-const trunkIM = new THREE.InstancedMesh(cached("trunk", () => new THREE.CylinderGeometry(.22,.34,2.4,6,1,true).translate(0,1.2,0)), std("#6b4a35"), trees.length);
-const canopyIM = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), std("#ffffff"), decid.length*2);
+/* Houppiers en grappes (crownGeo, js/render.js) ; le lointain et la qualité basse gardent une seule boule.
+   Tronc avec deux maîtresses branches. */
+const simpleCrown = (() => { const g = new THREE.IcosahedronGeometry(1, 0); g.setAttribute("color", new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count*3).fill(.9), 3)); return g; })();
+const fullCrown = crownGeo(4), midCrown = crownGeo(2);          // qualité haute, moyenne (la basse : simpleCrown)
+const trunkGeo = (() => {
+	const main = new THREE.CylinderGeometry(.2, .34, 2.6, 6, 1, true).translate(0, 1.3, 0);
+	const b1 = new THREE.CylinderGeometry(.07, .13, 1.5, 5, 1, true).translate(0, .75, 0).rotateZ(-.62).translate(0, 1.75, 0);
+	const b2 = new THREE.CylinderGeometry(.06, .12, 1.35, 5, 1, true).translate(0, .67, 0).rotateZ(.58).rotateY(2.3).translate(0, 1.95, 0);
+	return mergeGeometries([main, b1, b2]);
+})();
+const simpleTrunk = new THREE.CylinderGeometry(.22, .34, 2.4, 6, 1, true).translate(0, 1.2, 0);
+const trunkIM = new THREE.InstancedMesh(trunkGeo, std("#5f4636"), trees.length);
+const canopyIM = new THREE.InstancedMesh(fullCrown, std("#ffffff", { vertexColors:true }), decid.length*2);
 const conifIM = new THREE.InstancedMesh(new THREE.ConeGeometry(1, 1, 7).translate(0,.5,0), std("#ffffff"), Math.max(1, conif.length*2));
 [trunkIM, canopyIM, conifIM].forEach(m => { m.castShadow = true; m.receiveShadow = true; scene.add(m); });
 {
 	const d = new THREE.Object3D();
-	trees.forEach((t,i) => { d.position.set(t.x,0,t.z); d.rotation.set(0,0,0); d.scale.setScalar(t.s); d.updateMatrix(); trunkIM.setMatrixAt(i, d.matrix); });
+	trees.forEach((t,i) => { d.position.set(t.x,0,t.z); d.rotation.set(0, R(0,6.3), 0); d.scale.setScalar(t.s); d.updateMatrix(); trunkIM.setMatrixAt(i, d.matrix); });
+	// trois silhouettes : platane (large et plat), tilleul (ovale, haut), charme ou érable (compact)
+	const SP = [[3.5, [2.5,1.65,2.5], 4.6, [1.7,1.2,1.7], 1.1], [3.9, [1.85,2.35,1.85], 5.5, [1.25,1.45,1.25], .6], [3.1, [1.6,1.45,1.6], 4.1, [1.15,1.05,1.15], .8]];
 	decid.forEach((t,i) => {
-		const s = t.s;
-		d.position.set(t.x, 3.6*s, t.z); d.rotation.set(R(0,1), R(0,3), R(0,1)); d.scale.set(2.2*s, 1.9*s, 2.2*s); d.updateMatrix(); canopyIM.setMatrixAt(i*2, d.matrix);
-		d.position.set(t.x + R(-1,1)*s, 5*s, t.z + R(-1,1)*s); d.scale.set(1.45*s, 1.35*s, 1.45*s); d.updateMatrix(); canopyIM.setMatrixAt(i*2+1, d.matrix);
+		const s = t.s, h = (Math.sin(t.x*12.9898 + t.z*78.233)*43758.5453) % 1, sp = SP[Math.abs(h) < .4 ? 0 : Math.abs(h) < .75 ? 1 : 2];
+		t.sp = sp;
+		d.position.set(t.x, sp[0]*s, t.z); d.rotation.set(R(-.12,.12), R(0,6.3), R(-.12,.12)); d.scale.set(sp[1][0]*s, sp[1][1]*s, sp[1][2]*s); d.updateMatrix(); canopyIM.setMatrixAt(i*2, d.matrix);
+		d.position.set(t.x + R(-1,1)*sp[4]*s, sp[2]*s, t.z + R(-1,1)*sp[4]*s); d.rotation.set(0, R(0,6.3), 0); d.scale.set(sp[3][0]*s, sp[3][1]*s, sp[3][2]*s); d.updateMatrix(); canopyIM.setMatrixAt(i*2+1, d.matrix);
 	});
 	conif.forEach((t,i) => {
 		const s = t.s;
@@ -1379,6 +1424,8 @@ const conifIM = new THREE.InstancedMesh(new THREE.ConeGeometry(1, 1, 7).translat
 	});
 	conifIM.count = conif.length*2;
 }
+// la forêt de la Citadelle et de ses abords : comme le lointain (sans tronc ni ombre), mais visible en qualité basse
+citWood = woodGroups(forestTrees.filter(t => !clearings.some(([x, z, r]) => Math.hypot(t.x - x, t.z - z) < r) && !inOsmBuilding(t.x, t.z)), mulberry(31), { low:true, keepLow:true });
 /* Le lointain : les vrais bâtiments en miniature et les bois (Bois de Boulogne…) plantés d'après la photo aérienne.
    Chargé une fois le campus affiché ; ses arbres, sans tronc, ne projettent pas d'ombre. */
 function nearCanal(x, z, r){
@@ -1389,21 +1436,16 @@ function nearCanal(x, z, r){
 	}
 	return false;
 }
-function buildFarWood(f){
-	const [cx, cz] = MAP.citadelle, fr = mulberry(11), list = [];
-	for(let i=0;i<f.length;i+=2){
-		const x = f[i]/10, z = f[i+1]/10;
-		if(inCitadel(x, z) || (LIFE.euratech && Math.hypot(x - LIFE.euratech.x, z - LIFE.euratech.z) < 60)) continue;
-		if(nearCanal(x, z, 6.5)) continue;          // pas d'arbre dans la Deûle ni sur son quai
-		list.push({ x, z, k: fr() < .22 ? "c" : "d", s:.95 + fr()*.4, c:fr() });
-	}
-	const d = new THREE.Object3D();
-	// deux volumes par arbre : le principal (instances 0…n-1), puis la touffe du dessus (n…2n-1), omise en qualité moyenne
+/* Bois dessinés en masse (lointain, forêt de la Citadelle) : sans tronc ni ombre portée, découpés en carreaux,
+   deux volumes par arbre (le second omis en qualité moyenne). low : hauteur du houppier abaissée (de près, pas de vide sous
+   les arbres) ; keepLow : le premier volume reste en qualité basse. */
+function woodGroups(list, fr, { low = false, keepLow = false } = {}){
+	const d = new THREE.Object3D(), y0 = low ? 2.6 : 3.2, y1 = low ? 4 : 4.6;
 	for(const t of list){
-		const s = t.s;
+		const s = t.s; if(t.c === undefined) t.c = fr();
 		if(t.k === "d"){
-			d.position.set(t.x, 3.2*s, t.z); d.rotation.set(fr(), fr()*3, fr()); d.scale.set(2.2*s, 1.9*s, 2.2*s); d.updateMatrix(); t.m0 = d.matrix.clone();
-			d.position.set(t.x + (fr() - .5)*2*s, 4.6*s, t.z + (fr() - .5)*2*s); d.scale.set(1.45*s, 1.35*s, 1.45*s); d.updateMatrix(); t.m1 = d.matrix.clone();
+			d.position.set(t.x, y0*s, t.z); d.rotation.set(fr()*.3, fr()*3, fr()*.3); d.scale.set(2.2*s, 1.9*s, 2.2*s); d.updateMatrix(); t.m0 = d.matrix.clone();
+			d.position.set(t.x + (fr() - .5)*2*s, y1*s, t.z + (fr() - .5)*2*s); d.scale.set(1.45*s, 1.35*s, 1.45*s); d.updateMatrix(); t.m1 = d.matrix.clone();
 		} else {
 			d.rotation.set(0, fr()*3, 0);
 			d.position.set(t.x, .6*s, t.z); d.scale.set(2.2*s, 4.6*s, 2.2*s); d.updateMatrix(); t.m0 = d.matrix.clone();
@@ -1413,15 +1455,26 @@ function buildFarWood(f){
 	const groups = [];
 	for(const tile of farTiles(list, t => [t.x, t.z])) for(const [k, src] of [["d", canopyIM], ["c", conifIM]]){
 		const trees = tile.filter(t => t.k === k), n = trees.length; if(!n) continue;
-		const m = new THREE.InstancedMesh(src.geometry, src.material, n*2);
+		const m = new THREE.InstancedMesh(k === "d" ? simpleCrown : src.geometry, src.material, n*2);
 		trees.forEach((t, i) => { m.setMatrixAt(i, t.m0); m.setMatrixAt(n + i, t.m1); });
-		fitInstances(m, [0, n, n*2]);
+		fitInstances(m, [keepLow ? n : 0, n, n*2]);
 		m.receiveShadow = true; m.castShadow = false;
 		scene.add(m);
 		groups.push({ m, trees, conifer:k === "c" });
 	}
 	return { groups, meshes:groups.map(g => g.m) };
 }
+function buildFarWood(f){
+	const [cx, cz] = MAP.citadelle, fr = mulberry(11), list = [];
+	for(let i=0;i<f.length;i+=2){
+		const x = f[i]/10, z = f[i+1]/10;
+		if(inCitadel(x, z) || (LIFE.euratech && Math.hypot(x - LIFE.euratech.x, z - LIFE.euratech.z) < 60)) continue;
+		if(nearCanal(x, z, 6.5)) continue;          // pas d'arbre dans la Deûle ni sur son quai
+		list.push({ x, z, k: fr() < .22 ? "c" : "d", s:.95 + fr()*.4, c:fr() });
+	}
+	return woodGroups(list, fr);
+}
+
 function paintFar(S){
 	const c = new THREE.Color();
 	if(horizon) for(const t of horizon.tiles){
@@ -1429,8 +1482,7 @@ function paintFar(S){
 		t.base.forEach((b, i) => { c.set(S.snowy ? "#dfe6ee" : b); t.roof.setColorAt(i, c); });
 		t.roof.instanceColor.needsUpdate = true;
 	}
-	if(!farWood) return;
-	for(const { m, trees, conifer } of farWood.groups){
+	for(const { m, trees, conifer } of [...(farWood ? farWood.groups : []), ...(citWood ? citWood.groups : [])]){
 		const n = trees.length;
 		trees.forEach((t, i) => {
 			if(conifer){ c.set(S.conifer); m.setColorAt(i, c); c.set(S.snowy ? "#e8eef6" : S.conifer).offsetHSL(0,0,.03); m.setColorAt(n + i, c); }
@@ -1447,6 +1499,7 @@ function loadFar(){
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
 		setFarLevel(QUALITY[quality].horizon);
+		gradeAll(scene);
 		shadowDirty = true;
 	}).catch(() => { farLoading = false; });
 }
@@ -1628,12 +1681,13 @@ function updateBoats(dt, t){
 		b.g.rotation.set(Math.sin(t*.9 + b.L)*.01, a + (b.dir < 0 ? Math.PI : 0), 0);
 	}
 }
-const cloudMat = new THREE.MeshLambertMaterial({ color:"#ffffff", flatShading:true });
+// nuages doux (sphères lissées) et éclairés par le ciel en dessous : plus de gros galets sombres au-dessus du quartier
+const cloudMat = new THREE.MeshLambertMaterial({ color:"#ffffff", emissive:"#ffffff", emissiveIntensity:.42 });
 const clouds = [];
 for(let i=0;i<12;i++){
 	const g = new THREE.Group(), n = 3 + Math.floor(rng()*3);
-	for(let k=0;k<n;k++){ const m = new THREE.Mesh(cached("cl", () => new THREE.IcosahedronGeometry(1,1)), cloudMat); m.position.set(k*3.2 - n*1.6, R(-.6,.8), R(-1.5,1.5)); m.scale.setScalar(R(2.4,4)); g.add(m); }
-	g.position.set(R(-300,300), R(60,80), R(-300,120)); g.scale.y = .6;
+	for(let k=0;k<n;k++){ const m = new THREE.Mesh(cached("cl", () => new THREE.IcosahedronGeometry(1,3)), cloudMat); m.position.set(k*3.2 - n*1.6, R(-.6,.8), R(-1.5,1.5)); m.scale.setScalar(R(2.4,4)); g.add(m); }
+	g.position.set(R(-300,300), R(140,175), R(-300,120)); g.scale.set(1.6, .55, 1.3);
 	scene.add(g); clouds.push({ g, v:R(1,2.4) });
 }
 const birdMat = std("#3a3230");
@@ -1777,6 +1831,10 @@ scene.traverse(o => { if(o.isMesh && o.userData.place && o.layers.mask === 1) pi
 	windSway(canopyIM.material, .06); windSway(conifIM.material, .035); windSway(bushIM.material, .03);
 	waterRipples(waterMat);
 	windowsGate(glassLit, city.nightU);
+	// occlusion au sol : le pied des murs, les rues étroites, les cours et le dessous des arbres s'assombrissent
+	if(MAP.sol){ const [x0, z0, w, h] = MAP.sol; try{ bakeGroundAO(renderer, scene, x0, z0, w, h, small ? 768 : 1024); }catch(e){ console.warn("occlusion au sol", e); } }
+	for(const m of [groundMat, lawnMat, city.ground.road, city.ground.ped, city.ground.walk]) if(m) groundAO(m, m === lawnMat || m === groundMat ? .42 : .5);
+	gradeAll(scene);
 }
 
 /* =====================================================================
@@ -1791,7 +1849,7 @@ function paintSky(top, bot){
 }
 const sky = createSky(renderer);
 scene.background = sky.background;
-const ENV_I = .5, HEMI_K = .72;     // part de la lumière qui vient des reflets du ciel ; la lumière hémisphérique baisse d'autant
+const ENV_I = .4, HEMI_K = .72;     // part de la lumière qui vient des reflets du ciel ; la lumière hémisphérique baisse d'autant
 scene.environmentIntensity = ENV_I;
 
 /* =====================================================================
@@ -1836,16 +1894,18 @@ function weatherize(o){
 		for(const c of ["skyTop","skyBot","fog","cloud"]) o[c].lerp(grey, W === "pluie" ? .78 : .72);
 		o.hemiSky.lerp(grey, .5); o.sun.lerp(grey, .4);
 		o.sunI *= W === "pluie" ? .22 : .42; o.hemiI *= 1.12;
+		o.gSat *= W === "pluie" ? .8 : .84; o.gCon *= W === "pluie" ? .97 : .92;
 		if(W === "pluie") o.exposure *= .92;
 		else { o.skyBot.copy(o.fog); o.skyTop.lerp(o.fog, .6); }          // dans le brouillard, le ciel se fond dans la brume
 	} else if(W === "nuageux"){
-		o.sunI *= .82;
+		o.sunI *= .82; o.gSat *= .94;
 		for(const c of ["skyTop","skyBot"]) o[c].lerp(new THREE.Color(night ? "#262a38" : "#c2c8d0"), .38);
 	}
 	return o;
 }
-const LCOL = ["skyTop","skyBot","fog","hemiSky","hemiGround","sun","cloud"], LNUM = ["hemiI","sunI","exposure","nightK"];
-const lightOf = (L, k) => { const o = { sunPos:V(...L.sunPos), nightK:L.nightK ?? k }; for(const c of LCOL) o[c] = new THREE.Color(L[c]); for(const n of LNUM) if(n !== "nightK") o[n] = L[n]; return o; };
+const LCOL = ["skyTop","skyBot","fog","hemiSky","hemiGround","sun","cloud","gLift","gGain"], LNUM = ["hemiI","sunI","exposure","nightK","gSat","gCon"];
+const GRADE_DEF = { gLift:"#000000", gGain:"#ffffff", gSat:1, gCon:1 };
+const lightOf = (L, k) => { const o = { sunPos:V(...L.sunPos), nightK:L.nightK ?? k }; for(const c of LCOL) o[c] = new THREE.Color(L[c] ?? GRADE_DEF[c]); for(const n of LNUM) if(n !== "nightK") o[n] = L[n] ?? GRADE_DEF[n]; return o; };
 const copyLight = l => { const o = { ...l, sunPos:l.sunPos.clone() }; for(const c of LCOL) o[c] = l[c].clone(); return o; };
 let light = null, lightTween = null;
 function showLight(){
@@ -1854,7 +1914,8 @@ function showLight(){
 	hemi.color.copy(st.hemiSky); hemi.groundColor.copy(st.hemiGround); hemi.intensity = st.hemiI*HEMI_K;
 	sun.color.copy(st.sun); sun.intensity = st.sunI;
 	renderer.toneMappingExposure = st.exposure*.94;
-	cloudMat.color.copy(st.cloud);
+	GRADE.gSat.value = st.gSat; GRADE.gCon.value = st.gCon; GRADE.gLift.value.copy(st.gLift); GRADE.gGain.value.copy(st.gGain);
+	cloudMat.color.copy(st.cloud); cloudMat.emissive.copy(st.cloud);
 	sky.set(st); sky.renderBackground();
 	const lamp = THREE.MathUtils.smoothstep(k, .12, .5);
 	glassLit.emissiveIntensity = k > 0 ? 1.7 : 0;          // fenêtre par fenêtre : voir windowsGate
@@ -1870,6 +1931,7 @@ function showLight(){
 	city.setNight(k); landmarks.setNight(k); monuments.setNight(k);
 	// paillettes sur l'eau : la lune la nuit (argentée), le soleil le jour, orangé à l'heure dorée
 	GLINT.dir.value.copy(st.sunPos).normalize();
+	FACADE.uSunW.value.copy(st.sunPos).normalize();
 	GLINT.color.value.copy(st.sun).multiplyScalar(k > .5 ? 2.6 : golden ? 2.2 : .9);
 	blobMaterial().opacity = .34 - .18*k;
 	if(post) post.setNight(k);
@@ -2002,7 +2064,7 @@ function fade(mid){
 }
 function loadInterior(id){
 	return interiors[id] ? Promise.resolve() : MAKERS[id]().then(make => {
-		interiors[id] = make({ background:skyTex }); qualityInterior(interiors[id]);
+		interiors[id] = make({ background:skyTex }); qualityInterior(interiors[id]); gradeAll(interiors[id].scene);
 		if(interiors[id].setAmbiance) interiors[id].setAmbiance(season, night ? NIGHT : season.day, night); else interiors[id].setNight(night);
 		// shaders préparés à l'avance (en parallèle si le navigateur le permet) : pas d'à-coup à l'entrée
 		return renderer.compileAsync(interiors[id].scene, camera).catch(() => {});
@@ -3527,6 +3589,7 @@ function setQuality(level){
 	smallCasters(scene);
 	shadowDirty = true;
 	setFarLevel(Q.horizon);
+	canopyIM.geometry = [simpleCrown, midCrown, fullCrown][Q.rank]; trunkIM.geometry = Q.rank === 0 ? simpleTrunk : trunkGeo;
 	const walkers = students.filter(s => !s.chat); walkers.forEach((s, i) => { s.off = (i + .5)/walkers.length > Q.crowd; s.g.visible = !s.off; });
 	fogFollow(true);
 	for(const k in interiors) if(interiors[k]) qualityInterior(interiors[k]);
@@ -3683,6 +3746,7 @@ function frame(){
 		if(now.getMinutes() === 0 && lastMinute === 59 && entered){ Audio.play("chime"); setTimeout(scarePigeons, 250); }
 		lastMinute = now.getMinutes();
 		if(mode === "ext") fogFollow();
+		if(mode === "ext" && landmarks.declutter && (++declutterN % 6 === 0)) landmarks.declutter(camera);          // étiquettes qui se recouvrent à l'écran : la plus lointaine monte
 		crowd.update();
 		// la rame et la station souterraine bougent pendant les cinématiques : ombres en continu ; sinon à la demande
 		renderer.shadowMap.autoUpdate = !!cine;

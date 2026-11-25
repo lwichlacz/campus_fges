@@ -9,6 +9,7 @@
      6. jeudi : devant le comité, répondre à chaque objection en montrant la pièce et la ligne qui le prouvent.
    Le dossier s'épaissit sur le bureau à chaque pièce. Environ 9 minutes. Contenus dans affaires-data.js. */
 import * as THREE from "three";
+import { studio } from "./studio.js?v=5545d023b6";
 import { makePerson, std, box, cyl } from "../kit.js?v=5545d023b6";
 import { jpoCard } from "./jpo.js?v=5545d023b6";
 import { palier } from "./palier.js?v=5545d023b6";
@@ -111,6 +112,7 @@ export function openAffaires({ formation, audio, isFav, toggleFav, onClose, onEv
 	renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.NeutralToneMapping;
 	const ANISO = Math.min(8, renderer.capabilities.getMaxAnisotropy());
 	const scene = new THREE.Scene(); scene.background = new THREE.Color("#dfe8ee");
+	studio(renderer, scene, {});          // reflets de studio, fond de pièce, ombres douces (js/games/studio.js)
 	const camera = new THREE.PerspectiveCamera(42, 1, .03, 80);
 	scene.add(new THREE.HemisphereLight("#fdfcf8", "#9d968a", 1.5));
 	const sun = new THREE.DirectionalLight("#fff3e0", 1.6); sun.castShadow = true;
