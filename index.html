@@ -47,6 +47,12 @@ button{font:inherit;color:inherit;cursor:pointer}
 #loader p{font:300 20px Tiempos Headline,Times New Roman,serif;color:var(--brand-ink);margin:0}
 #loader i{display:block;width:44px;height:44px;margin:0 auto 14px;border-radius:50%;border:4px solid #e6e6e6;border-top-color:var(--brand);animation:spin 1s linear infinite}
 #loader>div{text-align:center;padding:0 16px}
+#loader .lbar{position:relative;width:min(280px,72vw);height:8px;margin:18px auto 6px;border-radius:99px;background:#d4d4d4;overflow:hidden}
+#loader .lbar>span{position:absolute;inset:0;background:var(--brand);border-radius:inherit;transform-origin:left;transform:scaleX(.03);transition:transform .6s ease}
+#loader .lbar:after{content:"";position:absolute;inset:0;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:lshine 1.3s linear infinite}
+@keyframes lshine{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+#loader .lstep{display:block;min-height:18px;font-size:13px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){#loader .lbar:after{animation:none;display:none}}
 #loader .ltip{max-width:360px;min-height:88px;margin:22px auto 0;font-size:14.5px;line-height:1.45;color:var(--ink2);transition:opacity .45s ease}
 #loader .ltip.out{opacity:0}
 #loader .ltip b{display:block;margin-bottom:4px;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-ink)}
@@ -386,6 +392,17 @@ button{font:inherit;color:inherit;cursor:pointer}
 .coach{position:fixed;left:0;right:0;margin:0 auto;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 72px);z-index:14;width:min(470px,calc(100% - 24px));display:grid;grid-template-columns:auto 1fr;gap:4px 14px;background:var(--cream);border-radius:22px;box-shadow:var(--shadow);padding:16px;border:2px solid var(--gold);animation:rise .4s ease both}
 .coach[hidden]{display:none}
 .coach-ic{grid-row:span 2;width:54px;height:54px;border-radius:16px;background:var(--cream2);display:grid;place-items:center;font-size:28px}
+.dock .n[hidden]{display:none}
+.dock button.bump{animation:carnetBump .5s ease}
+@keyframes carnetBump{40%{transform:scale(1.18)}}
+/* tutoriel : le geste est montré, pas seulement écrit */
+.coach-ic[data-step="0"]{animation:coachSwipe 1.6s ease-in-out infinite}
+.coach-ic[data-step="1"]{animation:coachTap 1.2s ease-in-out infinite}
+.coach-ic[data-step="2"]{animation:coachBeat 1s ease-in-out infinite;color:#c0392b}
+@keyframes coachSwipe{0%,100%{transform:translateX(-7px) rotate(-8deg)}50%{transform:translateX(7px) rotate(8deg)}}
+@keyframes coachTap{0%,60%,100%{transform:scale(1)}30%{transform:scale(.86)}}
+@keyframes coachBeat{0%,100%{transform:scale(1)}15%{transform:scale(1.18)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){.coach-ic,.dock button.bump{animation:none!important}}
 .coach-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-ink)}
 .coach-tx b{display:block;font:300 18px/1.2 Tiempos Headline,Times New Roman,serif;margin:2px 0}
 .coach-tx p{margin:0;color:var(--ink2);font-size:14px}
@@ -502,23 +519,23 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 <script type="importmap">
 {"imports":{"three":"./vendor/three-0.165.0/build/three.module.min.js","three/addons/":"./vendor/three-0.165.0/examples/jsm/"}}
 </script>
-<link rel="modulepreload" href="js/main.js?v=af8698b034">
-<link rel="modulepreload" href="js/kit.js?v=af8698b034">
-<link rel="modulepreload" href="js/data.js?v=af8698b034">
-<link rel="modulepreload" href="js/details.js?v=af8698b034">
-<link rel="modulepreload" href="js/vauban.js?v=af8698b034">
-<link rel="modulepreload" href="js/city.js?v=af8698b034">
-<link rel="modulepreload" href="js/render.js?v=af8698b034">
-<link rel="modulepreload" href="js/landmarks.js?v=af8698b034">
-<link rel="modulepreload" href="js/monuments.js?v=af8698b034">
-<link rel="modulepreload" href="js/audio.js?v=af8698b034">
+<link rel="modulepreload" href="js/main.js?v=8ee610d7d8">
+<link rel="modulepreload" href="js/kit.js?v=8ee610d7d8">
+<link rel="modulepreload" href="js/data.js?v=8ee610d7d8">
+<link rel="modulepreload" href="js/details.js?v=8ee610d7d8">
+<link rel="modulepreload" href="js/vauban.js?v=8ee610d7d8">
+<link rel="modulepreload" href="js/city.js?v=8ee610d7d8">
+<link rel="modulepreload" href="js/render.js?v=8ee610d7d8">
+<link rel="modulepreload" href="js/landmarks.js?v=8ee610d7d8">
+<link rel="modulepreload" href="js/monuments.js?v=8ee610d7d8">
+<link rel="modulepreload" href="js/audio.js?v=8ee610d7d8">
 <link rel="modulepreload" href="vendor/three-0.165.0/build/three.module.min.js">
 <link rel="modulepreload" href="vendor/three-0.165.0/examples/jsm/controls/OrbitControls.js">
 </head>
 <body>
 <noscript><p style="padding:24px;font:300 16px Inter,Arial,sans-serif">Le campus en 3D nécessite JavaScript. <a href="liste.html">Voir toutes les formations en version liste</a>.</p></noscript>
 <div id="scene"></div>
-<div id="loader"><div><i></i><p>Le campus se réveille…</p><div class="ltip" id="ltip" aria-live="polite"></div><a class="lfast" id="lfast" href="liste.html" hidden>Pressé·e ? La version rapide, sans 3D →</a></div></div>
+<div id="loader" data-modules="19"><div><p>Le campus se réveille…</p><div class="lbar" id="lbar" role="progressbar" aria-label="Chargement du campus" aria-valuemin="0" aria-valuemax="100" aria-valuenow="3"><span></span></div><small class="lstep" id="lstep">Téléchargement du campus · 3 %</small><div class="ltip" id="ltip" aria-live="polite"></div><a class="lfast" id="lfast" href="liste.html" hidden>Pressé·e ? La version rapide, sans 3D →</a></div></div>
 <script>
 /* Écran de chargement : de vraies anecdotes (reprises des fiches des lieux et des formations, js/data.js) défilent,
    puis la version rapide sans 3D est proposée. Script classique, hors des modules : il tourne même si la 3D ne charge pas. */
@@ -542,6 +559,19 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 	];
 	const loader = document.getElementById("loader"), box = document.getElementById("ltip"), fast = document.getElementById("lfast"), t0 = Date.now();
 	let i = Math.floor(Math.random()*TIPS.length), tick = 0;
+	/* Barre de progression : 0-75 % = modules JavaScript reçus (leur nombre, data-modules, est compté par tools/version.py),
+	   75-95 % = construction du quartier (main.js l'annonce), 100 % = première image. Entre deux étapes, elle avance un peu
+	   chaque seconde : une barre immobile ferait croire la page figée. */
+	const bar = document.getElementById("lbar"), step = document.getElementById("lstep"), N = +loader.dataset.modules || 30, got = new Set();
+	let pct = 3, label = "Téléchargement du campus";
+	const paint = () => { bar.firstElementChild.style.transform = `scaleX(${Math.max(.03, pct/100)})`; bar.setAttribute("aria-valuenow", Math.round(pct)); step.textContent = `${label} · ${Math.round(pct)} %`; };
+	window.campusProgress = (v, l) => { if(l) label = l; pct = Math.min(100, Math.max(pct, v)); paint(); };
+	const count = () => {
+		performance.getEntriesByType("resource").forEach(e => { if(/\.js(\?|$)/.test(e.name) && !/goatcounter|zgo\.at/.test(e.name)) got.add(e.name.split("?")[0]); });
+		window.campusProgress(3 + 72*Math.min(1, got.size/N));
+	};
+	try { new PerformanceObserver(count).observe({ type:"resource", buffered:true }); } catch(e){}
+	paint();
 	const show = () => { box.innerHTML = "<b>Le savais-tu ?</b>" + TIPS[i++ % TIPS.length]; };
 	show();
 	// navigateur trop ancien pour les importmap (iPhone resté en iOS 15 ou moins, vieux Android) : le campus ne démarrerait
@@ -554,6 +584,7 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 		// la 3D est prête (ou l'écran a été remplacé par le message « navigateur non compatible ») : on s'arrête
 		if(loader.classList.contains("gone") || !document.body.contains(box)) return clearInterval(timer);
 		const s = (Date.now() - t0)/1000;
+		if(pct < 95) window.campusProgress(pct + (pct < 75 ? (75 - pct)*.04 : (95 - pct)*.08));          // jamais immobile, jamais au bout avant l'heure
 		if(s > 6) fast.hidden = false;
 		if(s > 30 && !fast.classList.contains("slow")){ fast.classList.add("slow"); fast.textContent = "Le chargement est long sur cet appareil : découvre toutes les formations dans la version rapide →"; }
 		if(++tick % 5 === 0){ box.classList.add("out"); setTimeout(() => { show(); box.classList.remove("out"); }, 450); }
@@ -705,7 +736,7 @@ body.walking .toast.on{opacity:1!important}          /* à pied : on garde le me
 	<div class="pb" id="pbody"></div>
 </aside>
 
-<script type="module" src="js/main.js?v=af8698b034"></script>
+<script type="module" src="js/main.js?v=8ee610d7d8"></script>
 <!-- mesure d audience anonyme, sans cookie (GoatCounter) -->
 <script data-goatcounter="https://lucas-wichlacz.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <!-- cache hors ligne (sw.js) : la borne de la JPO survit à une coupure du Wi-Fi ; installé après le chargement, sans retarder le campus.

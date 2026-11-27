@@ -44,11 +44,20 @@ export const FORMATIONS = [
 	["duhm","Parcours Humanités & Management","FGES","DU","ha",0,"Sur mesure · sur devis","Conférences et ateliers d'éthique pour les équipes.","du-humanite-management/"]
 ].map(a => ({ id:a[0], name:a[1], school:a[2], level:a[3], place:a[4], seats:a[5], rhythm:a[6], pitch:a[7], url:U + a[8] }));
 
-/* Plaquettes : id de formation → lien direct vers le PDF (à compléter).
-   Tant qu'une formation n'a pas son lien, le visiteur reçoit le catalogue Calaméo de toutes les plaquettes. */
-export const PLAQUETTES = {
-	// gestion: "https://www.fges.fr/wp-content/uploads/…/plaquette-licence-gestion.pdf",
-};
+/* Plaquettes : id de formation → lien direct vers le PDF (plaquettes de nov. 2026, toutes vérifiées le 27/11/2026).
+   Tant qu'une formation n'a pas son lien (les DU), le visiteur reçoit le catalogue Calaméo de toutes les plaquettes. */
+const P = "https://www.fges.fr/wp-content/uploads/2026/11/Plaquette-";
+export const PLAQUETTES = Object.fromEntries(Object.entries({
+	// FGES
+	ecofi:"Eco-Fi", gestion:"Licence-Gestion", cupge:"Prepa-Grandes-Ecoles-Commerce", d2:"Prepa-D2", veto:"Prepa-Agro-Veto",
+	sv:"Licence-SV", mh:"Licence-MH", apes:"APES", aese:"Licence-AESe", lpabf:"LP-Assurance-Banque-Finance", lieg:"IEG",
+	frd:"Master-FRD", im:"Master-IM", mbif:"Master-MBIF", me:"Master-ME", mrc:"Master-MRC", mre:"Master-MRE", ecoop:"Master-EO", mdd:"Master-MDD",
+	// ISEA
+	cfa:"Licence-CFA", cca:"Master-CCA", cgao:"Master-CGAO", dgp:"Master-DGP",
+	// École du Numérique
+	info:"Licence-Informatique", spi:"Licence-Sc-pour-lingenieur", cyber:"Master-Cyber", dia:"Master-Data-IA", dmb:"Master-DMB",
+	ebmd:"Master-Ebusiness-Market.Digit_", jn:"Master-JN", mtn:"Master-MTN", iasi:"Master-IASI"
+}).map(([id, f]) => [id, P + f + ".pdf"]));
 export const CATALOGUE_PLAQUETTES = "https://www.calameo.com/accounts/7206845";
 /* Relais du formulaire en production (plugin WordPress fourni dans tools/wordpress/).
    Vide : le site utilise le relais local (tools/serve.py), ou le mode démo une fois en ligne. */

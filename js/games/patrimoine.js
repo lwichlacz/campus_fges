@@ -5,10 +5,10 @@
    suit le dossier : les biens se rangent dans leur zone, la communauté se partage au décès, l'héritage se place…
    On raisonne avec le droit d'aujourd'hui. Famille fictive. Contenu à relire par l'équipe du master. */
 import * as THREE from "three";
-import { studio } from "./studio.js?v=af8698b034";
+import { studio } from "./studio.js?v=8ee610d7d8";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { soigner, modele, meuble, grain } from "./rendu.js?v=af8698b034";
-import { jpoCard } from "./jpo.js?v=af8698b034";
+import { soigner, modele, meuble, grain } from "./rendu.js?v=8ee610d7d8";
+import { jpoCard } from "./jpo.js?v=8ee610d7d8";
 
 const COURSES = {
 	famille: ["Droit de la famille", "Régimes matrimoniaux, PACS, concubinage : qui possède quoi dans un couple, et que changer quand la vie change."],

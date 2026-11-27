@@ -26,13 +26,32 @@ SPEC = re.compile(r"""(["'])((?:\.{1,2}/|js/)(?!vendor/)[^"'?\s]+\.js)(?:\?v=[0-
 def strip(t): return SPEC.sub(lambda m: m.group(1) + m.group(2) + m.group(1), t)
 
 texts = {f: f.read_text(encoding="utf-8") for f in FILES}
+
+# Barre de chargement (index.html) : nombre de modules JavaScript que le navigateur télécharge avant de lancer la 3D,
+# c'est-à-dire le graphe des imports statiques de main.js (three.js compris, via l'importmap).
+IMP = re.compile(r"""(?:^|[;\n])\s*(?:import|export)\s[^"';]*?from\s*["']([^"']+)["']|(?:^|[;\n])\s*import\s*["']([^"']+)["']""")
+MAPS = {"three": ROOT / "vendor/three-0.165.0/build/three.module.min.js", "three/addons/": ROOT / "vendor/three-0.165.0/examples/jsm/"}
+def resolve(spec, base):
+    spec = spec.split("?")[0]
+    if spec in MAPS: return MAPS[spec]
+    if spec.startswith("three/addons/"): return MAPS["three/addons/"] / spec[len("three/addons/"):]
+    return (base.parent / spec).resolve()
+seen, todo = set(), [ROOT / "js/main.js"]
+while todo:
+    f = todo.pop()
+    if f in seen or not f.exists(): continue
+    seen.add(f)
+    for m in IMP.finditer(f.read_text(encoding="utf-8")): todo.append(resolve(m.group(1) or m.group(2), f))
+idx = ROOT / "index.html"
+texts[idx] = re.sub(r'(<div id="loader")(?: data-modules="\d+")?', lambda m: f'{m.group(1)} data-modules="{len(seen)}"', texts[idx], count=1)
 h = hashlib.sha1()
 for f in FILES: h.update(strip(texts[f]).encode("utf-8"))
 v = h.hexdigest()[:10]
 changed = 0
 for f, t in texts.items():
+    if f == idx: t0 = f.read_text(encoding="utf-8")
     n = SPEC.sub(lambda m: f"{m.group(1)}{m.group(2)}?v={v}{m.group(1)}", t)
-    if n != t:
+    if n != (t0 if f == idx else t):
         f.write_text(n, encoding="utf-8", newline="")
         changed += 1
 
@@ -49,4 +68,4 @@ s2 = re.sub(r"const FILES = \[[\s\S]*?\];", "const FILES = " + json.dumps(pre, i
 if s2 != s:
     sw.write_text(s2, encoding="utf-8", newline="")
     changed += 1
-print(f"version {v} · {changed} fichier(s) mis à jour · précache : {len(pre)} fichiers")
+print(f"modules au chargement : {len(seen)} · version {v} · {changed} fichier(s) mis à jour · précache : {len(pre)} fichiers")

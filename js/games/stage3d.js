@@ -7,9 +7,9 @@
    - les étiquettes gardent une taille constante à l'écran, réduite sur téléphone. */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { studio } from "./studio.js?v=af8698b034";
+import { studio } from "./studio.js?v=8ee610d7d8";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { soigner } from "./rendu.js?v=af8698b034";
+import { soigner } from "./rendu.js?v=8ee610d7d8";
 
 export { THREE };
 

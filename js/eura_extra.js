@@ -5,7 +5,7 @@
    - les quais de la Deûle : margelle de pierre au bord de l'eau et alignement d'arbres sur chaque rive ;
    - les passerelles sur la Deûle (tablier d'acier, garde-corps). */
 import * as THREE from "three";
-import { std } from "./kit.js?v=af8698b034";
+import { std } from "./kit.js?v=8ee610d7d8";
 
 const P2 = f => { const p = []; for(let i=0;i<f.length;i+=2) p.push([f[i], f[i+1]]); return p; };
 function pointIn(x, z, p){ let ins = false; for(let i=0, j=p.length-1; i<p.length; j=i++){ const [xi,zi] = p[i], [xj,zj] = p[j]; if(((zi > z) !== (zj > z)) && x < (xj-xi)*(z-zi)/(zj-zi) + xi) ins = !ins; } return ins; }

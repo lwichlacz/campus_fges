@@ -2,20 +2,22 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
-import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=af8698b034";
-import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain, GRADE, gradeAll, bakeGroundAO, groundAO, crownGeo, glassLook } from "./render.js?v=af8698b034";
-import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=af8698b034";
-import { MAP } from "./vauban.js?v=af8698b034";
-import { buildLandmarks } from "./landmarks.js?v=af8698b034";
-import { buildMonuments } from "./monuments.js?v=af8698b034";
-import { buildCity, pointInPoly, polyDist, FACADE } from "./city.js?v=af8698b034";
-import { CIT } from "./citadelle_osm.js?v=af8698b034";
-import { createTraffic } from "./traffic.js?v=af8698b034";
-import { buildCitadel, porteDauphine, handExclude, champDeMars } from "./citadelle.js?v=af8698b034";
-import { buildStation } from "./station.js?v=af8698b034";
-import { createRame } from "./rame.js?v=af8698b034";
-import { Audio } from "./audio.js?v=af8698b034";
-import { DETAILS } from "./details.js?v=af8698b034";
+import { rng, R, pick, BOX, BOXC, cached, std, mesh, box, cyl, cone, gable, mansard, windowBatch, makeStudent, makePerson, beam } from "./kit.js?v=8ee610d7d8";
+import { TIME, bakeStatic, proxyInstances, blobShadow, blobMaterial, createSky, createPost, contactShade, windSway, waterRipples, windowsGate, GLINT, CLOUDS, cloudShade, createRain, GRADE, gradeAll, bakeGroundAO, groundAO, crownGeo, glassLook } from "./render.js?v=8ee610d7d8";
+import { FORMATIONS as F, GAMES, GAME_INFO, PROFILES, PLACES, LIFE, DAYS, SEASONS, NIGHT, GOLDEN, SEASON_ORDER, PLAQUETTES, CATALOGUE_PLAQUETTES, LEAD_ENDPOINT, RENDEZ_VOUS } from "./data.js?v=8ee610d7d8";
+import { MAP } from "./vauban.js?v=8ee610d7d8";
+import { buildLandmarks } from "./landmarks.js?v=8ee610d7d8";
+import { buildMonuments } from "./monuments.js?v=8ee610d7d8";
+import { buildCity, pointInPoly, polyDist, FACADE } from "./city.js?v=8ee610d7d8";
+import { CIT } from "./citadelle_osm.js?v=8ee610d7d8";
+import { createTraffic } from "./traffic.js?v=8ee610d7d8";
+import { buildCitadel, porteDauphine, handExclude, champDeMars } from "./citadelle.js?v=8ee610d7d8";
+import { buildStation } from "./station.js?v=8ee610d7d8";
+import { createRame } from "./rame.js?v=8ee610d7d8";
+import { Audio } from "./audio.js?v=8ee610d7d8";
+import { DETAILS } from "./details.js?v=8ee610d7d8";
+
+window.campusProgress?.(78, "Construction du quartier");          // tous les modules sont là : main.js s'exécute
 
 // lieu → mini-jeu qui s'y trouve (badge sur l'épingle, bouton dans la fiche)
 const GAME_AT = {};   // lieu → mini-jeux qui s'y trouvent (un lieu peut en accueillir plusieurs)
@@ -1498,7 +1500,7 @@ function paintFar(S){
 let farLoading = false;
 function loadFar(){
 	if(farLoading) return; farLoading = true;
-	import("./vauban_far.js?v=af8698b034").then(({ FAR }) => {
+	import("./vauban_far.js?v=8ee610d7d8").then(({ FAR }) => {
 		horizon = buildHorizon(FAR.far);
 		farWood = buildFarWood(FAR.ftrees);
 		paintFar(season);
@@ -2040,27 +2042,27 @@ setInterval(() => { if(!dayTime && timeMode === "auto" && (realNight() !== night
    ===================================================================== */
 const interiors = { atrium:null, chapelle:null, eura:null, wenovin:null, bibli:null };
 /* Les intérieurs et le mini-jeu ne sont chargés qu'au besoin (et préchargés quand le navigateur est libre). */
-const MAKERS = { atrium:() => import("./atrium.js?v=af8698b034").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=af8698b034").then(m => m.createChapelle), eura:() => import("./eura.js?v=af8698b034").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=af8698b034").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=af8698b034").then(m => m.createBU) };
+const MAKERS = { atrium:() => import("./atrium.js?v=8ee610d7d8").then(m => m.createAtrium), chapelle:() => import("./chapelle.js?v=8ee610d7d8").then(m => m.createChapelle), eura:() => import("./eura.js?v=8ee610d7d8").then(m => m.createEura), wenovin:() => import("./wenovin.js?v=8ee610d7d8").then(m => m.createWenovIn), bibli:() => import("./bu.js?v=8ee610d7d8").then(m => m.createBU) };
 const GAME_LOADERS = {
-	comptoir:() => import("./games/comptoir.js?v=af8698b034").then(m => m.openComptoir),
-	jardin:() => import("./games/jardin.js?v=af8698b034").then(m => m.openJardin),
-	audit:() => import("./games/audit.js?v=af8698b034").then(m => m.openAudit),
-	robot:() => import("./games/robot.js?v=af8698b034").then(m => m.openRobot),
-	gaming:() => import("./games/gaming.js?v=af8698b034").then(m => m.openGaming),
-	biodata:() => import("./games/biodata.js?v=af8698b034").then(m => m.openBiodata),
-	crise:() => import("./games/crise.js?v=af8698b034").then(m => m.openCrise),
-	patrimoine:() => import("./games/patrimoine.js?v=af8698b034").then(m => m.openPatrimoine),
-	affaires:() => import("./games/affaires.js?v=af8698b034").then(m => m.openAffaires),
-	boutique:() => import("./games/boutique.js?v=af8698b034").then(m => m.openBoutique),
-	ruee:() => import("./games/ruee.js?v=af8698b034").then(m => m.openRuee),
-	tp:() => import("./games/tp.js?v=af8698b034").then(m => m.openTP),
-	clinique:() => import("./games/clinique.js?v=af8698b034").then(m => m.openClinique),
-	jourj:() => import("./games/jourj.js?v=af8698b034").then(m => m.openJourJ),
-	moniac:() => import("./games/moniac.js?v=af8698b034").then(m => m.openMoniac),
-	cargo:() => import("./games/cargo.js?v=af8698b034").then(m => m.openCargo),
-	marquelle:() => import("./games/marquelle.js?v=af8698b034").then(m => m.openMarquelle),
-	guichet:() => import("./games/guichet.js?v=af8698b034").then(m => m.openGuichet),
-	telephone:() => import("./games/dossier.js?v=af8698b034").then(m => m.openDossier)
+	comptoir:() => import("./games/comptoir.js?v=8ee610d7d8").then(m => m.openComptoir),
+	jardin:() => import("./games/jardin.js?v=8ee610d7d8").then(m => m.openJardin),
+	audit:() => import("./games/audit.js?v=8ee610d7d8").then(m => m.openAudit),
+	robot:() => import("./games/robot.js?v=8ee610d7d8").then(m => m.openRobot),
+	gaming:() => import("./games/gaming.js?v=8ee610d7d8").then(m => m.openGaming),
+	biodata:() => import("./games/biodata.js?v=8ee610d7d8").then(m => m.openBiodata),
+	crise:() => import("./games/crise.js?v=8ee610d7d8").then(m => m.openCrise),
+	patrimoine:() => import("./games/patrimoine.js?v=8ee610d7d8").then(m => m.openPatrimoine),
+	affaires:() => import("./games/affaires.js?v=8ee610d7d8").then(m => m.openAffaires),
+	boutique:() => import("./games/boutique.js?v=8ee610d7d8").then(m => m.openBoutique),
+	ruee:() => import("./games/ruee.js?v=8ee610d7d8").then(m => m.openRuee),
+	tp:() => import("./games/tp.js?v=8ee610d7d8").then(m => m.openTP),
+	clinique:() => import("./games/clinique.js?v=8ee610d7d8").then(m => m.openClinique),
+	jourj:() => import("./games/jourj.js?v=8ee610d7d8").then(m => m.openJourJ),
+	moniac:() => import("./games/moniac.js?v=8ee610d7d8").then(m => m.openMoniac),
+	cargo:() => import("./games/cargo.js?v=8ee610d7d8").then(m => m.openCargo),
+	marquelle:() => import("./games/marquelle.js?v=8ee610d7d8").then(m => m.openMarquelle),
+	guichet:() => import("./games/guichet.js?v=8ee610d7d8").then(m => m.openGuichet),
+	telephone:() => import("./games/dossier.js?v=8ee610d7d8").then(m => m.openDossier)
 };
 const loadGame = () => Object.values(GAME_LOADERS).forEach(l => l());
 function prefetchLater(){
@@ -2254,7 +2256,7 @@ function toast(msg, ms=3200){
 }
 const buzz = ms => { try { if(touch && !reduceMotion && navigator.userActivation?.hasBeenActive !== false) navigator.vibrate?.(ms); } catch(e){} };
 function refreshHud(){
-	$("carnetN").textContent = favs.size;
+	$("carnetN").textContent = favs.size; $("carnetN").hidden = !favs.size;          // pas de « 0 » énigmatique avant le premier ♡
 	discovered(true);
 	$("btnProfile").innerHTML = profile ? `${PROFILES[profile].icon} <span class="lbl">${PROFILES[profile].label}</span>` : "👤";
 	$("btnMusic").textContent = Audio.on ? "🎵" : "🔇";
@@ -3015,7 +3017,14 @@ $("panel").addEventListener("click", e => {
 	const ld = e.target.closest("[data-lead]"); if(ld) openLead([ld.dataset.lead]);
 });
 function toggleFav(id){
-	if(favs.has(id)) favs.delete(id); else { favs.add(id); toast("Ajouté à ton carnet 📒", 1600); Audio.play("pop"); }
+	if(favs.has(id)) favs.delete(id);
+	else {
+		favs.add(id); Audio.play("pop");
+		// la première fois, on dit à quoi sert le carnet ; ensuite, un simple accusé
+		if(favs.size === 1 && !store.get("favExplained")){ store.set("favExplained", true); toast("Gardée dans ton carnet 📒 · ouvre-le en bas pour recevoir sa plaquette", 4200); }
+		else toast(favs.size > 1 ? `Ajouté à ton carnet 📒 · ${favs.size} formations` : "Ajouté à ton carnet 📒", 1600);
+		const b = document.querySelector('.dock [data-dock="carnet"]'); if(b){ b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
+	}
 	store.set("favs", [...favs]); refreshHud();
 }
 /* Mesure d'audience anonyme (GoatCounter, chargé en async dans index.html). Silencieux si le script est bloqué
@@ -3516,13 +3525,13 @@ const COACH = [
 	{ ic:"👆", k:"1 / 3 · Se déplacer", t: touch ? "Glisse un doigt pour tourner" : "Glisse pour tourner autour du campus",
 	  p: touch ? "Pince avec deux doigts pour zoomer. Fais défiler les cartes du bas : la caméra t'emmène à chaque lieu." : "Molette pour zoomer, clic droit pour te déplacer. Le bouton ⌂ te ramène à la vue d'ensemble." },
 	{ ic:"🏛️", k:"2 / 3 · Explorer", t:"Touche un bâtiment ou une épingle", p:"La barre du bas t'emmène directement aux formations, aux lieux du campus ou dans une visite guidée.", dock:true },
-	{ ic:"♡", k:"3 / 3 · Garder", t:"Garde les formations qui te plaisent", p:"Touche ♡ sur une formation : elle rejoint ton carnet 📒, avec tes tampons de visite." }
+	{ ic:"♡", k:"3 / 3 · Garder", t:"Garde les formations qui te plaisent", p:"Touche ♡ sur une formation : elle rejoint ton carnet 📒. À la fin, tu reçois toutes leurs plaquettes d'un coup." }
 ];
 let coach = null;
 function startCoach(){ coach = { i:0 }; showCoach(); }
 function showCoach(){
 	const c = COACH[coach.i];
-	$("coachIc").textContent = c.ic; $("coachK").textContent = c.k; $("coachT").textContent = c.t; $("coachP").textContent = c.p;
+	$("coachIc").textContent = c.ic; $("coachIc").dataset.step = coach.i; $("coachK").textContent = c.k; $("coachT").textContent = c.t; $("coachP").textContent = c.p;
 	$("coachNext").textContent = coach.i === COACH.length - 1 ? "C'est parti !" : "Suivant";
 	$("coach").hidden = false;
 	$("dock").classList.toggle("pulse", !!c.dock);
@@ -3829,7 +3838,7 @@ function frame(){
 	}
 	if(entered){ syncCarousel(); updatePins(); }
 	if(perfHud) perfHud.end(rawDt);
-	if(first){ first = false; performance.mark("campus-ready"); setTimeout(() => $("loader").classList.add("gone"), 150); prefetchLater(); setTimeout(loadFar, 400); setTimeout(() => { smallCasters(scene); shadowDirty = true; }, 3000); }
+	if(first){ first = false; performance.mark("campus-ready"); window.campusProgress?.(100, "Bienvenue"); setTimeout(() => $("loader").classList.add("gone"), 150); prefetchLater(); setTimeout(loadFar, 400); setTimeout(() => { smallCasters(scene); shadowDirty = true; }, 3000); }
 	requestAnimationFrame(frame);
 }
 addEventListener("resize", () => {

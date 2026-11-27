@@ -14,10 +14,10 @@
    Entreprises, banques, personnes, navire et chiffres sont fictifs et simplifiés. Contenus à relire par l'équipe pédagogique
    (docs/validation-licence-lieg.md). */
 import * as THREE from "three";
-import { studio } from "./studio.js?v=af8698b034";
+import { studio } from "./studio.js?v=8ee610d7d8";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { jpoCard } from "./jpo.js?v=af8698b034";
-import { palier } from "./palier.js?v=af8698b034";
+import { jpoCard } from "./jpo.js?v=8ee610d7d8";
+import { palier } from "./palier.js?v=8ee610d7d8";
 
 /* ---------- les cours (intitulés et années à faire valider) ---------- */
 const COURSES = {

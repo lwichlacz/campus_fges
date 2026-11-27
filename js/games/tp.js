@@ -15,10 +15,10 @@
    indénombrable) ; on ne gomme jamais, on barre dans le cahier de labo, on explique, puis on refait avec la méthode.
    L'interface est le cahier de laboratoire, à petits carreaux ; la responsable, Nadia Keller, y laisse ses visas.
    École, laboratoire, personnes et valeurs sont fictifs ou simplifiés. Contenu à relire par l'équipe de l'APES. */
-import { soleil, guideGeste, modele, meuble, grain } from "./rendu.js?v=af8698b034";
-import { stage3d, THREE } from "./stage3d.js?v=af8698b034";
-import { jpoCard } from "./jpo.js?v=af8698b034";
-import { palier } from "./palier.js?v=af8698b034";
+import { soleil, guideGeste, modele, meuble, grain } from "./rendu.js?v=8ee610d7d8";
+import { stage3d, THREE } from "./stage3d.js?v=8ee610d7d8";
+import { jpoCard } from "./jpo.js?v=8ee610d7d8";
+import { palier } from "./palier.js?v=8ee610d7d8";
 
 const SPEED = /[?&]vite/.test(location.search) ? 5 : 1;      // ?vite : attentes et animations 5 fois plus rapides (tests)
 
