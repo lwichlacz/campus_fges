@@ -194,7 +194,9 @@ async function browserChecks(){
 					for(let i = 0; i < 100 && ![...document.body.children].some(e => !window.__avant.has(e) && e.getAttribute("role") === "dialog"); i++) await new Promise(r => setTimeout(r, 100));`);
 				const opened = await evaluate(`return [...document.body.children].some(e => !window.__avant.has(e) && e.getAttribute("role") === "dialog");`);
 				if(!opened) throw new Error("la fenêtre du jeu ne s'ouvre pas");
-				await sleep(1200); await shot("20-" + fid, `Mini-jeu ${fid}`);
+				// la caméra des jeux part d'un plan large et rejoint la scène en 1,4 s (stage3d.fly) : on attend qu'elle soit
+				// arrivée, sinon la capture montre un mur ou un fond vide alors que le jeu va bien
+				await sleep(3500); await shot("20-" + fid, `Mini-jeu ${fid}`);
 				const closed = await evaluate(`const g = [...document.body.children].find(e => !window.__avant.has(e) && e.getAttribute("role") === "dialog");
 					const b = g.querySelector('[aria-label="Quitter le jeu"], [aria-label="Close the game"]');
 					if(b) b.click(); else document.dispatchEvent(new KeyboardEvent("keydown", { key:"Escape" }));

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tournage · vidéo d'accueil</title>
+<style>
+	:root{ color-scheme:dark; }
+	body{ margin:0; background:#0c1a38; color:#e8eef8; font:15px/1.4 system-ui, sans-serif; }
+	header{ padding:14px 20px; display:flex; gap:18px; align-items:center; }
+	b{ color:#21b7cb; }
+	#barre{ flex:1; height:8px; background:#1d2c52; border-radius:4px; overflow:hidden; }
+	#barre i{ display:block; height:100%; width:0; background:#21b7cb; transition:width .3s; }
+	iframe{ display:block; width:960px; height:540px; border:0; margin:0 20px; }
+</style>
+</head>
+<body>
+<!-- Ouverte par tools/film/accueil.py : charge le campus dans le cadre ci-dessous et y lance le tournage de la partie 3D. -->
+<header><span>Tournage <b id="saison"></b></span><div id="barre"><i></i></div><span id="msg">chargement du campus…</span></header>
+<iframe id="campus" src="/?debug"></iframe>
+<script>
+const q = new URLSearchParams(location.search), saison = q.get("saison") || "automne", recepteur = q.get("recepteur") || "http://127.0.0.1:8768";
+document.getElementById("saison").textContent = saison;
+const fr = document.getElementById("campus"), msg = document.getElementById("msg"), barre = document.querySelector("#barre i");
+fr.addEventListener("load", async () => {
+	const w = fr.contentWindow;
+	for(let i = 0; i < 300 && !w.campus; i++) await new Promise(r => setTimeout(r, 200));
+	if(!w.campus){ msg.textContent = "le campus ne s'est pas chargé"; return; }
+	msg.textContent = "tournage…";
+	// le module s'exécute dans la page du campus (c'est elle qu'il pilote)
+	const s = w.document.createElement("script"); s.type = "module";
+	s.textContent = `const A = await import("/tools/film/accueil.js"); window.__film = A; A.tourner(${JSON.stringify({ saison, recepteur })});`;
+	w.document.head.appendChild(s);
+	const suivi = setInterval(() => {
+		const e = w.__film?.avancement(); if(!e) return;
+		barre.style.width = (e.total ? 100*e.fait/e.total : 0) + "%";
+		msg.textContent = e.err ? "erreur : " + e.err : e.fini ? "terminé : le montage continue dans le terminal" : `${e.fait} / ${e.total} images`;
+		if(e.err || e.fini) clearInterval(suivi);
+	}, 500);
+});
+</script>
+</body>
+</html>

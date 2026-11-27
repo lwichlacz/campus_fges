@@ -4,8 +4,38 @@
     {
       "name": "campus",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["tools/serve.py"],
+      "runtimeArgs": [
+        "tools/serve.py"
+      ],
       "port": 8765
+    },
+    {
+      "name": "campus-statique",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8770",
+        "--bind",
+        "127.0.0.1"
+      ],
+      "port": 8770,
+      "autoPort": false
+    },
+    {
+      "name": "campus-cupge-d2",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8791",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        ".claude/worktrees/cupge-d2-gestes-3d"
+      ],
+      "port": 8791,
+      "autoPort": false
     }
   ]
 }
